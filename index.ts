@@ -318,6 +318,91 @@ type VarType = {
 };
 
 const var_types: VarType[] = [];
+    
+function inferType(node) {
+    switch (node.type) {
+        
+        // Named types
+        case g.SyntaxType.Ellipsis: {
+            return 'ellipsis';
+            break
+        }
+        case (g.SyntaxType.True || g.SyntaxType.False): {
+            return 'bool';
+            break
+        }
+        case g.SyntaxType.Float: {
+            return 'float';
+            break
+        }
+        case g.SyntaxType.Integer: {
+            return 'int';
+            break
+        }
+        case g.SyntaxType.String: {
+            return 'str';
+            break
+        }
+        case g.SyntaxType.Matrix: {
+            return 'matrix';
+            break
+        }
+        case g.SyntaxType.Cell: {
+            return 'cell';
+            break
+        }
+            
+        // Recursive calls to inferTypes
+        case g.SyntaxType.ComparisonOperator:
+        case g.SyntaxType.BooleanOperator: {
+            return 'bool';
+            break;
+        }
+        case g.SyntaxType.TransposeOperator:
+        case g.SyntaxType.UnaryOperator: {
+            if (node.operatorNode.type == "~") {
+                return 'bool';
+            }
+            else {
+                return inferType(node.firstChild);
+            }
+            
+            break;
+        }
+        case g.SyntaxType.BinaryOperator: {
+            
+            let left_type = inferType(node.leftNode);
+            let right_type = inferType(node.rightNode);
+            
+            if (left_type == right_type) {
+                return left_type;
+            } else if (left_type == 'matrix' || right_type == 'matrix') {
+                return 'matrix';
+            } else if (left_type == 'bool') {
+                return right_type;
+            } else if (right_type == 'bool') {
+                return left_type;
+            } else {
+                return 'unknown';
+            }
+            break;
+        }
+        
+        // Identifiers
+        case g.SyntaxType.Identifier: {
+            let obj = var_types.find(x => x.name === node.text);
+            if (obj != null) {
+                return obj.type;
+            } else {
+                return 'unknown'
+            }
+            break;
+        }
+        
+        // Default
+        default: return 'unknown';
+    }
+}
 
 function typeInference() {
     let cursor = tree.walk();
@@ -326,40 +411,36 @@ function typeInference() {
         switch (c.nodeType) {
             case g.SyntaxType.Assignment: {
                 let node = c.currentNode;
+
+                // If LHS is an identifier, type is same as RHS
                 if (node.leftNode.type == g.SyntaxType.Identifier) {
-                    if (node.rightNode.type == g.SyntaxType.Identifier) {
-                        let obj = var_types.find(x => x.name === node.rightNode.text);
-                        if (obj != null) {
-                            const v1: VarType = { name: node.leftNode.text, type: obj.type };
-                            var_types.push(v1);
-                        } else {
-                            const v1: VarType = { name: node.leftNode.text, type: node.rightNode.type };
-                            var_types.push(v1);
-                        }
-                    } else {
-                        const v1: VarType = { name: node.leftNode.text, type: node.rightNode.type };
-                        var_types.push(v1);
-                    }
+                    const v1: VarType = { name: node.leftNode.text, type: inferType(node.rightNode) };
+                    var_types.push(v1);
+                    
+                // If LHS is subscript, type is array or struct
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
                     const v1: VarType = { name: node.leftNode.text, type: 'array_or_struct' };
                     var_types.push(v1);
                 }
-                //var_types.push(v1);
+                
                 break;
             }
         }
     } while(gotoPreorderSucc(cursor));
+    console.log("Inferred types:");
+    console.log(var_types);
 }
 
 
-// Get member names
+// Get children names
 // -----------------------------------------------------------------------------
 
-function getMemberNames(node: g.MatrixNode) {
+function getChildrenNames(node) {
     let result = [];
-    for (let member of node.namedChildren) {
+    //for (let child of node.namedChildren) {
+    for (let child of node.children) {
         //if (member.type === g.SyntaxType.Expression) {
-            result.push(member.text);
+            result.push(child.text);
         //}
     }
     return result;
@@ -379,8 +460,9 @@ function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
     return true;
 }
 
-// Print matrix functions
+// Call functions
 // -----------------------------------------------------------------------------
 
 printMatrixFunctions();
 printFunctionDefinitions(); 
+typeInference();

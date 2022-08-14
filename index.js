@@ -12,7 +12,6 @@ if (args.length != 1) {
 }
 // Load the file passed as an argument
 var sourceCode = (0, fs_1.readFileSync)(args[0], "utf8");
-console.log("Source code:\n" + sourceCode);
 var tree = parser.parse(sourceCode);
 /*let tree = parser.parse(`
     A = [1, 2;
@@ -31,7 +30,7 @@ function printMatrixFunctions() {
                 var node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "+": {
-                        if (node.argumentNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log("FILLIN(".concat(node.argumentNode.text, ")"));
                         }
                         else {
@@ -40,7 +39,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "-": {
-                        if (node.argumentNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log("FILLIN(".concat(node.argumentNode.text, ")"));
                         }
                         else {
@@ -49,7 +48,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "~": {
-                        if (node.argumentNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log("notM(".concat(node.argumentNode.text, ")"));
                         }
                         else {
@@ -64,7 +63,7 @@ function printMatrixFunctions() {
                 var node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "'": {
-                        if (node.argumentNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log("ctransposeM(".concat(node.argumentNode.text, ")"));
                         }
                         else {
@@ -73,7 +72,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".'": {
-                        if (node.argumentNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log("transposeM(".concat(node.argumentNode.text, ")"));
                         }
                         else {
@@ -88,7 +87,7 @@ function printMatrixFunctions() {
                 var node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "+": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("addM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -97,7 +96,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "-": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("minusM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -106,7 +105,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "*": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("mtimesM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -115,7 +114,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".*": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("timesM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -124,7 +123,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "/": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("mrdivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -133,7 +132,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "./": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("rdivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -142,7 +141,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "\\": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("mldivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -151,7 +150,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".\\": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("ldivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -160,7 +159,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "^": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("mpowerM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -169,7 +168,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".^": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("powerM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -184,7 +183,7 @@ function printMatrixFunctions() {
                 var node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "&": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("andM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -193,7 +192,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "|": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("orM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -202,7 +201,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "&&": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("FILLIN(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -211,7 +210,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "||": {
-                        if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log("FILLIN(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
                         }
                         else {
@@ -298,20 +297,34 @@ function printFunctionDefinitions() {
                 var node = c.currentNode;
                 if (node.isNamed && node.nameNode != null) {
                     custom_functions.push(node.nameNode.text);
-                    node.bodyNode;
-                    node.parametersNode;
-                    if (node.return_variableNode.firstChild != null) {
-                        var return_node = node.return_variableNode.firstChild;
+                    var param_list = [];
+                    for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
+                        var param = _a[_i];
+                        var param_type = inferType(param);
+                        param_list.push(param_type + " " + param.text);
+                    }
+                    if (node.children[1].type == "return_value" /* g.SyntaxType.ReturnValue */) {
+                        var return_node = node.children[1].firstChild;
                         // If multiple return values, use pointers
                         if (return_node.type == "matrix" /* g.SyntaxType.Matrix */) {
-                            for (var _i = 0, _a = return_node.namedChildren; _i < _a.length; _i++) {
-                                var member = _a[_i];
-                                console.log("*p_" + member.text + " = " + member.text);
+                            var ptr_declaration = [];
+                            for (var _b = 0, _c = return_node.namedChildren; _b < _c.length; _b++) {
+                                var return_var = _c[_b];
+                                ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text);
+                                param_list.push(inferType(return_var) + "* " + return_var.text);
                             }
+                            var ptr_declaration_joined = ptr_declaration.join("\n");
+                            console.log(ptr_declaration_joined);
+                            var return_type = "void";
                             // If single return value, don't use pointers 
                         }
-                        else { }
+                        else {
+                            var return_type = inferType(return_node);
+                        }
                     }
+                    var param_list_joined = "(" + param_list.join(", ") + ")";
+                    console.log(return_type + " static " + node.nameNode.text + param_list_joined);
+                    console.log(node.bodyNode.text);
                 }
                 break;
             }
@@ -351,11 +364,13 @@ function inferType(node) {
             break;
         }
         // Recursive calls to inferTypes
-        case ("comparison_operator" /* g.SyntaxType.ComparisonOperator */ || "boolean_operator" /* g.SyntaxType.BooleanOperator */): {
+        case "comparison_operator" /* g.SyntaxType.ComparisonOperator */:
+        case "boolean_operator" /* g.SyntaxType.BooleanOperator */: {
             return 'bool';
             break;
         }
-        case ("unary_operator" /* g.SyntaxType.UnaryOperator */ || "transpose_operator" /* g.SyntaxType.TransposeOperator */): {
+        case "transpose_operator" /* g.SyntaxType.TransposeOperator */:
+        case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
             if (node.operatorNode.type == "~") {
                 return 'bool';
             }
@@ -420,6 +435,7 @@ function typeInference() {
             }
         }
     } while (gotoPreorderSucc(cursor));
+    console.log("Inferred types:");
     console.log(var_types);
 }
 // Get children names
@@ -447,9 +463,13 @@ function gotoPreorderSucc(cursor) {
     }
     return true;
 }
-// Print matrix functions
+// Call functions
 // -----------------------------------------------------------------------------
-printMatrixFunctions();
-printFunctionDefinitions();
+console.log("Source code:\n" + sourceCode);
+console.log("---------------------\n");
 typeInference();
+console.log("---------------------\nMatrix functions:\n");
+printMatrixFunctions();
+console.log("---------------------\nFunction definitions:\n");
+printFunctionDefinitions();
 //# sourceMappingURL=index.js.map

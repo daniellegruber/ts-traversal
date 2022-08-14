@@ -20,7 +20,6 @@ if (args.length != 1) {
 
 // Load the file passed as an argument
 const sourceCode = readFileSync(args[0], "utf8");
-console.log("Source code:\n" + sourceCode);
 
 let tree = parser.parse(sourceCode);
 
@@ -45,7 +44,7 @@ function printMatrixFunctions() {
                 let node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "+": {
-                        if (node.argumentNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log(`FILLIN(${node.argumentNode.text})`);
                         } else {
                             console.log(`+${node.argumentNode.text}`);
@@ -53,7 +52,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "-": {
-                        if (node.argumentNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log(`FILLIN(${node.argumentNode.text})`);
                         } else {
                             console.log(`-${node.argumentNode.text}`);
@@ -61,7 +60,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "~": {
-                        if (node.argumentNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log(`notM(${node.argumentNode.text})`);
                         } else {
                             console.log(`~${node.argumentNode.text}`);
@@ -75,7 +74,7 @@ function printMatrixFunctions() {
                 let node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "'": {
-                        if (node.argumentNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log(`ctransposeM(${node.argumentNode.text})`);
                         } else {
                             console.log(`${node.argumentNode.text}'`);
@@ -83,7 +82,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".'": {
-                        if (node.argumentNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.argumentNode) == 'matrix') {
                             console.log(`transposeM(${node.argumentNode.text})`);
                         } else {
                             console.log(`${node.argumentNode.text}.'`);
@@ -97,7 +96,7 @@ function printMatrixFunctions() {
                 let node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "+": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`addM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} + ${node.rightNode.text}`);
@@ -105,7 +104,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "-": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`minusM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} - ${node.rightNode.text}`);
@@ -113,7 +112,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "*": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`mtimesM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} * ${node.rightNode.text}`);
@@ -121,7 +120,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".*": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`timesM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} .* ${node.rightNode.text}`);
@@ -129,7 +128,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "/": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`mrdivideM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} / ${node.rightNode.text}`);
@@ -137,7 +136,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "./": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`rdivideM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} ./ ${node.rightNode.text}`);
@@ -145,7 +144,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "\\": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`mldivideM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} \\ ${node.rightNode.text}`);
@@ -153,7 +152,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".\\": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`ldivideM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} .\\ ${node.rightNode.text}`);
@@ -161,7 +160,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "^": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`mpowerM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} ^ ${node.rightNode.text}`);
@@ -169,7 +168,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case ".^": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`powerM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} .^ ${node.rightNode.text}`);
@@ -183,7 +182,7 @@ function printMatrixFunctions() {
                 let node = c.currentNode;
                 switch (node.operatorNode.type) {
                     case "&": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`andM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} & ${node.rightNode.text}`);
@@ -191,7 +190,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "|": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`orM(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} | ${node.rightNode.text}`);
@@ -199,7 +198,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "&&": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`FILLIN(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} && ${node.rightNode.text}`);
@@ -207,7 +206,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "||": {
-                        if (node.leftNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Matrix) {
+                        if (inferType(node.leftNode) == 'matrix' || inferType(node.rightNode) == 'matrix') {
                             console.log(`FILLIN(${node.leftNode.text},${node.rightNode.text})`);
                         } else {
                             console.log(`${node.leftNode.text} || ${node.rightNode.text}`);
@@ -289,20 +288,39 @@ function printFunctionDefinitions() {
                 let node = c.currentNode;
                 if (node.isNamed && node.nameNode != null) {
                     custom_functions.push(node.nameNode.text);
-                    node.bodyNode
-                    node.parametersNode
-                    if (node.return_variableNode.firstChild != null) {
-                        let return_node = node.return_variableNode.firstChild;
+                    
+                    
+                    let param_list = [];
+                    for (let param of node.parametersNode.namedChildren) {
+                        let param_type = inferType(param);
+                        param_list.push(param_type + " " + param.text);
+                    }
+                    
+                    
+                    if (node.children[1].type == g.SyntaxType.ReturnValue) {
+                        let return_node = node.children[1].firstChild;
                         
                         // If multiple return values, use pointers
                         if (return_node.type == g.SyntaxType.Matrix) {
-                            for (let member of return_node.namedChildren) {
-                                console.log("*p_" + member.text + " = " + member.text);
+                            let ptr_declaration = [];
+                            for (let return_var of return_node.namedChildren) {
+                                ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text)
+                                param_list.push(inferType(return_var) + "* p_" + return_var.text)
                             }
+                            var ptr_declaration_joined = ptr_declaration.join("\n");
+                            
+                            var return_type:string = "void";
                             
                         // If single return value, don't use pointers 
-                        } else {}
+                        } else {
+                            var return_type:string = inferType(return_node);
+                        }
                     }
+                    
+                    let param_list_joined = "(" + param_list.join(", ") + ")";
+                    console.log(return_type + " static " + node.nameNode.text + param_list_joined);
+                    console.log(ptr_declaration_joined);
+                    console.log(node.bodyNode.text);
                 }
                 break;
             }
@@ -463,6 +481,11 @@ function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
 // Call functions
 // -----------------------------------------------------------------------------
 
-printMatrixFunctions();
-printFunctionDefinitions(); 
+console.log("Source code:\n" + sourceCode);
+console.log("---------------------\n")
 typeInference();
+console.log("---------------------\nMatrix functions:\n")
+printMatrixFunctions();
+console.log("---------------------\nFunction definitions:\n")
+printFunctionDefinitions(); 
+

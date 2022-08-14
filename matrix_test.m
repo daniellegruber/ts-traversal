@@ -8,3 +8,8 @@ c = a < b;
 
 D = {'hello', 'world'};
 E = D';
+
+function [F, G] = myfun(f,g)
+    F = f + g;
+    G = f - g;
+end

@@ -19,6 +19,24 @@ var tree = parser.parse(sourceCode);
     B = [A;A];
     C = B*A;
 `);*/
+// Initialize matrices
+// -----------------------------------------------------------------------------
+function initializeMatrix(node, name, ndim, dim) {
+    console.log("int ndim = " + ndim);
+    console.log("int dim = " + dim);
+    console.log("Matrix *" + name + " = createM(ndim, dim, COMPLEX);");
+    console.log("double complex *input = NULL;");
+    var numel = dim.reduce(function (a, b) { return a * b; });
+    console.log("input = malloc(" + numel + "*sizeof(*input));");
+    var j = 0;
+    for (var i = 0; i < node.childCount; i++) {
+        if (node.children[i].isNamed) {
+            console.log("input[" + j + "] = " + node.children[i].text + ";");
+        }
+    }
+    console.log("writeM(" + name + ", " + numel + ", input);");
+    console.log("free(input);");
+}
 // Print matrix functions
 // -----------------------------------------------------------------------------
 function printMatrixFunctions() {
@@ -284,11 +302,11 @@ function printMatrixFunctions() {
         }
     } while (gotoPreorderSucc(cursor));
 }
-// Print function definitions
+// Print function definitions and declarations
 // -----------------------------------------------------------------------------
 var custom_functions = [];
 var default_functions = ['func1', 'func2'];
-function printFunctionDefinitions() {
+function printFunctionDefDeclare() {
     var cursor = tree.walk();
     do {
         var c = cursor;
@@ -311,10 +329,9 @@ function printFunctionDefinitions() {
                             for (var _b = 0, _c = return_node.namedChildren; _b < _c.length; _b++) {
                                 var return_var = _c[_b];
                                 ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text);
-                                param_list.push(inferType(return_var) + "* " + return_var.text);
+                                param_list.push(inferType(return_var) + "* p_" + return_var.text);
                             }
                             var ptr_declaration_joined = ptr_declaration.join("\n");
-                            console.log(ptr_declaration_joined);
                             var return_type = "void";
                             // If single return value, don't use pointers 
                         }
@@ -323,8 +340,34 @@ function printFunctionDefinitions() {
                         }
                     }
                     var param_list_joined = "(" + param_list.join(", ") + ")";
-                    console.log(return_type + " static " + node.nameNode.text + param_list_joined);
+                    var function_declaration = "static " + return_type + node.nameNode.text + param_list_joined;
+                    console.log(function_declaration);
+                    console.log(return_type + node.nameNode.text + param_list_joined);
+                    console.log(ptr_declaration_joined);
                     console.log(node.bodyNode.text);
+                }
+                break;
+            }
+        }
+    } while (gotoPreorderSucc(cursor));
+}
+// Identify calls to custom functions
+// -----------------------------------------------------------------------------
+function printFunctionCalls() {
+    var cursor = tree.walk();
+    do {
+        var c = cursor;
+        switch (c.nodeType) {
+            case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
+                var node = c.currentNode;
+                // Is a function call
+                if (custom_functions.includes(node.valueNode.text)) {
+                    // Is a subscript
+                }
+                else {
+                    var v1 = { name: node.valueNode.text, type: 'array_or_struct', ndim: 1, dim: [1] };
+                    var_types.push(v1);
+                    console.log;
                 }
                 break;
             }
@@ -336,43 +379,85 @@ function inferType(node) {
     switch (node.type) {
         // Named types
         case "ellipsis" /* g.SyntaxType.Ellipsis */: {
-            return 'ellipsis';
+            return ['ellipsis', 2, [1, 1]];
             break;
         }
         case ("true" /* g.SyntaxType.True */ || "false" /* g.SyntaxType.False */): {
-            return 'bool';
+            return ['bool', 2, [1, 1]];
             break;
         }
         case "float" /* g.SyntaxType.Float */: {
-            return 'float';
+            return ['float', 2, [1, 1]];
             break;
         }
         case "integer" /* g.SyntaxType.Integer */: {
-            return 'int';
+            return ['int', 2, [1, 1]];
             break;
         }
         case "string" /* g.SyntaxType.String */: {
-            return 'str';
+            return ['str', 2, [1, 1]];
             break;
         }
         case "matrix" /* g.SyntaxType.Matrix */: {
-            return 'matrix';
+            var row = 0;
+            var col = 0;
+            var nrows = 0;
+            var ncols = 0;
+            for (var i = 0; i < node.childCount; i++) {
+                if (node.children[i].type === ";") {
+                    row += 1;
+                    col = 0;
+                }
+                else if (node.children[i].isNamed) {
+                    if (row == 0) {
+                        var _a = inferType(node.children[i]), type = _a[0], ndim_1 = _a[1], dim_1 = _a[2];
+                        ncols += dim_1[1];
+                    }
+                    if (col == 0) {
+                        var _b = inferType(node.children[i]), type = _b[0], ndim_2 = _b[1], dim_2 = _b[2];
+                        nrows += dim_2[0];
+                    }
+                    col += 1;
+                }
+            }
+            return ['matrix', 2, [nrows, ncols]];
             break;
         }
         case "cell" /* g.SyntaxType.Cell */: {
-            return 'cell';
+            var row = 0;
+            var col = 0;
+            var nrows = 0;
+            var ncols = 0;
+            for (var i = 0; i < node.childCount; i++) {
+                if (node.children[i].type === ";") {
+                    row += 1;
+                    col = 0;
+                }
+                else if (node.children[i].isNamed) {
+                    if (row == 0) {
+                        var _c = inferType(node.children[i]), type = _c[0], ndim_3 = _c[1], dim_3 = _c[2];
+                        ncols += dim_3[1];
+                    }
+                    if (col == 0) {
+                        var _d = inferType(node.children[i]), type = _d[0], ndim_4 = _d[1], dim_4 = _d[2];
+                        nrows += dim_4[0];
+                    }
+                    col += 1;
+                }
+            }
+            return ['cell', 2, [nrows, ncols]];
             break;
         }
         // Recursive calls to inferTypes
         case "comparison_operator" /* g.SyntaxType.ComparisonOperator */:
         case "boolean_operator" /* g.SyntaxType.BooleanOperator */: {
-            return 'bool';
+            return ['bool', 2, [1, 1]];
             break;
         }
         case "transpose_operator" /* g.SyntaxType.TransposeOperator */:
         case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
             if (node.operatorNode.type == "~") {
-                return 'bool';
+                return ['bool', 2, [1, 1]];
             }
             else {
                 return inferType(node.firstChild);
@@ -380,22 +465,43 @@ function inferType(node) {
             break;
         }
         case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
-            var left_type = inferType(node.leftNode);
-            var right_type = inferType(node.rightNode);
+            var _e = inferType(node.leftNode), left_type = _e[0], left_ndim = _e[1], left_dim = _e[2];
+            var _f = inferType(node.rightNode), right_type = _f[0], right_ndim = _f[1], right_dim = _f[2];
+            switch (node.operatorNode.type) {
+                case "+":
+                case "-":
+                case ".*":
+                case "./":
+                case ".\\":
+                case "^":
+                case ".^": {
+                    var ndim = left_ndim;
+                    var dim = left_dim;
+                    break;
+                }
+                case "*":
+                case "/":
+                case "\\": {
+                    var ndim = left_ndim;
+                    var dim = left_dim;
+                    dim[1] = right_dim[1];
+                    break;
+                }
+            }
             if (left_type == right_type) {
-                return left_type;
+                return [left_type, ndim, dim];
             }
             else if (left_type == 'matrix' || right_type == 'matrix') {
-                return 'matrix';
+                return ['matrix', ndim, dim];
             }
             else if (left_type == 'bool') {
-                return right_type;
+                return [right_type, ndim, dim];
             }
             else if (right_type == 'bool') {
-                return left_type;
+                return [left_type, ndim, dim];
             }
             else {
-                return 'unknown';
+                return ['unknown', 2, [1, 1]];
             }
             break;
         }
@@ -403,15 +509,15 @@ function inferType(node) {
         case "identifier" /* g.SyntaxType.Identifier */: {
             var obj = var_types.find(function (x) { return x.name === node.text; });
             if (obj != null) {
-                return obj.type;
+                return [obj.type, obj.ndim, obj.dim];
             }
             else {
-                return 'unknown';
+                return ['unknown', 2, [1, 1]];
             }
             break;
         }
         // Default
-        default: return 'unknown';
+        default: return ['unknown', 2, [1, 1]];
     }
 }
 function typeInference() {
@@ -423,12 +529,16 @@ function typeInference() {
                 var node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
                 if (node.leftNode.type == "identifier" /* g.SyntaxType.Identifier */) {
-                    var v1 = { name: node.leftNode.text, type: inferType(node.rightNode) };
+                    var _a = inferType(node.rightNode), type = _a[0], ndim = _a[1], dim = _a[2];
+                    var v1 = { name: node.leftNode.text, type: type, ndim: ndim, dim: dim };
                     var_types.push(v1);
+                    if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
+                    }
                     // If LHS is subscript, type is array or struct
                 }
                 else if (node.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */) {
-                    var v1 = { name: node.leftNode.text, type: 'array_or_struct' };
+                    var v1 = { name: node.leftNode.text, type: 'unknown', ndim: 2, dim: [1, 1] };
                     var_types.push(v1);
                 }
                 break;
@@ -437,19 +547,6 @@ function typeInference() {
     } while (gotoPreorderSucc(cursor));
     console.log("Inferred types:");
     console.log(var_types);
-}
-// Get children names
-// -----------------------------------------------------------------------------
-function getChildrenNames(node) {
-    var result = [];
-    //for (let child of node.namedChildren) {
-    for (var _i = 0, _a = node.children; _i < _a.length; _i++) {
-        var child = _a[_i];
-        //if (member.type === g.SyntaxType.Expression) {
-        result.push(child.text);
-        //}
-    }
-    return result;
 }
 // Tree traversal function
 // -----------------------------------------------------------------------------
@@ -468,8 +565,10 @@ function gotoPreorderSucc(cursor) {
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
 typeInference();
+//console.log("---------------------\nInitialize matrices:\n")
+//initializeMatrices();
 console.log("---------------------\nMatrix functions:\n");
 printMatrixFunctions();
 console.log("---------------------\nFunction definitions:\n");
-printFunctionDefinitions();
+printFunctionDefDeclare();
 //# sourceMappingURL=index.js.map

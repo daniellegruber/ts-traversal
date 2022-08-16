@@ -28,8 +28,8 @@ let tree = parser.parse(sourceCode);
 
 var matrix_initializations = [];
 function initializeMatrix(node, name, ndim, dim) {
-            matrix_initializations.push("int ndim = " + ndim);
-            matrix_initializations.push("int dim = " + dim);
+            matrix_initializations.push("int ndim = " + ndim + ";");
+            matrix_initializations.push("int dim = {" + dim + "};");
             matrix_initializations.push("Matrix *" + name + " = createM(ndim, dim, COMPLEX);")
             matrix_initializations.push("double complex *input = NULL;");
             
@@ -59,9 +59,10 @@ function printMatrixFunctions() {
         switch (c.nodeType) {
             case g.SyntaxType.UnaryOperator: {
                 let node = c.currentNode;
+                let [type, ndim, dim] = inferType(node.argumentNode);
                 switch (node.operatorNode.type) {
                     case "+": {
-                        if (inferType(node.argumentNode) == 'matrix') {
+                        if (type == 'matrix') {
                             console.log(`FILLIN(${node.argumentNode.text})`);
                         } else {
                             console.log(`+${node.argumentNode.text}`);
@@ -69,7 +70,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "-": {
-                        if (inferType(node.argumentNode) == 'matrix') {
+                        if (type == 'matrix') {
                             console.log(`FILLIN(${node.argumentNode.text})`);
                         } else {
                             console.log(`-${node.argumentNode.text}`);
@@ -77,7 +78,7 @@ function printMatrixFunctions() {
                         break;
                     }
                     case "~": {
-                        if (inferType(node.argumentNode) == 'matrix') {
+                        if (type == 'matrix') {
                             console.log(`notM(${node.argumentNode.text})`);
                         } else {
                             console.log(`~${node.argumentNode.text}`);
@@ -303,6 +304,9 @@ function printMatrixFunctions() {
 var custom_functions = [];
 var default_functions = ['func1', 'func2'];
 
+var function_definitions = [];
+var function_declarations = [];
+
 function printFunctionDefDeclare() {
     let cursor = tree.walk();
     do {
@@ -316,7 +320,7 @@ function printFunctionDefDeclare() {
                     
                     let param_list = [];
                     for (let param of node.parametersNode.namedChildren) {
-                        let param_type = inferType(param);
+                        let [param_type, ,] = inferType(param);
                         param_list.push(param_type + " " + param.text);
                     }
                     
@@ -329,25 +333,32 @@ function printFunctionDefDeclare() {
                             let ptr_declaration = [];
                             for (let return_var of return_node.namedChildren) {
                                 ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text)
-                                param_list.push(inferType(return_var) + "* p_" + return_var.text)
+                                var [return_type, ,] = inferType(return_var);
+                                param_list.push(return_type + "* p_" + return_var.text)
                             }
                             var ptr_declaration_joined = ptr_declaration.join("\n");
                             
-                            var return_type:string = "void";
+                            let param_list_joined = "(" + param_list.join(", ") + ")";
+                            
+                            function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
+                            function_definitions.push("void " + node.nameNode.text + param_list_joined);
+                            function_definitions.push("{");
+                            function_definitions.push(ptr_declaration_joined);
                             
                         // If single return value, don't use pointers 
                         } else {
-                            var return_type:string = inferType(return_node);
+                            let param_list_joined = "(" + param_list.join(", ") + ")";
+                            
+                            var [return_type, ,] = inferType(return_node);
+                            
+                            function_declarations.push(return_type + node.nameNode.text + param_list_joined + ";");
+                            function_definitions.push(return_type + node.nameNode.text + param_list_joined);
+                            function_definitions.push("{");
                         }
                     }
                     
-                    
-                    let param_list_joined = "(" + param_list.join(", ") + ")";
-                    let function_declaration = "static " + return_type + node.nameNode.text + param_list_joined;
-                    console.log(function_declaration);
-                    console.log(return_type + node.nameNode.text + param_list_joined);
-                    console.log(ptr_declaration_joined);
-                    console.log(node.bodyNode.text);
+                    function_definitions.push(node.bodyNode.text);
+                    function_definitions.push("}");
                 }
                 break;
             }
@@ -617,6 +628,9 @@ console.log("---------------------\nInitialize matrices:\n");
 console.log(matrix_initializations.join("\n"));
 console.log("---------------------\nMatrix functions:\n");
 printMatrixFunctions();
-console.log("---------------------\nFunction definitions:\n");
-printFunctionDefDeclare(); 
 
+printFunctionDefDeclare(); 
+console.log("---------------------\nFunction declarations:\n");
+console.log(function_declarations.join("\n"));
+console.log("---------------------\nFunction definitions:\n");
+console.log(function_definitions.join("\n"));

@@ -13,12 +13,80 @@ if (args.length != 1) {
 // Load the file passed as an argument
 var sourceCode = (0, fs_1.readFileSync)(args[0], "utf8");
 var tree = parser.parse(sourceCode);
+var generated_code = [];
+// Main
+function main() {
+    var cursor = tree.walk();
+    do {
+        var c = cursor;
+        switch (c.nodeType) {
+            case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
+                var node = c.currentNode;
+                var expression = mainOperation(node.firstChild);
+                generated_code.push(expression);
+                break;
+            }
+            case "block" /* g.SyntaxType.Block */: { }
+            case "break_statement" /* g.SyntaxType.BreakStatement */: { }
+            case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: { }
+            case "cell" /* g.SyntaxType.Cell */: { }
+            case "conditional_expression" /* g.SyntaxType.ConditionalExpression */: { }
+            case "continue_statement" /* g.SyntaxType.ContinueStatement */: { }
+            case "else_clause" /* g.SyntaxType.ElseClause */: { }
+            case "elseif_clause" /* g.SyntaxType.ElseifClause */: { }
+            case "for_statement" /* g.SyntaxType.ForStatement */: { }
+            case "if_statement" /* g.SyntaxType.IfStatement */: { }
+            case "matrix" /* g.SyntaxType.Matrix */: { }
+            case "module" /* g.SyntaxType.Module */: { }
+            case "parameters" /* g.SyntaxType.Parameters */: { }
+            case "return_value" /* g.SyntaxType.ReturnValue */: { }
+            case "slice" /* g.SyntaxType.Slice */: { }
+            case "while_statement" /* g.SyntaxType.WhileStatement */: { }
+        }
+    } while (gotoPreorderSucc(cursor));
+}
+// Main
+function mainOperation(node) {
+    switch (node.type) {
+        // Assignment
+        case "assignment" /* g.SyntaxType.Assignment */: {
+            var expression = [];
+            expression.push(mainOperation(node.leftNode));
+            expression.push("=");
+            expression.push(mainOperation(node.rightNode));
+            return expression.join(" ");
+            break;
+        }
+        // Transform matrix operations
+        case "binary_operator" /* g.SyntaxType.BinaryOperator */:
+        case "boolean_operator" /* g.SyntaxType.BooleanOperator */:
+        case "comparison_operator" /* g.SyntaxType.ComparisonOperator */:
+        case "transpose_operator" /* g.SyntaxType.TransposeOperator */:
+        case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
+            return printMatrixFunctions(node);
+            break;
+        }
+        // Comments
+        // case g.SyntaxType.Comment: {}
+        // Basic types
+        //case g.SyntaxType.Ellipsis: {}
+        case "string" /* g.SyntaxType.String */:
+        case "identifier" /* g.SyntaxType.Identifier */:
+        case "integer" /* g.SyntaxType.Integer */:
+        case "float" /* g.SyntaxType.Float */:
+        case "true" /* g.SyntaxType.True */:
+        case "false" /* g.SyntaxType.False */: {
+            return node.text;
+            break;
+        }
+    }
+}
 // Initialize matrices
 // -----------------------------------------------------------------------------
 var matrix_initializations = [];
 function initializeMatrix(node, name, ndim, dim) {
-    matrix_initializations.push("int ndim = " + ndim);
-    matrix_initializations.push("int dim = " + dim);
+    matrix_initializations.push("int ndim = " + ndim + ";");
+    matrix_initializations.push("int dim = {" + dim + "};");
     matrix_initializations.push("Matrix *" + name + " = createM(ndim, dim, COMPLEX);");
     matrix_initializations.push("double complex *input = NULL;");
     var numel = dim.reduce(function (a, b) { return a * b; });
@@ -35,276 +103,267 @@ function initializeMatrix(node, name, ndim, dim) {
 }
 // Print matrix functions
 // -----------------------------------------------------------------------------
-function printMatrixFunctions() {
-    var cursor = tree.walk();
-    do {
-        var c = cursor;
-        switch (c.nodeType) {
-            case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
-                var node = c.currentNode;
-                var _a = inferType(node.argumentNode), type = _a[0], ndim = _a[1], dim = _a[2];
-                switch (node.operatorNode.type) {
-                    case "+": {
-                        if (type == 'matrix') {
-                            console.log("FILLIN(".concat(node.argumentNode.text, ")"));
-                        }
-                        else {
-                            console.log("+".concat(node.argumentNode.text));
-                        }
-                        break;
+function printMatrixFunctions(node) {
+    switch (node.type) {
+        case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
+            var _a = inferType(node.argumentNode), type = _a[0];
+            switch (node.operatorNode.type) {
+                case "+": {
+                    if (type == 'matrix') {
+                        return "FILLIN(".concat(node.argumentNode.text, ")");
                     }
-                    case "-": {
-                        if (type == 'matrix') {
-                            console.log("FILLIN(".concat(node.argumentNode.text, ")"));
-                        }
-                        else {
-                            console.log("-".concat(node.argumentNode.text));
-                        }
-                        break;
+                    else {
+                        return "+".concat(node.argumentNode.text);
                     }
-                    case "~": {
-                        if (type == 'matrix') {
-                            console.log("notM(".concat(node.argumentNode.text, ")"));
-                        }
-                        else {
-                            console.log("~".concat(node.argumentNode.text));
-                        }
-                        break;
-                    }
+                    break;
                 }
-                break;
-            }
-            case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
-                var node = c.currentNode;
-                var _b = inferType(node.argumentNode), type = _b[0], ndim = _b[1], dim = _b[2];
-                switch (node.operatorNode.type) {
-                    case "'": {
-                        if (type == 'matrix') {
-                            console.log("ctransposeM(".concat(node.argumentNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.argumentNode.text, "'"));
-                        }
-                        break;
+                case "-": {
+                    if (type == 'matrix') {
+                        return "FILLIN(".concat(node.argumentNode.text, ")");
                     }
-                    case ".'": {
-                        if (type == 'matrix') {
-                            console.log("transposeM(".concat(node.argumentNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.argumentNode.text, ".'"));
-                        }
-                        break;
+                    else {
+                        return "-".concat(node.argumentNode.text);
                     }
+                    break;
                 }
-                break;
-            }
-            case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
-                var node = c.currentNode;
-                var _c = inferType(node.leftNode), left_type = _c[0], left_ndim = _c[1], left_dim = _c[2];
-                var _d = inferType(node.rightNode), right_type = _d[0], right_ndim = _d[1], right_dim = _d[2];
-                switch (node.operatorNode.type) {
-                    case "+": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("addM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " + ").concat(node.rightNode.text));
-                        }
-                        break;
+                case "~": {
+                    if (type == 'matrix') {
+                        return "notM(".concat(node.argumentNode.text, ")");
                     }
-                    case "-": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("minusM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " - ").concat(node.rightNode.text));
-                        }
-                        break;
+                    else {
+                        return "~".concat(node.argumentNode.text);
                     }
-                    case "*": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("mtimesM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " * ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case ".*": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("timesM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " .* ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "/": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("mrdivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " / ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "./": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("rdivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " ./ ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "\\": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("mldivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " \\ ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case ".\\": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("ldivideM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " .\\ ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "^": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("mpowerM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " ^ ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case ".^": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("powerM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " .^ ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
+                    break;
                 }
-                break;
             }
-            case "boolean_operator" /* g.SyntaxType.BooleanOperator */: {
-                var node = c.currentNode;
-                var _e = inferType(node.leftNode), left_type = _e[0], left_ndim = _e[1], left_dim = _e[2];
-                var _f = inferType(node.rightNode), right_type = _f[0], right_ndim = _f[1], right_dim = _f[2];
-                switch (node.operatorNode.type) {
-                    case "&": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("andM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " & ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "|": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("orM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " | ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "&&": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("FILLIN(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " && ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "||": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("FILLIN(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " || ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                }
-                break;
-            }
-            case "comparison_operator" /* g.SyntaxType.ComparisonOperator */: {
-                var node = c.currentNode;
-                var _g = inferType(node.leftNode), left_type = _g[0], left_ndim = _g[1], left_dim = _g[2];
-                var _h = inferType(node.rightNode), right_type = _h[0], right_ndim = _h[1], right_dim = _h[2];
-                switch (node.operatorNode.type) {
-                    case "<": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("ltM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " < ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "<=": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("leM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " <= ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "==": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("eqM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " == ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case ">": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("gtM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " > ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case ">=": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("geM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " >= ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                    case "~=": {
-                        if (left_type == 'matrix' || right_type == 'matrix') {
-                            console.log("neqM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
-                        }
-                        else {
-                            console.log("".concat(node.leftNode.text, " ~= ").concat(node.rightNode.text));
-                        }
-                        break;
-                    }
-                }
-                break;
-            }
+            break;
         }
-    } while (gotoPreorderSucc(cursor));
+        case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
+            var _b = inferType(node.argumentNode), type = _b[0];
+            switch (node.operatorNode.type) {
+                case "'": {
+                    if (type == 'matrix') {
+                        return "ctransposeM(".concat(node.argumentNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.argumentNode.text, "'");
+                    }
+                    break;
+                }
+                case ".'": {
+                    if (type == 'matrix') {
+                        return "transposeM(".concat(node.argumentNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.argumentNode.text, ".'");
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+        case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
+            var _c = inferType(node.leftNode), left_type = _c[0];
+            var _d = inferType(node.rightNode), right_type = _d[0];
+            switch (node.operatorNode.type) {
+                case "+": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "addM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " + ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "-": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "minusM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " - ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "*": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "mtimesM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " * ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case ".*": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "timesM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " .* ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "/": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "mrdivideM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " / ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "./": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "rdivideM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " ./ ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "\\": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "mldivideM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " \\ ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case ".\\": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "ldivideM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " .\\ ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "^": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "mpowerM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " ^ ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case ".^": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "powerM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " .^ ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+        case "boolean_operator" /* g.SyntaxType.BooleanOperator */: {
+            var _e = inferType(node.leftNode), left_type = _e[0];
+            var _f = inferType(node.rightNode), right_type = _f[0];
+            switch (node.operatorNode.type) {
+                case "&": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "andM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " & ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "|": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "orM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " | ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "&&": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "FILLIN(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " && ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "||": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "FILLIN(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " || ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+        case "comparison_operator" /* g.SyntaxType.ComparisonOperator */: {
+            var _g = inferType(node.leftNode), left_type = _g[0];
+            var _h = inferType(node.rightNode), right_type = _h[0];
+            switch (node.operatorNode.type) {
+                case "<": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "ltM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " < ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "<=": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "leM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " <= ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "==": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "eqM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " == ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case ">": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "gtM(".concat(node.leftNode.text, ", ").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " > ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case ">=": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "geM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " >= ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+                case "~=": {
+                    if (left_type == 'matrix' || right_type == 'matrix') {
+                        return "neqM(".concat(node.leftNode.text, ",").concat(node.rightNode.text, ")");
+                    }
+                    else {
+                        return "".concat(node.leftNode.text, " ~= ").concat(node.rightNode.text);
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    }
 }
 // Print function definitions and declarations
 // -----------------------------------------------------------------------------
@@ -335,23 +394,27 @@ function printFunctionDefDeclare() {
                             for (var _c = 0, _d = return_node.namedChildren; _c < _d.length; _c++) {
                                 var return_var = _d[_c];
                                 ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text);
-                                param_list.push(inferType(return_var) + "* p_" + return_var.text);
+                                var _e = inferType(return_var), return_type = _e[0];
+                                param_list.push(return_type + "* p_" + return_var.text);
                             }
                             var ptr_declaration_joined = ptr_declaration.join("\n");
                             var param_list_joined = "(" + param_list.join(", ") + ")";
-                            function_declarations.push("static void" + node.nameNode.text + param_list_joined);
-                            function_definitions.push("void" + node.nameNode.text + param_list_joined);
+                            function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
+                            function_definitions.push("void " + node.nameNode.text + param_list_joined);
+                            function_definitions.push("{");
                             function_definitions.push(ptr_declaration_joined);
                             // If single return value, don't use pointers 
                         }
                         else {
                             var param_list_joined = "(" + param_list.join(", ") + ")";
-                            var _e = inferType(return_node), return_type = _e[0];
-                            function_declarations.push("static " + return_type + node.nameNode.text + param_list_joined);
+                            var _f = inferType(return_node), return_type = _f[0];
+                            function_declarations.push(return_type + node.nameNode.text + param_list_joined + ";");
                             function_definitions.push(return_type + node.nameNode.text + param_list_joined);
+                            function_definitions.push("{");
                         }
                     }
                     function_definitions.push(node.bodyNode.text);
+                    function_definitions.push("}");
                 }
                 break;
             }
@@ -586,9 +649,10 @@ typeInference();
 console.log("---------------------\nInitialize matrices:\n");
 console.log(matrix_initializations.join("\n"));
 console.log("---------------------\nMatrix functions:\n");
-printMatrixFunctions();
-console.log("---------------------\nFunction definitions:\n");
+main();
 printFunctionDefDeclare();
+console.log("---------------------\nFunction declarations:\n");
 console.log(function_declarations.join("\n"));
+console.log("---------------------\nFunction definitions:\n");
 console.log(function_definitions.join("\n"));
 //# sourceMappingURL=index.js.map

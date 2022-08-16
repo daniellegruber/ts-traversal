@@ -24,26 +24,39 @@ const sourceCode = readFileSync(args[0], "utf8");
 let tree = parser.parse(sourceCode);
 
 var generated_code = [];
+var main_function = [];
+
+      
+var cursor_adjust = false;
 
 // Main
-function main() {
+function generateCode() {
     let cursor = tree.walk();
     do {
+        if (cursor_adjust) {
+            cursor.gotoParent();
+        }
         const c = cursor as g.TypedTreeCursor;
-        switch (c.nodeType) {
-        
+        let node = c.currentNode;
+        switch (node.type) {
             
             case g.SyntaxType.ExpressionStatement: {
-                let node = c.currentNode;
                 
-                let expression = mainOperation(node.firstChild);
-                generated_code.push(expression);
+                let expression = transformNode(node.firstChild);
+                main_function.push(expression);
+                cursor_adjust = false;
                 break;
             }
         
+            case g.SyntaxType.FunctionDefinition: {
+                printFunctionDefDeclare(node);
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
+                break;
+            }
             
-            
-            case g.SyntaxType.Block: {}
             
             case g.SyntaxType.BreakStatement: {}
             case g.SyntaxType.CallOrSubscript: {}
@@ -54,8 +67,6 @@ function main() {
             case g.SyntaxType.ElseClause: {}
             case g.SyntaxType.ElseifClause: {}
             
-            
-            
             case g.SyntaxType.ForStatement: {}
             case g.SyntaxType.IfStatement: {}
             case g.SyntaxType.Matrix: {}
@@ -64,11 +75,7 @@ function main() {
             case g.SyntaxType.ReturnValue: {}
             case g.SyntaxType.Slice: {}
             
-            
             case g.SyntaxType.WhileStatement: {}
-            
-            
-            
             
         }
     } while(gotoPreorderSucc(cursor));
@@ -76,18 +83,35 @@ function main() {
 
 
 // Main
-function mainOperation(node) {
+function transformNode(node) {
     
     switch (node.type) {
         
+        case g.SyntaxType.ExpressionStatement: {
+            return transformNode(node.firstChild);
+            break;
+        }
+        
         // Assignment
         case g.SyntaxType.Assignment: {
-            let expression = [];
-            expression.push(mainOperation(node.leftNode));
-            expression.push("=");
-            expression.push(mainOperation(node.rightNode));
-            return expression.join(" ");
-    
+            
+            if (node.rightNode.type == g.SyntaxType.Matrix) {
+                let children_types = [];
+                for (let child of node.rightNode.children) {
+                    children_types.push(child.type);
+                }
+                const [type, ndim, dim] = inferType(node.rightNode);
+                if (!children_types.includes(g.SyntaxType.Identifier)) {
+                    initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
+                }
+                return;
+            } else {
+                let expression = [];
+                expression.push(transformNode(node.leftNode));
+                expression.push("=");
+                expression.push(transformNode(node.rightNode));
+                return expression.join(" ");
+            }
             break;
         }
         
@@ -98,6 +122,15 @@ function mainOperation(node) {
         case g.SyntaxType.TransposeOperator:
         case g.SyntaxType.UnaryOperator: {
             return printMatrixFunctions(node);
+            break;
+        }
+        
+        case g.SyntaxType.Block: {
+            let expression = [];
+            for (let child of node.namedChildren) {
+                expression.push(transformNode(child));
+            }
+            return expression.join("\n");
             break;
         }
         
@@ -118,6 +151,16 @@ function mainOperation(node) {
     }
 }
 
+// Initialize variables
+// -----------------------------------------------------------------------------
+var var_initializations = [];
+function initializeVariables() {
+    for (let var_type of var_types) {
+        if (var_type.type != 'matrix' && var_type.type != 'cell') {
+            var_initializations.push(var_type.type + " " + var_type.name + ";");
+        }
+    }
+}
 
 
 // Initialize matrices
@@ -395,63 +438,60 @@ var default_functions = ['func1', 'func2'];
 var function_definitions = [];
 var function_declarations = [];
 
-function printFunctionDefDeclare() {
-    let cursor = tree.walk();
-    do {
-        const c = cursor as g.TypedTreeCursor;
-        switch (c.nodeType) {
-            case g.SyntaxType.FunctionDefinition: {
-                let node = c.currentNode;
-                if (node.isNamed && node.nameNode != null) {
-                    custom_functions.push(node.nameNode.text);
-                    
-                    
-                    let param_list = [];
-                    for (let param of node.parametersNode.namedChildren) {
-                        let [param_type, ,] = inferType(param);
-                        param_list.push(param_type + " " + param.text);
-                    }
-                    
-                    
-                    if (node.children[1].type == g.SyntaxType.ReturnValue) {
-                        let return_node = node.children[1].firstChild;
-                        
-                        // If multiple return values, use pointers
-                        if (return_node.type == g.SyntaxType.Matrix) {
-                            let ptr_declaration = [];
-                            for (let return_var of return_node.namedChildren) {
-                                ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text)
-                                var [return_type, ,] = inferType(return_var);
-                                param_list.push(return_type + "* p_" + return_var.text)
-                            }
-                            var ptr_declaration_joined = ptr_declaration.join("\n");
-                            
-                            let param_list_joined = "(" + param_list.join(", ") + ")";
-                            
-                            function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
-                            function_definitions.push("void " + node.nameNode.text + param_list_joined);
-                            function_definitions.push("{");
-                            function_definitions.push(ptr_declaration_joined);
-                            
-                        // If single return value, don't use pointers 
-                        } else {
-                            let param_list_joined = "(" + param_list.join(", ") + ")";
-                            
-                            var [return_type, ,] = inferType(return_node);
-                            
-                            function_declarations.push(return_type + node.nameNode.text + param_list_joined + ";");
-                            function_definitions.push(return_type + node.nameNode.text + param_list_joined);
-                            function_definitions.push("{");
-                        }
-                    }
-                    
-                    function_definitions.push(node.bodyNode.text);
-                    function_definitions.push("}");
+function printFunctionDefDeclare(node) {
+    if (node.isNamed && node.nameNode != null) {
+        custom_functions.push(node.nameNode.text);
+        
+        let param_list = [];
+        for (let param of node.parametersNode.namedChildren) {
+            let [param_type, ,] = inferType(param);
+            param_list.push(param_type + " " + param.text);
+        }
+        
+        if (node.children[1].type == g.SyntaxType.ReturnValue) {
+            let return_node = node.children[1].firstChild;
+            
+            // If multiple return values, use pointers
+            if (return_node.type == g.SyntaxType.Matrix) {
+                let ptr_declaration = [];
+                for (let return_var of return_node.namedChildren) {
+                    ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text)
+                    var [return_type, ,] = inferType(return_var);
+                    param_list.push(return_type + "* p_" + return_var.text)
                 }
-                break;
+                var ptr_declaration_joined = ptr_declaration.join("\n");
+                
+                if (param_list.length == 0) {
+                    var param_list_joined = "(void)";
+                } else {
+                    var param_list_joined = "(" + param_list.join(", ") + ")";
+                }
+                
+                function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
+                function_definitions.push("void " + node.nameNode.text + param_list_joined);
+                function_definitions.push("{");
+                function_definitions.push(ptr_declaration_joined);
+                
+            // If single return value, don't use pointers 
+            } else {
+                if (param_list.length == 0) {
+                    var param_list_joined = "(void)";
+                } else {
+                    var param_list_joined = "(" + param_list.join(", ") + ")";
+                }
+                
+                var [return_type, ,] = inferType(return_node);
+                
+                function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
+                function_definitions.push(return_type + " " + node.nameNode.text + param_list_joined);
+                function_definitions.push("{");
             }
         }
-    } while(gotoPreorderSucc(cursor));
+        
+        function_definitions.push(transformNode(node.bodyNode));
+        function_definitions.push("}");
+    }
+    
 }
 
 // Identify calls to custom functions
@@ -513,7 +553,7 @@ function inferType(node) {
             break
         }
         case g.SyntaxType.String: {
-            return ['str',  2, [1, 1]];
+            return ['char',  2, [1, 1]];
             break
         }
         case g.SyntaxType.Matrix: {
@@ -667,15 +707,6 @@ function typeInference() {
                     const v1: VarType = { name: node.leftNode.text, type: type, ndim: ndim, dim: dim };
                     var_types.push(v1);
                     
-                    if (node.rightNode.type == g.SyntaxType.Matrix) {
-                        let children_types = [];
-                        for (let child of node.rightNode.children) {
-                            children_types.push(child.type);
-                        }
-                        if (!children_types.includes(g.SyntaxType.Identifier)) {
-                            initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
-                        }
-                    }
                     
                 // If LHS is subscript, type is array or struct
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
@@ -711,16 +742,27 @@ function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
 
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
+
 typeInference();
-console.log("---------------------\nInitialize matrices:\n");
-console.log(matrix_initializations.join("\n"));
+initializeVariables();
+generateCode();
+
 console.log("---------------------\nGenerated code:\n");
-main();
+generated_code.push(
+`//Link
+#include <stdio.h>
+#include <stdbool.h>`)
+generated_code.push("\n//Function declarations")
+generated_code.push(function_declarations.join("\n"));
+generated_code.push(
+`\n//Main function
+int main(void)
+{
+// Initialize variables`);
+generated_code.push(var_initializations.join("\n"));
+generated_code.push("\n//Initialize matrices")
+generated_code.push(matrix_initializations.join("\n"));
+generated_code.push("\n" + main_function.join("\n"));
+generated_code.push("}\n\n//Subprograms");
+generated_code.push(function_definitions.join("\n"));
 console.log(generated_code.join("\n"));
-
-
-printFunctionDefDeclare(); 
-console.log("---------------------\nFunction declarations:\n");
-console.log(function_declarations.join("\n"));
-console.log("---------------------\nFunction definitions:\n");
-console.log(function_definitions.join("\n"));

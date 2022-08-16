@@ -9,7 +9,11 @@ c = a < b;
 D = {'hello', 'world'};
 E = D';
 
-function [F, G] = myfun(f,g)
+function [F, G] = myfun1(f,g)
     F = f + g;
     G = f - g;
+end
+
+function outstr = myfun2()
+    outstr = "hello world";
 end

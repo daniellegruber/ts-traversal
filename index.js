@@ -14,19 +14,33 @@ if (args.length != 1) {
 var sourceCode = (0, fs_1.readFileSync)(args[0], "utf8");
 var tree = parser.parse(sourceCode);
 var generated_code = [];
+var main_function = [];
+var cursor_adjust = false;
 // Main
-function main() {
+function generateCode() {
     var cursor = tree.walk();
     do {
+        if (cursor_adjust) {
+            cursor.gotoParent();
+        }
         var c = cursor;
-        switch (c.nodeType) {
+        var node = c.currentNode;
+        console.log(node.type);
+        switch (node.type) {
             case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
-                var node = c.currentNode;
-                var expression = mainOperation(node.firstChild);
-                generated_code.push(expression);
+                var expression = transformNode(node.firstChild);
+                main_function.push(expression);
+                cursor_adjust = false;
                 break;
             }
-            case "block" /* g.SyntaxType.Block */: { }
+            case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
+                printFunctionDefDeclare(node);
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
+                break;
+            }
             case "break_statement" /* g.SyntaxType.BreakStatement */: { }
             case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: { }
             case "cell" /* g.SyntaxType.Cell */: { }
@@ -46,15 +60,33 @@ function main() {
     } while (gotoPreorderSucc(cursor));
 }
 // Main
-function mainOperation(node) {
+function transformNode(node) {
     switch (node.type) {
+        case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
+            return transformNode(node.firstChild);
+            break;
+        }
         // Assignment
         case "assignment" /* g.SyntaxType.Assignment */: {
-            var expression = [];
-            expression.push(mainOperation(node.leftNode));
-            expression.push("=");
-            expression.push(mainOperation(node.rightNode));
-            return expression.join(" ");
+            if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                var children_types = [];
+                for (var _i = 0, _a = node.rightNode.children; _i < _a.length; _i++) {
+                    var child = _a[_i];
+                    children_types.push(child.type);
+                }
+                var _b = inferType(node.rightNode), type = _b[0], ndim = _b[1], dim = _b[2];
+                if (!children_types.includes("identifier" /* g.SyntaxType.Identifier */)) {
+                    initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
+                }
+                return;
+            }
+            else {
+                var expression = [];
+                expression.push(transformNode(node.leftNode));
+                expression.push("=");
+                expression.push(transformNode(node.rightNode));
+                return expression.join(" ");
+            }
             break;
         }
         // Transform matrix operations
@@ -64,6 +96,15 @@ function mainOperation(node) {
         case "transpose_operator" /* g.SyntaxType.TransposeOperator */:
         case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
             return printMatrixFunctions(node);
+            break;
+        }
+        case "block" /* g.SyntaxType.Block */: {
+            var expression = [];
+            for (var _c = 0, _d = node.namedChildren; _c < _d.length; _c++) {
+                var child = _d[_c];
+                expression.push(transformNode(child));
+            }
+            return expression.join("\n");
             break;
         }
         // Comments
@@ -78,6 +119,17 @@ function mainOperation(node) {
         case "false" /* g.SyntaxType.False */: {
             return node.text;
             break;
+        }
+    }
+}
+// Initialize variables
+// -----------------------------------------------------------------------------
+var var_initializations = [];
+function initializeVariables() {
+    for (var _i = 0, var_types_1 = var_types; _i < var_types_1.length; _i++) {
+        var var_type = var_types_1[_i];
+        if (var_type.type != 'matrix' && var_type.type != 'cell') {
+            var_initializations.push(var_type.type + " " + var_type.name + ";");
         }
     }
 }
@@ -371,55 +423,55 @@ var custom_functions = [];
 var default_functions = ['func1', 'func2'];
 var function_definitions = [];
 var function_declarations = [];
-function printFunctionDefDeclare() {
-    var cursor = tree.walk();
-    do {
-        var c = cursor;
-        switch (c.nodeType) {
-            case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
-                var node = c.currentNode;
-                if (node.isNamed && node.nameNode != null) {
-                    custom_functions.push(node.nameNode.text);
-                    var param_list = [];
-                    for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
-                        var param = _a[_i];
-                        var _b = inferType(param), param_type = _b[0];
-                        param_list.push(param_type + " " + param.text);
-                    }
-                    if (node.children[1].type == "return_value" /* g.SyntaxType.ReturnValue */) {
-                        var return_node = node.children[1].firstChild;
-                        // If multiple return values, use pointers
-                        if (return_node.type == "matrix" /* g.SyntaxType.Matrix */) {
-                            var ptr_declaration = [];
-                            for (var _c = 0, _d = return_node.namedChildren; _c < _d.length; _c++) {
-                                var return_var = _d[_c];
-                                ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text);
-                                var _e = inferType(return_var), return_type = _e[0];
-                                param_list.push(return_type + "* p_" + return_var.text);
-                            }
-                            var ptr_declaration_joined = ptr_declaration.join("\n");
-                            var param_list_joined = "(" + param_list.join(", ") + ")";
-                            function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
-                            function_definitions.push("void " + node.nameNode.text + param_list_joined);
-                            function_definitions.push("{");
-                            function_definitions.push(ptr_declaration_joined);
-                            // If single return value, don't use pointers 
-                        }
-                        else {
-                            var param_list_joined = "(" + param_list.join(", ") + ")";
-                            var _f = inferType(return_node), return_type = _f[0];
-                            function_declarations.push(return_type + node.nameNode.text + param_list_joined + ";");
-                            function_definitions.push(return_type + node.nameNode.text + param_list_joined);
-                            function_definitions.push("{");
-                        }
-                    }
-                    function_definitions.push(node.bodyNode.text);
-                    function_definitions.push("}");
+function printFunctionDefDeclare(node) {
+    if (node.isNamed && node.nameNode != null) {
+        custom_functions.push(node.nameNode.text);
+        var param_list = [];
+        for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
+            var param = _a[_i];
+            var _b = inferType(param), param_type = _b[0];
+            param_list.push(param_type + " " + param.text);
+        }
+        if (node.children[1].type == "return_value" /* g.SyntaxType.ReturnValue */) {
+            var return_node = node.children[1].firstChild;
+            // If multiple return values, use pointers
+            if (return_node.type == "matrix" /* g.SyntaxType.Matrix */) {
+                var ptr_declaration = [];
+                for (var _c = 0, _d = return_node.namedChildren; _c < _d.length; _c++) {
+                    var return_var = _d[_c];
+                    ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text);
+                    var _e = inferType(return_var), return_type = _e[0];
+                    param_list.push(return_type + "* p_" + return_var.text);
                 }
-                break;
+                var ptr_declaration_joined = ptr_declaration.join("\n");
+                if (param_list.length == 0) {
+                    var param_list_joined = "(void)";
+                }
+                else {
+                    var param_list_joined = "(" + param_list.join(", ") + ")";
+                }
+                function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
+                function_definitions.push("void " + node.nameNode.text + param_list_joined);
+                function_definitions.push("{");
+                function_definitions.push(ptr_declaration_joined);
+                // If single return value, don't use pointers 
+            }
+            else {
+                if (param_list.length == 0) {
+                    var param_list_joined = "(void)";
+                }
+                else {
+                    var param_list_joined = "(" + param_list.join(", ") + ")";
+                }
+                var _f = inferType(return_node), return_type = _f[0];
+                function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
+                function_definitions.push(return_type + " " + node.nameNode.text + param_list_joined);
+                function_definitions.push("{");
             }
         }
-    } while (gotoPreorderSucc(cursor));
+        function_definitions.push(transformNode(node.bodyNode));
+        function_definitions.push("}");
+    }
 }
 // Identify calls to custom functions
 // -----------------------------------------------------------------------------
@@ -465,7 +517,7 @@ function inferType(node) {
             break;
         }
         case "string" /* g.SyntaxType.String */: {
-            return ['str', 2, [1, 1]];
+            return ['char', 2, [1, 1]];
             break;
         }
         case "matrix" /* g.SyntaxType.Matrix */: {
@@ -606,16 +658,6 @@ function typeInference() {
                     var _a = inferType(node.rightNode), type = _a[0], ndim = _a[1], dim = _a[2];
                     var v1 = { name: node.leftNode.text, type: type, ndim: ndim, dim: dim };
                     var_types.push(v1);
-                    if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
-                        var children_types = [];
-                        for (var _i = 0, _b = node.rightNode.children; _i < _b.length; _i++) {
-                            var child = _b[_i];
-                            children_types.push(child.type);
-                        }
-                        if (!children_types.includes("identifier" /* g.SyntaxType.Identifier */)) {
-                            initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
-                        }
-                    }
                     // If LHS is subscript, type is array or struct
                 }
                 else if (node.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */) {
@@ -646,13 +688,18 @@ function gotoPreorderSucc(cursor) {
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
 typeInference();
-console.log("---------------------\nInitialize matrices:\n");
-console.log(matrix_initializations.join("\n"));
-console.log("---------------------\nMatrix functions:\n");
-main();
-printFunctionDefDeclare();
-console.log("---------------------\nFunction declarations:\n");
-console.log(function_declarations.join("\n"));
-console.log("---------------------\nFunction definitions:\n");
-console.log(function_definitions.join("\n"));
+initializeVariables();
+generateCode();
+console.log("---------------------\nGenerated code:\n");
+generated_code.push("//Link\n#include <stdio.h>\n#include <stdbool.h>");
+generated_code.push("\n//Function declarations");
+generated_code.push(function_declarations.join("\n"));
+generated_code.push("\n//Main function\nint main(void)\n{\n// Initialize variables");
+generated_code.push(var_initializations.join("\n"));
+generated_code.push("\n//Initialize matrices");
+generated_code.push(matrix_initializations.join("\n"));
+generated_code.push("\n" + main_function.join("\n"));
+generated_code.push("}\n\n//Subprograms");
+generated_code.push(function_definitions.join("\n"));
+console.log(generated_code.join("\n"));
 //# sourceMappingURL=index.js.map

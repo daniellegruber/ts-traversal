@@ -85,18 +85,25 @@ function generateCode() {
             case "for_statement" /* g.SyntaxType.ForStatement */: {
                 console.log(node.children);
                 var expression = [];
-                expression.push("for (" + node.leftNode + " = ");
+                expression.push("for (" + node.leftNode.text + " = ");
                 if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
-                    expression.push(node.rightNode.children[1].text + ";");
-                    expression.push(node.leftNode.text + " < ", node.rightNode.children[3].text + ";");
-                    if (node.rightNode.childCount == 5) {
-                        expression.push(node.leftNode.text + " += " + node.rightNode.children[5].text);
+                    expression.push(node.rightNode.children[0].text + ";");
+                    expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
+                    if (node.rightNode.childCount == 4) {
+                        expression.push(node.leftNode.text + " += " + node.rightNode.children[4].text);
                     }
                     else {
                         expression.push("++ " + node.leftNode.text);
                     }
+                    main_function.push(expression.join(" ") + ")");
                 }
-                main_function.push(expression.join(" ") + ")");
+                else if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                    expression.push("j = 0;");
+                    expression.push("j <= " + node.rightNode.namedChildCount + ";");
+                    expression.push("++j");
+                    main_function.push(expression.join(" ") + ")");
+                    main_function.push(node.leftNode.text + " = " + node.rightNode.text + "[j];");
+                }
                 main_function.push(transformNode(node.bodyNode));
                 if (!cursor.gotoNextSibling()) {
                     return;

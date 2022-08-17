@@ -26,6 +26,10 @@ for i = 1:5
     a;
 end
 
+for i = [2, 7, 9]
+    a;
+end
+
 function [F, G] = myfun1(f,g)
     F = f + g;
     G = f - g;

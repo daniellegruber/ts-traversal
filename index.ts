@@ -107,8 +107,9 @@ function generateCode() {
             case g.SyntaxType.ForStatement: {
                 console.log(node.children);
                 let expression = [];
-                expression.push("for (" + node.leftNode.text + " = ");
+                
                 if (node.rightNode.type == g.SyntaxType.Slice) {
+                    expression.push("for (" + node.leftNode.text + " = ");
                     expression.push(node.rightNode.children[0].text + ";");
                     expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
                     if (node.rightNode.childCount == 4) {
@@ -116,8 +117,17 @@ function generateCode() {
                     } else {
                         expression.push("++ " + node.leftNode.text);
                     }
+                    main_function.push(expression.join(" ") + ")");
+                    
+                } else if (node.rightNode.type == g.SyntaxType.Matrix) {
+                    expression.push("for (j = 0;");
+                    expression.push("j <= " + (node.rightNode.namedChildCount - 1) + ";");
+                    expression.push("++j");
+                    main_function.push(expression.join(" ") + ")");
+                    main_function.push(node.leftNode.text + " = " + node.rightNode.text + "[j];");
+                    
                 }
-                main_function.push(expression.join(" ") + ")");
+               
                 main_function.push(transformNode(node.bodyNode));
                 if (!cursor.gotoNextSibling()) {
                     return;

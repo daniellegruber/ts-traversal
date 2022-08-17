@@ -13,6 +13,16 @@ E = D';
 
 myvar = A(1,1);
 
+% This is a comment
+
+if a
+  b
+elseif c
+  d
+else
+  f
+  
+
 function [F, G] = myfun1(f,g)
     F = f + g;
     G = f - g;

@@ -26,10 +26,13 @@ function generateCode() {
         }
         var c = cursor;
         var node = c.currentNode;
+        console.log(node.text);
         switch (node.type) {
             case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
                 var expression = transformNode(node.firstChild);
-                main_function.push(expression);
+                if (expression != "") {
+                    main_function.push(expression + ";");
+                }
                 cursor_adjust = false;
                 current_code = "main";
                 break;
@@ -43,24 +46,42 @@ function generateCode() {
                 current_code = "subprogram";
                 break;
             }
-            case "break_statement" /* g.SyntaxType.BreakStatement */: { }
-            case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: { }
-            case "cell" /* g.SyntaxType.Cell */: { }
-            case "conditional_expression" /* g.SyntaxType.ConditionalExpression */: { }
-            case "continue_statement" /* g.SyntaxType.ContinueStatement */: { }
-            case "else_clause" /* g.SyntaxType.ElseClause */: { }
-            case "elseif_clause" /* g.SyntaxType.ElseifClause */: { }
-            case "for_statement" /* g.SyntaxType.ForStatement */: { }
-            case "if_statement" /* g.SyntaxType.IfStatement */: { }
-            case "matrix" /* g.SyntaxType.Matrix */: { }
-            case "module" /* g.SyntaxType.Module */: { }
-            case "parameters" /* g.SyntaxType.Parameters */: { }
-            case "return_value" /* g.SyntaxType.ReturnValue */: { }
-            case "slice" /* g.SyntaxType.Slice */: { }
-            case "while_statement" /* g.SyntaxType.WhileStatement */: { }
-            default: {
+            case "if_statement" /* g.SyntaxType.IfStatement */: {
+                main_function.push("if (" + transformNode(node.conditionNode) + ")");
+                for (var i = 2; i < node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        main_function.push(transformNode(node.children[i]));
+                    }
+                }
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
                 current_code = "main";
+                break;
             }
+            case "while_statement" /* g.SyntaxType.WhileStatement */: {
+                main_function.push("while (" + transformNode(node.conditionNode) + ")");
+                for (var i = 2; i < node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        main_function.push(transformNode(node.children[i]));
+                    }
+                }
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
+                current_code = "main";
+                break;
+            }
+            // Comments
+            case "comment" /* g.SyntaxType.Comment */: {
+                console.log(node.children);
+                main_function.push(node.text);
+                break;
+            }
+            // TO DO
+            //case g.SyntaxType.ForStatement: {}
         }
     } while (gotoPreorderSucc(cursor));
 }
@@ -68,7 +89,7 @@ function generateCode() {
 function transformNode(node) {
     switch (node.type) {
         case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
-            return transformNode(node.firstChild);
+            return transformNode(node.firstChild) + ";";
             break;
         }
         // Assignment
@@ -83,7 +104,7 @@ function transformNode(node) {
                 if (!children_types.includes("identifier" /* g.SyntaxType.Identifier */)) {
                     initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
                 }
-                return;
+                return "";
             }
             else {
                 var expression = [];
@@ -109,23 +130,23 @@ function transformNode(node) {
                 var child = _d[_c];
                 expression.push(transformNode(child));
             }
-            return expression.join("\n");
+            return "{\n" + expression.join("\n") + "\n}";
             break;
         }
         case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
             // Is a function call
             var obj = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
             if (obj != null) {
-                var param_list = [];
-                for (var _e = 0, _f = node.namedChildren; _e < _f.length; _e++) {
-                    var param = _f[_e];
-                    param_list.push(param.text);
+                var arg_list = [];
+                for (var _e = 0, _f = node.args_or_subscriptNodes; _e < _f.length; _e++) {
+                    var arg = _f[_e];
+                    arg_list.push(arg.text);
                 }
-                param_list.push(obj.ptr_param);
+                arg_list.push(obj.ptr_param);
                 var expression = [];
                 expression.push(obj.ptr_declaration);
-                expression.push(obj.name + param_list.join(", "));
-                return expression;
+                expression.push(obj.name + "(" + arg_list.join(", ") + ")");
+                return expression.join("\n");
                 // Is a subscript
             }
             else {
@@ -148,8 +169,20 @@ function transformNode(node) {
             }
             break;
         }
-        // Comments
-        // case g.SyntaxType.Comment: {}
+        case "elseif_clause" /* g.SyntaxType.ElseifClause */: {
+            var expression = [];
+            expression.push("else if (" + transformNode(node.conditionNode) + ")");
+            expression.push(transformNode(node.bodyNode));
+            return expression.join("\n");
+            break;
+        }
+        case "else_clause" /* g.SyntaxType.ElseClause */: {
+            var expression = [];
+            expression.push("else");
+            expression.push(transformNode(node.bodyNode));
+            return expression.join("\n");
+            break;
+        }
         // Basic types
         //case g.SyntaxType.Ellipsis: {}
         case "string" /* g.SyntaxType.String */:
@@ -476,8 +509,9 @@ function identifyCustomFunctions() {
                             var ptr_param = [];
                             for (var _i = 0, _a = return_node.namedChildren; _i < _a.length; _i++) {
                                 var return_var = _a[_i];
+                                var _b = inferType(return_var), return_type = _b[0];
+                                ptr_declaration.push(return_type + "* p_" + return_var.text);
                                 ptr_param.push("*p_" + return_var.text);
-                                ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text + ";");
                             }
                             var v1 = { name: node.nameNode.text, ptr_param: ptr_param.join(", "), ptr_declaration: ptr_declaration.join("\n") };
                             custom_functions.push(v1);
@@ -517,11 +551,13 @@ function printFunctionDefDeclare(node) {
                 var ptr_declaration = [];
                 for (var _c = 0, _d = return_node.namedChildren; _c < _d.length; _c++) {
                     var return_var = _d[_c];
-                    ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text);
+                    ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text + ";");
                     var _e = inferType(return_var), return_type = _e[0];
                     param_list.push(return_type + "* p_" + return_var.text);
                 }
                 var ptr_declaration_joined = ptr_declaration.join("\n");
+                console.log("hey there");
+                console.log(param_list);
                 if (param_list.length == 0) {
                     var param_list_joined = "(void)";
                 }
@@ -542,12 +578,18 @@ function printFunctionDefDeclare(node) {
                     var param_list_joined = "(" + param_list.join(", ") + ")";
                 }
                 var _f = inferType(return_node), return_type = _f[0];
+                if (return_type == "char") {
+                    return_type = "char *";
+                }
                 function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
                 function_definitions.push(return_type + " " + node.nameNode.text + param_list_joined);
                 function_definitions.push("{");
             }
         }
-        function_definitions.push(transformNode(node.bodyNode));
+        for (var _g = 0, _h = node.bodyNode.children; _g < _h.length; _g++) {
+            var child = _h[_g];
+            function_definitions.push(transformNode(child));
+        }
         function_definitions.push("}");
     }
 }
@@ -743,6 +785,9 @@ function gotoPreorderSucc(cursor) {
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
 identifyCustomFunctions();
+console.log("---------------------Custom\n");
+console.log(custom_functions[0].name);
+console.log(custom_functions[1].name);
 typeInference();
 initializeVariables();
 generateCode();

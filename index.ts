@@ -44,7 +44,10 @@ function generateCode() {
             case g.SyntaxType.ExpressionStatement: {
                 
                 let expression = transformNode(node.firstChild);
-                main_function.push(expression);
+                if (expression != "") {
+                    main_function.push(expression + ";");
+                }
+                
                 cursor_adjust = false;
                 current_code = "main";
                 break;
@@ -60,28 +63,49 @@ function generateCode() {
                 break;
             }
             
-            
-            case g.SyntaxType.BreakStatement: {}
-            case g.SyntaxType.CallOrSubscript: {}
-            case g.SyntaxType.Cell: {}
-            
-            case g.SyntaxType.ConditionalExpression: {}
-            case g.SyntaxType.ContinueStatement: {}
-            case g.SyntaxType.ElseClause: {}
-            case g.SyntaxType.ElseifClause: {}
-            
-            case g.SyntaxType.ForStatement: {}
-            case g.SyntaxType.IfStatement: {}
-            case g.SyntaxType.Matrix: {}
-            case g.SyntaxType.Module: {}
-            case g.SyntaxType.Parameters: {}
-            case g.SyntaxType.ReturnValue: {}
-            case g.SyntaxType.Slice: {}
-            
-            case g.SyntaxType.WhileStatement: {}
-            default: {
+
+            case g.SyntaxType.IfStatement: {
+                main_function.push("if (" + transformNode(node.conditionNode) + ")");
+                for (let i=2; i<node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        main_function.push(transformNode(node.children[i]));
+                    }
+                }
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
                 current_code = "main";
+                break;
+            } 
+            
+            case g.SyntaxType.WhileStatement: {
+                main_function.push("while (" + transformNode(node.conditionNode) + ")");
+                for (let i=2; i<node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        main_function.push(transformNode(node.children[i]));
+                    }
+                }
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
+                current_code = "main";
+                break;
+            } 
+            
+            // Comments
+            // TO DO: multiline comments
+            case g.SyntaxType.Comment: {
+                main_function.push(node.text.replace("%","//"));
+                cursor_adjust = false;
+                current_code = "main";
+                break;
             }
+            
+            // TO DO
+            //case g.SyntaxType.ForStatement: {}
+
         }
     } while(gotoPreorderSucc(cursor));
 }
@@ -93,13 +117,12 @@ function transformNode(node) {
     switch (node.type) {
         
         case g.SyntaxType.ExpressionStatement: {
-            return transformNode(node.firstChild);
+            return transformNode(node.firstChild) + ";";
             break;
         }
         
         // Assignment
         case g.SyntaxType.Assignment: {
-            
             if (node.rightNode.type == g.SyntaxType.Matrix) {
                 let children_types = [];
                 for (let child of node.rightNode.children) {
@@ -109,7 +132,7 @@ function transformNode(node) {
                 if (!children_types.includes(g.SyntaxType.Identifier)) {
                     initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim);
                 }
-                return;
+                return "";
             } else {
                 let expression = [];
                 expression.push(transformNode(node.leftNode));
@@ -135,22 +158,25 @@ function transformNode(node) {
             for (let child of node.namedChildren) {
                 expression.push(transformNode(child));
             }
-            return expression.join("\n");
+            return "{\n" + expression.join("\n") + "\n}";
             break;
         }
         
         case g.SyntaxType.CallOrSubscript: {
             // Is a function call
+            console.log(node);
             let obj = custom_functions.find(x => x.name === node.valueNode.text);
             if (obj != null) {
-                let param_list = [];
-                for (let param of node.namedChildren) {
-                    param_list.push(param.text);
+                let arg_list = [];
+                for (let i=2; i<node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        arg_list.push(transformNode(node.children[i]));
+                    }
                 }
-                param_list.push(obj.ptr_param);
+                arg_list.push(obj.ptr_param);
                 let expression = [];
                 expression.push(obj.ptr_declaration);
-                expression.push(obj.name + "(" + param_list.join(", ") + ");");
+                expression.push(obj.name + "(" + arg_list.join(", ") + ")");
                 return expression.join("\n"); 
                 
             // Is a subscript
@@ -159,16 +185,18 @@ function transformNode(node) {
                 var_types.push(v1);
                 
                 let index = [];
-                for (let child of node.namedChildren) {
-                    index.push(child.text);
+                for (let i=2; i<node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        index.push(transformNode(node.children[i]));
+                    }
                 }
                 
                 if (current_code == "main") {
                     main_function.push("double tmp;");
-                    main_function.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");    
+                    main_function.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");    
                 } else if (current_code == "subprogram") {
                     function_definitions.push("double tmp;");
-                    function_definitions.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");    
+                    function_definitions.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");    
                 }
                 
                 return "tmp";
@@ -177,9 +205,22 @@ function transformNode(node) {
                 break;
             }
         
+        case g.SyntaxType.ElseifClause: {
+                let expression = [];
+                expression.push("else if (" + transformNode(node.conditionNode) + ")");
+                expression.push(transformNode(node.consequenceNode));
+                return expression.join("\n");
+                break;
+            } 
+            case g.SyntaxType.ElseClause: {
+                let expression = [];
+                expression.push("else");
+                expression.push(transformNode(node.bodyNode));
+                return expression.join("\n");
+                break;
+            }
         
-        // Comments
-        // case g.SyntaxType.Comment: {}
+        
         
         // Basic types
         //case g.SyntaxType.Ellipsis: {}
@@ -539,7 +580,7 @@ var function_declarations = [];
 function printFunctionDefDeclare(node) {
     if (node.isNamed && node.nameNode != null) {
         
-        let param_list = [];
+        var param_list = [];
         for (let param of node.parametersNode.namedChildren) {
             let [param_type, ,] = inferType(param);
             param_list.push(param_type + " " + param.text);
@@ -552,7 +593,7 @@ function printFunctionDefDeclare(node) {
             if (return_node.type == g.SyntaxType.Matrix) {
                 let ptr_declaration = [];
                 for (let return_var of return_node.namedChildren) {
-                    ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text)
+                    ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text + ";");
                     var [return_type, ,] = inferType(return_var);
                     param_list.push(return_type + "* p_" + return_var.text)
                 }
@@ -578,6 +619,9 @@ function printFunctionDefDeclare(node) {
                 }
                 
                 var [return_type, ,] = inferType(return_node);
+                if (return_type == "char") {
+                    return_type = "char *";
+                }
                 
                 function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
                 function_definitions.push(return_type + " " + node.nameNode.text + param_list_joined);
@@ -585,7 +629,10 @@ function printFunctionDefDeclare(node) {
             }
         }
         
-        function_definitions.push(transformNode(node.bodyNode));
+        for (let child of node.bodyNode.children) {
+            function_definitions.push(transformNode(child));
+        }
+        
         function_definitions.push("}");
     }
     

@@ -9,6 +9,10 @@ c = a < b;
 D = {'hello', 'world'};
 E = D';
 
+[F,G] = myfun1(1,2);
+
+myvar = A(1,1);
+
 function [F, G] = myfun1(f,g)
     F = f + g;
     G = f - g;

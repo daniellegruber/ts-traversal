@@ -28,6 +28,7 @@ var main_function = [];
 
       
 var cursor_adjust = false;
+var current_code = "main";
 
 // Main
 function generateCode() {
@@ -45,6 +46,7 @@ function generateCode() {
                 let expression = transformNode(node.firstChild);
                 main_function.push(expression);
                 cursor_adjust = false;
+                current_code = "main";
                 break;
             }
         
@@ -54,6 +56,7 @@ function generateCode() {
                     return;
                 }
                 cursor_adjust = true;
+                current_code = "subprogram";
                 break;
             }
             
@@ -76,7 +79,9 @@ function generateCode() {
             case g.SyntaxType.Slice: {}
             
             case g.SyntaxType.WhileStatement: {}
-            
+            default: {
+                current_code = "main";
+            }
         }
     } while(gotoPreorderSucc(cursor));
 }
@@ -133,6 +138,45 @@ function transformNode(node) {
             return expression.join("\n");
             break;
         }
+        
+        case g.SyntaxType.CallOrSubscript: {
+            // Is a function call
+            let obj = custom_functions.find(x => x.name === node.valueNode.text);
+            if (obj != null) {
+                let param_list = [];
+                for (let param of node.namedChildren) {
+                    param_list.push(param.text);
+                }
+                param_list.push(obj.ptr_param);
+                let expression = [];
+                expression.push(obj.ptr_declaration);
+                expression.push(obj.name + "(" + param_list.join(", ") + ");");
+                return expression.join("\n"); 
+                
+            // Is a subscript
+            } else {
+                const v1: VarType = { name: node.valueNode.text, type: 'array_or_struct', ndim: 1, dim: [1] };
+                var_types.push(v1);
+                
+                let index = [];
+                for (let child of node.namedChildren) {
+                    index.push(child.text);
+                }
+                
+                if (current_code == "main") {
+                    main_function.push("double tmp;");
+                    main_function.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");    
+                } else if (current_code == "subprogram") {
+                    function_definitions.push("double tmp;");
+                    function_definitions.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");    
+                }
+                
+                return "tmp";
+            }
+                    
+                break;
+            }
+        
         
         // Comments
         // case g.SyntaxType.Comment: {}
@@ -430,17 +474,70 @@ function printMatrixFunctions(node) {
     }
 }
 
-// Print function definitions and declarations
+// Identify function definitions
 // -----------------------------------------------------------------------------
-var custom_functions = [];
+type CustomFunction = {
+  name: string;
+  ptr_param: string;
+  ptr_declaration:string;
+};
+
+var custom_functions: CustomFunction[] = [];
+
 var default_functions = ['func1', 'func2'];
 
+function identifyCustomFunctions() {
+    let cursor = tree.walk();
+    do {
+        const c = cursor as g.TypedTreeCursor;
+        switch (c.nodeType) {
+            case g.SyntaxType.FunctionDefinition: {
+                let node = c.currentNode;
+                if (node.isNamed && node.nameNode != null) {
+                    
+                    if (node.children[1].type == g.SyntaxType.ReturnValue) {
+                        let return_node = node.children[1].firstChild;
+                        
+                        // If multiple return values, use pointers
+                        if (return_node.type == g.SyntaxType.Matrix) {
+                            let ptr_declaration = [];
+                            let ptr_param = [];
+                            for (let return_var of return_node.namedChildren) {
+                                var [return_type, ,] = inferType(return_var);
+                                ptr_declaration.push(return_type + "* p_" + return_var.text)
+                                ptr_param.push("*p_" + return_var.text);
+
+                            }
+                            
+                            const v1: CustomFunction = { name: node.nameNode.text, ptr_param:ptr_param.join(", "), ptr_declaration:ptr_declaration.join("\n") };
+                            custom_functions.push(v1);
+  
+                        // If single return value, don't use pointers 
+                        } else {
+                            const v1: CustomFunction = { name: node.nameNode.text, ptr_param:"", ptr_declaration:""};
+                            custom_functions.push(v1);
+                            
+                        }
+                    } else {
+                        const v1: CustomFunction = { name: node.nameNode.text, ptr_param:"", ptr_declaration:""};
+                        custom_functions.push(v1);
+                        
+                    }
+ 
+                }
+                break;
+            }
+        }
+    } while(gotoPreorderSucc(cursor));
+}
+
+// Print function definitions and declarations
+// -----------------------------------------------------------------------------
 var function_definitions = [];
 var function_declarations = [];
 
 function printFunctionDefDeclare(node) {
     if (node.isNamed && node.nameNode != null) {
-        custom_functions.push(node.nameNode.text);
         
         let param_list = [];
         for (let param of node.parametersNode.namedChildren) {
@@ -494,32 +591,7 @@ function printFunctionDefDeclare(node) {
     
 }
 
-// Identify calls to custom functions
-// -----------------------------------------------------------------------------
-function printFunctionCalls() {
-    let cursor = tree.walk();
-    do {
-        const c = cursor as g.TypedTreeCursor;
-        switch (c.nodeType) {
-            case g.SyntaxType.CallOrSubscript: {
-                let node = c.currentNode;
-                // Is a function call
-                if (custom_functions.includes(node.valueNode.text)) {
-                
-                // Is a subscript
-                } else {
-                    const v1: VarType = { name: node.valueNode.text, type: 'array_or_struct', ndim: 1, dim: [1] };
-                    var_types.push(v1);
-                    console.log
-                }
-                    
-                    
-                    
-                break;
-            }
-        }
-    } while(gotoPreorderSucc(cursor));
-}
+
 
 // Type inference
 // -----------------------------------------------------------------------------
@@ -743,6 +815,7 @@ function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
 
+identifyCustomFunctions();
 typeInference();
 initializeVariables();
 generateCode();

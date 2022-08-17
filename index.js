@@ -16,6 +16,7 @@ var tree = parser.parse(sourceCode);
 var generated_code = [];
 var main_function = [];
 var cursor_adjust = false;
+var current_code = "main";
 // Main
 function generateCode() {
     var cursor = tree.walk();
@@ -25,12 +26,12 @@ function generateCode() {
         }
         var c = cursor;
         var node = c.currentNode;
-        console.log(node.type);
         switch (node.type) {
             case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
                 var expression = transformNode(node.firstChild);
                 main_function.push(expression);
                 cursor_adjust = false;
+                current_code = "main";
                 break;
             }
             case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
@@ -39,6 +40,7 @@ function generateCode() {
                     return;
                 }
                 cursor_adjust = true;
+                current_code = "subprogram";
                 break;
             }
             case "break_statement" /* g.SyntaxType.BreakStatement */: { }
@@ -56,6 +58,9 @@ function generateCode() {
             case "return_value" /* g.SyntaxType.ReturnValue */: { }
             case "slice" /* g.SyntaxType.Slice */: { }
             case "while_statement" /* g.SyntaxType.WhileStatement */: { }
+            default: {
+                current_code = "main";
+            }
         }
     } while (gotoPreorderSucc(cursor));
 }
@@ -105,6 +110,42 @@ function transformNode(node) {
                 expression.push(transformNode(child));
             }
             return expression.join("\n");
+            break;
+        }
+        case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
+            // Is a function call
+            var obj = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
+            if (obj != null) {
+                var param_list = [];
+                for (var _e = 0, _f = node.namedChildren; _e < _f.length; _e++) {
+                    var param = _f[_e];
+                    param_list.push(param.text);
+                }
+                param_list.push(obj.ptr_param);
+                var expression = [];
+                expression.push(obj.ptr_declaration);
+                expression.push(obj.name + param_list.join(", "));
+                return expression;
+                // Is a subscript
+            }
+            else {
+                var v1 = { name: node.valueNode.text, type: 'array_or_struct', ndim: 1, dim: [1] };
+                var_types.push(v1);
+                var index = [];
+                for (var _g = 0, _h = node.namedChildren; _g < _h.length; _g++) {
+                    var child = _h[_g];
+                    index.push(child.text);
+                }
+                if (current_code == "main") {
+                    main_function.push("double tmp;");
+                    main_function.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");
+                }
+                else if (current_code == "subprogram") {
+                    function_definitions.push("double tmp;");
+                    function_definitions.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");
+                }
+                return "tmp";
+            }
             break;
         }
         // Comments
@@ -417,15 +458,52 @@ function printMatrixFunctions(node) {
         }
     }
 }
-// Print function definitions and declarations
-// -----------------------------------------------------------------------------
 var custom_functions = [];
 var default_functions = ['func1', 'func2'];
+function identifyCustomFunctions() {
+    var cursor = tree.walk();
+    do {
+        var c = cursor;
+        switch (c.nodeType) {
+            case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
+                var node = c.currentNode;
+                if (node.isNamed && node.nameNode != null) {
+                    if (node.children[1].type == "return_value" /* g.SyntaxType.ReturnValue */) {
+                        var return_node = node.children[1].firstChild;
+                        // If multiple return values, use pointers
+                        if (return_node.type == "matrix" /* g.SyntaxType.Matrix */) {
+                            var ptr_declaration = [];
+                            var ptr_param = [];
+                            for (var _i = 0, _a = return_node.namedChildren; _i < _a.length; _i++) {
+                                var return_var = _a[_i];
+                                ptr_param.push("*p_" + return_var.text);
+                                ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text + ";");
+                            }
+                            var v1 = { name: node.nameNode.text, ptr_param: ptr_param.join(", "), ptr_declaration: ptr_declaration.join("\n") };
+                            custom_functions.push(v1);
+                            // If single return value, don't use pointers 
+                        }
+                        else {
+                            var v1 = { name: node.nameNode.text, ptr_param: "", ptr_declaration: "" };
+                            custom_functions.push(v1);
+                        }
+                    }
+                    else {
+                        var v1 = { name: node.nameNode.text, ptr_param: "", ptr_declaration: "" };
+                        custom_functions.push(v1);
+                    }
+                }
+                break;
+            }
+        }
+    } while (gotoPreorderSucc(cursor));
+}
+// Print function definitions and declarations
+// -----------------------------------------------------------------------------
 var function_definitions = [];
 var function_declarations = [];
 function printFunctionDefDeclare(node) {
     if (node.isNamed && node.nameNode != null) {
-        custom_functions.push(node.nameNode.text);
         var param_list = [];
         for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
             var param = _a[_i];
@@ -472,29 +550,6 @@ function printFunctionDefDeclare(node) {
         function_definitions.push(transformNode(node.bodyNode));
         function_definitions.push("}");
     }
-}
-// Identify calls to custom functions
-// -----------------------------------------------------------------------------
-function printFunctionCalls() {
-    var cursor = tree.walk();
-    do {
-        var c = cursor;
-        switch (c.nodeType) {
-            case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
-                var node = c.currentNode;
-                // Is a function call
-                if (custom_functions.includes(node.valueNode.text)) {
-                    // Is a subscript
-                }
-                else {
-                    var v1 = { name: node.valueNode.text, type: 'array_or_struct', ndim: 1, dim: [1] };
-                    var_types.push(v1);
-                    console.log;
-                }
-                break;
-            }
-        }
-    } while (gotoPreorderSucc(cursor));
 }
 var var_types = [];
 function inferType(node) {
@@ -687,6 +742,7 @@ function gotoPreorderSucc(cursor) {
 // -----------------------------------------------------------------------------
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
+identifyCustomFunctions();
 typeInference();
 initializeVariables();
 generateCode();

@@ -22,6 +22,9 @@ elseif c
 else
   f
   
+for i = 1:5
+    a;
+end
 
 function [F, G] = myfun1(f,g)
     F = f + g;

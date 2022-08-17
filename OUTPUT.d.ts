@@ -462,7 +462,6 @@ export interface ExpressionStatementNode extends NamedNodeBase {
 
 export interface ForStatementNode extends NamedNodeBase {
   type: SyntaxType.ForStatement;
-  alternativeNode?: ElseClauseNode;
   bodyNode: BlockNode;
   leftNode: CallOrSubscriptNode | IdentifierNode;
   rightNode: ExpressionNode | SliceNode;

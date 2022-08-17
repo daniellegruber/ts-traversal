@@ -104,7 +104,28 @@ function generateCode() {
             }
             
             // TO DO
-            //case g.SyntaxType.ForStatement: {}
+            case g.SyntaxType.ForStatement: {
+                console.log(node.children);
+                let expression = [];
+                expression.push("for (" + node.leftNode.text + " = ");
+                if (node.rightNode.type == g.SyntaxType.Slice) {
+                    expression.push(node.rightNode.children[0].text + ";");
+                    expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
+                    if (node.rightNode.childCount == 4) {
+                        expression.push(node.leftNode.text + " += " + node.rightNode.children[4].text);
+                    } else {
+                        expression.push("++ " + node.leftNode.text);
+                    }
+                }
+                main_function.push(expression.join(" ") + ")");
+                main_function.push(transformNode(node.bodyNode));
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
+                current_code = "main";
+                break;
+            }
 
         }
     } while(gotoPreorderSucc(cursor));
@@ -164,7 +185,6 @@ function transformNode(node) {
         
         case g.SyntaxType.CallOrSubscript: {
             // Is a function call
-            console.log(node);
             let obj = custom_functions.find(x => x.name === node.valueNode.text);
             if (obj != null) {
                 let arg_list = [];

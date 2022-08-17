@@ -26,7 +26,6 @@ function generateCode() {
         }
         var c = cursor;
         var node = c.currentNode;
-        console.log(node.text);
         switch (node.type) {
             case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
                 var expression = transformNode(node.firstChild);
@@ -75,13 +74,37 @@ function generateCode() {
                 break;
             }
             // Comments
+            // TO DO: multiline comments
             case "comment" /* g.SyntaxType.Comment */: {
-                console.log(node.children);
-                main_function.push(node.text);
+                main_function.push(node.text.replace("%", "//"));
+                cursor_adjust = false;
+                current_code = "main";
                 break;
             }
             // TO DO
-            //case g.SyntaxType.ForStatement: {}
+            case "for_statement" /* g.SyntaxType.ForStatement */: {
+                console.log(node.children);
+                var expression = [];
+                expression.push("for (" + node.leftNode + " = ");
+                if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
+                    expression.push(node.rightNode.children[1].text + ";");
+                    expression.push(node.leftNode.text + " < ", node.rightNode.children[3].text + ";");
+                    if (node.rightNode.childCount == 5) {
+                        expression.push(node.leftNode.text + " += " + node.rightNode.children[5].text);
+                    }
+                    else {
+                        expression.push("++ " + node.leftNode.text);
+                    }
+                }
+                main_function.push(expression.join(" ") + ")");
+                main_function.push(transformNode(node.bodyNode));
+                if (!cursor.gotoNextSibling()) {
+                    return;
+                }
+                cursor_adjust = true;
+                current_code = "main";
+                break;
+            }
         }
     } while (gotoPreorderSucc(cursor));
 }
@@ -138,9 +161,10 @@ function transformNode(node) {
             var obj = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
             if (obj != null) {
                 var arg_list = [];
-                for (var _e = 0, _f = node.args_or_subscriptNodes; _e < _f.length; _e++) {
-                    var arg = _f[_e];
-                    arg_list.push(arg.text);
+                for (var i = 2; i < node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        arg_list.push(transformNode(node.children[i]));
+                    }
                 }
                 arg_list.push(obj.ptr_param);
                 var expression = [];
@@ -153,17 +177,18 @@ function transformNode(node) {
                 var v1 = { name: node.valueNode.text, type: 'array_or_struct', ndim: 1, dim: [1] };
                 var_types.push(v1);
                 var index = [];
-                for (var _g = 0, _h = node.namedChildren; _g < _h.length; _g++) {
-                    var child = _h[_g];
-                    index.push(child.text);
+                for (var i = 2; i < node.childCount; i++) {
+                    if (node.children[i].isNamed) {
+                        index.push(transformNode(node.children[i]));
+                    }
                 }
                 if (current_code == "main") {
                     main_function.push("double tmp;");
-                    main_function.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");
+                    main_function.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");
                 }
                 else if (current_code == "subprogram") {
                     function_definitions.push("double tmp;");
-                    function_definitions.push("indexM(" + node.value + ", &tmp, " + index.join(", ") + ");");
+                    function_definitions.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");
                 }
                 return "tmp";
             }
@@ -172,7 +197,7 @@ function transformNode(node) {
         case "elseif_clause" /* g.SyntaxType.ElseifClause */: {
             var expression = [];
             expression.push("else if (" + transformNode(node.conditionNode) + ")");
-            expression.push(transformNode(node.bodyNode));
+            expression.push(transformNode(node.consequenceNode));
             return expression.join("\n");
             break;
         }
@@ -556,8 +581,6 @@ function printFunctionDefDeclare(node) {
                     param_list.push(return_type + "* p_" + return_var.text);
                 }
                 var ptr_declaration_joined = ptr_declaration.join("\n");
-                console.log("hey there");
-                console.log(param_list);
                 if (param_list.length == 0) {
                     var param_list_joined = "(void)";
                 }
@@ -785,9 +808,6 @@ function gotoPreorderSucc(cursor) {
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
 identifyCustomFunctions();
-console.log("---------------------Custom\n");
-console.log(custom_functions[0].name);
-console.log(custom_functions[1].name);
 typeInference();
 initializeVariables();
 generateCode();

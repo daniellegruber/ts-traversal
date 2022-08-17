@@ -30,6 +30,12 @@ var main_function = [];
 var cursor_adjust = false;
 var current_code = "main";
 
+var tmpVarCnt = 0;
+function generateTmpVar() {
+    tmpVarCnt += 1;
+    return "tmp" + tmpVarCnt;
+}
+
 // Main
 function generateCode() {
     let cursor = tree.walk();
@@ -109,6 +115,7 @@ function generateCode() {
                 let expression = [];
                 
                 if (node.rightNode.type == g.SyntaxType.Slice) {
+                    main_function.push("int " + node.leftNode.text + "j;");
                     expression.push("for (" + node.leftNode.text + " = ");
                     expression.push(node.rightNode.children[0].text + ";");
                     expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
@@ -120,11 +127,24 @@ function generateCode() {
                     main_function.push(expression.join(" ") + ")");
                     
                 } else if (node.rightNode.type == g.SyntaxType.Matrix) {
-                    expression.push("for (j = 0;");
-                    expression.push("j <= " + (node.rightNode.namedChildCount - 1) + ";");
+                    let children_types = [];
+                    for (let child of node.rightNode.children) {
+                        children_types.push(child.type);
+                    }
+                    const [type, ndim, dim] = inferType(node.rightNode);
+                    if (!children_types.includes(g.SyntaxType.Identifier)) {
+                        var tmp_var = generateTmpVar();
+                        initializeMatrix(node.rightNode, tmp_var, ndim, dim);
+                    } else {
+                        console.log("WARNING: SITUATION UNACCOUNTED FOR");
+                    }
+                
+                    main_function.push("int j;");
+                    expression.push("for (j = 1;");
+                    expression.push("j <= " + node.rightNode.namedChildCount + ";");
                     expression.push("++j");
                     main_function.push(expression.join(" ") + ")");
-                    main_function.push(node.leftNode.text + " = " + node.rightNode.text + "[j];");
+                    main_function.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + tmp_var + "->ndim=1, j);");
                     
                 }
                
@@ -221,15 +241,16 @@ function transformNode(node) {
                     }
                 }
                 
+                var tmp_var = generateTmpVar();
                 if (current_code == "main") {
-                    main_function.push("double tmp;");
-                    main_function.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");    
+                    main_function.push("double " + tmp_var + ";");
+                    main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
                 } else if (current_code == "subprogram") {
-                    function_definitions.push("double tmp;");
-                    function_definitions.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");    
+                    function_definitions.push("double " + tmp_var + ";");
+                    function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
                 }
                 
-                return "tmp";
+                return tmp_var;
             }
                     
                 break;

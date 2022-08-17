@@ -17,6 +17,11 @@ var generated_code = [];
 var main_function = [];
 var cursor_adjust = false;
 var current_code = "main";
+var tmpVarCnt = 0;
+function generateTmpVar() {
+    tmpVarCnt += 1;
+    return "tmp" + tmpVarCnt;
+}
 // Main
 function generateCode() {
     var cursor = tree.walk();
@@ -85,8 +90,9 @@ function generateCode() {
             case "for_statement" /* g.SyntaxType.ForStatement */: {
                 console.log(node.children);
                 var expression = [];
-                expression.push("for (" + node.leftNode.text + " = ");
                 if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
+                    main_function.push("int " + node.leftNode.text + "j;");
+                    expression.push("for (" + node.leftNode.text + " = ");
                     expression.push(node.rightNode.children[0].text + ";");
                     expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
                     if (node.rightNode.childCount == 4) {
@@ -98,11 +104,25 @@ function generateCode() {
                     main_function.push(expression.join(" ") + ")");
                 }
                 else if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
-                    expression.push("j = 0;");
+                    var children_types = [];
+                    for (var _i = 0, _a = node.rightNode.children; _i < _a.length; _i++) {
+                        var child = _a[_i];
+                        children_types.push(child.type);
+                    }
+                    var _b = inferType(node.rightNode), type = _b[0], ndim = _b[1], dim = _b[2];
+                    if (!children_types.includes("identifier" /* g.SyntaxType.Identifier */)) {
+                        var tmp_var = generateTmpVar();
+                        initializeMatrix(node.rightNode, tmp_var, ndim, dim);
+                    }
+                    else {
+                        console.log("WARNING: SITUATION UNACCOUNTED FOR");
+                    }
+                    main_function.push("int j;");
+                    expression.push("for (j = 1;");
                     expression.push("j <= " + node.rightNode.namedChildCount + ";");
                     expression.push("++j");
                     main_function.push(expression.join(" ") + ")");
-                    main_function.push(node.leftNode.text + " = " + node.rightNode.text + "[j];");
+                    main_function.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + temp_var + "->ndim=1, j);");
                 }
                 main_function.push(transformNode(node.bodyNode));
                 if (!cursor.gotoNextSibling()) {
@@ -189,15 +209,16 @@ function transformNode(node) {
                         index.push(transformNode(node.children[i]));
                     }
                 }
+                var tmp_var = generateTmpVar();
                 if (current_code == "main") {
-                    main_function.push("double tmp;");
-                    main_function.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");
+                    main_function.push("double " + tmp_var + ";");
+                    main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
                 }
                 else if (current_code == "subprogram") {
-                    function_definitions.push("double tmp;");
-                    function_definitions.push("indexM(" + node.valueNode.text + ", &tmp, " + index.join(", ") + ");");
+                    function_definitions.push("double " + tmp_var + ";");
+                    function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
                 }
-                return "tmp";
+                return tmp_var;
             }
             break;
         }

@@ -1066,9 +1066,10 @@ tar@^6.1.11, tar@^6.1.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-"tree-sitter-matlab@github:daniellegruber/tree-sitter-matlab":
-  version "1.0.0"
-  resolved "https://codeload.github.com/daniellegruber/tree-sitter-matlab/tar.gz/369e855dfd56177aa3fe60c56e5adf7016388894"
+tree-sitter-matlab@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tree-sitter-matlab/-/tree-sitter-matlab-1.0.1.tgz#c8ec440c06658a7ea6447728d9f1cf396ad4ac75"
+  integrity sha512-nVhyBeCHWnXIt0XoBjfcMIeuQt7C1beQMGWN0xGLGRu9sq1ojMvoJGEsJFdWBcIQaRMfsCfiW1pUX8NfIgkBBA==
   dependencies:
     nan "^2.15.0"
     node-gyp "^9.1.0"

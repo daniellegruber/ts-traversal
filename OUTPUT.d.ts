@@ -178,6 +178,7 @@ export const enum SyntaxType {
   BooleanOperator = "boolean_operator",
   BreakStatement = "break_statement",
   CallOrSubscript = "call_or_subscript",
+  CatchClause = "catch_clause",
   Cell = "cell",
   ComparisonOperator = "comparison_operator",
   ConditionalExpression = "conditional_expression",
@@ -189,6 +190,7 @@ export const enum SyntaxType {
   ForStatement = "for_statement",
   FunctionDefinition = "function_definition",
   IfStatement = "if_statement",
+  Keyword = "keyword",
   Matrix = "matrix",
   Module = "module",
   Parameters = "parameters",
@@ -196,6 +198,7 @@ export const enum SyntaxType {
   Slice = "slice",
   String = "string",
   TransposeOperator = "transpose_operator",
+  TryStatement = "try_statement",
   UnaryOperator = "unary_operator",
   WhileStatement = "while_statement",
   Comment = "comment",
@@ -241,6 +244,7 @@ export type UnnamedType =
   | "async"
   | "break"
   | "case"
+  | "catch"
   | "continue"
   | "else"
   | "elseif"
@@ -248,6 +252,7 @@ export type UnnamedType =
   | "for"
   | "function"
   | "if"
+  | "try"
   | "while"
   | "{"
   | "|"
@@ -271,6 +276,7 @@ export type SyntaxNode =
   | BooleanOperatorNode
   | BreakStatementNode
   | CallOrSubscriptNode
+  | CatchClauseNode
   | CellNode
   | ComparisonOperatorNode
   | ConditionalExpressionNode
@@ -282,6 +288,7 @@ export type SyntaxNode =
   | ForStatementNode
   | FunctionDefinitionNode
   | IfStatementNode
+  | KeywordNode
   | MatrixNode
   | ModuleNode
   | ParametersNode
@@ -289,6 +296,7 @@ export type SyntaxNode =
   | SliceNode
   | StringNode
   | TransposeOperatorNode
+  | TryStatementNode
   | UnaryOperatorNode
   | WhileStatementNode
   | UnnamedNode<"\"">
@@ -322,6 +330,7 @@ export type SyntaxNode =
   | UnnamedNode<"async">
   | UnnamedNode<"break">
   | UnnamedNode<"case">
+  | UnnamedNode<"catch">
   | CommentNode
   | UnnamedNode<"continue">
   | EllipsisNode
@@ -338,6 +347,7 @@ export type SyntaxNode =
   | IntegerNode
   | StringFragmentNode
   | TrueNode
+  | UnnamedNode<"try">
   | UnnamedNode<"while">
   | UnnamedNode<"{">
   | UnnamedNode<"|">
@@ -352,6 +362,7 @@ export type CompoundStatementNode =
   | ForStatementNode
   | FunctionDefinitionNode
   | IfStatementNode
+  | TryStatementNode
   | WhileStatementNode
   ;
 
@@ -381,6 +392,7 @@ export type PrimaryExpressionNode =
   | FloatNode
   | IdentifierNode
   | IntegerNode
+  | KeywordNode
   | MatrixNode
   | StringNode
   | TransposeOperatorNode
@@ -418,8 +430,14 @@ export interface BreakStatementNode extends NamedNodeBase {
 
 export interface CallOrSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CallOrSubscript;
-  args_or_subscriptNodes: (UnnamedNode<"end"> | ExpressionNode | SliceNode)[];
+  args_or_subscriptNodes: (UnnamedNode<","> | ExpressionNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
+}
+
+export interface CatchClauseNode extends NamedNodeBase {
+  type: SyntaxType.CatchClause;
+  bodyNode: BlockNode;
+  exceptionNode?: ExpressionNode;
 }
 
 export interface CellNode extends NamedNodeBase {
@@ -482,6 +500,10 @@ export interface IfStatementNode extends NamedNodeBase {
   consequenceNode: BlockNode;
 }
 
+export interface KeywordNode extends NamedNodeBase {
+  type: SyntaxType.Keyword;
+}
+
 export interface MatrixNode extends NamedNodeBase {
   type: SyntaxType.Matrix;
 }
@@ -510,6 +532,11 @@ export interface TransposeOperatorNode extends NamedNodeBase {
   type: SyntaxType.TransposeOperator;
   argumentNode: PrimaryExpressionNode;
   operatorNode: UnnamedNode<"'"> | UnnamedNode<".'">;
+}
+
+export interface TryStatementNode extends NamedNodeBase {
+  type: SyntaxType.TryStatement;
+  bodyNode: BlockNode;
 }
 
 export interface UnaryOperatorNode extends NamedNodeBase {

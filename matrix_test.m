@@ -21,8 +21,11 @@ elseif c
   d
 else
   f
-  
-for i = 1:5
+end
+
+myarr = zeros(2,3);
+
+for i = 1:2:5
     a;
 end
 

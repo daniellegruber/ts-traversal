@@ -109,19 +109,19 @@ function generateCode() {
                 break;
             }
             
-            // TO DO
             case g.SyntaxType.ForStatement: {
-                console.log(node.children);
                 let expression = [];
                 
                 if (node.rightNode.type == g.SyntaxType.Slice) {
-                    main_function.push("int " + node.leftNode.text + "j;");
+                    main_function.push("int " + node.leftNode.text + ";");
                     expression.push("for (" + node.leftNode.text + " = ");
                     expression.push(node.rightNode.children[0].text + ";");
-                    expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
-                    if (node.rightNode.childCount == 4) {
-                        expression.push(node.leftNode.text + " += " + node.rightNode.children[4].text);
+                    
+                    if (node.rightNode.childCount == 5) {
+                        expression.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
+                        expression.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
                     } else {
+                        expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
                         expression.push("++ " + node.leftNode.text);
                     }
                     main_function.push(expression.join(" ") + ")");
@@ -214,7 +214,7 @@ function transformNode(node) {
         }
         
         case g.SyntaxType.CallOrSubscript: {
-            // Is a function call
+            // Is a custom function call
             let obj = custom_functions.find(x => x.name === node.valueNode.text);
             if (obj != null) {
                 let arg_list = [];
@@ -228,6 +228,32 @@ function transformNode(node) {
                 expression.push(obj.ptr_declaration);
                 expression.push(obj.name + "(" + arg_list.join(", ") + ")");
                 return expression.join("\n"); 
+            
+            // Is a builtin function call
+            } else if (builtin_functions.includes(node.valueNode.text)) {
+                switch (node.valueNode.text) {
+                    case "zeros":
+                    case "ones": 
+                    case "rand":
+                    case "randn": {
+                        let args = [];
+                        for (let i=2; i<node.childCount; i++) {
+                            if (node.children[i].isNamed) {
+                                args.push(transformNode(node.children[i]));
+                            }
+                        }
+                        let dim = "{" + args.join(", ") + "}";
+                        let ndim = args.length;
+                        var tmp_var = generateTmpVar();
+                        if (current_code == "main") {
+                            main_function.push(`Matrix * ${tmp_var} = ${node.valueNode.text}M(${ndim}, ${dim});`)
+                        } else if (current_code == "subprogram") { 
+                            function_definitions.push(`Matrix * ${tmp_var} = onesM(${ndim}, ${dim});`)
+                        }
+                        return tmp_var;
+                        break;
+                    }
+                }
                 
             // Is a subscript
             } else {
@@ -257,24 +283,23 @@ function transformNode(node) {
             }
         
         case g.SyntaxType.ElseifClause: {
-                let expression = [];
-                expression.push("else if (" + transformNode(node.conditionNode) + ")");
-                expression.push(transformNode(node.consequenceNode));
-                return expression.join("\n");
-                break;
-            } 
-            case g.SyntaxType.ElseClause: {
-                let expression = [];
-                expression.push("else");
-                expression.push(transformNode(node.bodyNode));
-                return expression.join("\n");
-                break;
-            }
-        
+            let expression = [];
+            expression.push("else if (" + transformNode(node.conditionNode) + ")");
+            expression.push(transformNode(node.consequenceNode));
+            return expression.join("\n");
+            break;
+        } 
+        case g.SyntaxType.ElseClause: {
+            let expression = [];
+            expression.push("else");
+            expression.push(transformNode(node.bodyNode));
+            return expression.join("\n");
+            break;
+        }
         
         
         // Basic types
-        //case g.SyntaxType.Ellipsis: {}
+        //case g.SyntaxType.Ellipsis:
         case g.SyntaxType.String:
         case g.SyntaxType.Identifier:
         case g.SyntaxType.Integer:
@@ -323,244 +348,99 @@ function initializeMatrix(node, name, ndim, dim) {
     	matrix_initializations.push("writeM(" + name + ", " + numel + ", input);")
     	matrix_initializations.push("free(input);")
     }
+    
+type operatorMapping = {
+  operator: string;
+  function: string;
+};
 
 
+const binaryMapping: operatorMapping[] = [
+        {operator: '+', function: "addM"},
+        {operator: '-', function: "minusM"},
+        {operator: '*', function: "mtimesM"},
+        {operator: '/', function: "mrdivideM"},
+        {operator: '\\', function: "mldivideM"},
+        {operator: '^', function: "mpowerM"},
+        {operator: '.*', function: "timesM"},
+        {operator: './', function: "rdivideM"},
+        {operator: '.\\', function: "ldivideM"},
+        {operator: '.^', function: "powerM"},
+        {operator: '<', function: "ltM"},
+        {operator: '<=', function: "leM"},
+        {operator: '==', function: "eqM"},
+        {operator: '>', function: "gtM"},
+        {operator: '>=', function: "geM"},
+        {operator: '~=', function: "neqM"},
+    ];    
+const unaryMapping: operatorMapping[] = [
+        {operator: "+", function: "FILLIN"},
+        {operator: "-", function: "FILLIN"},
+        {operator: "~", function: "notM"}
+    ];
 
+const transposeMapping: operatorMapping[] = [
+        {operator: "'", function: "ctransposeM"},
+        {operator: ".'", function: "tranposeM"}
+    ];
 // Print matrix functions
 // -----------------------------------------------------------------------------
 function printMatrixFunctions(node) {
+    var tmp_var = generateTmpVar();
+    
     switch (node.type) {
         case g.SyntaxType.UnaryOperator: {
+            let obj = unaryMapping.find(x => x.operator === node.operatorNode.type);
             let [type, , ] = inferType(node.argumentNode);
-            switch (node.operatorNode.type) {
-                case "+": {
-                    if (type == 'matrix') {
-                        return `FILLIN(${node.argumentNode.text})`;
-                    } else {
-                        return `+${node.argumentNode.text}`;
-                    }
-                    break;
+            
+            if (type == 'matrix') {
+                if (current_code == "main") {
+                    main_function.push(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
+                } else if (current_code == "subprogram") {
+                    function_definitions.push(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
                 }
-                case "-": {
-                    if (type == 'matrix') {
-                        return `FILLIN(${node.argumentNode.text})`;
-                    } else {
-                        return `-${node.argumentNode.text}`;
-                    }
-                    break;
-                }
-                case "~": {
-                    if (type == 'matrix') {
-                        return `notM(${node.argumentNode.text})`;
-                    } else {
-                        return `~${node.argumentNode.text}`;
-                    }
-                    break;
-                }
+                return tmp_var;
+            } else {
+                return `${obj.operator}${node.argumentNode.text}`;
             }
+            
             break;
+                    
         }
         case g.SyntaxType.TransposeOperator: {
+            let obj = transposeMapping.find(x => x.operator === node.operatorNode.type);
             let [type, , ] = inferType(node.argumentNode);
-            switch (node.operatorNode.type) {
-                case "'": {
-                    if (type == 'matrix') {
-                        return `ctransposeM(${node.argumentNode.text})`;
-                    } else {
-                        return `${node.argumentNode.text}'`;
-                    }
-                    break;
+            
+            if (type == 'matrix') {
+                if (current_code == "main") {
+                    main_function.push(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
+                } else if (current_code == "subprogram") {
+                    function_definitions.push(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
                 }
-                case ".'": {
-                    if (type == 'matrix') {
-                        return `transposeM(${node.argumentNode.text})`;
-                    } else {
-                        return `${node.argumentNode.text}.'`;
-                    }
-                    break;
-                }
+                return tmp_var;
+            } else {
+                return `${node.argumentNode.text}${obj.operator}`;
             }
             break;
         }
+        case g.SyntaxType.ComparisonOperator:
+        case g.SyntaxType.BooleanOperator:
         case g.SyntaxType.BinaryOperator: {
+            let obj = binaryMapping.find(x => x.operator === node.operatorNode.type);
             let [left_type, , ] = inferType(node.leftNode);
             let [right_type, , ] = inferType(node.rightNode);
-            switch (node.operatorNode.type) {
-                case "+": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `addM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} + ${node.rightNode.text}`;
-                    }
-                    break;
+            
+            if (left_type == 'matrix' || right_type == 'matrix') {
+                if (current_code == "main") {
+                    main_function.push(`Matrix * ${tmp_var} = ${obj.function}(${node.leftNode.text},${node.rightNode.text})`);
+                } else if (current_code == "subprogram") {
+                    function_definitions.push(`Matrix * ${tmp_var} = ${obj.function}(${node.leftNode.text},${node.rightNode.text})`);
                 }
-                case "-": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `minusM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} - ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "*": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `mtimesM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} * ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case ".*": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `timesM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} .* ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "/": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `mrdivideM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} / ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "./": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `rdivideM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} ./ ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "\\": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `mldivideM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} \\ ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case ".\\": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `ldivideM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} .\\ ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "^": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `mpowerM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} ^ ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case ".^": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `powerM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} .^ ${node.rightNode.text}`;
-                    }
-                    break;
-                }
+                return tmp_var;
+            } else {
+                return `${node.leftNode.text} ${obj.operator} ${node.rightNode.text}`;
             }
-            break;
-        }
-        case g.SyntaxType.BooleanOperator: {
-            let [left_type, , ] = inferType(node.leftNode);
-            let [right_type, , ] = inferType(node.rightNode);
-            switch (node.operatorNode.type) {
-                case "&": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `andM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} & ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "|": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `orM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} | ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "&&": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `FILLIN(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} && ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "||": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `FILLIN(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} || ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-            }
-            break;
-        }
-        case g.SyntaxType.ComparisonOperator: {
-            let [left_type, , ] = inferType(node.leftNode);
-            let [right_type, , ] = inferType(node.rightNode);
-            switch (node.operatorNode.type) {
-                case "<": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `ltM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} < ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "<=": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `leM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} <= ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "==": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `eqM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} == ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case ">": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `gtM(${node.leftNode.text}, ${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} > ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case ">=": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `geM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} >= ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-                case "~=": {
-                    if (left_type == 'matrix' || right_type == 'matrix') {
-                        return `neqM(${node.leftNode.text},${node.rightNode.text})`;
-                    } else {
-                        return `${node.leftNode.text} ~= ${node.rightNode.text}`;
-                    }
-                    break;
-                }
-            }
+            
             break;
         }
     }
@@ -576,7 +456,7 @@ type CustomFunction = {
 
 var custom_functions: CustomFunction[] = [];
 
-var default_functions = ['func1', 'func2'];
+var builtin_functions = ['zeros', 'ones'];
 
 function identifyCustomFunctions() {
     let cursor = tree.walk();

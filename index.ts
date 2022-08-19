@@ -355,7 +355,11 @@ function initializeMatrix(node, name, ndim, dim, matrix_type) {
     	var j = 0;
     	for (let i=0; i<node.childCount; i++) {
             if (node.children[i].isNamed) {
-                matrix_initializations.push("input[" + j + "] = " + node.children[i].text + ";");
+                if (matrix_type == 3)
+                    matrix_initializations.push("input[" + j + "][] = " + node.children[i].text.replace(/'/g, '"') + ";");
+                else {
+                    matrix_initializations.push("input[" + j + "] = " + node.children[i].text + ";");
+                }
                 j++;
             }
     	}

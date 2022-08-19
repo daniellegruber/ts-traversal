@@ -181,6 +181,7 @@ export const enum SyntaxType {
   CatchClause = "catch_clause",
   Cell = "cell",
   ComparisonOperator = "comparison_operator",
+  Complex = "complex",
   ConditionalExpression = "conditional_expression",
   ContinueStatement = "continue_statement",
   ElseClause = "else_clause",
@@ -241,7 +242,6 @@ export type UnnamedType =
   | "\\"
   | "]"
   | "^"
-  | "async"
   | "break"
   | "case"
   | "catch"
@@ -251,7 +251,9 @@ export type UnnamedType =
   | "end"
   | "for"
   | "function"
+  | "i"
   | "if"
+  | "j"
   | "try"
   | "while"
   | "{"
@@ -279,6 +281,7 @@ export type SyntaxNode =
   | CatchClauseNode
   | CellNode
   | ComparisonOperatorNode
+  | ComplexNode
   | ConditionalExpressionNode
   | ContinueStatementNode
   | ElseClauseNode
@@ -327,7 +330,6 @@ export type SyntaxNode =
   | UnnamedNode<"\\">
   | UnnamedNode<"]">
   | UnnamedNode<"^">
-  | UnnamedNode<"async">
   | UnnamedNode<"break">
   | UnnamedNode<"case">
   | UnnamedNode<"catch">
@@ -342,9 +344,11 @@ export type SyntaxNode =
   | FloatNode
   | UnnamedNode<"for">
   | UnnamedNode<"function">
+  | UnnamedNode<"i">
   | IdentifierNode
   | UnnamedNode<"if">
   | IntegerNode
+  | UnnamedNode<"j">
   | StringFragmentNode
   | TrueNode
   | UnnamedNode<"try">
@@ -387,6 +391,7 @@ export type PrimaryExpressionNode =
   | BinaryOperatorNode
   | CallOrSubscriptNode
   | CellNode
+  | ComplexNode
   | EllipsisNode
   | FalseNode
   | FloatNode
@@ -430,7 +435,7 @@ export interface BreakStatementNode extends NamedNodeBase {
 
 export interface CallOrSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CallOrSubscript;
-  args_or_subscriptNodes: (UnnamedNode<","> | ExpressionNode | SliceNode)[];
+  args_or_subscriptNodes: (ExpressionNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
 }
 
@@ -449,6 +454,10 @@ export interface ComparisonOperatorNode extends NamedNodeBase {
   leftNode: ExpressionNode;
   operatorNode: UnnamedNode<"<"> | UnnamedNode<"<="> | UnnamedNode<"=="> | UnnamedNode<">"> | UnnamedNode<">="> | UnnamedNode<"~=">;
   rightNode: ExpressionNode;
+}
+
+export interface ComplexNode extends NamedNodeBase {
+  type: SyntaxType.Complex;
 }
 
 export interface ConditionalExpressionNode extends NamedNodeBase {

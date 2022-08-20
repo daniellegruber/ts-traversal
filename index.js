@@ -32,15 +32,6 @@ function generateCode() {
         var c = cursor;
         var node = c.currentNode;
         switch (node.type) {
-            case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
-                var expression = transformNode(node.firstChild);
-                if (expression != "") {
-                    main_function.push(expression + ";");
-                }
-                cursor_adjust = false;
-                current_code = "main";
-                break;
-            }
             case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
                 printFunctionDefDeclare(node);
                 if (!cursor.gotoNextSibling()) {
@@ -50,73 +41,20 @@ function generateCode() {
                 current_code = "subprogram";
                 break;
             }
-            case "if_statement" /* g.SyntaxType.IfStatement */: {
-                main_function.push("if (" + transformNode(node.conditionNode) + ")");
-                for (var i = 2; i < node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        main_function.push(transformNode(node.children[i]));
-                    }
+            case "comment" /* g.SyntaxType.Comment */:
+            case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
+                var expression = transformNode(node);
+                if (expression != ";") {
+                    main_function.push(expression);
                 }
-                if (!cursor.gotoNextSibling()) {
-                    return;
-                }
-                cursor_adjust = true;
-                current_code = "main";
-                break;
-            }
-            case "while_statement" /* g.SyntaxType.WhileStatement */: {
-                main_function.push("while (" + transformNode(node.conditionNode) + ")");
-                for (var i = 2; i < node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        main_function.push(transformNode(node.children[i]));
-                    }
-                }
-                if (!cursor.gotoNextSibling()) {
-                    return;
-                }
-                cursor_adjust = true;
-                current_code = "main";
-                break;
-            }
-            // Comments
-            // TO DO: multiline comments
-            case "comment" /* g.SyntaxType.Comment */: {
-                main_function.push(node.text.replace("%", "//"));
                 cursor_adjust = false;
                 current_code = "main";
                 break;
             }
+            case "if_statement" /* g.SyntaxType.IfStatement */:
+            case "while_statement" /* g.SyntaxType.WhileStatement */:
             case "for_statement" /* g.SyntaxType.ForStatement */: {
-                var expression = [];
-                if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
-                    main_function.push("int " + node.leftNode.text + ";");
-                    expression.push("for (" + node.leftNode.text + " = ");
-                    expression.push(node.rightNode.children[0].text + ";");
-                    if (node.rightNode.childCount == 5) {
-                        expression.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
-                        expression.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
-                    }
-                    else {
-                        expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
-                        expression.push("++ " + node.leftNode.text);
-                    }
-                    main_function.push(expression.join(" ") + ")");
-                }
-                else if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
-                    var tmp_var = generateTmpVar();
-                    var _a = inferType(node.rightNode), type = _a[0], ndim = _a[1], dim = _a[2];
-                    var obj = type_to_matrix_type.find(function (x) { return x.type === type; });
-                    if (obj != null) {
-                        initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, obj.matrix_type);
-                    }
-                    main_function.push("int j;");
-                    expression.push("for (j = 1;");
-                    expression.push("j <= " + node.rightNode.namedChildCount + ";");
-                    expression.push("++j");
-                    main_function.push(expression.join(" ") + ")");
-                    main_function.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + tmp_var + "->ndim=1, j);");
-                }
-                main_function.push(transformNode(node.bodyNode));
+                main_function.push(transformNode(node));
                 if (!cursor.gotoNextSibling()) {
                     return;
                 }
@@ -136,6 +74,69 @@ var type_to_matrix_type = [
 // Main
 function transformNode(node) {
     switch (node.type) {
+        // Comments
+        // TO DO: multiline comments
+        case "comment" /* g.SyntaxType.Comment */: {
+            return node.text.replace("%", "//");
+            break;
+        }
+        case "if_statement" /* g.SyntaxType.IfStatement */: {
+            var expression = [];
+            expression.push("if (" + transformNode(node.conditionNode) + ")");
+            for (var i = 2; i < node.childCount; i++) {
+                if (node.children[i].isNamed) {
+                    expression.push(transformNode(node.children[i]));
+                }
+            }
+            return expression.join("\n");
+            break;
+        }
+        case "while_statement" /* g.SyntaxType.WhileStatement */: {
+            var expression = [];
+            expression.push("while (" + transformNode(node.conditionNode) + ")");
+            for (var i = 2; i < node.childCount; i++) {
+                if (node.children[i].isNamed) {
+                    expression.push(transformNode(node.children[i]));
+                }
+            }
+            return expression.join("\n");
+            break;
+        }
+        case "for_statement" /* g.SyntaxType.ForStatement */: {
+            var expression1 = [];
+            var expression2 = [];
+            if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
+                expression1.push("int " + node.leftNode.text + ";");
+                expression2.push("for (" + node.leftNode.text + " = ");
+                expression2.push(node.rightNode.children[0].text + ";");
+                if (node.rightNode.childCount == 5) {
+                    expression2.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
+                    expression2.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
+                }
+                else {
+                    expression2.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
+                    expression2.push("++ " + node.leftNode.text);
+                }
+                expression1.push(expression2.join(" ") + ")");
+            }
+            else if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                var tmp_var = generateTmpVar();
+                var _a = inferType(node.rightNode), type = _a[0], ndim = _a[1], dim = _a[2];
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type; });
+                if (obj != null) {
+                    initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, obj.matrix_type);
+                }
+                expression1.push("int j;");
+                expression2.push("for (j = 1;");
+                expression2.push("j <= " + node.rightNode.namedChildCount + ";");
+                expression2.push("++j");
+                expression1.push(expression2.join(" ") + ")");
+                expression1.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + tmp_var + "->ndim=1, j);");
+            }
+            expression1.push(transformNode(node.bodyNode));
+            return expression1.join("\n");
+            break;
+        }
         case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
             return transformNode(node.firstChild) + ";";
             break;
@@ -143,9 +144,10 @@ function transformNode(node) {
         // Assignment
         case "assignment" /* g.SyntaxType.Assignment */: {
             if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "cell" /* g.SyntaxType.Cell */) {
-                var _a = inferType(node.rightNode), type = _a[0], ndim = _a[1], dim = _a[2];
+                var _b = inferType(node.rightNode), type = _b[0], ndim = _b[1], dim = _b[2];
                 if (type == 'heterogeneous') {
                     // FILL IN
+                    return "";
                 }
                 else {
                     var obj = type_to_matrix_type.find(function (x) { return x.type === type; });
@@ -175,8 +177,8 @@ function transformNode(node) {
         }
         case "block" /* g.SyntaxType.Block */: {
             var expression = [];
-            for (var _i = 0, _b = node.namedChildren; _i < _b.length; _i++) {
-                var child = _b[_i];
+            for (var _i = 0, _c = node.namedChildren; _i < _c.length; _i++) {
+                var child = _c[_i];
                 expression.push(transformNode(child));
             }
             return "{\n" + expression.join("\n") + "\n}";
@@ -274,7 +276,6 @@ function transformNode(node) {
             break;
         }
         case "complex" /* g.SyntaxType.Complex */: {
-            console.log("HELLLOOOO");
             return node.firstChild.text + "*I";
         }
     }
@@ -303,7 +304,11 @@ function initializeMatrix(node, name, ndim, dim, matrix_type) {
     var j = 0;
     for (var i = 0; i < node.childCount; i++) {
         if (node.children[i].isNamed) {
-            matrix_initializations.push("input[" + j + "] = " + node.children[i].text + ";");
+            if (matrix_type == 3)
+                matrix_initializations.push("input[" + j + "][] = " + node.children[i].text.replace(/'/g, '"') + ";");
+            else {
+                matrix_initializations.push("input[" + j + "] = " + node.children[i].text + ";");
+            }
             j++;
         }
     }
@@ -355,7 +360,7 @@ function printMatrixFunctions(node) {
                 return tmp_var;
             }
             else {
-                return "".concat(obj.operator).concat(node.argumentNode.text);
+                return "".concat(obj.operator).concat(transformNode(node.argumentNode));
             }
             break;
         }
@@ -372,7 +377,7 @@ function printMatrixFunctions(node) {
                 return tmp_var;
             }
             else {
-                return "".concat(node.argumentNode.text).concat(obj.operator);
+                return "".concat(transformNode(node.argumentNode)).concat(obj.operator);
             }
             break;
         }
@@ -392,7 +397,7 @@ function printMatrixFunctions(node) {
                 return tmp_var;
             }
             else {
-                return "".concat(node.leftNode.text, " ").concat(obj.operator, " ").concat(node.rightNode.text);
+                return "".concat(transformNode(node.leftNode), " ").concat(obj.operator, " ").concat(transformNode(node.rightNode));
             }
             break;
         }
@@ -500,6 +505,7 @@ function printFunctionDefDeclare(node) {
 }
 var var_types = [];
 function inferType(node) {
+    var _a;
     switch (node.type) {
         // Named types
         case "ellipsis" /* g.SyntaxType.Ellipsis */: {
@@ -539,21 +545,21 @@ function inferType(node) {
                 }
                 else if (node.children[i].isNamed) {
                     if (row == 0) {
-                        var _a = inferType(node.children[i]), type_1 = _a[0], ndim_2 = _a[1], dim_2 = _a[2];
+                        var _b = inferType(node.children[i]), type_1 = _b[0], ndim_2 = _b[1], dim_2 = _b[2];
                         ncols += dim_2[1];
                     }
                     if (col == 0) {
-                        var _b = inferType(node.children[i]), type_2 = _b[0], ndim_3 = _b[1], dim_3 = _b[2];
+                        var _c = inferType(node.children[i]), type_2 = _c[0], ndim_3 = _c[1], dim_3 = _c[2];
                         nrows += dim_3[0];
                     }
                     col += 1;
                 }
             }
             var children_types_1 = [];
-            for (var _i = 0, _c = node.namedChildren; _i < _c.length; _i++) {
-                var child = _c[_i];
+            for (var _i = 0, _d = node.namedChildren; _i < _d.length; _i++) {
+                var child = _d[_i];
                 //children_types.push(child.type);
-                var _d = inferType(child), child_type = _d[0];
+                var _e = inferType(child), child_type = _e[0];
                 children_types_1.push(child_type);
             }
             var type = 'unknown';
@@ -584,7 +590,7 @@ function inferType(node) {
             break;
         }
         case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
-            var _e = inferType(node.firstChild), type_3 = _e[0], ndim_4 = _e[1], dim_4 = _e[2], ismatrix_1 = _e[3];
+            var _f = inferType(node.firstChild), type_3 = _f[0], ndim_4 = _f[1], dim_4 = _f[2], ismatrix_1 = _f[3];
             return [type_3, 2, [dim_4[1], dim_4[0]], ismatrix_1];
             break;
         }
@@ -598,8 +604,8 @@ function inferType(node) {
             break;
         }
         case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
-            var _f = inferType(node.leftNode), left_type = _f[0], left_ndim = _f[1], left_dim = _f[2], left_ismatrix = _f[3];
-            var _g = inferType(node.rightNode), right_type = _g[0], right_ndim = _g[1], right_dim = _g[2], right_ismatrix = _g[3];
+            var _g = inferType(node.leftNode), left_type = _g[0], left_ndim = _g[1], left_dim = _g[2], left_ismatrix = _g[3];
+            var _h = inferType(node.rightNode), right_type = _h[0], right_ndim = _h[1], right_dim = _h[2], right_ismatrix = _h[3];
             switch (node.operatorNode.type) {
                 case "+":
                 case "-":
@@ -631,10 +637,10 @@ function inferType(node) {
                 return [left_type, ndim, dim, ismatrix];
             }
             else if (left_type == 'complex' || right_type == 'complex') {
-                return [left_type, ndim, dim, ismatrix];
+                return ['complex', ndim, dim, ismatrix];
             }
             else if (left_type == 'float' || right_type == 'float') {
-                return [left_type, ndim, dim, ismatrix];
+                return ['float', ndim, dim, ismatrix];
             }
             else if (left_type == 'bool') {
                 return [right_type, ndim, dim, ismatrix];
@@ -657,6 +663,74 @@ function inferType(node) {
                 return ['unknown', 2, [1, 1], false];
             }
             break;
+        }
+        case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
+            var _j = inferType(node.valueNode), parent_type = _j[0], parent_ismatrix = _j[3];
+            if (parent_ismatrix) {
+                var dim_5 = [];
+                for (var i = 1; i < node.namedChildCount; i++) {
+                    var _k = inferType(node.namedChildren[i]), child_dim = _k[2];
+                    dim_5.push(child_dim[1]);
+                }
+                if (dim_5.every(function (val) { return val === 1; })) {
+                    return [parent_type, 2, dim_5, false];
+                }
+                else {
+                    return [parent_type, 2, dim_5, true];
+                }
+            }
+            else {
+            }
+            break;
+        }
+        case "slice" /* g.SyntaxType.Slice */: {
+            var children_types = [];
+            var children_vals = [];
+            for (var i = 1; i < node.namedChildCount; i++) {
+                var child = node.namedChildren[i];
+                var _l = inferType(child), child_type = _l[0];
+                if (child_type == "keyword") {
+                    _a = inferType(node.parent.valueNode), ndim = _a[1], dim = _a[2];
+                    var firstNode = node.parent.namedChildren[1];
+                    var current_dim = 0;
+                    var dummyNode = node;
+                    while (JSON.stringify(dummyNode) != JSON.stringify(firstNode)) {
+                        dummyNode = dummyNode.previousNamedSibling;
+                        current_dim += 1;
+                    }
+                    console.log(current_dim);
+                    children_vals.push(dim[current_dim]);
+                    children_types.push('int');
+                }
+                else {
+                    children_vals.push(child.text);
+                    children_types.push(child_type);
+                }
+            }
+            var type = 'unknown';
+            if (children_types.every(function (val) { return ['int', 'float', 'complex'].includes(val); })) {
+                if (children_types.includes('complex')) {
+                    type = 'complex';
+                }
+                else if (children_types.includes('float')) {
+                    type = 'float';
+                }
+                else if (children_types.includes('int')) {
+                    type = 'int';
+                }
+            }
+            var start = node.children[0].text;
+            var stop = children_vals[1];
+            var step = 1;
+            if (children_vals.length == 3) {
+                stop = children_vals[2];
+                step = children_vals[1];
+            }
+            var len = Math.floor((stop - start) / step) + 1;
+            return [type, 2, [1, len], true];
+        }
+        case "keyword" /* g.SyntaxType.Keyword */: {
+            return ['keyword', 2, [1, 1], false];
         }
         // Default
         default: return ['unknown', 2, [1, 1], false];

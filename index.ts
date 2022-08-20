@@ -45,20 +45,8 @@ function generateCode() {
         }
         const c = cursor as g.TypedTreeCursor;
         let node = c.currentNode;
-        
         switch (node.type) {
             
-            case g.SyntaxType.ExpressionStatement: {
-                
-                let expression = transformNode(node.firstChild);
-                if (expression != "") {
-                    main_function.push(expression + ";");
-                }
-                
-                cursor_adjust = false;
-                current_code = "main";
-                break;
-            }
         
             case g.SyntaxType.FunctionDefinition: {
                 printFunctionDefDeclare(node);
@@ -71,81 +59,22 @@ function generateCode() {
             }
             
 
-            case g.SyntaxType.IfStatement: {
-                main_function.push("if (" + transformNode(node.conditionNode) + ")");
-                for (let i=2; i<node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        main_function.push(transformNode(node.children[i]));
-                    }
+            case g.SyntaxType.Comment:
+            case g.SyntaxType.ExpressionStatement: {
+                let expression = transformNode(node);
+                if (expression != ";") {
+                    main_function.push(expression);
                 }
-                if (!cursor.gotoNextSibling()) {
-                    return;
-                }
-                cursor_adjust = true;
-                current_code = "main";
-                break;
-            } 
-            
-            case g.SyntaxType.WhileStatement: {
-                main_function.push("while (" + transformNode(node.conditionNode) + ")");
-                for (let i=2; i<node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        main_function.push(transformNode(node.children[i]));
-                    }
-                }
-                if (!cursor.gotoNextSibling()) {
-                    return;
-                }
-                cursor_adjust = true;
-                current_code = "main";
-                break;
-            } 
-            
-            // Comments
-            // TO DO: multiline comments
-            case g.SyntaxType.Comment: {
-                main_function.push(node.text.replace("%","//"));
                 cursor_adjust = false;
                 current_code = "main";
                 break;
             }
-            
+            case g.SyntaxType.IfStatement:
+            case g.SyntaxType.WhileStatement:
             case g.SyntaxType.ForStatement: {
-                let expression = [];
                 
-                if (node.rightNode.type == g.SyntaxType.Slice) {
-                    main_function.push("int " + node.leftNode.text + ";");
-                    expression.push("for (" + node.leftNode.text + " = ");
-                    expression.push(node.rightNode.children[0].text + ";");
-                    
-                    if (node.rightNode.childCount == 5) {
-                        expression.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
-                        expression.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
-                    } else {
-                        expression.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
-                        expression.push("++ " + node.leftNode.text);
-                    }
-                    main_function.push(expression.join(" ") + ")");
-                    
-                } else if (node.rightNode.type == g.SyntaxType.Matrix) {
-                    var tmp_var = generateTmpVar();
-                    var [type, ndim, dim, ] = inferType(node.rightNode);
-                    let obj = type_to_matrix_type.find(x => x.type === type);
-                    if (obj != null) {
-                        initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, obj.matrix_type);
-                    }
-                    
+                main_function.push(transformNode(node));
                 
-                    main_function.push("int j;");
-                    expression.push("for (j = 1;");
-                    expression.push("j <= " + node.rightNode.namedChildCount + ";");
-                    expression.push("++j");
-                    main_function.push(expression.join(" ") + ")");
-                    main_function.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + tmp_var + "->ndim=1, j);");
-                    
-                }
-               
-                main_function.push(transformNode(node.bodyNode));
                 if (!cursor.gotoNextSibling()) {
                     return;
                 }
@@ -175,6 +104,80 @@ const type_to_matrix_type: typeToMatrixType[] = [
 function transformNode(node) {
     switch (node.type) {
         
+        // Comments
+        // TO DO: multiline comments
+        case g.SyntaxType.Comment: {
+            return node.text.replace("%","//");
+            break;
+        }
+            
+        case g.SyntaxType.IfStatement: {
+            let expression = [];
+            expression.push("if (" + transformNode(node.conditionNode) + ")");
+            for (let i=2; i<node.childCount; i++) {
+                if (node.children[i].isNamed) {
+                    expression.push(transformNode(node.children[i]));
+                }
+            }
+            return expression.join("\n");
+            break;
+            } 
+        
+        case g.SyntaxType.WhileStatement: {
+            let expression = [];
+            expression.push("while (" + transformNode(node.conditionNode) + ")");
+            for (let i=2; i<node.childCount; i++) {
+                if (node.children[i].isNamed) {
+                    expression.push(transformNode(node.children[i]));
+                }
+            }
+            return expression.join("\n");
+            break;
+        }
+            
+        case g.SyntaxType.ForStatement: {
+            let expression1 = [];
+            let expression2 = [];
+            
+            if (node.rightNode.type == g.SyntaxType.Slice) {
+                expression1.push("int " + node.leftNode.text + ";");
+                expression2.push("for (" + node.leftNode.text + " = ");
+                expression2.push(node.rightNode.children[0].text + ";");
+                
+                if (node.rightNode.childCount == 5) {
+                    expression2.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
+                    expression2.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
+                } else {
+                    expression2.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
+                    expression2.push("++ " + node.leftNode.text);
+                }
+                expression1.push(expression2.join(" ") + ")");
+                
+                
+            } else if (node.rightNode.type == g.SyntaxType.Matrix) {
+                var tmp_var = generateTmpVar();
+                var [type, ndim, dim, ] = inferType(node.rightNode);
+                let obj = type_to_matrix_type.find(x => x.type === type);
+                if (obj != null) {
+                    initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, obj.matrix_type);
+                }
+                
+            
+                expression1.push("int j;");
+                expression2.push("for (j = 1;");
+                expression2.push("j <= " + node.rightNode.namedChildCount + ";");
+                expression2.push("++j");
+                expression1.push(expression2.join(" ") + ")");
+                expression1.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + tmp_var + "->ndim=1, j);");
+                
+            }
+           
+            expression1.push(transformNode(node.bodyNode));
+            return expression1.join("\n");
+            break;
+        }
+
+        
         case g.SyntaxType.ExpressionStatement: {
             return transformNode(node.firstChild) + ";";
             break;
@@ -187,6 +190,7 @@ function transformNode(node) {
                 var [type, ndim, dim, ] = inferType(node.rightNode);
                 if (type == 'heterogeneous') {
                     // FILL IN
+                    return "";
                 } else {
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
@@ -761,11 +765,98 @@ function inferType(node) {
         case g.SyntaxType.Identifier: {
             let obj = var_types.find(x => x.name === node.text);
             if (obj != null) {
-                return [obj.type, obj.ndim, obj.dim];
+                return [obj.type, obj.ndim, obj.dim, obj.ismatrix];
             } else {
                 return ['unknown', 2, [1, 1], false];
             }
             break;
+        }
+        
+        case g.SyntaxType.CallOrSubscript: {
+   
+            let [parent_type,,,parent_ismatrix] = inferType(node.valueNode);
+
+            if (parent_ismatrix) {
+                
+                
+                let dim = [];
+                for (let i=1; i<node.namedChildCount; i++) {
+                    let [,,child_dim,] = inferType(node.namedChildren[i]);
+                    dim.push(child_dim[1]);
+                }
+                
+                
+                if (dim.every(val => val === 1)) {
+                    return [parent_type, 2, dim, false];
+                } else {
+                    return [parent_type, 2, dim, true];
+                }
+                
+                
+            } else {
+                return ['unknown', 2, [1,1], true];
+            }
+            break;
+        }
+        
+        case g.SyntaxType.Slice: {
+
+            let children_types = [];
+            let children_vals = []
+            
+            for (let i=0; i<node.namedChildCount; i++) {
+                let child = node.namedChildren[i];
+                let [child_type,,,] = inferType(child);
+                
+                if (child_type == "keyword") {
+                    
+                    [,ndim,dim,] = inferType(node.parent.valueNode);
+                    let firstNode = node.parent.namedChildren[1];
+                    let current_dim = 0;
+                    let dummyNode = node;
+                    while (JSON.stringify(dummyNode) != JSON.stringify(firstNode)) {
+                        dummyNode = dummyNode.previousNamedSibling;
+                        current_dim += 1;
+                    }
+                    
+                    children_vals.push(dim[current_dim]);
+                    children_types.push('int');
+                } else {
+                    children_vals.push(Number(child.text));
+                    children_types.push(child_type);
+                }
+                
+            }
+            
+            
+            var type = 'unknown';
+            if (children_types.every(val => ['int','float','complex'].includes(val))) {
+                
+                if (children_types.includes('complex')) {
+                    type = 'complex';
+                } else if (children_types.includes('float')) {
+                    type = 'float';
+                } else if (children_types.includes('int')) {
+                    type = 'int'; 
+                }
+            }
+            
+            
+            let start = children_vals[0];
+            var stop = children_vals[1];
+            var step = 1;
+                
+            if (children_vals.length == 3) {
+                stop = children_vals[2];
+                step = children_vals[1];
+            }
+            
+            let len = Math.floor((stop-start)/step) + 1;
+            return [type, 2, [1, len], true];
+        }
+        
+        case g.SyntaxType.Keyword: {
+            return ['keyword', 2, [1, 1], false]
         }
         
         // Default
@@ -794,6 +885,7 @@ function typeInference() {
                     const v1: VarType = { name: node.leftNode.text, type: 'unknown', ndim: 2, dim: [1,1], ismatrix: true };
                     var_types.push(v1);
                 }
+                
                 
                 
                 break;

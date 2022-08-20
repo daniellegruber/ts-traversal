@@ -1,5 +1,5 @@
-A = [1, 2.1;
-    3, 4];
+A = [1, 2.1, 1;
+    3, 4, 1];
 B = [A;A];
 C = B*A;
 
@@ -12,7 +12,7 @@ E = D';
 
 [F,G] = myfun1(1,2);
 
-myvar = A(1,1);
+myvar = A(1:end,1:end);
 
 % This is a comment
 
@@ -26,10 +26,6 @@ end
 
 myarr = zeros(2,3);
 
-for i = 1:2:5
-    a;
-end
-
 for i = [2, 7, 9]
     a;
 end
@@ -37,6 +33,9 @@ end
 function [F, G] = myfun1(f,g)
     F = f + g;
     G = f - g;
+    for i = 1:2:5
+        a;
+    end
 end
 
 function outstr = myfun2()

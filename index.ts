@@ -63,7 +63,7 @@ function generateCode() {
             case g.SyntaxType.ExpressionStatement: {
                 let expression = transformNode(node);
                 if (expression != ";") {
-                    main_function.push("\n" + expression);
+                    main_function.push(expression);
                 }
                 cursor_adjust = false;
                 current_code = "main";
@@ -165,7 +165,7 @@ function transformNode(node) {
                 }
                 
             
-                expression1.push(`int ${tmp_var2};`);
+                expression1.push(`\nint ${tmp_var2};`);
                 expression2.push(`for (${tmp_var2} = 1;`);
                 expression2.push(`${tmp_var2} <= ${node.rightNode.namedChildCount};`);
                 expression2.push(`++${tmp_var2}`);
@@ -175,8 +175,6 @@ function transformNode(node) {
             }
            
             for (let child of node.bodyNode.namedChildren) {
-                //expression1.push(transformNode(node.bodyNode));
-                
                 expression1.push(transformNode(child));
             }
             
@@ -186,7 +184,12 @@ function transformNode(node) {
 
         
         case g.SyntaxType.ExpressionStatement: {
-            return "\n" + transformNode(node.firstChild) + ";";
+            let expression = transformNode(node.firstChild);
+            if (![";","\n"].includes(expression.slice(-1))) {
+                return expression + ";";
+            } else {
+                return expression;
+            }
             break;
         }
         
@@ -199,7 +202,7 @@ function transformNode(node) {
                 if (type == 'heterogeneous') {
                     let expression1 = [];
                     let expression2 = [];
-                    expression1.push(`struct cell${numCellStruct} {`);
+                    expression1.push(`\nstruct cell${numCellStruct} {`);
                     expression2.push(`cell${numCellStruct} ${node.leftNode.text};`)
                     
                     for (let i=0; i<node.rightNode.namedChildCount; i++) {
@@ -220,11 +223,11 @@ function transformNode(node) {
                         }
                         
                     }
-                    expression1.push("}");
+                    expression1.push("}\n");
                     
                     numCellStruct += 1;
                     expression1.push(expression2.join("\n"));
-                    return expression1.join("\n");
+                    return expression1.join("\n") + "\n";
                 } else {
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
@@ -411,7 +414,7 @@ function transformNode(node) {
 var var_initializations = [];
 function initializeVariables() {
     for (let var_type of var_types) {
-        if (var_type.type == 'char') {
+        if (var_type.type == 'char' && !var_type.ismatrix) {
             var_initializations.push("char * " + var_type.name + ";");
         }
         else if (!var_type.ismatrix) {
@@ -460,7 +463,7 @@ function initializeMatrix(node, name, ndim, dim, type) {
     	matrix_initializations.push("free(input);")*/
     	expression.push(`writeM( ${name}, ${numel}, input);`)
     	expression.push("free(input);")
-    	return expression.join("\n");
+    	return "\n" + expression.join("\n") + "\n";
     }
     
 type operatorMapping = {
@@ -651,7 +654,7 @@ function printFunctionDefDeclare(node) {
                 }
                 
                 function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
-                function_definitions.push("void " + node.nameNode.text + param_list_joined);
+                function_definitions.push("\nvoid " + node.nameNode.text + param_list_joined);
                 function_definitions.push("{");
                 function_definitions.push(ptr_declaration_joined);
                 
@@ -669,7 +672,7 @@ function printFunctionDefDeclare(node) {
                 }
                 
                 function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
-                function_definitions.push(return_type + " " + node.nameNode.text + param_list_joined);
+                function_definitions.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
                 function_definitions.push("{");
             }
         }
@@ -1017,7 +1020,8 @@ generated_code.push(
 `//Link
 #include <stdio.h>
 #include <stdbool.h>
-#include <complex.h>`)
+#include <complex.h>
+#include <string.h>`)
 generated_code.push("\n//Function declarations")
 generated_code.push(function_declarations.join("\n"));
 generated_code.push(

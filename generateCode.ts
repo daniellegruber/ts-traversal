@@ -14,6 +14,8 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     var generated_code = [];
     var main_function = [];
     
+    var header = [];
+    
     var builtin_functions = ['zeros', 'ones'];
           
     var cursor_adjust = false;
@@ -83,6 +85,7 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
             }
             const c = cursor as g.TypedTreeCursor;
             let node = c.currentNode;
+            
             switch (node.type) {
                 
             
@@ -103,6 +106,7 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                     
                     cursor_adjust = true;
                     current_code = "subprogram";
+                    
                     break;
                 }
                 
@@ -115,6 +119,7 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                     }
                     cursor_adjust = false;
                     current_code = "main";
+                    
                     break;
                 }
                 case g.SyntaxType.IfStatement:
@@ -128,6 +133,7 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                     }
                     cursor_adjust = true;
                     current_code = "main";
+                    
                     break;
                 }
     
@@ -640,7 +646,6 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     // -----------------------------------------------------------------------------
     
     function identifyCustomFunctions() {
-        
         type CustomFunction = {
           name: string;
           ptr_param: string;
@@ -655,6 +660,7 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
             switch (c.nodeType) {
                 case g.SyntaxType.FunctionDefinition: {
                     let node = c.currentNode;
+                    
                     if (node.isNamed && node.nameNode != null) {
                         
                         if (node.children[1].type == g.SyntaxType.ReturnValue) {
@@ -694,7 +700,8 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                     if (files.includes(node.valueNode.text + ".m")) {
                         const functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
                         let tree2 = parser.parse(functionCode);
-                        generateCode(node.valueNode.text + ".c", tree2, parser, files, search_folder, out_folder);
+                        generateCode(node.valueNode.text, tree2, parser, files, search_folder, out_folder);
+                        
                     }
                 }
             }
@@ -702,17 +709,33 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
         return custom_functions;
     }
     
+    // Generate header files
+    function generateHeader() {
+        let macro_fun = filename.toUpperCase() + "_H";
+        header.push(`#ifndef ${macro_fun}   /* Include guard */`);
+        header.push(`#define ${macro_fun}`);
+        if (function_definitions.length == 0) {
+            header.push("\n//Function declarations")
+            header.push(function_declarations.join("\n"));
+        }
+        header.push("#endif");
+        writeToFile(out_folder, filename + ".h", header.join("\n"));
+        
+        console.log(`---------------------\nGenerated code for ${filename}.h:\n`);
+        console.log(header.join("\n"));
+    }
+    
     // Call functions
     // -----------------------------------------------------------------------------
-    console.log(`---------------------\nInferred types for ${filename}:\n`);
+    console.log(`---------------------\nInferred types for ${filename}.c:\n`);
+    
     var var_types = typeInference(tree);
     var custom_functions = identifyCustomFunctions();
-    
     initializeVariables();
     
     main();
     
-    console.log(`---------------------\nGenerated code for ${filename}:\n`);
+    console.log(`---------------------\nGenerated code for ${filename}.c:\n`);
     generated_code.push(
 `//Link
 #include <stdio.h>
@@ -743,17 +766,8 @@ int main(void)
     
     console.log(generated_code.join("\n"));
     
-    writeToFile(out_folder, filename, generated_code);
+    generateHeader();
+    
+    writeToFile(out_folder, filename + ".c", generated_code.join("\n"));
     
 }
-
-
-
-
-    
-
-
-
-
-
-

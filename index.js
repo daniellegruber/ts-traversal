@@ -20,5 +20,5 @@ var files = fs.readdirSync(search_folder);
 var out_folder = search_folder + "/generatedCode";
 console.log("Source code:\n" + sourceCode);
 console.log("---------------------\n");
-(0, generateCode_1.generateCode)("main.c", tree, parser, files, search_folder, out_folder);
+(0, generateCode_1.generateCode)("main", tree, parser, files, search_folder, out_folder);
 //# sourceMappingURL=index.js.map

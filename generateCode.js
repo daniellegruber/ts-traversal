@@ -12,6 +12,7 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     var numCellStruct = 0;
     var generated_code = [];
     var main_function = [];
+    var header = [];
     var builtin_functions = ['zeros', 'ones'];
     var cursor_adjust = false;
     var current_code = "main";
@@ -603,21 +604,35 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                     if (files.includes(node.valueNode.text + ".m")) {
                         var functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
                         var tree2 = parser.parse(functionCode);
-                        generateCode(node.valueNode.text + ".c", tree2, parser, files, search_folder, out_folder);
+                        generateCode(node.valueNode.text, tree2, parser, files, search_folder, out_folder);
                     }
                 }
             }
         } while ((0, gotoPreorderSucc_1.gotoPreorderSucc)(cursor));
         return custom_functions;
     }
+    // Generate header files
+    function generateHeader() {
+        var macro_fun = filename.toUpperCase() + "_H";
+        header.push("#ifndef ".concat(macro_fun, "   /* Include guard */"));
+        header.push("#define ".concat(macro_fun));
+        if (function_definitions.length == 0) {
+            header.push("\n//Function declarations");
+            header.push(function_declarations.join("\n"));
+        }
+        header.push("#endif");
+        (0, writeToFile_1.writeToFile)(out_folder, filename + ".h", header.join("\n"));
+        console.log("---------------------\nGenerated code for ".concat(filename, ".h:\n"));
+        console.log(header.join("\n"));
+    }
     // Call functions
     // -----------------------------------------------------------------------------
-    console.log("---------------------\nInferred types for ".concat(filename, ":\n"));
+    console.log("---------------------\nInferred types for ".concat(filename, ".c:\n"));
     var var_types = (0, typeInference_1.typeInference)(tree);
     var custom_functions = identifyCustomFunctions();
     initializeVariables();
     main();
-    console.log("---------------------\nGenerated code for ".concat(filename, ":\n"));
+    console.log("---------------------\nGenerated code for ".concat(filename, ".c:\n"));
     generated_code.push("//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>");
     if (function_definitions.length != 0) {
         generated_code.push("\n//Function declarations");
@@ -636,7 +651,8 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
         generated_code.push(function_definitions.join("\n"));
     }
     console.log(generated_code.join("\n"));
-    (0, writeToFile_1.writeToFile)(out_folder, filename, generated_code);
+    generateHeader();
+    (0, writeToFile_1.writeToFile)(out_folder, filename + ".c", generated_code.join("\n"));
 }
 exports.generateCode = generateCode;
 //# sourceMappingURL=generateCode.js.map

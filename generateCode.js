@@ -53,6 +53,7 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
         { operator: "'", "function": "ctransposeM" },
         { operator: ".'", "function": "tranposeM" }
     ];
+    var file_is_function = false;
     function main() {
         var cursor = tree.walk();
         do {
@@ -63,7 +64,13 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
             var node = c.currentNode;
             switch (node.type) {
                 case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
-                    printFunctionDefDeclare(node);
+                    if (node.previousSibling == null && node.nextSibling == null) {
+                        file_is_function = true;
+                    }
+                    else {
+                        file_is_function = false;
+                    }
+                    printFunctionDefDeclare(node, file_is_function);
                     if (!cursor.gotoNextSibling()) {
                         return;
                     }
@@ -474,7 +481,7 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
         }
     }
     // Print function declarations and definitions
-    function printFunctionDefDeclare(node) {
+    function printFunctionDefDeclare(node, file_is_function) {
         if (node.isNamed && node.nameNode != null) {
             var param_list = [];
             for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
@@ -501,9 +508,16 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                         var param_list_joined = "(" + param_list.join(", ") + ")";
                     }
                     function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
-                    function_definitions.push("\nvoid " + node.nameNode.text + param_list_joined);
-                    function_definitions.push("{");
-                    function_definitions.push(ptr_declaration_joined);
+                    if (file_is_function) {
+                        main_function.push("\nvoid " + node.nameNode.text + param_list_joined);
+                        main_function.push("{");
+                        main_function.push(ptr_declaration_joined);
+                    }
+                    else {
+                        function_definitions.push("\nvoid " + node.nameNode.text + param_list_joined);
+                        function_definitions.push("{");
+                        function_definitions.push(ptr_declaration_joined);
+                    }
                     // If single return value, don't use pointers 
                 }
                 else {
@@ -518,15 +532,31 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                         return_type = "char *";
                     }
                     function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
-                    function_definitions.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
-                    function_definitions.push("{");
+                    if (file_is_function) {
+                        main_function.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
+                        main_function.push("{");
+                    }
+                    else {
+                        function_definitions.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
+                        function_definitions.push("{");
+                    }
                 }
             }
             for (var _g = 0, _h = node.bodyNode.children; _g < _h.length; _g++) {
                 var child = _h[_g];
-                function_definitions.push(transformNode(child));
+                if (file_is_function) {
+                    main_function.push(transformNode(child));
+                }
+                else {
+                    function_definitions.push(transformNode(child));
+                }
             }
-            function_definitions.push("}");
+            if (file_is_function) {
+                main_function.push("}");
+            }
+            else {
+                function_definitions.push("}");
+            }
         }
     }
     // Identify function definitions
@@ -573,7 +603,6 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                     if (files.includes(node.valueNode.text + ".m")) {
                         var functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
                         var tree2 = parser.parse(functionCode);
-                        console.log("---------------------\n".concat(node.valueNode.text, "\n"));
                         generateCode(node.valueNode.text + ".c", tree2, parser, files, search_folder, out_folder);
                     }
                 }
@@ -589,16 +618,23 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     initializeVariables();
     main();
     console.log("---------------------\nGenerated code for ".concat(filename, ":\n"));
-    generated_code.push("//Link\n    #include <stdio.h>\n    #include <stdbool.h>\n    #include <complex.h>\n    #include <string.h>");
-    generated_code.push("\n//Function declarations");
-    generated_code.push(function_declarations.join("\n"));
-    generated_code.push("\n//Main function\n    int main(void)\n    {\n    // Initialize variables");
+    generated_code.push("//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>");
+    if (function_definitions.length != 0) {
+        generated_code.push("\n//Function declarations");
+        generated_code.push(function_declarations.join("\n"));
+    }
+    if (!file_is_function) {
+        generated_code.push("\n//Main function\nint main(void)\n{\n// Initialize variables");
+    }
     generated_code.push(var_initializations.join("\n"));
-    //generated_code.push("\n//Initialize matrices")
-    //generated_code.push(matrix_initializations.join("\n"));
     generated_code.push("\n" + main_function.join("\n"));
-    generated_code.push("}\n\n//Subprograms");
-    generated_code.push(function_definitions.join("\n"));
+    if (!file_is_function) {
+        generated_code.push("}\n");
+    }
+    if (function_definitions.length != 0) {
+        generated_code.push("\n//Subprograms");
+        generated_code.push(function_definitions.join("\n"));
+    }
     console.log(generated_code.join("\n"));
     (0, writeToFile_1.writeToFile)(out_folder, filename, generated_code);
 }

@@ -73,6 +73,8 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
             {operator: ".'", function: "tranposeM"}
         ];
     
+    var file_is_function = false;
+    
     function main() {
         let cursor = tree.walk();
         do {
@@ -85,10 +87,20 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                 
             
                 case g.SyntaxType.FunctionDefinition: {
-                    printFunctionDefDeclare(node);
+                    
+                    if (node.previousSibling == null && node.nextSibling == null) {
+                        file_is_function = true;
+                        
+                    } else {
+                        file_is_function = false;
+                    }
+                    
+                    printFunctionDefDeclare(node, file_is_function);
+                    
                     if (!cursor.gotoNextSibling()) {
                         return;
                     }
+                    
                     cursor_adjust = true;
                     current_code = "subprogram";
                     break;
@@ -542,7 +554,7 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     }
     
     // Print function declarations and definitions
-    function printFunctionDefDeclare(node) {
+    function printFunctionDefDeclare(node, file_is_function) {
         if (node.isNamed && node.nameNode != null) {
             
             var param_list = [];
@@ -571,9 +583,15 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                     }
                     
                     function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
-                    function_definitions.push("\nvoid " + node.nameNode.text + param_list_joined);
-                    function_definitions.push("{");
-                    function_definitions.push(ptr_declaration_joined);
+                    if (file_is_function) {
+                        main_function.push("\nvoid " + node.nameNode.text + param_list_joined);
+                        main_function.push("{");
+                        main_function.push(ptr_declaration_joined);
+                    } else {
+                        function_definitions.push("\nvoid " + node.nameNode.text + param_list_joined);
+                        function_definitions.push("{");
+                        function_definitions.push(ptr_declaration_joined);
+                    }
                     
                 // If single return value, don't use pointers 
                 } else {
@@ -589,16 +607,31 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                     }
                     
                     function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
-                    function_definitions.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
-                    function_definitions.push("{");
+                    if (file_is_function) {
+                        main_function.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
+                        main_function.push("{");
+                    } else {
+                        function_definitions.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
+                        function_definitions.push("{");
+                    }
                 }
             }
             
             for (let child of node.bodyNode.children) {
-                function_definitions.push(transformNode(child));
+                if (file_is_function) {
+                    main_function.push(transformNode(child));
+                } else {
+                    function_definitions.push(transformNode(child));
+                }
+                
             }
             
-            function_definitions.push("}");
+            if (file_is_function) {
+                main_function.push("}");
+            } else {
+                function_definitions.push("}");
+            }
+            
         }
         
     }
@@ -681,24 +714,33 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     
     console.log(`---------------------\nGenerated code for ${filename}:\n`);
     generated_code.push(
-    `//Link
-    #include <stdio.h>
-    #include <stdbool.h>
-    #include <complex.h>
-    #include <string.h>`)
-    generated_code.push("\n//Function declarations")
-    generated_code.push(function_declarations.join("\n"));
+`//Link
+#include <stdio.h>
+#include <stdbool.h>
+#include <complex.h>
+#include <string.h>`)
+    if (function_definitions.length != 0) {
+        generated_code.push("\n//Function declarations")
+        generated_code.push(function_declarations.join("\n"));
+    }
+    if (!file_is_function){
     generated_code.push(
-    `\n//Main function
-    int main(void)
-    {
-    // Initialize variables`);
+`\n//Main function
+int main(void)
+{
+// Initialize variables`);
+    }
     generated_code.push(var_initializations.join("\n"));
-    //generated_code.push("\n//Initialize matrices")
-    //generated_code.push(matrix_initializations.join("\n"));
     generated_code.push("\n" + main_function.join("\n"));
-    generated_code.push("}\n\n//Subprograms");
-    generated_code.push(function_definitions.join("\n"));
+    if (!file_is_function){
+        generated_code.push("}\n");
+    }
+
+    if (function_definitions.length != 0) {
+        generated_code.push("\n//Subprograms");
+        generated_code.push(function_definitions.join("\n"));
+    }
+    
     console.log(generated_code.join("\n"));
     
     writeToFile(out_folder, filename, generated_code);

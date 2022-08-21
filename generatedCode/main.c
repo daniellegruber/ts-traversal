@@ -1,17 +1,17 @@
 //Link
-    #include <stdio.h>
-    #include <stdbool.h>
-    #include <complex.h>
-    #include <string.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <complex.h>
+#include <string.h>
 
 //Function declarations
 void myfun1(unknown f, unknown g, unknown* p_F, unknown* p_G);
 char * myfun2(void);
 
 //Main function
-    int main(void)
-    {
-    // Initialize variables
+int main(void)
+{
+// Initialize variables
 float a;
 bool c;
 complex d;
@@ -109,6 +109,7 @@ indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
 a;
 }
 }
+
 
 //Subprograms
 

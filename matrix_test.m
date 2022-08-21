@@ -28,9 +28,12 @@ end
 
 myarr = zeros(2,3);
 
+b = myfun3(a);
+
 for i = [2, 7, 9]
     a;
 end
+
 
 function [F, G] = myfun1(f,g)
     F = f + g;

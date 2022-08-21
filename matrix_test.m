@@ -12,6 +12,8 @@ E = D';
 
 [F,G] = myfun1(1,2);
 
+H = {'hello', 1};
+
 myvar = A(1:end,1:end);
 
 % This is a comment

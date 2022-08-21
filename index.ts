@@ -63,7 +63,7 @@ function generateCode() {
             case g.SyntaxType.ExpressionStatement: {
                 let expression = transformNode(node);
                 if (expression != ";") {
-                    main_function.push(expression);
+                    main_function.push("\n" + expression);
                 }
                 cursor_adjust = false;
                 current_code = "main";
@@ -73,7 +73,7 @@ function generateCode() {
             case g.SyntaxType.WhileStatement:
             case g.SyntaxType.ForStatement: {
                 
-                main_function.push(transformNode(node));
+                main_function.push("\n" + transformNode(node));
                 
                 if (!cursor.gotoNextSibling()) {
                     return;
@@ -100,6 +100,7 @@ const type_to_matrix_type: typeToMatrixType[] = [
     ];
 
 
+var numCellStruct = 0;
 // Main
 function transformNode(node) {
     switch (node.type) {
@@ -119,7 +120,7 @@ function transformNode(node) {
                     expression.push(transformNode(node.children[i]));
                 }
             }
-            return expression.join("\n");
+            return "\n" + expression.join("\n");
             break;
             } 
         
@@ -131,7 +132,7 @@ function transformNode(node) {
                     expression.push(transformNode(node.children[i]));
                 }
             }
-            return expression.join("\n");
+            return "\n" + expression.join("\n");
             break;
         }
             
@@ -151,35 +152,41 @@ function transformNode(node) {
                     expression2.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
                     expression2.push("++ " + node.leftNode.text);
                 }
-                expression1.push(expression2.join(" ") + ")");
+                expression1.push(expression2.join(" ") + ") {");
                 
                 
             } else if (node.rightNode.type == g.SyntaxType.Matrix) {
-                var tmp_var = generateTmpVar();
+                var tmp_var1 = generateTmpVar();
+                var tmp_var2 = generateTmpVar();
                 var [type, ndim, dim, ] = inferType(node.rightNode);
                 let obj = type_to_matrix_type.find(x => x.type === type);
                 if (obj != null) {
-                    initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, obj.matrix_type);
+                    expression1.push(initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, type));
                 }
                 
             
-                expression1.push("int j;");
-                expression2.push("for (j = 1;");
-                expression2.push("j <= " + node.rightNode.namedChildCount + ";");
-                expression2.push("++j");
-                expression1.push(expression2.join(" ") + ")");
-                expression1.push("indexM(" + tmp_var + ", &" + node.leftNode.text + ", " + tmp_var + "->ndim=1, j);");
+                expression1.push(`int ${tmp_var2};`);
+                expression2.push(`for (${tmp_var2} = 1;`);
+                expression2.push(`${tmp_var2} <= ${node.rightNode.namedChildCount};`);
+                expression2.push(`++${tmp_var2}`);
+                expression1.push(expression2.join(" ") + ") {");
+                expression1.push(`indexM(${tmp_var1}, &${node.leftNode.text}, ${tmp_var1} -> ndim=1, ${tmp_var2});`);
                 
             }
            
-            expression1.push(transformNode(node.bodyNode));
-            return expression1.join("\n");
+            for (let child of node.bodyNode.namedChildren) {
+                //expression1.push(transformNode(node.bodyNode));
+                
+                expression1.push(transformNode(child));
+            }
+            
+            return "\n" + expression1.join("\n") + "\n}";
             break;
         }
 
         
         case g.SyntaxType.ExpressionStatement: {
-            return transformNode(node.firstChild) + ";";
+            return "\n" + transformNode(node.firstChild) + ";";
             break;
         }
         
@@ -187,16 +194,44 @@ function transformNode(node) {
         case g.SyntaxType.Assignment: {
             if (node.rightNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Cell) {
 
+                // https://www.mathworks.com/help/coder/ug/homogeneous-vs-heterogeneous-cell-arrays.html
                 var [type, ndim, dim, ] = inferType(node.rightNode);
                 if (type == 'heterogeneous') {
-                    // FILL IN
-                    return "";
+                    let expression1 = [];
+                    let expression2 = [];
+                    expression1.push(`struct cell${numCellStruct} {`);
+                    expression2.push(`cell${numCellStruct} ${node.leftNode.text};`)
+                    
+                    for (let i=0; i<node.rightNode.namedChildCount; i++) {
+                        let child = node.rightNode.namedChildren[i];
+                        let [child_type, child_ndim, child_dim, child_ismatrix] = inferType(child);
+                        let numel = dim.reduce(function(a, b) {return a * b;});
+                        if (child.type == g.SyntaxType.Matrix) {
+                            
+                            expression1.push(`Matrix f${i}[${numel}];`);
+                            expression2.push(initializeMatrix(node.rightNode, `${node.leftNode.text}.f${i}`, child_ndim, child_dim, type));
+      
+                        } else if (child_type == 'char') {
+                                expression1.push(`${child_type} f${i}[${numel}];`);
+                                expression2.push(`strcpy(${node.leftNode.text}.f${i}, ${child.text.replace(/'/g, '"')});`);
+                        } else {
+                            expression1.push(`${child_type} f${i};`);
+                            expression2.push(`${node.leftNode.text}.f${i} = ${child.text}`)
+                        }
+                        
+                    }
+                    expression1.push("}");
+                    
+                    numCellStruct += 1;
+                    expression1.push(expression2.join("\n"));
+                    return expression1.join("\n");
                 } else {
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
-                        initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, obj.matrix_type);
+                        return initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, type);
+                    } else {
+                        return "";
                     }
-                    return "";
                 }
             } else {
                 let expression = [];
@@ -275,10 +310,8 @@ function transformNode(node) {
                 var_types.push(v1);
                 
                 let index = [];
-                for (let i=2; i<node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        index.push(transformNode(node.children[i]));
-                    }
+                for (let i=1; i<node.namedChildCount; i++) {
+                    index.push(transformNode(node.namedChildren[i]));
                 }
                 
                 var tmp_var = generateTmpVar();
@@ -328,6 +361,48 @@ function transformNode(node) {
             
             return node.firstChild.text + "*I";
         }
+        
+        case g.SyntaxType.Slice: {
+            let children_vals = []
+            
+            for (let i=0; i<node.namedChildCount; i++) {
+                let child = node.namedChildren[i];
+                let [child_type,,,] = inferType(child);
+                
+                if (child_type == "keyword") {
+                    
+                    [,ndim,dim,] = inferType(node.parent.valueNode);
+                    let firstNode = node.parent.namedChildren[1];
+                    let current_dim = 0;
+                    let dummyNode = node;
+                    while (JSON.stringify(dummyNode) != JSON.stringify(firstNode)) {
+                        dummyNode = dummyNode.previousNamedSibling;
+                        current_dim += 1;
+                    }
+                    
+                    children_vals.push(dim[current_dim]);
+                    
+                } else {
+                    children_vals.push(Number(child.text));
+                    
+                }
+            }
+            
+            let start = children_vals[0];
+            var stop = children_vals[1];
+            var step = 1;
+                
+            if (children_vals.length == 3) {
+                stop = children_vals[2];
+                step = children_vals[1];
+            }
+            
+            let expression = [];
+            for (let i = start; i <= stop; i += step) {
+                expression.push(i);
+            }
+            return `{${expression.join(", ")}}`;
+        }
     }
 }
 
@@ -336,7 +411,10 @@ function transformNode(node) {
 var var_initializations = [];
 function initializeVariables() {
     for (let var_type of var_types) {
-        if (var_type.type != 'matrix' && var_type.type != 'cell') {
+        if (var_type.type == 'char') {
+            var_initializations.push("char * " + var_type.name + ";");
+        }
+        else if (!var_type.ismatrix) {
             var_initializations.push(var_type.type + " " + var_type.name + ";");
         }
     }
@@ -347,29 +425,42 @@ function initializeVariables() {
 // -----------------------------------------------------------------------------
 
 var matrix_initializations = [];
-function initializeMatrix(node, name, ndim, dim, matrix_type) {
-        matrix_initializations.push("int ndim = " + ndim + ";");
+function initializeMatrix(node, name, ndim, dim, type) {
+        /*matrix_initializations.push("int ndim = " + ndim + ";");
         matrix_initializations.push("int dim = {" + dim + "};");
         matrix_initializations.push(`Matrix * ${name} = createM(ndim, dim, ${matrix_type});`)
-        matrix_initializations.push("double complex *input = NULL;");
+        matrix_initializations.push("double complex *input = NULL;");*/
+        let obj = type_to_matrix_type.find(x => x.type === type);
+        
+        let expression = [];
+        expression.push(`int ndim = ${ndim};`);
+        expression.push(`int dim = {${dim}};`);
+        expression.push(`Matrix * ${name} = createM(ndim, dim, ${obj.matrix_type});`)
+        expression.push(`double ${type} *input = NULL;`);
         
         let numel = dim.reduce(function(a, b) {return a * b;});
-    	matrix_initializations.push("input = malloc(" + numel + "*sizeof(*input));");
+    	//matrix_initializations.push("input = malloc(" + numel + "*sizeof(*input));");
+    	expression.push(`input = malloc( ${numel}*sizeof(*input));`);
     	
     	var j = 0;
     	for (let i=0; i<node.childCount; i++) {
             if (node.children[i].isNamed) {
-                if (matrix_type == 3)
-                    matrix_initializations.push("input[" + j + "][] = " + node.children[i].text.replace(/'/g, '"') + ";");
+                if (obj.matrix_type == 3)
+                    //matrix_initializations.push("input[" + j + "][] = " + node.children[i].text.replace(/'/g, '"') + ";");
+                    expression.push(`input[${j}][] = ${node.children[i].text.replace(/'/g, '"')};`);
                 else {
-                    matrix_initializations.push("input[" + j + "] = " + node.children[i].text + ";");
+                    //matrix_initializations.push("input[" + j + "] = " + node.children[i].text + ";");
+                    expression.push(`input[${j}] = ${node.children[i].text};`);
                 }
                 j++;
             }
     	}
     	
-    	matrix_initializations.push("writeM(" + name + ", " + numel + ", input);")
-    	matrix_initializations.push("free(input);")
+    	/*matrix_initializations.push("writeM(" + name + ", " + numel + ", input);")
+    	matrix_initializations.push("free(input);")*/
+    	expression.push(`writeM( ${name}, ${numel}, input);`)
+    	expression.push("free(input);")
+    	return expression.join("\n");
     }
     
 type operatorMapping = {
@@ -935,8 +1026,8 @@ int main(void)
 {
 // Initialize variables`);
 generated_code.push(var_initializations.join("\n"));
-generated_code.push("\n//Initialize matrices")
-generated_code.push(matrix_initializations.join("\n"));
+//generated_code.push("\n//Initialize matrices")
+//generated_code.push(matrix_initializations.join("\n"));
 generated_code.push("\n" + main_function.join("\n"));
 generated_code.push("}\n\n//Subprograms");
 generated_code.push(function_definitions.join("\n"));

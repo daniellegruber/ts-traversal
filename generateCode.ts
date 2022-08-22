@@ -16,6 +16,12 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     
     var header = [];
     
+    var link = [`//Link
+#include <stdio.h>
+#include <stdbool.h>
+#include <complex.h>
+#include <string.h>`];
+    
     var builtin_functions = ['zeros', 'ones'];
           
     var cursor_adjust = false;
@@ -698,10 +704,10 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                 case g.SyntaxType.CallOrSubscript: {
                     let node = c.currentNode;
                     if (files.includes(node.valueNode.text + ".m")) {
+                        link.push(`#include <${node.valueNode.text}.h>`);
                         const functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
                         let tree2 = parser.parse(functionCode);
                         generateCode(node.valueNode.text, tree2, parser, files, search_folder, out_folder);
-                        
                     }
                 }
             }
@@ -712,11 +718,13 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     // Generate header files
     function generateHeader() {
         let macro_fun = filename.toUpperCase() + "_H";
-        header.push(`#ifndef ${macro_fun}   /* Include guard */`);
+        header.push(`#ifndef ${macro_fun}`);
         header.push(`#define ${macro_fun}`);
         if (function_definitions.length == 0) {
-            header.push("\n//Function declarations")
+            header.push("\n// Function declarations")
             header.push(function_declarations.join("\n"));
+        } else {
+            header.push("int " + filename + "(void);");
         }
         header.push("#endif");
         writeToFile(out_folder, filename + ".h", header.join("\n"));
@@ -736,31 +744,27 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
     main();
     
     console.log(`---------------------\nGenerated code for ${filename}.c:\n`);
-    generated_code.push(
-`//Link
-#include <stdio.h>
-#include <stdbool.h>
-#include <complex.h>
-#include <string.h>`)
+    generated_code.push(link.join("\n"));
     if (function_definitions.length != 0) {
-        generated_code.push("\n//Function declarations")
+        generated_code.push("\n// Function declarations")
         generated_code.push(function_declarations.join("\n"));
     }
     if (!file_is_function){
     generated_code.push(
-`\n//Main function
-int main(void)
-{
-// Initialize variables`);
+`\n// Entry-point function
+int ${filename}(void)
+{`);
     }
+    generated_code.push("\n// Initialize variables");
     generated_code.push(var_initializations.join("\n"));
     generated_code.push("\n" + main_function.join("\n"));
     if (!file_is_function){
+        generated_code.push("return 0;");
         generated_code.push("}\n");
     }
 
     if (function_definitions.length != 0) {
-        generated_code.push("\n//Subprograms");
+        generated_code.push("\n// Subprograms");
         generated_code.push(function_definitions.join("\n"));
     }
     

@@ -3,12 +3,13 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <myfun3.h>
 
-//Function declarations
+// Function declarations
 void myfun1(unknown f, unknown g, unknown* p_F, unknown* p_G);
 char * myfun2(void);
 
-//Main function
+// Entry-point function
 int main(void)
 {
 // Initialize variables
@@ -108,10 +109,11 @@ for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
 indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
 a;
 }
+return 0;
 }
 
 
-//Subprograms
+// Subprograms
 
 void myfun1(unknown f, unknown g, unknown* p_F, unknown* p_G)
 {

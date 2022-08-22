@@ -13,6 +13,7 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     var generated_code = [];
     var main_function = [];
     var header = [];
+    var link = ["//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>"];
     var builtin_functions = ['zeros', 'ones'];
     var cursor_adjust = false;
     var current_code = "main";
@@ -602,6 +603,7 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                 case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
                     var node = c.currentNode;
                     if (files.includes(node.valueNode.text + ".m")) {
+                        link.push("#include <".concat(node.valueNode.text, ".h>"));
                         var functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
                         var tree2 = parser.parse(functionCode);
                         generateCode(node.valueNode.text, tree2, parser, files, search_folder, out_folder);
@@ -614,11 +616,14 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     // Generate header files
     function generateHeader() {
         var macro_fun = filename.toUpperCase() + "_H";
-        header.push("#ifndef ".concat(macro_fun, "   /* Include guard */"));
+        header.push("#ifndef ".concat(macro_fun));
         header.push("#define ".concat(macro_fun));
         if (function_definitions.length == 0) {
-            header.push("\n//Function declarations");
+            header.push("\n// Function declarations");
             header.push(function_declarations.join("\n"));
+        }
+        else {
+            header.push("int " + filename + "(void);");
         }
         header.push("#endif");
         (0, writeToFile_1.writeToFile)(out_folder, filename + ".h", header.join("\n"));
@@ -633,21 +638,23 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     initializeVariables();
     main();
     console.log("---------------------\nGenerated code for ".concat(filename, ".c:\n"));
-    generated_code.push("//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>");
+    generated_code.push(link.join("\n"));
     if (function_definitions.length != 0) {
-        generated_code.push("\n//Function declarations");
+        generated_code.push("\n// Function declarations");
         generated_code.push(function_declarations.join("\n"));
     }
     if (!file_is_function) {
-        generated_code.push("\n//Main function\nint main(void)\n{\n// Initialize variables");
+        generated_code.push("\n// Entry-point function\nint ".concat(filename, "(void)\n{"));
     }
+    generated_code.push("// Initialize variables");
     generated_code.push(var_initializations.join("\n"));
     generated_code.push("\n" + main_function.join("\n"));
     if (!file_is_function) {
+        generated_code.push("return 0;");
         generated_code.push("}\n");
     }
     if (function_definitions.length != 0) {
-        generated_code.push("\n//Subprograms");
+        generated_code.push("\n// Subprograms");
         generated_code.push(function_definitions.join("\n"));
     }
     console.log(generated_code.join("\n"));

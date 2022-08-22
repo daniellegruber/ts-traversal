@@ -4,9 +4,10 @@ exports.generateCode = void 0;
 var fs = require("fs");
 var typeInference_1 = require("./typeInference");
 var gotoPreorderSucc_1 = require("./gotoPreorderSucc");
-var writeToFile_1 = require("./writeToFile");
+var helperFunctions_1 = require("./helperFunctions");
 // Main
-function generateCode(filename, tree, parser, files, search_folder, out_folder) {
+function generateCode(filename, tree, parser, search_folder, out_folder, show_output) {
+    var files = (0, helperFunctions_1.getFilesInPath)(search_folder);
     var function_definitions = [];
     var function_declarations = [];
     var numCellStruct = 0;
@@ -566,7 +567,8 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     function identifyCustomFunctions() {
         var custom_functions = [];
         var cursor = tree.walk();
-        do {
+        var _loop_1 = function () {
+            var _a;
             var c = cursor;
             switch (c.nodeType) {
                 case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
@@ -578,9 +580,9 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                             if (return_node.type == "matrix" /* g.SyntaxType.Matrix */) {
                                 var ptr_declaration = [];
                                 var ptr_param = [];
-                                for (var _i = 0, _a = return_node.namedChildren; _i < _a.length; _i++) {
-                                    var return_var = _a[_i];
-                                    var _b = (0, typeInference_1.inferType)(return_var, var_types), return_type = _b[0];
+                                for (var _i = 0, _b = return_node.namedChildren; _i < _b.length; _i++) {
+                                    var return_var = _b[_i];
+                                    _a = (0, typeInference_1.inferType)(return_var, var_types), return_type = _a[0];
                                     ptr_declaration.push(return_type + "* p_" + return_var.text);
                                     ptr_param.push("*p_" + return_var.text);
                                 }
@@ -601,15 +603,24 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
                     break;
                 }
                 case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
-                    var node = c.currentNode;
-                    if (files.includes(node.valueNode.text + ".m")) {
-                        link.push("#include <".concat(node.valueNode.text, ".h>"));
-                        var functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
+                    var node_1 = c.currentNode;
+                    var match = files.find(function (element) {
+                        if (element.includes("/" + node_1.valueNode.text + ".m")) {
+                            return true;
+                        }
+                    });
+                    if (match !== undefined) {
+                        link.push("#include <".concat(node_1.valueNode.text, ".h>"));
+                        var functionCode = fs.readFileSync(match, "utf8");
                         var tree2 = parser.parse(functionCode);
-                        generateCode(node.valueNode.text, tree2, parser, files, search_folder, out_folder);
+                        generateCode(node_1.valueNode.text, tree2, parser, search_folder, out_folder, show_output);
                     }
                 }
             }
+        };
+        var return_type;
+        do {
+            _loop_1();
         } while ((0, gotoPreorderSucc_1.gotoPreorderSucc)(cursor));
         return custom_functions;
     }
@@ -626,18 +637,25 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
             header.push("int " + filename + "(void);");
         }
         header.push("#endif");
-        (0, writeToFile_1.writeToFile)(out_folder, filename + ".h", header.join("\n"));
-        console.log("---------------------\nGenerated code for ".concat(filename, ".h:\n"));
-        console.log(header.join("\n"));
+        (0, helperFunctions_1.writeToFile)(out_folder, filename + ".h", header.join("\n"));
+        if (show_output == 1) {
+            console.log("---------------------\nGenerated code for ".concat(filename, ".h:\n"));
+            console.log(header.join("\n"));
+        }
     }
     // Call functions
     // -----------------------------------------------------------------------------
-    console.log("---------------------\nInferred types for ".concat(filename, ".c:\n"));
     var var_types = (0, typeInference_1.typeInference)(tree);
+    if (show_output == 1) {
+        console.log("---------------------\nInferred types for ".concat(filename, ".c:\n"));
+        console.log(var_types);
+    }
     var custom_functions = identifyCustomFunctions();
     initializeVariables();
     main();
-    console.log("---------------------\nGenerated code for ".concat(filename, ".c:\n"));
+    if (show_output == 1) {
+        console.log("---------------------\nGenerated code for ".concat(filename, ".c:\n"));
+    }
     generated_code.push(link.join("\n"));
     if (function_definitions.length != 0) {
         generated_code.push("\n// Function declarations");
@@ -646,7 +664,7 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
     if (!file_is_function) {
         generated_code.push("\n// Entry-point function\nint ".concat(filename, "(void)\n{"));
     }
-    generated_code.push("// Initialize variables");
+    generated_code.push("\n// Initialize variables");
     generated_code.push(var_initializations.join("\n"));
     generated_code.push("\n" + main_function.join("\n"));
     if (!file_is_function) {
@@ -657,9 +675,11 @@ function generateCode(filename, tree, parser, files, search_folder, out_folder) 
         generated_code.push("\n// Subprograms");
         generated_code.push(function_definitions.join("\n"));
     }
-    console.log(generated_code.join("\n"));
+    if (show_output == 1) {
+        console.log(generated_code.join("\n"));
+    }
     generateHeader();
-    (0, writeToFile_1.writeToFile)(out_folder, filename + ".c", generated_code.join("\n"));
+    (0, helperFunctions_1.writeToFile)(out_folder, filename + ".c", generated_code.join("\n"));
 }
 exports.generateCode = generateCode;
 //# sourceMappingURL=generateCode.js.map

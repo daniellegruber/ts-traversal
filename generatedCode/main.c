@@ -12,6 +12,7 @@ char * myfun2(void);
 // Entry-point function
 int main(void)
 {
+
 // Initialize variables
 float a;
 bool c;

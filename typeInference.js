@@ -25,7 +25,6 @@ function typeInference(tree) {
             }
         }
     } while ((0, gotoPreorderSucc_1.gotoPreorderSucc)(cursor));
-    console.log(var_types);
     return var_types;
 }
 exports.typeInference = typeInference;

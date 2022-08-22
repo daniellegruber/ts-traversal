@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+
 // Initialize variables
 unknown b;
 

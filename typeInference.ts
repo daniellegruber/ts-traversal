@@ -44,7 +44,6 @@ function typeInference(tree) {
             }
         }
     } while(gotoPreorderSucc(cursor));
-    console.log(var_types);
     return var_types;
 }
 

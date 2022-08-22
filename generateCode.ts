@@ -2,10 +2,12 @@ const fs = require("fs");
 import * as g from "./generated";
 import { typeInference, inferType, VarType } from "./typeInference";
 import { gotoPreorderSucc } from "./gotoPreorderSucc";
-import { writeToFile } from "./writeToFile";
+import { writeToFile, getFilesInPath } from "./helperFunctions";
 
 // Main
-export function generateCode(filename, tree, parser, files, search_folder, out_folder) {
+export function generateCode(filename, tree, parser, search_folder, out_folder, show_output) {
+    var files = getFilesInPath(search_folder);
+    
     var function_definitions = [];
     var function_declarations = [];
 
@@ -703,11 +705,16 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
                 }
                 case g.SyntaxType.CallOrSubscript: {
                     let node = c.currentNode;
-                    if (files.includes(node.valueNode.text + ".m")) {
+                    const match = files.find(element => {
+                        if (element.includes("/" + node.valueNode.text + ".m")) {
+                            return true;
+                        }
+                    });
+                    if (match !== undefined) {
                         link.push(`#include <${node.valueNode.text}.h>`);
-                        const functionCode = fs.readFileSync(search_folder + "/" + node.valueNode.text + ".m", "utf8");
+                        const functionCode = fs.readFileSync(match, "utf8");
                         let tree2 = parser.parse(functionCode);
-                        generateCode(node.valueNode.text, tree2, parser, files, search_folder, out_folder);
+                        generateCode(node.valueNode.text, tree2, parser, search_folder, out_folder, show_output);
                     }
                 }
             }
@@ -729,21 +736,29 @@ export function generateCode(filename, tree, parser, files, search_folder, out_f
         header.push("#endif");
         writeToFile(out_folder, filename + ".h", header.join("\n"));
         
-        console.log(`---------------------\nGenerated code for ${filename}.h:\n`);
-        console.log(header.join("\n"));
+        if (show_output==1) {
+            console.log(`---------------------\nGenerated code for ${filename}.h:\n`);
+            console.log(header.join("\n"));
+        }
     }
     
     // Call functions
     // -----------------------------------------------------------------------------
-    console.log(`---------------------\nInferred types for ${filename}.c:\n`);
-    
     var var_types = typeInference(tree);
+    
+    if (show_output==1) {
+        console.log(`---------------------\nInferred types for ${filename}.c:\n`);
+        console.log(var_types);
+    }
+    
     var custom_functions = identifyCustomFunctions();
     initializeVariables();
     
     main();
     
-    console.log(`---------------------\nGenerated code for ${filename}.c:\n`);
+    if (show_output==1) {
+        console.log(`---------------------\nGenerated code for ${filename}.c:\n`);
+    }
     generated_code.push(link.join("\n"));
     if (function_definitions.length != 0) {
         generated_code.push("\n// Function declarations")
@@ -768,7 +783,9 @@ int ${filename}(void)
         generated_code.push(function_definitions.join("\n"));
     }
     
-    console.log(generated_code.join("\n"));
+    if (show_output==1) {
+        console.log(generated_code.join("\n"));
+    }
     
     generateHeader();
     

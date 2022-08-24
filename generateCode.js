@@ -6,6 +6,7 @@ var path = require("path");
 var typeInference_1 = require("./typeInference");
 var treeTraversal_1 = require("./treeTraversal");
 var helperFunctions_1 = require("./helperFunctions");
+var builtinFunctions_1 = require("./builtinFunctions");
 // Main
 function generateCode(filename, tree, out_folder, custom_functions, var_types) {
     var function_definitions = [];
@@ -15,7 +16,6 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
     var main_function = [];
     var header = [];
     var link = ["//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>"];
-    var builtin_functions = ['zeros', 'ones'];
     var cursor_adjust = false;
     var current_code = "main";
     var tmpVarCnt = 0;
@@ -215,6 +215,21 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                             return "";
                         }
                     }
+                    // TO DO: what do when RHS is function call
+                }
+                else if (node.rightNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */) {
+                    // Is a custom function call
+                    var obj = custom_functions.find(function (x) { return x.name === node.rightNode.valueNode.text; });
+                    if (obj != null) {
+                        if (obj.return_type == null) {
+                            return transformNode(node.rightNode);
+                        }
+                    }
+                    var expression = [];
+                    expression.push(transformNode(node.leftNode));
+                    expression.push("=");
+                    expression.push(transformNode(node.rightNode));
+                    return expression.join(" ");
                 }
                 else {
                     var expression = [];
@@ -268,7 +283,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                     return obj.name + "(" + arg_list.join(", ") + ")";
                     // Is a builtin function call
                 }
-                else if (builtin_functions.includes(node.valueNode.text)) {
+                else if (builtinFunctions_1.builtin_functions.includes(node.valueNode.text)) {
                     switch (node.valueNode.text) {
                         case "zeros":
                         case "ones":
@@ -290,6 +305,10 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                                 function_definitions.push("Matrix * ".concat(tmp_var, " = onesM(").concat(ndim_1, ", ").concat(dim_1, ");"));
                             }
                             return tmp_var;
+                            break;
+                        }
+                        default: {
+                            return node.text;
                             break;
                         }
                     }

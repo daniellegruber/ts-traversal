@@ -34,7 +34,6 @@ type VarType = {
     
 
 function typeInference(tree, custom_functions) {
-        
     // First perform type inference for function definitions
     let cursor = tree.walk();
     do {
@@ -369,7 +368,11 @@ function inferType(node, var_types, custom_functions) {
             } else {
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
                 if (obj != null) {
-                    return [obj.return_type.type, obj.return_type.ndim, obj.return_type.dim, obj.return_type.ismatrix];
+                    if (obj.return_type == null) {
+                        return ['unknown', 2, [1,1], false];
+                    } else {
+                        return [obj.return_type.type, obj.return_type.ndim, obj.return_type.dim, obj.return_type.ismatrix];
+                    }
                 } else {
                     return ['unknown', 2, [1,1], false];
                 }

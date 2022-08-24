@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <length.h>
+#include <length.h>
 
 // Function declarations
 unknown reshape(unknown a, unknown d1, unknown d2, unknown d3);
@@ -43,17 +45,10 @@ int reshape(void)
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-double tmp4;
-indexM(prod, &tmp4, 
-size(a, ));
-double tmp5;
-indexM(prod, &tmp5, d1);
-double tmp6;
-indexM(error, &tmp6, 'Wrong dimensions for reshaping');
-double tmp8;
-indexM(strcmpi, &tmp8, , 'transposed');
-double tmp11;
-indexM(d1, &tmp11, );
+
+
+double tmp7;
+indexM(d1, &tmp7, );
 return 0;
 }
 
@@ -74,31 +69,29 @@ else if (nargin > 2)
 ;
 }
 
-if (tmp4 ~= tmp5)
+if (prod(size(a)) ~= prod(d1))
 {
-tmp6;
+error('Wrong dimensions for reshaping');
 }
 
-if (~tmp8)
+if (~strcmpi(a.fileformat, 'transposed'))
 {
  = d1;
 }
 else
 {
 
-if (
-length(d1, ) == 1)
+if (length(d1) == 1)
 {
  = d1;
 }
-else if (
-length(d1, ) == 2)
+else if (length(d1) == 2)
 {
 ;
 }
 else
 {
- = tmp11;
+ = tmp7;
 }
 }
 }

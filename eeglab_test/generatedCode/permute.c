@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <length.h>
+#include <length.h>
 
 // Entry-point function
 int permute(void)
@@ -18,37 +20,33 @@ unknown tmpMMO2;
 unknown d;
 char * s.type;
 
-double tmp2;
-indexM(error, &tmp2, 'Max 3 dimensions for permutation');
-double tmp4;
-indexM(error, &tmp4, 'Permutation with 2 dimensions: use transpose instead');
 
 
-if (
-length(dims, ) > 3)
+
+
+if (length(dims) > 3)
 {
-tmp2;
+error('Max 3 dimensions for permutation');
 }
-else if (
-length(dims, ) == 2)
+else if (length(dims) == 2)
 {
-tmp4;
+error('Permutation with 2 dimensions: use transpose instead');
 }
 newFileName = ;
-double tmp5;
-indexM(copyfile, &tmp5, , newFileName);
-tmp5;
+double tmp3;
+indexM(copyfile, &tmp3, , newFileName);
+tmp3;
 res = obj;
-double tmp6;
-indexM(obj.dimensions, &tmp6, dims);
- = tmp6;
+double tmp4;
+indexM(obj.dimensions, &tmp4, dims);
+ = tmp4;
  = newFileName;
-double tmp7;
-indexM(memmapfile, &tmp7, , 'writable', , 'format', );
-tmpMMO1 = tmp7;
-double tmp8;
-indexM(memmapfile, &tmp8, , 'writable', true, 'format', );
-tmpMMO2 = tmp8;
+double tmp5;
+indexM(memmapfile, &tmp5, , 'writable', , 'format', );
+tmpMMO1 = tmp5;
+double tmp6;
+indexM(memmapfile, &tmp6, , 'writable', true, 'format', );
+tmpMMO2 = tmp6;
 // copy the data
 // -------------
 d = ;

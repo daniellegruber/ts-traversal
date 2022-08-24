@@ -6,28 +6,24 @@
 
 // Initialize variables
 unknown tmp;
- res;
+unknown res;
 
 
- length(unknown this)
+unknown length(unknown this)
 {
 
-double tmp1;
-indexM(struct, &tmp1, this);
-tmp = tmp1;
+tmp = struct(this);
 
 //if any(cellfun(@length, { tmp.EEG }) > 1)
 //    error('EEG structure in object with more than 1 element')
 //end
 
-double tmp3;
-indexM(error, &tmp3, 'EEG structure in object with more than 1 element');
 
 if (res > 1)
 {
-tmp3;
+error('EEG structure in object with more than 1 element');
 }
-res = 
-length(tmp, );
+
+res = length(tmp);
 
 }

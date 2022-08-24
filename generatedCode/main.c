@@ -67,7 +67,7 @@ Matrix * tmp4 = ctransposeM(D)
 E = tmp4;
 unknown* p_F
 unknown* p_G
- = myfun1(1, 2, *p_F, *p_G);
+myfun1(1, 2, *p_F, *p_G);
 
 struct cell0 {
 char f0[2];

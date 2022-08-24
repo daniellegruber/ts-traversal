@@ -3,9 +3,11 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <size.h>
+#include <length.h>
 
 // Function declarations
-void sum(unknown a, int dim, * p_s);
+void sum(unknown a, int dim, unknown* p_s);
 
 // Entry-point function
 int sum(void)
@@ -13,7 +15,7 @@ int sum(void)
 
 // Initialize variables
 int dim;
- s;
+unknown s;
 
 // sum() - sum of memory mapped underlying array
 //
@@ -44,19 +46,20 @@ int dim;
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-double tmp3;
-indexM(strcmpi, &tmp3, , 'transposed');
-double tmp5;
-indexM(alldim, &tmp5, dim);
-double tmp6;
-indexM(permute, &tmp6, s, );
+unknown* p_s
+
+
+double tmp4;
+indexM(alldim, &tmp4, dim);
+unknown* p_s
+unknown* p_s
 return 0;
 }
 
 
 // Subprograms
 
-void sum(unknown a, int dim, * p_s)
+void sum(unknown a, int dim, unknown* p_s)
 {
 *p_s = s;
 
@@ -66,23 +69,19 @@ dim = 1;
 }
 //b = (:,:,:);
 
-if (~tmp3)
+if (~strcmpi(a.fileformat, 'transposed'))
 {
-s = 
-sum(, dim, );
+sum(, dim, *p_s);
 }
 else
 {
 ;
 
-if (
-length(
-size(a, ), ) == 3)
+if (length(size(a)) == 3)
 {
-dim = tmp5;
-s = 
-sum(, dim, );
-s = tmp6;
+dim = tmp4;
+sum(, dim, *p_s);
+s = permute(s, [3 1 2]);
 }
 else
 {
@@ -95,8 +94,7 @@ else
 {
 
 }
-s = 
-sum(, dim, )';
+s = sum(, dim, *p_s)';
 }
 }
 return;

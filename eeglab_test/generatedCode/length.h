@@ -2,5 +2,5 @@
 #define LENGTH_H
 
 // Function declarations
- length(unknown this);
+unknown length(unknown this);
 #endif

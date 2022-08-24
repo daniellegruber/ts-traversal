@@ -10,6 +10,7 @@ import {
     findEntryFunction
 } from "./treeTraversal";
 import { writeToFile } from "./helperFunctions";
+import { builtin_functions } from "./builtinFunctions";
 
 // Main
 export function generateCode(filename, tree, out_folder, custom_functions, var_types) {
@@ -29,8 +30,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, var_t
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>`];
-    
-    var builtin_functions = ['zeros', 'ones'];
           
     var cursor_adjust = false;
     var current_code = "main";
@@ -278,6 +277,22 @@ export function generateCode(filename, tree, out_folder, custom_functions, var_t
                             return "";
                         }
                     }
+                // TO DO: what do when RHS is function call
+                } else if (node.rightNode.type == g.SyntaxType.CallOrSubscript) {
+                    // Is a custom function call
+                    let obj = custom_functions.find(x => x.name === node.rightNode.valueNode.text);
+                    if (obj != null) {
+                        if (obj.return_type == null) {
+                            return transformNode(node.rightNode);
+                        }
+                    }
+                    
+                    let expression = [];
+                    expression.push(transformNode(node.leftNode));
+                    expression.push("=");
+                    expression.push(transformNode(node.rightNode));
+                    return expression.join(" ");
+                    
                 } else {
                     let expression = [];
                     expression.push(transformNode(node.leftNode));
@@ -358,6 +373,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, var_t
                                 function_definitions.push(`Matrix * ${tmp_var} = onesM(${ndim}, ${dim});`)
                             }
                             return tmp_var;
+                            break;
+                        }
+                        default: {
+                            return node.text;
                             break;
                         }
                     }

@@ -3,21 +3,34 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <size.h>
+#include <sum.h>
 
 // Function declarations
-int isnumeric(unknown a);
+void kurt(unknown data, unknown* p_k);
 
 // Entry-point function
-int isnumeric(void)
+int main(void)
 {
 
 // Initialize variables
-int r;
+unknown kdata;
+unknown r;
+unknown kdata;
+unknown k;
 
-// isnumeric() - returns 1 
+// kurt() - return kurtosis of input data distribution
 //
-// Author: Arnaud Delorme, SCCN, INC, UCSD, Nov. 2008
-// Copyright (C) 2008 Arnaud Delorme, SCCN, INC, UCSD
+// Usage:
+//   >> k=kurt(data)
+//
+// Algorithm:
+//   Calculates kurtosis or normalized 4th moment of an input data vector
+//   Given a matrix, returns a row vector giving the kurtosis' of the columns
+//   (Ref: "Numerical Recipes," p. 612)
+//
+// Author: Martin Mckeown, CNL / Salk Institute, La Jolla, 10/2/96
+// Copyright (C) Martin Mckeown, CNL / Salk Institute, La Jolla, 7/1996
 //
 // This file is part of EEGLAB, see http://www.eeglab.org
 // for the documentation and details.
@@ -43,14 +56,46 @@ int r;
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
+// 2/28/97 - made to return separate kurtosis estimates of columns -Scott Makeig
+// 01-25-02 reformated help & license, added links -ad 
+double tmp3;
+indexM(mean, &tmp3, kdata);
+Matrix * tmp4 = minusM(kdata,ones(r,1)*mn)
+Matrix * tmp5 = timesM(diff,diff)
+Matrix * tmp6 = minusM(  (sum(dsq.*dsq)./std(kdata).^4)./r,3)
 return 0;
 }
 
 
 // Subprograms
 
-int isnumeric(unknown a)
+void kurt(unknown data, unknown* p_k)
 {
-r = 1;
+*p_k = k;
+ = 
+size(data, );
+
+
+if (r == 1)
+{
+kdata = data';
+// if a row vector, make into a column vector
+r = c;
+}
+else
+{
+kdata = data;
+}
+//fprintf('size of kdata = [%d,%d]\n',size(kdata,1),size(kdata,2));
+mn = tmp3;
+
+// find the column means
+diff = tmp4;
+
+// remove the column means
+dsq = tmp5;
+
+// square the data
+k = tmp6;
 
 }

@@ -1,3 +1,3 @@
 function b = myfun3(a)
-    b = a^2;
+    b = 1;
 end

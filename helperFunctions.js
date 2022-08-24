@@ -1,13 +1,17 @@
 "use strict";
 exports.__esModule = true;
 exports.getFilesInPath = exports.writeToFile = void 0;
-var fs = require("fs");
+//const fs = require("graceful-fs");
+var fs = require('fs');
+var gracefulFs = require('graceful-fs');
+gracefulFs.gracefulify(fs);
 var path = require("path");
+var glob = require("glob");
 function writeToFile(out_folder, filename, generated_code) {
     if (!fs.existsSync(out_folder)) {
         fs.mkdirSync(out_folder);
     }
-    fs.writeFile(out_folder + "/" + filename, generated_code, function (err) {
+    fs.writeFile(path.join(out_folder, filename), generated_code, function (err) {
         if (err) {
             console.error(err);
             return;
@@ -15,18 +19,21 @@ function writeToFile(out_folder, filename, generated_code) {
     });
 }
 exports.writeToFile = writeToFile;
-var getFilesInPath = function (fullPath) {
-    var files = [];
-    fs.readdirSync(fullPath).forEach(function (file) {
-        var absolutePath = path.join(fullPath, file);
+/*export const getFilesInPath = (fullPath) => {
+    let files = [];
+    fs.readdirSync(fullPath).forEach(file => {
+        const absolutePath = path.join(fullPath, file);
         if (fs.statSync(absolutePath).isDirectory()) {
-            var filesFromNestedFolder = (0, exports.getFilesInPath)(absolutePath);
-            filesFromNestedFolder.forEach(function (file) { files.push(file); });
-        }
-        else
-            return files.push(absolutePath);
+            const filesFromNestedFolder = getFilesInPath(absolutePath);
+            filesFromNestedFolder.forEach(file => { files.push(file); })
+        } else return files.push(absolutePath);
     });
     return files;
-};
+}*/
+function getFilesInPath(src) {
+    var files = glob.sync(src + '/**/*.m');
+    return files;
+}
 exports.getFilesInPath = getFilesInPath;
+;
 //# sourceMappingURL=helperFunctions.js.map

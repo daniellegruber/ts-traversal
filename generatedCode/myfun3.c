@@ -5,11 +5,11 @@
 #include <string.h>
 
 // Initialize variables
-unknown b;
+int b;
 
 
-unknown myfun3(unknown a)
+int myfun3(unknown a)
 {
-b = a ^ 2;
+b = 1;
 
 }

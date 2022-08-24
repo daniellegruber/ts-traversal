@@ -5,16 +5,18 @@
 #include <string.h>
 
 // Function declarations
-int isnumeric(unknown a);
+void size(unknown a, unknown dim, unknown* p_s, unknown* p_s2, unknown* p_s3);
 
 // Entry-point function
-int isnumeric(void)
+int size(void)
 {
 
 // Initialize variables
-int r;
+unknown s3;
+unknown s2;
+unknown s;
 
-// isnumeric() - returns 1 
+// size() - size of memory mapped underlying array
 //
 // Author: Arnaud Delorme, SCCN, INC, UCSD, Nov. 2008
 // Copyright (C) 2008 Arnaud Delorme, SCCN, INC, UCSD
@@ -43,14 +45,79 @@ int r;
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
+double tmp1;
+indexM(strcmpi, &tmp1, , 'transposed');
+double tmp3;
+indexM(s, &tmp3, );
+double tmp6;
+indexM(s, &tmp6, dim);
+double tmp8;
+indexM(s, &tmp8, 3);
+double tmp10;
+indexM(s, &tmp10, 2);
+double tmp11;
+indexM(s, &tmp11, 1);
 return 0;
 }
 
 
 // Subprograms
 
-int isnumeric(unknown a)
+void size(unknown a, unknown dim, unknown* p_s, unknown* p_s2, unknown* p_s3)
 {
-r = 1;
+*p_s = s;
+*p_s2 = s2;
+*p_s3 = s3;
 
+if (
+isnumeric(, ))
+{
+s = 
+size(, );
+}
+else
+{
+s = ;
+
+if (tmp1)
+{
+
+if (
+length(s, ) == 2)
+{
+s = tmp3;
+}
+else if (
+length(s, ) == 3)
+{
+;
+}
+}
+}
+
+if (nargin > 1)
+{
+
+struct cell0 {
+unknown f0;
+int f1;
+}
+
+cell0 s;
+s.f0 = s
+s.f1 = 1
+
+s = tmp6;
+}
+
+if (nargout > 2)
+{
+s3 = tmp8;
+}
+
+if (nargout > 1)
+{
+s2 = tmp10;
+s = tmp11;
+}
 }

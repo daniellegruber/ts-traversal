@@ -5,16 +5,17 @@
 #include <string.h>
 
 // Function declarations
-int isnumeric(unknown a);
+void sum(unknown a, int dim, * p_s);
 
 // Entry-point function
-int isnumeric(void)
+int sum(void)
 {
 
 // Initialize variables
-int r;
+int dim;
+ s;
 
-// isnumeric() - returns 1 
+// sum() - sum of memory mapped underlying array
 //
 // Author: Arnaud Delorme, SCCN, INC, UCSD, Nov. 2008
 // Copyright (C) 2008 Arnaud Delorme, SCCN, INC, UCSD
@@ -43,14 +44,79 @@ int r;
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
+double tmp3;
+indexM(strcmpi, &tmp3, , 'transposed');
+double tmp5;
+indexM(alldim, &tmp5, dim);
+double tmp6;
+indexM(permute, &tmp6, s, );
 return 0;
 }
 
 
 // Subprograms
 
-int isnumeric(unknown a)
+void sum(unknown a, int dim, * p_s)
 {
-r = 1;
+*p_s = s;
 
+if (nargin < 2)
+{
+dim = 1;
+}
+//b = (:,:,:);
+
+if (~tmp3)
+{
+s = 
+sum(, dim, );
+}
+else
+{
+;
+
+if (
+length(
+size(a, ), ) == 3)
+{
+dim = tmp5;
+s = 
+sum(, dim, );
+s = tmp6;
+}
+else
+{
+
+if (dim == 1)
+{
+dim = 2;
+}
+else
+{
+
+}
+s = 
+sum(, dim, )';
+}
+}
+return;
+
+// do pnts by pnts if dim = 1
+//     if dim == 1 & length(
+//         
+//         s = zeros(size(a,2), size(a,3));
+//         for i=1:size(a,2)
+//             s(i,:) = mean(a.data.data.x(:,i,:));
+//         end
+//     elseif dim == 1
+//          s = zeros(size(a,1), size(a,1));
+//         for i=1:size(a,1)
+//             s(i,:) = mean(a.data.data.x(:,:,:));
+//         end
+//        
+//         
+//     s = builtin('sum', rand(10,10), dim);
+//if length(size(a)) > 2
+//else s = sum(a(:,:,:), dim);
+//end
 }

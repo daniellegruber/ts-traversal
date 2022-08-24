@@ -5,16 +5,16 @@
 #include <string.h>
 
 // Function declarations
-int isnumeric(unknown a);
+unknown reshape(unknown a, unknown d1, unknown d2, unknown d3);
 
 // Entry-point function
-int isnumeric(void)
+int reshape(void)
 {
 
 // Initialize variables
-int r;
 
-// isnumeric() - returns 1 
+
+// reshape() - reshape of memory mapped underlying array
 //
 // Author: Arnaud Delorme, SCCN, INC, UCSD, Nov. 2008
 // Copyright (C) 2008 Arnaud Delorme, SCCN, INC, UCSD
@@ -43,14 +43,62 @@ int r;
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
+double tmp4;
+indexM(prod, &tmp4, 
+size(a, ));
+double tmp5;
+indexM(prod, &tmp5, d1);
+double tmp6;
+indexM(error, &tmp6, 'Wrong dimensions for reshaping');
+double tmp8;
+indexM(strcmpi, &tmp8, , 'transposed');
+double tmp11;
+indexM(d1, &tmp11, );
 return 0;
 }
 
 
 // Subprograms
 
-int isnumeric(unknown a)
+unknown reshape(unknown a, unknown d1, unknown d2, unknown d3)
 {
-r = 1;
+// decode length
+// -------------
 
+if (nargin > 3)
+{
+;
+}
+else if (nargin > 2)
+{
+;
+}
+
+if (tmp4 ~= tmp5)
+{
+tmp6;
+}
+
+if (~tmp8)
+{
+ = d1;
+}
+else
+{
+
+if (
+length(d1, ) == 1)
+{
+ = d1;
+}
+else if (
+length(d1, ) == 2)
+{
+;
+}
+else
+{
+ = tmp11;
+}
+}
 }

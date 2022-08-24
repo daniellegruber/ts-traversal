@@ -173,6 +173,7 @@ export interface ErrorNode extends NamedNodeBase {
 export const enum SyntaxType {
   ERROR = "ERROR",
   Assignment = "assignment",
+  Attribute = "attribute",
   BinaryOperator = "binary_operator",
   Block = "block",
   BooleanOperator = "boolean_operator",
@@ -180,13 +181,13 @@ export const enum SyntaxType {
   CallOrSubscript = "call_or_subscript",
   CatchClause = "catch_clause",
   Cell = "cell",
+  CellSubscript = "cell_subscript",
   ComparisonOperator = "comparison_operator",
   Complex = "complex",
   ConditionalExpression = "conditional_expression",
   ContinueStatement = "continue_statement",
   ElseClause = "else_clause",
   ElseifClause = "elseif_clause",
-  ExpressionList = "expression_list",
   ExpressionStatement = "expression_statement",
   ForStatement = "for_statement",
   FunctionDefinition = "function_definition",
@@ -224,6 +225,7 @@ export type UnnamedType =
   | "+"
   | ","
   | "-"
+  | "."
   | ".'"
   | ".*"
   | "./"
@@ -273,6 +275,7 @@ export type SyntaxNode =
   | ParameterNode
   | PrimaryExpressionNode
   | AssignmentNode
+  | AttributeNode
   | BinaryOperatorNode
   | BlockNode
   | BooleanOperatorNode
@@ -280,13 +283,13 @@ export type SyntaxNode =
   | CallOrSubscriptNode
   | CatchClauseNode
   | CellNode
+  | CellSubscriptNode
   | ComparisonOperatorNode
   | ComplexNode
   | ConditionalExpressionNode
   | ContinueStatementNode
   | ElseClauseNode
   | ElseifClauseNode
-  | ExpressionListNode
   | ExpressionStatementNode
   | ForStatementNode
   | FunctionDefinitionNode
@@ -312,6 +315,7 @@ export type SyntaxNode =
   | UnnamedNode<"+">
   | UnnamedNode<",">
   | UnnamedNode<"-">
+  | UnnamedNode<".">
   | UnnamedNode<".'">
   | UnnamedNode<".*">
   | UnnamedNode<"./">
@@ -388,16 +392,17 @@ export type ParameterNode =
   ;
 
 export type PrimaryExpressionNode = 
+  | AttributeNode
   | BinaryOperatorNode
   | CallOrSubscriptNode
   | CellNode
+  | CellSubscriptNode
   | ComplexNode
   | EllipsisNode
   | FalseNode
   | FloatNode
   | IdentifierNode
   | IntegerNode
-  | KeywordNode
   | MatrixNode
   | StringNode
   | TransposeOperatorNode
@@ -407,8 +412,14 @@ export type PrimaryExpressionNode =
 
 export interface AssignmentNode extends NamedNodeBase {
   type: SyntaxType.Assignment;
-  leftNode: CallOrSubscriptNode | IdentifierNode;
+  leftNode: PrimaryExpressionNode;
   rightNode: ExpressionNode;
+}
+
+export interface AttributeNode extends NamedNodeBase {
+  type: SyntaxType.Attribute;
+  attributeNode: IdentifierNode;
+  objectNode: PrimaryExpressionNode;
 }
 
 export interface BinaryOperatorNode extends NamedNodeBase {
@@ -435,7 +446,7 @@ export interface BreakStatementNode extends NamedNodeBase {
 
 export interface CallOrSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CallOrSubscript;
-  args_or_subscriptNodes: (ExpressionNode | SliceNode)[];
+  args_or_subscriptNodes: (ExpressionNode | KeywordNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
 }
 
@@ -447,6 +458,12 @@ export interface CatchClauseNode extends NamedNodeBase {
 
 export interface CellNode extends NamedNodeBase {
   type: SyntaxType.Cell;
+}
+
+export interface CellSubscriptNode extends NamedNodeBase {
+  type: SyntaxType.CellSubscript;
+  subscriptNodes: (ExpressionNode | KeywordNode | SliceNode)[];
+  valueNode: PrimaryExpressionNode;
 }
 
 export interface ComparisonOperatorNode extends NamedNodeBase {
@@ -476,11 +493,7 @@ export interface ElseClauseNode extends NamedNodeBase {
 export interface ElseifClauseNode extends NamedNodeBase {
   type: SyntaxType.ElseifClause;
   conditionNode: ExpressionNode;
-  consequenceNode: BlockNode;
-}
-
-export interface ExpressionListNode extends NamedNodeBase {
-  type: SyntaxType.ExpressionList;
+  consequenceNode?: BlockNode;
 }
 
 export interface ExpressionStatementNode extends NamedNodeBase {
@@ -490,7 +503,7 @@ export interface ExpressionStatementNode extends NamedNodeBase {
 export interface ForStatementNode extends NamedNodeBase {
   type: SyntaxType.ForStatement;
   bodyNode: BlockNode;
-  leftNode: CallOrSubscriptNode | IdentifierNode;
+  leftNode: PrimaryExpressionNode;
   rightNode: ExpressionNode | SliceNode;
 }
 
@@ -506,7 +519,7 @@ export interface IfStatementNode extends NamedNodeBase {
   type: SyntaxType.IfStatement;
   alternativeNodes: (ElseClauseNode | ElseifClauseNode)[];
   conditionNode: ExpressionNode;
-  consequenceNode: BlockNode;
+  consequenceNode?: BlockNode;
 }
 
 export interface KeywordNode extends NamedNodeBase {

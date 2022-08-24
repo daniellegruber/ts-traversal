@@ -1,8 +1,15 @@
 require('source-map-support').install()
-const fs = require("fs");
+//const fs = require("graceful-fs");
+var fs = require('fs');
+var path = require("path");
+var gracefulFs = require('graceful-fs');
+gracefulFs.gracefulify(fs);
 
 import { generateCode } from "./generateCode";
+import { getFilesInPath } from "./helperFunctions";
 import * as g from "./generated";
+import { identifyCustomFunctions, CustomFunction } from "./identifyCustomFunctions";
+import { typeInference, inferType, VarType, Type } from "./typeInference";
 
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
@@ -34,5 +41,43 @@ if (show_output==1) {
     console.log("Source code:\n" + sourceCode);
     console.log("---------------------\n");
 }
+
+var files = getFilesInPath(search_folder);
+
+let file_traversal_order = [args[0]];
+
+var custom_functions: CustomFunction[] = [];
+var var_types: VarType[] = [];
+[custom_functions, file_traversal_order] = identifyCustomFunctions(tree, custom_functions, files, args[0], []);
+console.log("File traversal order");
+console.log(file_traversal_order);
+console.log("---------------------\n");
+
+for (let file of file_traversal_order) {
+    const sourceCode = fs.readFileSync(file, "utf8");
+    let tree = parser.parse(sourceCode);
+    [var_types, custom_functions] = typeInference(tree, custom_functions);
     
-generateCode("main", tree, parser, search_folder, out_folder, show_output);
+    
+    if (file == args[0]) {
+        var filename = "main";
+    } else {
+        var filename:string = path.parse(file).name;
+    }
+    
+    let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, var_types);
+    
+    /*console.log(`---------------------\nInferred types for ${filename}.c:\n`);
+    console.log(var_types);
+    console.log(`---------------------\nUpdated custom functions after ${filename}.c:\n`);
+    console.log(custom_functions);*/
+        
+    if (show_output==1) {
+        console.log(`---------------------\nInferred types for ${filename}.c:\n`);
+        console.log(var_types);
+        console.log(`---------------------\nGenerated code for ${filename}.c:\n`);
+        console.log(generated_code);
+        console.log(`---------------------\nGenerated code for ${filename}.h:\n`);
+        console.log(header);
+    }
+}

@@ -3,11 +3,12 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <matrix_test.h>
 #include <myfun3.h>
 
 // Function declarations
 void myfun1(unknown f, unknown g, unknown* p_F, unknown* p_G);
-char * myfun2(void);
+unknown myfun2(void);
 
 // Entry-point function
 int main(void)
@@ -17,9 +18,8 @@ int main(void)
 float a;
 bool c;
 complex d;
-unknown F;
-unknown G;
-char * outstr;
+unknown myarr;
+int b;
 
 
 int ndim = 2;
@@ -50,8 +50,7 @@ free(input);
 Matrix * tmp1 = mtimesM(B,A)
 C = tmp1;
 a = 2.5;
-Matrix * tmp2 = ltM(a,b)
-c = tmp2;
+c = a < b;
 d = 1 + 3.444*I;
 
 int ndim = 2;
@@ -68,7 +67,7 @@ Matrix * tmp4 = ctransposeM(D)
 E = tmp4;
 unknown* p_F
 unknown* p_G
-myfun1(1, 2, *p_F, *p_G);
+ = myfun1(1, 2, *p_F, *p_G);
 
 struct cell0 {
 char f0[2];
@@ -99,15 +98,14 @@ f;
 }
 Matrix * tmp6 = zerosM(2, {2, 3});
 myarr = tmp6;
-double tmp7;
-indexM(myfun3, &tmp7, a);
-b = tmp7;
+
+b = myfun3(a);
 
 
 
-int tmp9;
-for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
-indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
+int tmp8;
+for (tmp8 = 1; tmp8 <= 3; ++tmp8) {
+indexM(tmp7, &i, tmp7 -> ndim=1, tmp8);
 a;
 }
 return 0;
@@ -131,7 +129,7 @@ a;
 }
 }
 
-char * myfun2(void)
+unknown myfun2(void)
 {
 outstr = "hello world";
 

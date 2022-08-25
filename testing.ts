@@ -16,6 +16,12 @@ import {
     findEntryFunction
 } from "./treeTraversal";
 
+import { 
+    getClassFolders,
+    getClasses,
+    getNonClassFilesInPath
+} from "./helperFunctions";
+
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
 
@@ -100,8 +106,15 @@ console.log(fileIsFunction(tree3));
 console.log(fileIsFunction(tree4));
 console.log(fileIsFunction(tree5));*/
 
-console.log(findEntryFunction(tree1));
+/*console.log(findEntryFunction(tree1));
 console.log(findEntryFunction(tree2));
 console.log(findEntryFunction(tree3));
 console.log(findEntryFunction(tree4));
-console.log(findEntryFunction(tree5));
+console.log(findEntryFunction(tree5));*/
+
+console.log("class folders");
+console.log(getClassFolders(search_folder));
+console.log("classes");
+console.log(getClasses(search_folder));
+console.log("non-class files");
+console.log(getNonClassFilesInPath(search_folder));

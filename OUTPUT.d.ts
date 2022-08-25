@@ -196,6 +196,7 @@ export const enum SyntaxType {
   Matrix = "matrix",
   Module = "module",
   Parameters = "parameters",
+  ParenthesizedExpression = "parenthesized_expression",
   ReturnValue = "return_value",
   Slice = "slice",
   String = "string",
@@ -298,6 +299,7 @@ export type SyntaxNode =
   | MatrixNode
   | ModuleNode
   | ParametersNode
+  | ParenthesizedExpressionNode
   | ReturnValueNode
   | SliceNode
   | StringNode
@@ -404,6 +406,7 @@ export type PrimaryExpressionNode =
   | IdentifierNode
   | IntegerNode
   | MatrixNode
+  | ParenthesizedExpressionNode
   | StringNode
   | TransposeOperatorNode
   | TrueNode
@@ -536,6 +539,10 @@ export interface ModuleNode extends NamedNodeBase {
 
 export interface ParametersNode extends NamedNodeBase {
   type: SyntaxType.Parameters;
+}
+
+export interface ParenthesizedExpressionNode extends NamedNodeBase {
+  type: SyntaxType.ParenthesizedExpression;
 }
 
 export interface ReturnValueNode extends NamedNodeBase {

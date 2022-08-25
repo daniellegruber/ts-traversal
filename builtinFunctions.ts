@@ -9,5 +9,7 @@ export const builtin_functions = [
     'error',
     'permute',
     'rand',
-    'randn'
+    'randn',
+    'memmapfile',
+    'mean'
 ];

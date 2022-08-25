@@ -6,7 +6,7 @@ var fs = require('fs');
 var path = require("path");
 var gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
-var treeTraversal_1 = require("./treeTraversal");
+var helperFunctions_1 = require("./helperFunctions");
 var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
@@ -54,9 +54,15 @@ console.log(fileIsFunction(tree2));
 console.log(fileIsFunction(tree3));
 console.log(fileIsFunction(tree4));
 console.log(fileIsFunction(tree5));*/
-console.log((0, treeTraversal_1.findEntryFunction)(tree1));
-console.log((0, treeTraversal_1.findEntryFunction)(tree2));
-console.log((0, treeTraversal_1.findEntryFunction)(tree3));
-console.log((0, treeTraversal_1.findEntryFunction)(tree4));
-console.log((0, treeTraversal_1.findEntryFunction)(tree5));
+/*console.log(findEntryFunction(tree1));
+console.log(findEntryFunction(tree2));
+console.log(findEntryFunction(tree3));
+console.log(findEntryFunction(tree4));
+console.log(findEntryFunction(tree5));*/
+console.log("class folders");
+console.log((0, helperFunctions_1.getClassFolders)(search_folder));
+console.log("classes");
+console.log((0, helperFunctions_1.getClasses)(search_folder));
+console.log("non-class files");
+console.log((0, helperFunctions_1.getNonClassFilesInPath)(search_folder));
 //# sourceMappingURL=testing.js.map

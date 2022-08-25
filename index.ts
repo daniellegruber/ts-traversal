@@ -6,7 +6,7 @@ var gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
 
 import { generateCode } from "./generateCode";
-import { getFilesInPath } from "./helperFunctions";
+import { getNonClassFilesInPath, getClasses } from "./helperFunctions";
 import * as g from "./generated";
 import { identifyCustomFunctions, CustomFunction } from "./identifyCustomFunctions";
 import { typeInference, inferType, VarType, Type } from "./typeInference";
@@ -29,7 +29,7 @@ let tree = parser.parse(sourceCode);
 
 // Read filenames in given directory
 const search_folder = args[1];
-//const files = fs.readdirSync(search_folder);
+let classes = getClasses(search_folder);
 
 // Output code to given directory
 let out_folder = args[2] + "/generatedCode";
@@ -42,13 +42,10 @@ if (show_output==1) {
     console.log("---------------------\n");
 }
 
-var files = getFilesInPath(search_folder);
+var files = getNonClassFilesInPath(search_folder);
 
-let file_traversal_order = [args[0]];
-
-var custom_functions: CustomFunction[] = [];
 var var_types: VarType[] = [];
-[custom_functions, file_traversal_order] = identifyCustomFunctions(tree, custom_functions, files, args[0], []);
+var [custom_functions, file_traversal_order] = identifyCustomFunctions(tree, [], files, args[0], [args[0]]);
 console.log("File traversal order");
 console.log(file_traversal_order);
 console.log("---------------------\n");
@@ -56,7 +53,7 @@ console.log("---------------------\n");
 for (let file of file_traversal_order) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
-    [var_types, custom_functions] = typeInference(tree, custom_functions);
+    [var_types, custom_functions] = typeInference(tree, custom_functions, classes);
     
     
     if (file == args[0]) {
@@ -65,7 +62,7 @@ for (let file of file_traversal_order) {
         var filename:string = path.parse(file).name;
     }
     
-    let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, var_types);
+    let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types);
     
     /*console.log(`---------------------\nInferred types for ${filename}.c:\n`);
     console.log(var_types);

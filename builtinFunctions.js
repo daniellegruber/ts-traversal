@@ -12,6 +12,8 @@ exports.builtin_functions = [
     'error',
     'permute',
     'rand',
-    'randn'
+    'randn',
+    'memmapfile',
+    'mean'
 ];
 //# sourceMappingURL=builtinFunctions.js.map

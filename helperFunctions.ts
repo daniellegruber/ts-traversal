@@ -17,19 +17,43 @@ export function writeToFile(out_folder, filename, generated_code) {
     })
 }
 
-/*export const getFilesInPath = (fullPath) => {
-    let files = []; 
-    fs.readdirSync(fullPath).forEach(file => {
-        const absolutePath = path.join(fullPath, file); 
-        if (fs.statSync(absolutePath).isDirectory()) {
-            const filesFromNestedFolder = getFilesInPath(absolutePath); 
-            filesFromNestedFolder.forEach(file => { files.push(file); }) 
-        } else return files.push(absolutePath); 
-    }); 
-    return files; 
-}*/
-
 export function getFilesInPath(src) {
     const files = glob.sync(src + '/**/*.m');
     return files;
+};
+
+export function getNonClassFilesInPath(src) {
+    const files = glob.sync(src + '/!(@)**/*.m');
+    return files;
+};
+
+// https://www.mathworks.com/help/matlab/matlab_oop/organizing-classes-in-folders.html
+export function getClassFolders(src) {
+    const folders = glob.sync(src + '/@**');
+    return folders;
+};
+
+type Class = {
+    name: string;
+    methods: Array<string>;
+    folder: string;
+};
+
+export function getClasses(src) {
+    let folders = getClassFolders(src);
+    let classes: Class[] = [];
+    for (let folder of folders) {
+        let files = getFilesInPath(folder);
+        let methods = [];
+        for (let file of files) {
+            methods.push(path.parse(file).name);
+        }
+        const c: Class = {
+            name: folder.substr(folder.indexOf("@") + 1),
+            methods: methods,
+            folder: folder
+        }
+        classes.push(c);
+    }
+    return classes;
 };

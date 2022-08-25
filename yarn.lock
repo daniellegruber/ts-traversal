@@ -1066,10 +1066,10 @@ tar@^6.1.11, tar@^6.1.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-tree-sitter-matlab@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/tree-sitter-matlab/-/tree-sitter-matlab-1.0.6.tgz#03c7cd9cb3b19aeae2092371bad64ceece89ff5b"
-  integrity sha512-En0ztpCgj4l6ro0I1AlbxMMasRGG8IgTYkyHhdYfQGAZevVqzs8STVgUTvVNAFpd1lqIVqJGbd1VBxIkYRZEfQ==
+tree-sitter-matlab@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/tree-sitter-matlab/-/tree-sitter-matlab-1.0.7.tgz#22d526cf8eaad5f7cfe7fbdbcd8fe5048b324574"
+  integrity sha512-ERHv3KT1jvVjHIWG4YVs0PNAWDyifGKG42E6Ki09YDPZSBeola+YMyocFTxY+eW+VTU9OfWr/hvdOw1FjI6k4w==
   dependencies:
     nan "^2.15.0"
     node-gyp "^9.1.0"

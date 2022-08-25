@@ -4,6 +4,8 @@ import * as g from "./generated";
 // -----------------------------------------------------------------------------
 
 export function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
+    //console.log("hello1");
+    //console.log(cursor.currentNode);
     if (cursor.gotoFirstChild())
         return true;
     while (!cursor.gotoNextSibling()) {
@@ -15,6 +17,8 @@ export function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
 }
 
 export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
+    //console.log("hello2");
+    
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         case g.SyntaxType.Comment:
@@ -28,6 +32,7 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
                     return false;
                 }
             }
+            //console.log(cursor.currentNode);
             break;
         }
         
@@ -46,6 +51,8 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
 }
 
 export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean {
+    //console.log("hello3");
+    //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         case g.SyntaxType.FunctionDefinition: {
@@ -79,6 +86,8 @@ export function fileIsFunction(tree): boolean {
     do {
         const c = cursor as g.TypedTreeCursor;
         let node = c.currentNode;
+        //console.log("hello4");
+        //console.log(cursor.currentNode);
         switch (node.type) {
             case g.SyntaxType.FunctionDefinition: {
                 if (encountered_function) {

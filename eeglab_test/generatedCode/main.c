@@ -3,8 +3,6 @@
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
-#include <size.h>
-#include <sum.h>
 
 // Function declarations
 void kurt(unknown data, unknown* p_k);
@@ -14,9 +12,11 @@ int main(void)
 {
 
 // Initialize variables
-unknown kdata;
 unknown r;
 unknown kdata;
+unknown mn;
+unknown diff;
+unknown dsq;
 unknown k;
 
 // kurt() - return kurtosis of input data distribution
@@ -58,11 +58,13 @@ unknown k;
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 2/28/97 - made to return separate kurtosis estimates of columns -Scott Makeig
 // 01-25-02 reformated help & license, added links -ad 
-double tmp3;
-indexM(mean, &tmp3, kdata);
-Matrix * tmp4 = minusM(kdata,ones(r,1)*mn)
-Matrix * tmp5 = timesM(diff,diff)
-Matrix * tmp6 = minusM(  (sum(dsq.*dsq)./std(kdata).^4)./r,3)
+double tmp1;
+indexM(size, &tmp1, data);
+Matrix * tmp6 = onesM(2, {r, 1});
+double tmp12;
+indexM(sum, &tmp12, dsq .* dsq);
+double tmp14;
+indexM(std, &tmp14, kdata);
 return 0;
 }
 
@@ -72,8 +74,7 @@ return 0;
 void kurt(unknown data, unknown* p_k)
 {
 *p_k = k;
- = 
-size(data, );
+ = tmp1;
 
 
 if (r == 1)
@@ -87,15 +88,15 @@ else
 kdata = data;
 }
 //fprintf('size of kdata = [%d,%d]\n',size(kdata,1),size(kdata,2));
-mn = tmp3;
+mn = mean(kdata);
 
 // find the column means
-diff = tmp4;
+diff = kdata - tmp6 * mn;
 
 // remove the column means
-dsq = tmp5;
+dsq = diff .* diff;
 
 // square the data
-k = tmp6;
+k = (tmp12 ./ tmp14 .^ 4) ./ r - 3;
 
 }

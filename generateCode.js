@@ -8,7 +8,7 @@ var treeTraversal_1 = require("./treeTraversal");
 var helperFunctions_1 = require("./helperFunctions");
 var builtinFunctions_1 = require("./builtinFunctions");
 // Main
-function generateCode(filename, tree, out_folder, custom_functions, var_types) {
+function generateCode(filename, tree, out_folder, custom_functions, classes, var_types) {
     var function_definitions = [];
     var function_declarations = [];
     var numCellStruct = 0;
@@ -145,7 +145,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                 else if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
                     var tmp_var1 = generateTmpVar();
                     var tmp_var2 = generateTmpVar();
-                    var _b = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions), type = _b[0], ndim = _b[1], dim = _b[2];
+                    var _b = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions, classes), type = _b[0], ndim = _b[1], dim = _b[2];
                     var obj = type_to_matrix_type.find(function (x) { return x.type === type; });
                     if (obj != null) {
                         expression1.push(initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, type));
@@ -174,11 +174,15 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                 }
                 break;
             }
+            case "parenthesized_expression" /* g.SyntaxType.ParenthesizedExpression */: {
+                return "(" + transformNode(node.firstNamedChild) + ")";
+                break;
+            }
             // Assignment
             case "assignment" /* g.SyntaxType.Assignment */: {
                 if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */ || node.rightNode.type == "cell" /* g.SyntaxType.Cell */) {
                     // https://www.mathworks.com/help/coder/ug/homogeneous-vs-heterogeneous-cell-arrays.html
-                    var _d = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions), type = _d[0], ndim = _d[1], dim = _d[2];
+                    var _d = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions, classes), type = _d[0], ndim = _d[1], dim = _d[2];
                     if (type == 'heterogeneous') {
                         var expression1 = [];
                         var expression2 = [];
@@ -186,7 +190,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                         expression2.push("cell".concat(numCellStruct, " ").concat(node.leftNode.text, ";"));
                         for (var i = 0; i < node.rightNode.namedChildCount; i++) {
                             var child = node.rightNode.namedChildren[i];
-                            var _e = (0, typeInference_1.inferType)(child, var_types, custom_functions), child_type = _e[0], child_ndim = _e[1], child_dim = _e[2], child_ismatrix = _e[3];
+                            var _e = (0, typeInference_1.inferType)(child, var_types, custom_functions, classes), child_type = _e[0], child_ndim = _e[1], child_dim = _e[2], child_ismatrix = _e[3];
                             var numel = dim.reduce(function (a, b) { return a * b; });
                             if (child.type == "matrix" /* g.SyntaxType.Matrix */) {
                                 expression1.push("Matrix f".concat(i, "[").concat(numel, "];"));
@@ -215,14 +219,21 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                             return "";
                         }
                     }
-                    // TO DO: what do when RHS is function call
+                    // TO DO: what do when RHS is class or function call
                 }
                 else if (node.rightNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */) {
-                    // Is a custom function call
-                    var obj = custom_functions.find(function (x) { return x.name === node.rightNode.valueNode.text; });
+                    var obj = classes.find(function (x) { return x.name === node.rightNode.valueNode.text; });
+                    // Is a class
                     if (obj != null) {
-                        if (obj.return_type == null) {
-                            return transformNode(node.rightNode);
+                        return obj.name;
+                    }
+                    else {
+                        // Is a custom function call
+                        var obj_1 = custom_functions.find(function (x) { return x.name === node.rightNode.valueNode.text; });
+                        if (obj_1 != null) {
+                            if (obj_1.return_type == null) {
+                                return transformNode(node.rightNode);
+                            }
                         }
                     }
                     var expression = [];
@@ -256,6 +267,24 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                     expression.push(transformNode(child));
                 }
                 return "{\n" + expression.join("\n") + "\n}";
+                break;
+            }
+            // TO DO: FIX THIS
+            case "cell_subscript" /* g.SyntaxType.CellSubscript */: {
+                var index = [];
+                for (var i = 1; i < node.namedChildCount; i++) {
+                    index.push(transformNode(node.namedChildren[i]));
+                }
+                var tmp_var = generateTmpVar();
+                if (current_code == "main") {
+                    main_function.push("double " + tmp_var + ";");
+                    main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
+                }
+                else if (current_code == "subprogram") {
+                    function_definitions.push("double " + tmp_var + ";");
+                    function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
+                }
+                return tmp_var;
                 break;
             }
             case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
@@ -349,6 +378,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
             // Basic types
             //case g.SyntaxType.Ellipsis:
             case "string" /* g.SyntaxType.String */:
+            case "attribute" /* g.SyntaxType.Attribute */:
             case "identifier" /* g.SyntaxType.Identifier */:
             case "integer" /* g.SyntaxType.Integer */:
             case "float" /* g.SyntaxType.Float */:
@@ -364,9 +394,9 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                 var children_vals = [];
                 for (var i = 0; i < node.namedChildCount; i++) {
                     var child = node.namedChildren[i];
-                    var _h = (0, typeInference_1.inferType)(child, var_types, custom_functions), child_type = _h[0];
+                    var _h = (0, typeInference_1.inferType)(child, var_types, custom_functions, classes), child_type = _h[0];
                     if (child_type == "keyword") {
-                        _a = (0, typeInference_1.inferType)(node.parent.valueNode, var_types, custom_functions), ndim = _a[1], dim = _a[2];
+                        _a = (0, typeInference_1.inferType)(node.parent.valueNode, var_types, custom_functions, classes), ndim = _a[1], dim = _a[2];
                         var firstNode = node.parent.namedChildren[1];
                         var current_dim = 0;
                         var dummyNode = node;
@@ -442,7 +472,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
         switch (node.type) {
             case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
                 var obj = unaryMapping.find(function (x) { return x.operator === node.operatorNode.type; });
-                var _a = (0, typeInference_1.inferType)(node.argumentNode, var_types, custom_functions), type = _a[0], ismatrix = _a[3];
+                var _a = (0, typeInference_1.inferType)(node.argumentNode, var_types, custom_functions, classes), type = _a[0], ismatrix = _a[3];
                 if (ismatrix) {
                     if (current_code == "main") {
                         main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj["function"], "(").concat(node.argumentNode.text, ")"));
@@ -459,7 +489,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
             }
             case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
                 var obj = transposeMapping.find(function (x) { return x.operator === node.operatorNode.type; });
-                var _b = (0, typeInference_1.inferType)(node.argumentNode, var_types, custom_functions), type = _b[0], ismatrix = _b[3];
+                var _b = (0, typeInference_1.inferType)(node.argumentNode, var_types, custom_functions, classes), type = _b[0], ismatrix = _b[3];
                 if (ismatrix) {
                     if (current_code == "main") {
                         main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj["function"], "(").concat(node.argumentNode.text, ")"));
@@ -478,8 +508,8 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
             case "boolean_operator" /* g.SyntaxType.BooleanOperator */:
             case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
                 var obj = binaryMapping.find(function (x) { return x.operator === node.operatorNode.type; });
-                var _c = (0, typeInference_1.inferType)(node.leftNode, var_types, custom_functions), left_type = _c[0], left_ismatrix = _c[3];
-                var _d = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions), right_type = _d[0], right_ismatrix = _d[3];
+                var _c = (0, typeInference_1.inferType)(node.leftNode, var_types, custom_functions, classes), left_type = _c[0], left_ismatrix = _c[3];
+                var _d = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions, classes), right_type = _d[0], right_ismatrix = _d[3];
                 if (left_ismatrix || right_ismatrix) {
                     if (current_code == "main") {
                         main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj["function"], "(").concat(node.leftNode.text, ",").concat(node.rightNode.text, ")"));
@@ -502,7 +532,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
             var param_list = [];
             for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
                 var param = _a[_i];
-                var _b = (0, typeInference_1.inferType)(param, var_types, custom_functions), param_type = _b[0];
+                var _b = (0, typeInference_1.inferType)(param, var_types, custom_functions, classes), param_type = _b[0];
                 param_list.push(param_type + " " + param.text);
             }
             if (node.children[1].type == "return_value" /* g.SyntaxType.ReturnValue */) {
@@ -513,7 +543,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                     for (var _c = 0, _d = return_node.namedChildren; _c < _d.length; _c++) {
                         var return_var = _d[_c];
                         ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text + ";");
-                        var _e = (0, typeInference_1.inferType)(return_var, var_types, custom_functions), return_type = _e[0];
+                        var _e = (0, typeInference_1.inferType)(return_var, var_types, custom_functions, classes), return_type = _e[0];
                         param_list.push(return_type + "* p_" + return_var.text);
                     }
                     var ptr_declaration_joined = ptr_declaration.join("\n");
@@ -543,7 +573,7 @@ function generateCode(filename, tree, out_folder, custom_functions, var_types) {
                     else {
                         var param_list_joined = "(" + param_list.join(", ") + ")";
                     }
-                    var _f = (0, typeInference_1.inferType)(return_node, var_types, custom_functions), return_type = _f[0];
+                    var _f = (0, typeInference_1.inferType)(return_node, var_types, custom_functions, classes), return_type = _f[0];
                     if (return_type == "char") {
                         return_type = "char *";
                     }

@@ -4,6 +4,8 @@ exports.findEntryFunction = exports.fileIsFunction = exports.gotoPreorderSucc_Sk
 // Tree traversal function
 // -----------------------------------------------------------------------------
 function gotoPreorderSucc(cursor) {
+    //console.log("hello1");
+    //console.log(cursor.currentNode);
     if (cursor.gotoFirstChild())
         return true;
     while (!cursor.gotoNextSibling()) {
@@ -15,6 +17,7 @@ function gotoPreorderSucc(cursor) {
 }
 exports.gotoPreorderSucc = gotoPreorderSucc;
 function gotoPreorderSucc_OnlyMajorTypes(cursor) {
+    //console.log("hello2");
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         case "comment" /* g.SyntaxType.Comment */:
@@ -28,6 +31,7 @@ function gotoPreorderSucc_OnlyMajorTypes(cursor) {
                     return false;
                 }
             }
+            //console.log(cursor.currentNode);
             break;
         }
         default: {
@@ -45,6 +49,8 @@ function gotoPreorderSucc_OnlyMajorTypes(cursor) {
 }
 exports.gotoPreorderSucc_OnlyMajorTypes = gotoPreorderSucc_OnlyMajorTypes;
 function gotoPreorderSucc_SkipFunctionDef(cursor) {
+    //console.log("hello3");
+    //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
@@ -77,6 +83,8 @@ function fileIsFunction(tree) {
     do {
         var c = cursor;
         var node = c.currentNode;
+        //console.log("hello4");
+        //console.log(cursor.currentNode);
         switch (node.type) {
             case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
                 if (encountered_function) {

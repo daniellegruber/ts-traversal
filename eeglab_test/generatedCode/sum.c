@@ -71,7 +71,7 @@ dim = 1;
 
 if (~strcmpi(a.fileformat, 'transposed'))
 {
-sum(, dim, *p_s);
+sum(a.data.data.x, dim, *p_s);
 }
 else
 {
@@ -80,7 +80,7 @@ else
 if (length(size(a)) == 3)
 {
 dim = tmp4;
-sum(, dim, *p_s);
+sum(a.data.data.x, dim, *p_s);
 s = permute(s, [3 1 2]);
 }
 else
@@ -94,7 +94,7 @@ else
 {
 
 }
-s = sum(, dim, *p_s)';
+s = sum(a.data.data.x, dim, *p_s)';
 }
 }
 return;

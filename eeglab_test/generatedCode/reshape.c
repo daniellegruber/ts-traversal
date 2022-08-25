@@ -45,10 +45,16 @@ int reshape(void)
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-
+double tmp5;
+indexM(a.data.format, &tmp5, 2);
 
 double tmp7;
-indexM(d1, &tmp7, );
+indexM(a.data.format, &tmp7, 2);
+
+double tmp9;
+indexM(a.data.format, &tmp9, 2);
+double tmp10;
+indexM(d1, &tmp10, );
 return 0;
 }
 
@@ -76,14 +82,14 @@ error('Wrong dimensions for reshaping');
 
 if (~strcmpi(a.fileformat, 'transposed'))
 {
- = d1;
+tmp5 = d1;
 }
 else
 {
 
 if (length(d1) == 1)
 {
- = d1;
+tmp7 = d1;
 }
 else if (length(d1) == 2)
 {
@@ -91,7 +97,7 @@ else if (length(d1) == 2)
 }
 else
 {
- = tmp7;
+tmp9 = tmp10;
 }
 }
 }

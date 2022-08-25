@@ -52,18 +52,20 @@ unknown s;
 unknown* p_s
 unknown* p_s2
 unknown* p_s3
+double tmp1;
+indexM(a.data.format, &tmp1, 2);
 
-double tmp2;
-indexM(s, &tmp2, );
+double tmp3;
+indexM(s, &tmp3, );
 
-double tmp5;
-indexM(s, &tmp5, dim);
-double tmp7;
-indexM(s, &tmp7, 3);
-double tmp9;
-indexM(s, &tmp9, 2);
+double tmp6;
+indexM(s, &tmp6, dim);
+double tmp8;
+indexM(s, &tmp8, 3);
 double tmp10;
-indexM(s, &tmp10, 1);
+indexM(s, &tmp10, 2);
+double tmp11;
+indexM(s, &tmp11, 1);
 return 0;
 }
 
@@ -76,20 +78,20 @@ void size(unknown a, unknown dim, unknown* p_s, unknown* p_s2, unknown* p_s3)
 *p_s2 = s2;
 *p_s3 = s3;
 
-if (isnumeric())
+if (isnumeric(a.data))
 {
-size(, *p_s, *p_s2, *p_s3);
+size(a.data, *p_s, *p_s2, *p_s3);
 }
 else
 {
-s = ;
+s = tmp1;
 
 if (strcmpi(a.fileformat, 'transposed'))
 {
 
 if (length(s) == 2)
 {
-s = tmp2;
+s = tmp3;
 }
 else if (length(s) == 3)
 {
@@ -110,17 +112,17 @@ cell0 s;
 s.f0 = s
 s.f1 = 1
 
-s = tmp5;
+s = tmp6;
 }
 
 if (nargout > 2)
 {
-s3 = tmp7;
+s3 = tmp8;
 }
 
 if (nargout > 1)
 {
-s2 = tmp9;
-s = tmp10;
+s2 = tmp10;
+s = tmp11;
 }
 }

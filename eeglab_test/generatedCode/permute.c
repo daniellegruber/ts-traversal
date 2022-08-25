@@ -32,25 +32,21 @@ else if (length(dims) == 2)
 {
 error('Permutation with 2 dimensions: use transpose instead');
 }
-newFileName = ;
+newFileName = mmo.getnewfilename;
 double tmp3;
-indexM(copyfile, &tmp3, , newFileName);
+indexM(copyfile, &tmp3, obj.dataFile, newFileName);
 tmp3;
 res = obj;
 double tmp4;
 indexM(obj.dimensions, &tmp4, dims);
- = tmp4;
- = newFileName;
-double tmp5;
-indexM(memmapfile, &tmp5, , 'writable', , 'format', );
-tmpMMO1 = tmp5;
-double tmp6;
-indexM(memmapfile, &tmp6, , 'writable', true, 'format', );
-tmpMMO2 = tmp6;
+res.dimensions = tmp4;
+res.dataFile = newFileName;
+tmpMMO1 = memmapfile(obj.dataFile, 'writable', obj.writable, 'format', { 'single' obj.dimensions 'x' });
+tmpMMO2 = memmapfile(res.dataFile, 'writable', true        , 'format', { 'single' res.dimensions 'x' });
 // copy the data
 // -------------
-d = ;
- = '()';
+d = res.dimensions;
+s.type = '()';
 // slower versions below
 // for i1 = 1:obj.dimensions(1)
 //     for i2 = 1:obj.dimensions(3)

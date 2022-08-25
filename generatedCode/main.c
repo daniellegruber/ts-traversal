@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix_test.h>
-#include <myfun3.h>
 
 // Function declarations
 void myfun1(unknown f, unknown g, unknown* p_F, unknown* p_G);
@@ -19,7 +18,7 @@ float a;
 bool c;
 complex d;
 unknown myarr;
-int b;
+unknown b;
 
 
 int ndim = 2;
@@ -98,14 +97,15 @@ f;
 }
 Matrix * tmp6 = zerosM(2, {2, 3});
 myarr = tmp6;
+double tmp7;
+indexM(myfun3, &tmp7, a);
+b = tmp7;
 
-b = myfun3(a);
 
 
-
-int tmp8;
-for (tmp8 = 1; tmp8 <= 3; ++tmp8) {
-indexM(tmp7, &i, tmp7 -> ndim=1, tmp8);
+int tmp9;
+for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
+indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
 a;
 }
 return 0;

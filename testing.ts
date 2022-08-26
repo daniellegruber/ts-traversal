@@ -112,9 +112,13 @@ console.log(findEntryFunction(tree3));
 console.log(findEntryFunction(tree4));
 console.log(findEntryFunction(tree5));*/
 
-console.log("class folders");
-console.log(getClassFolders(search_folder));
+//console.log("class folders");
+//console.log(getClassFolders(search_folder));
 console.log("classes");
-console.log(getClasses(search_folder));
-console.log("non-class files");
-console.log(getNonClassFilesInPath(search_folder));
+let classes = getClasses(search_folder);
+console.log(classes);
+for (let c of classes) {
+    console.log(c.methods);
+}
+//console.log("non-class files");
+//console.log(getNonClassFilesInPath(search_folder));

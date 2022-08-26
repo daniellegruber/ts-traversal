@@ -8,8 +8,6 @@ var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
 function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order) {
-    //console.log("Current file");
-    //console.log(filename);
     // Internal functions
     var cursor = tree.walk();
     do {

@@ -273,8 +273,43 @@ function inferType(node, var_types, custom_functions, classes) {
             }
             break;
         }
-        // Identifiers
-        case "attribute" /* g.SyntaxType.Attribute */:
+        // Attribute
+        case "attribute" /* g.SyntaxType.Attribute */: {
+            // First check if class method
+            var _j = inferType(node.objectNode, var_types, custom_functions, classes), type_4 = _j[0];
+            var obj = classes.find(function (x) { return x.name === type_4; });
+            if (obj !== null && obj !== undefined) {
+                if (obj.methods.includes(node.attributeNode.text)) {
+                    // Is a method
+                    // TO DO: do something like custom_functions for classes
+                    // OH maybe make methods be of type CustomFunction so you can have a function dictionary
+                    var obj_2 = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
+                    if (obj_2 != null) {
+                        if (obj_2.return_type == null) {
+                            return ['unknown', 2, [1, 1], false];
+                        }
+                        else {
+                            return [obj_2.return_type.type, obj_2.return_type.ndim, obj_2.return_type.dim, obj_2.return_type.ismatrix];
+                        }
+                    }
+                    else {
+                        return ['unknown', 2, [1, 1], false];
+                    }
+                }
+                // If not class method, treat like an identifier (field of a struct)
+            }
+            else {
+                var obj_3 = var_types.find(function (x) { return x.name === node.text; });
+                if (obj_3 != null) {
+                    return [obj_3.type, obj_3.ndim, obj_3.dim, obj_3.ismatrix];
+                }
+                else {
+                    return ['unknown', 2, [1, 1], false];
+                }
+                break;
+            }
+        }
+        // Identifier
         case "identifier" /* g.SyntaxType.Identifier */: {
             var obj = var_types.find(function (x) { return x.name === node.text; });
             if (obj != null) {
@@ -289,7 +324,7 @@ function inferType(node, var_types, custom_functions, classes) {
         case "cell_subscript" /* g.SyntaxType.CellSubscript */: {
             var dim_4 = [];
             for (var i = 1; i < node.namedChildCount; i++) {
-                var _j = inferType(node.namedChildren[i], var_types, custom_functions, classes), child_type = _j[0], child_dim = _j[2];
+                var _k = inferType(node.namedChildren[i], var_types, custom_functions, classes), child_type = _k[0], child_dim = _k[2];
                 dim_4.push(child_dim[1]);
             }
             if (dim_4.length == 1 && dim_4[0] == 1) {
@@ -304,12 +339,12 @@ function inferType(node, var_types, custom_functions, classes) {
             break;
         }
         case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
-            var _k = inferType(node.valueNode, var_types, custom_functions, classes), parent_type = _k[0], parent_ismatrix = _k[3];
+            var _l = inferType(node.valueNode, var_types, custom_functions, classes), parent_type = _l[0], parent_ismatrix = _l[3];
             // Is a subscript
             if (parent_ismatrix) {
                 var dim_5 = [];
                 for (var i = 1; i < node.namedChildCount; i++) {
-                    var _l = inferType(node.namedChildren[i], var_types, custom_functions, classes), child_dim_1 = _l[2];
+                    var _m = inferType(node.namedChildren[i], var_types, custom_functions, classes), child_dim_1 = _m[2];
                     dim_5.push(child_dim_1[1]);
                 }
                 if (dim_5.length == 1 && dim_5[0] == 1) {
@@ -331,13 +366,13 @@ function inferType(node, var_types, custom_functions, classes) {
                 }
                 else {
                     // Is a function call
-                    var obj_2 = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
-                    if (obj_2 != null) {
-                        if (obj_2.return_type == null) {
+                    var obj_4 = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
+                    if (obj_4 != null) {
+                        if (obj_4.return_type == null) {
                             return ['unknown', 2, [1, 1], false];
                         }
                         else {
-                            return [obj_2.return_type.type, obj_2.return_type.ndim, obj_2.return_type.dim, obj_2.return_type.ismatrix];
+                            return [obj_4.return_type.type, obj_4.return_type.ndim, obj_4.return_type.dim, obj_4.return_type.ismatrix];
                         }
                     }
                     else {
@@ -352,7 +387,7 @@ function inferType(node, var_types, custom_functions, classes) {
             var children_vals = [];
             for (var i = 0; i < node.namedChildCount; i++) {
                 var child = node.namedChildren[i];
-                var _m = inferType(child, var_types, custom_functions, classes), child_type_2 = _m[0];
+                var _o = inferType(child, var_types, custom_functions, classes), child_type_2 = _o[0];
                 if (child_type_2 == "keyword") {
                     _a = inferType(node.parent.valueNode, var_types, custom_functions, classes), ndim = _a[1], dim = _a[2];
                     var firstNode = node.parent.namedChildren[1];

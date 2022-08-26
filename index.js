@@ -51,10 +51,6 @@ for (var _i = 0, file_traversal_order_1 = file_traversal_order; _i < file_traver
         var filename = path.parse(file).name;
     }
     var _c = (0, generateCode_1.generateCode)(filename, tree_1, out_folder, custom_functions, classes, var_types), generated_code = _c[0], header = _c[1];
-    /*console.log(`---------------------\nInferred types for ${filename}.c:\n`);
-    console.log(var_types);
-    console.log(`---------------------\nUpdated custom functions after ${filename}.c:\n`);
-    console.log(custom_functions);*/
     if (show_output == 1) {
         console.log("---------------------\nInferred types for ".concat(filename, ".c:\n"));
         console.log(var_types);

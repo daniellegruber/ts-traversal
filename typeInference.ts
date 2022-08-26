@@ -313,8 +313,41 @@ function inferType(node, var_types, custom_functions, classes) {
             break;
         }
         
-        // Identifiers
-        case g.SyntaxType.Attribute:
+        // Attribute
+        case g.SyntaxType.Attribute: {
+            // First check if class method
+            let [type,,,] = inferType(node.objectNode, var_types, custom_functions, classes);
+            let obj = classes.find(x => x.name === type);
+            if (obj !== null && obj !== undefined) {
+                if (obj.methods.includes(node.attributeNode.text)) {
+                    // Is a method
+                    // TO DO: do something like custom_functions for classes
+                    // OH maybe make methods be of type CustomFunction so you can have a function dictionary
+                    let obj = custom_functions.find(x => x.name === node.valueNode.text);
+                    if (obj != null) {
+                        if (obj.return_type == null) {
+                            return ['unknown', 2, [1,1], false];
+                        } else {
+                            return [obj.return_type.type, obj.return_type.ndim, obj.return_type.dim, obj.return_type.ismatrix];
+                        }
+                    } else {
+                        return ['unknown', 2, [1,1], false];
+                    }
+                }
+            
+            
+            // If not class method, treat like an identifier (field of a struct)
+            } else {
+                let obj = var_types.find(x => x.name === node.text);
+                if (obj != null) {
+                    return [obj.type, obj.ndim, obj.dim, obj.ismatrix];
+                } else {
+                    return ['unknown', 2, [1, 1], false];
+                }
+                break;
+            }
+        }
+        // Identifier
         case g.SyntaxType.Identifier: {
             let obj = var_types.find(x => x.name === node.text);
             if (obj != null) {

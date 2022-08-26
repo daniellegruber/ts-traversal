@@ -21,7 +21,6 @@ parser.setLanguage(Matlab);
 
 export type CustomFunction = {
     name: string;
-    //return_type:string;
     return_type:Type;
     ptr_param: string;
     ptr_declaration:string;
@@ -33,8 +32,6 @@ export type CustomFunction = {
     
 export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order) {
     
-    //console.log("Current file");
-    //console.log(filename);
     // Internal functions
     let cursor = tree.walk();
     do {

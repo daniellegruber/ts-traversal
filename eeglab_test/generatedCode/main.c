@@ -4,99 +4,121 @@
 #include <complex.h>
 #include <string.h>
 
-// Function declarations
-void kurt(unknown data, unknown* p_k);
-
 // Entry-point function
 int main(void)
 {
 
 // Initialize variables
-unknown r;
-unknown kdata;
-unknown mn;
-unknown diff;
-unknown dsq;
-unknown k;
+unknown tmpobj;
+unknown obj2;
+unknown obj1;
+unknown data1;
+unknown data2;
+unknown newFileName;
+unknown fid;
+unknown s1;
+char * ss.type;
+unknown tmpdata;
+unknown obj3;
 
-// kurt() - return kurtosis of input data distribution
-//
-// Usage:
-//   >> k=kurt(data)
-//
-// Algorithm:
-//   Calculates kurtosis or normalized 4th moment of an input data vector
-//   Given a matrix, returns a row vector giving the kurtosis' of the columns
-//   (Ref: "Numerical Recipes," p. 612)
-//
-// Author: Martin Mckeown, CNL / Salk Institute, La Jolla, 10/2/96
-// Copyright (C) Martin Mckeown, CNL / Salk Institute, La Jolla, 7/1996
-//
-// This file is part of EEGLAB, see http://www.eeglab.org
-// for the documentation and details.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice,
-// this list of conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditions and the following disclaimer in the documentation
-// and/or other materials provided with the distribution.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-// THE POSSIBILITY OF SUCH DAMAGE.
-// 2/28/97 - made to return separate kurtosis estimates of columns -Scott Makeig
-// 01-25-02 reformated help & license, added links -ad 
-double tmp1;
-indexM(size, &tmp1, data);
-Matrix * tmp6 = onesM(2, {r, 1});
-double tmp12;
-indexM(sum, &tmp12, dsq .* dsq);
-double tmp14;
-indexM(std, &tmp14, kdata);
-return 0;
+Matrix * tmp1 = null(obj2,'mmo');
+
+
+if (tmp1)
+{
+tmpobj = obj2;
+obj2 = obj1;
+obj1 = tmpobj;
+clear;
+tmpobj;
 }
+Matrix * tmp4 = null(obj1);
+Matrix * tmp5 = null(obj2);
+double tmp6;
+indexM(isequal, &tmp6, tmp4, tmp5);
+Matrix * tmp8 = null(obj2);
+Matrix * tmp9 = null(tmp8);
+Matrix * tmp10 = null('Matrix dimensions must agree.');
 
 
-// Subprograms
-
-void kurt(unknown data, unknown* p_k)
+if (~tmp6 && tmp9 ~= 1)
 {
-*p_k = k;
- = tmp1;
+tmp10;
+}
+Matrix * tmp11 = null(obj1.dataFile,'writable',obj1.writable,'format',);
+data1 = tmp11;
+Matrix * tmp12 = null(obj2,'mmo');
+Matrix * tmp13 = null(obj2.dataFile,'writable',obj2.writable,'format',);
 
 
-if (r == 1)
+if (tmp12)
 {
-kdata = data';
-// if a row vector, make into a column vector
-r = c;
+data2 = tmp13;
 }
 else
 {
-kdata = data;
+data2 = obj2;
 }
-//fprintf('size of kdata = [%d,%d]\n',size(kdata,1),size(kdata,2));
-mn = mean(kdata);
+// make new memory mapped data file (blank)
+// --------------------------------
+newFileName = mmo.getnewfilename;
+double tmp14;
+indexM(fopen, &tmp14, newFileName, 'w');
+fid = tmp14;
+Matrix * tmp15 = null(obj1);
+s1 = tmp15;
+ss.type = '()';
 
-// find the column means
-diff = kdata - tmp6 * mn;
+int ndim = 2;
+int dim = {1,1};
+Matrix * ss.subs(1:length(s1)-1) = createM(ndim, dim, 3);
+double char *input = NULL;
+input = malloc( 1*sizeof(*input));
+input[0][] = ":";
+writeM( ss.subs(1:length(s1)-1), 1, input);
+free(input);
 
-// remove the column means
-dsq = diff .* diff;
+Matrix * tmp16 = null(s1);
+double tmp17;
+indexM(ss.subs, &tmp17, tmp16);
+Matrix * tmp19 = null(data2);
+Matrix * tmp20 = null(tmp19);
+double tmp21;
+indexM(subsref, &tmp21, data1.Data.x, ss);
+double tmp22;
+indexM(f, &tmp22, tmp21, data2);
+double tmp23;
+indexM(subsref, &tmp23, data1.Data.x, ss);
+double tmp24;
+indexM(subsref, &tmp24, data2.Data.x, ss);
+double tmp25;
+indexM(f, &tmp25, tmp23, tmp24);
+double tmp26;
+indexM(fwrite, &tmp26, fid, tmpdata, 'float');
 
-// square the data
-k = (tmp12 ./ tmp14 .^ 4) ./ r - 3;
 
+int index;
+for (index =  1; index <= s1(end); ++ index) {
+tmp17 = index;
+
+if (tmp20 == 1)
+{
+tmpdata = tmp22;
+}
+else
+{
+tmpdata = tmp25;
+}
+tmp26;
+}
+double tmp27;
+indexM(fclose, &tmp27, fid);
+tmp27;
+// create object
+// -------------
+mmo;
+double tmp28;
+indexM(updateWorkspace, &tmp28, obj3);
+obj3 = tmp28;
+return 0;
 }

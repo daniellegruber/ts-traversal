@@ -46,6 +46,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         { operator: '>', "function": "gtM" },
         { operator: '>=', "function": "geM" },
         { operator: '~=', "function": "neqM" },
+        { operator: '&&', "function": "FILLIN" },
+        { operator: '||', "function": "FILLIN" },
+        { operator: '&', "function": "andM" },
+        { operator: '|', "function": "orM" },
     ];
     var unaryMapping = [
         { operator: "+", "function": "FILLIN" },
@@ -310,54 +314,57 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         link.push("#include <".concat(path.parse(obj.file).name, ".h>"));
                     }
                     return obj.name + "(" + arg_list.join(", ") + ")";
-                    // Is a builtin function call
-                }
-                else if (builtinFunctions_1.builtin_functions.includes(node.valueNode.text)) {
-                    switch (node.valueNode.text) {
-                        case "zeros":
-                        case "ones":
-                        case "rand":
-                        case "randn": {
-                            var args = [];
-                            for (var i = 2; i < node.childCount; i++) {
-                                if (node.children[i].isNamed) {
-                                    args.push(transformNode(node.children[i]));
-                                }
-                            }
-                            var dim_1 = "{" + args.join(", ") + "}";
-                            var ndim_1 = args.length;
-                            var tmp_var = generateTmpVar();
-                            if (current_code == "main") {
-                                main_function.push("Matrix * ".concat(tmp_var, " = ").concat(node.valueNode.text, "M(").concat(ndim_1, ", ").concat(dim_1, ");"));
-                            }
-                            else if (current_code == "subprogram") {
-                                function_definitions.push("Matrix * ".concat(tmp_var, " = onesM(").concat(ndim_1, ", ").concat(dim_1, ");"));
-                            }
-                            return tmp_var;
-                            break;
-                        }
-                        default: {
-                            return node.text;
-                            break;
-                        }
-                    }
-                    // Is a subscript
                 }
                 else {
-                    var index = [];
-                    for (var i = 1; i < node.namedChildCount; i++) {
-                        index.push(transformNode(node.namedChildren[i]));
+                    // Is a builtin function call
+                    var obj_2 = builtinFunctions_1.builtin_functions.find(function (x) { return x.fun_matlab === node.valueNode.text; });
+                    if (obj_2 != null) {
+                        var args = [];
+                        for (var i = 1; i < node.namedChildCount; i++) {
+                            args.push(transformNode(node.namedChildren[i]));
+                        }
+                        var tmp_var = generateTmpVar();
+                        if (obj_2.args_transform) { // c function has different args than matlab function
+                            var dim_1 = "{" + args.join(", ") + "}";
+                            var ndim_1 = args.length;
+                            if (current_code == "main") {
+                                main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(ndim_1, ", ").concat(dim_1, ");"));
+                            }
+                            else if (current_code == "subprogram") {
+                                function_definitions.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(ndim_1, ", ").concat(dim_1, ");"));
+                            }
+                        }
+                        else { // c function has same args as matlab function
+                            var n_args = node.namedChildCount - 1;
+                            if (n_args < obj_2.n_req_args) {
+                                args = args.concat(obj_2.opt_arg_defaults.slice(0, obj_2.n_req_args - n_args));
+                            }
+                            if (current_code == "main") {
+                                main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(args, ");"));
+                            }
+                            else if (current_code == "subprogram") {
+                                function_definitions.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(args, ");"));
+                            }
+                        }
+                        return tmp_var;
+                        // Is a subscript
                     }
-                    var tmp_var = generateTmpVar();
-                    if (current_code == "main") {
-                        main_function.push("double " + tmp_var + ";");
-                        main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
+                    else {
+                        var index = [];
+                        for (var i = 1; i < node.namedChildCount; i++) {
+                            index.push(transformNode(node.namedChildren[i]));
+                        }
+                        var tmp_var = generateTmpVar();
+                        if (current_code == "main") {
+                            main_function.push("double " + tmp_var + ";");
+                            main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
+                        }
+                        else if (current_code == "subprogram") {
+                            function_definitions.push("double " + tmp_var + ";");
+                            function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
+                        }
+                        return tmp_var;
                     }
-                    else if (current_code == "subprogram") {
-                        function_definitions.push("double " + tmp_var + ";");
-                        function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
-                    }
-                    return tmp_var;
                 }
                 break;
             }

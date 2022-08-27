@@ -76,6 +76,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             {operator: '>', function: "gtM"},
             {operator: '>=', function: "geM"},
             {operator: '~=', function: "neqM"},
+            {operator: '&&', function: "FILLIN"},
+            {operator: '||', function: "FILLIN"},
+            {operator: '&', function: "andM"},
+            {operator: '|', function: "orM"},
         ];    
     const unaryMapping: operatorMapping[] = [
             {operator: "+", function: "FILLIN"},
@@ -153,6 +157,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             }
                 
             case g.SyntaxType.IfStatement: {
+                
                 let expression = [];
                 expression.push("if (" + transformNode(node.conditionNode) + ")");
                 for (let i=2; i<node.childCount; i++) {
@@ -160,6 +165,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         expression.push(transformNode(node.children[i]));
                     }
                 }
+
                 return "\n" + expression.join("\n");
                 break;
                 } 
@@ -381,59 +387,61 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                     return obj.name + "(" + arg_list.join(", ") + ")";
                     
+                } else {
+                    // Is a builtin function call
+                    let obj = builtin_functions.find(x => x.fun_matlab === node.valueNode.text);
+                    if (obj != null) {
+                        let args = [];
+                        for (let i=1; i<node.namedChildCount; i++) {
+                            args.push(transformNode(node.namedChildren[i]));
+                        }
                 
-                // Is a builtin function call
-                } else if (builtin_functions.includes(node.valueNode.text)) {
-                    switch (node.valueNode.text) {
-                        case "zeros":
-                        case "ones": 
-                        case "rand":
-                        case "randn": {
-                            let args = [];
-                            for (let i=2; i<node.childCount; i++) {
-                                if (node.children[i].isNamed) {
-                                    args.push(transformNode(node.children[i]));
-                                }
-                            }
+                        var tmp_var = generateTmpVar();
+                        if (obj.args_transform) { // c function has different args than matlab function
                             let dim = "{" + args.join(", ") + "}";
                             let ndim = args.length;
-                            var tmp_var = generateTmpVar();
                             if (current_code == "main") {
-                                main_function.push(`Matrix * ${tmp_var} = ${node.valueNode.text}M(${ndim}, ${dim});`)
-                            } else if (current_code == "subprogram") { 
-                                function_definitions.push(`Matrix * ${tmp_var} = onesM(${ndim}, ${dim});`)
+                                main_function.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${ndim}, ${dim});`);
+                            } else if (current_code == "subprogram") {
+                                function_definitions.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${ndim}, ${dim});`);
                             }
-                            return tmp_var;
-                            break;
                         }
-                        default: {
-                            return node.text;
-                            break;
+                        else { // c function has same args as matlab function
+                            let n_args = node.namedChildCount - 1;
+                            if (n_args < obj.n_req_args) {
+                                args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
+                            }
+                            if (current_code == "main") {
+                                main_function.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${args});`);
+                            } else if (current_code == "subprogram") {
+                                function_definitions.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${args});`)
+                            }
                         }
-                    }
-                    
-                // Is a subscript
-                } else {
-                    
-                    let index = [];
-                    for (let i=1; i<node.namedChildCount; i++) {
-                        index.push(transformNode(node.namedChildren[i]));
-                    }
-                    
-                    var tmp_var = generateTmpVar();
-                    if (current_code == "main") {
-                        main_function.push("double " + tmp_var + ";");
-                        main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
-                    } else if (current_code == "subprogram") {
-                        function_definitions.push("double " + tmp_var + ";");
-                        function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
-                    }
-                    
-                    return tmp_var;
-                }
+                
+                        return tmp_var;
                         
-                    break;
-                }
+                    // Is a subscript
+                    } else {
+                        
+                        let index = [];
+                        for (let i=1; i<node.namedChildCount; i++) {
+                            index.push(transformNode(node.namedChildren[i]));
+                        }
+                        
+                        var tmp_var = generateTmpVar();
+                        if (current_code == "main") {
+                            main_function.push("double " + tmp_var + ";");
+                            main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
+                        } else if (current_code == "subprogram") {
+                            function_definitions.push("double " + tmp_var + ";");
+                            function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
+                        }
+                        
+                        return tmp_var;
+                    }
+                }    
+                break;
+            }
             
             case g.SyntaxType.ElseifClause: {
                 let expression = [];
@@ -564,7 +572,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     // -----------------------------------------------------------------------------
     function printMatrixFunctions(node) {
         var tmp_var = generateTmpVar();
-        
         switch (node.type) {
             case g.SyntaxType.UnaryOperator: {
                 let obj = unaryMapping.find(x => x.operator === node.operatorNode.type);

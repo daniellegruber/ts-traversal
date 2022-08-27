@@ -44,6 +44,7 @@ for (var _i = 0, file_traversal_order_1 = file_traversal_order; _i < file_traver
     var sourceCode_1 = fs.readFileSync(file, "utf8");
     var tree_1 = parser.parse(sourceCode_1);
     _a = (0, typeInference_1.typeInference)(tree_1, custom_functions, classes), var_types = _a[0], custom_functions = _a[1];
+    console.log(var_types);
     if (file == args[0]) {
         var filename = "main";
     }

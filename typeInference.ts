@@ -131,7 +131,6 @@ function inferTypeFromAssignment(tree, custom_functions, classes) {
         switch (c.nodeType) {
             case g.SyntaxType.Assignment: {
                 let node = c.currentNode;
-                
                 // If LHS is an identifier, type is same as RHS
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
                     const [type, ndim, dim, ismatrix] = inferType(node.rightNode, var_types, custom_functions, classes);

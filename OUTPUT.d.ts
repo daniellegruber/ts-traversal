@@ -184,15 +184,21 @@ export const enum SyntaxType {
   CellSubscript = "cell_subscript",
   ComparisonOperator = "comparison_operator",
   Complex = "complex",
-  ConditionalExpression = "conditional_expression",
   ContinueStatement = "continue_statement",
   ElseClause = "else_clause",
   ElseifClause = "elseif_clause",
   ExpressionStatement = "expression_statement",
   ForStatement = "for_statement",
+  FormatSpecifier = "format_specifier",
   FunctionDefinition = "function_definition",
   IfStatement = "if_statement",
+  IgnoreOutput = "ignore_output",
   Keyword = "keyword",
+  KeywordBinaryOperator = "keyword_binary_operator",
+  KeywordBooleanOperator = "keyword_boolean_operator",
+  KeywordComparisonOperator = "keyword_comparison_operator",
+  KeywordTransposeOperator = "keyword_transpose_operator",
+  KeywordUnaryOperator = "keyword_unary_operator",
   Matrix = "matrix",
   Module = "module",
   Parameters = "parameters",
@@ -217,9 +223,11 @@ export const enum SyntaxType {
 
 export type UnnamedType =
   | "\""
+  | "\"\""
   | "&"
   | "&&"
   | "'"
+  | "''"
   | "("
   | ")"
   | "*"
@@ -273,6 +281,8 @@ export type SyntaxNode =
   | CompoundStatementNode
   | SimpleStatementNode
   | ExpressionNode
+  | KeywordExpressionNode
+  | KeywordPrimaryExpressionNode
   | ParameterNode
   | PrimaryExpressionNode
   | AssignmentNode
@@ -287,15 +297,21 @@ export type SyntaxNode =
   | CellSubscriptNode
   | ComparisonOperatorNode
   | ComplexNode
-  | ConditionalExpressionNode
   | ContinueStatementNode
   | ElseClauseNode
   | ElseifClauseNode
   | ExpressionStatementNode
   | ForStatementNode
+  | FormatSpecifierNode
   | FunctionDefinitionNode
   | IfStatementNode
+  | IgnoreOutputNode
   | KeywordNode
+  | KeywordBinaryOperatorNode
+  | KeywordBooleanOperatorNode
+  | KeywordComparisonOperatorNode
+  | KeywordTransposeOperatorNode
+  | KeywordUnaryOperatorNode
   | MatrixNode
   | ModuleNode
   | ParametersNode
@@ -308,9 +324,11 @@ export type SyntaxNode =
   | UnaryOperatorNode
   | WhileStatementNode
   | UnnamedNode<"\"">
+  | UnnamedNode<"\"\"">
   | UnnamedNode<"&">
   | UnnamedNode<"&&">
   | UnnamedNode<"'">
+  | UnnamedNode<"''">
   | UnnamedNode<"(">
   | UnnamedNode<")">
   | UnnamedNode<"*">
@@ -378,6 +396,7 @@ export type CompoundStatementNode =
 
 export type SimpleStatementNode = 
   | BreakStatementNode
+  | CommentNode
   | ContinueStatementNode
   | ExpressionStatementNode
   ;
@@ -385,8 +404,34 @@ export type SimpleStatementNode =
 export type ExpressionNode = 
   | BooleanOperatorNode
   | ComparisonOperatorNode
-  | ConditionalExpressionNode
   | PrimaryExpressionNode
+  ;
+
+export type KeywordExpressionNode = 
+  | KeywordBooleanOperatorNode
+  | KeywordComparisonOperatorNode
+  | KeywordPrimaryExpressionNode
+  ;
+
+export type KeywordPrimaryExpressionNode = 
+  | AttributeNode
+  | CallOrSubscriptNode
+  | CellNode
+  | CellSubscriptNode
+  | ComplexNode
+  | EllipsisNode
+  | FalseNode
+  | FloatNode
+  | IdentifierNode
+  | IntegerNode
+  | KeywordNode
+  | KeywordBinaryOperatorNode
+  | KeywordTransposeOperatorNode
+  | KeywordUnaryOperatorNode
+  | MatrixNode
+  | ParenthesizedExpressionNode
+  | StringNode
+  | TrueNode
   ;
 
 export type ParameterNode = 
@@ -449,13 +494,13 @@ export interface BreakStatementNode extends NamedNodeBase {
 
 export interface CallOrSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CallOrSubscript;
-  args_or_subscriptNodes: (ExpressionNode | KeywordNode | SliceNode)[];
+  args_or_subscriptNodes: (UnnamedNode<":"> | ExpressionNode | KeywordExpressionNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
 }
 
 export interface CatchClauseNode extends NamedNodeBase {
   type: SyntaxType.CatchClause;
-  bodyNode: BlockNode;
+  bodyNode?: BlockNode;
   exceptionNode?: ExpressionNode;
 }
 
@@ -465,7 +510,7 @@ export interface CellNode extends NamedNodeBase {
 
 export interface CellSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CellSubscript;
-  subscriptNodes: (ExpressionNode | KeywordNode | SliceNode)[];
+  subscriptNodes: (UnnamedNode<":"> | ExpressionNode | KeywordExpressionNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
 }
 
@@ -478,10 +523,6 @@ export interface ComparisonOperatorNode extends NamedNodeBase {
 
 export interface ComplexNode extends NamedNodeBase {
   type: SyntaxType.Complex;
-}
-
-export interface ConditionalExpressionNode extends NamedNodeBase {
-  type: SyntaxType.ConditionalExpression;
 }
 
 export interface ContinueStatementNode extends NamedNodeBase {
@@ -505,14 +546,18 @@ export interface ExpressionStatementNode extends NamedNodeBase {
 
 export interface ForStatementNode extends NamedNodeBase {
   type: SyntaxType.ForStatement;
-  bodyNode: BlockNode;
+  bodyNode?: BlockNode;
   leftNode: PrimaryExpressionNode;
   rightNode: ExpressionNode | SliceNode;
 }
 
+export interface FormatSpecifierNode extends NamedNodeBase {
+  type: SyntaxType.FormatSpecifier;
+}
+
 export interface FunctionDefinitionNode extends NamedNodeBase {
   type: SyntaxType.FunctionDefinition;
-  bodyNode: BlockNode;
+  bodyNode?: BlockNode;
   nameNode: IdentifierNode;
   parametersNode: ParametersNode;
   return_variableNode?: ReturnValueNode;
@@ -525,8 +570,45 @@ export interface IfStatementNode extends NamedNodeBase {
   consequenceNode?: BlockNode;
 }
 
+export interface IgnoreOutputNode extends NamedNodeBase {
+  type: SyntaxType.IgnoreOutput;
+}
+
 export interface KeywordNode extends NamedNodeBase {
   type: SyntaxType.Keyword;
+}
+
+export interface KeywordBinaryOperatorNode extends NamedNodeBase {
+  type: SyntaxType.KeywordBinaryOperator;
+  leftNode: KeywordPrimaryExpressionNode;
+  operatorNode: UnnamedNode<"*"> | UnnamedNode<"+"> | UnnamedNode<"-"> | UnnamedNode<".*"> | UnnamedNode<"./"> | UnnamedNode<".\\"> | UnnamedNode<".^"> | UnnamedNode<"/"> | UnnamedNode<"\\"> | UnnamedNode<"^">;
+  rightNode: KeywordPrimaryExpressionNode;
+}
+
+export interface KeywordBooleanOperatorNode extends NamedNodeBase {
+  type: SyntaxType.KeywordBooleanOperator;
+  leftNode: KeywordExpressionNode;
+  operatorNode: UnnamedNode<"&"> | UnnamedNode<"&&"> | UnnamedNode<"|"> | UnnamedNode<"||">;
+  rightNode: KeywordExpressionNode;
+}
+
+export interface KeywordComparisonOperatorNode extends NamedNodeBase {
+  type: SyntaxType.KeywordComparisonOperator;
+  leftNode: KeywordExpressionNode;
+  operatorNode: UnnamedNode<"<"> | UnnamedNode<"<="> | UnnamedNode<"=="> | UnnamedNode<">"> | UnnamedNode<">="> | UnnamedNode<"~=">;
+  rightNode: KeywordExpressionNode;
+}
+
+export interface KeywordTransposeOperatorNode extends NamedNodeBase {
+  type: SyntaxType.KeywordTransposeOperator;
+  argumentNode: KeywordPrimaryExpressionNode;
+  operatorNode: UnnamedNode<"'"> | UnnamedNode<".'">;
+}
+
+export interface KeywordUnaryOperatorNode extends NamedNodeBase {
+  type: SyntaxType.KeywordUnaryOperator;
+  argumentNode: KeywordPrimaryExpressionNode;
+  operatorNode: UnnamedNode<"+"> | UnnamedNode<"-"> | UnnamedNode<"~">;
 }
 
 export interface MatrixNode extends NamedNodeBase {
@@ -577,7 +659,7 @@ export interface UnaryOperatorNode extends NamedNodeBase {
 export interface WhileStatementNode extends NamedNodeBase {
   type: SyntaxType.WhileStatement;
   alternativeNode?: ElseClauseNode;
-  bodyNode: BlockNode;
+  bodyNode?: BlockNode;
   conditionNode: ExpressionNode;
 }
 

@@ -18,7 +18,7 @@ export function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
 
 export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
     //console.log("hello2");
-    
+    //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         case g.SyntaxType.Comment:

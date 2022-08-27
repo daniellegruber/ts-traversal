@@ -6,7 +6,6 @@ var gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
 
 
-import { getFilesInPath } from "./helperFunctions";
 import * as g from "./generated";
 import { 
     gotoPreorderSucc, 
@@ -21,6 +20,8 @@ import {
     getClasses,
     getNonClassFilesInPath
 } from "./helperFunctions";
+
+import { parseMatlabFun } from "./builtinFunctions";
 
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
@@ -69,36 +70,26 @@ do {
 } while(gotoPreorderSucc_OnlyMajorTypes(cursor));*/
 
 let tree1 = parser.parse(`
-% this is a comment
-function myfun()
-end
-`);
-
-let tree2 = parser.parse(`
-% this is a comment
-function myfun1()
-end
-function myfun2()
-end
-`);
-
-let tree3 = parser.parse(`
-A = [1,2];
-function myfun()
-end
-`);
-
-let tree4 = parser.parse(`
-A = [1,2];
-B = [1,2];
-`);
-
-let tree5 = parser.parse(`
 % this is a comment 1
-function myfun1()
-end
-% this is a comment 2
+xcorr(x,y)
+A = zeros(2,2)
 `);
+let code = [];
+let cursor = tree1.walk();
+do {
+    const c = cursor as g.TypedTreeCursor;
+    if (c.currentNode.type == g.SyntaxType.CallOrSubscript) {
+        let [expression, code2] = parseMatlabFun(c.currentNode, code);
+        code2.push(expression);
+        console.log(code2);
+    }
+} while(gotoPreorderSucc(cursor));
+
+
+    
+
+
+
 /*
 console.log(fileIsFunction(tree1));
 console.log(fileIsFunction(tree2));
@@ -114,11 +105,11 @@ console.log(findEntryFunction(tree5));*/
 
 //console.log("class folders");
 //console.log(getClassFolders(search_folder));
-console.log("classes");
+/*console.log("classes");
 let classes = getClasses(search_folder);
 console.log(classes);
 for (let c of classes) {
     console.log(c.methods);
-}
+}*/
 //console.log("non-class files");
 //console.log(getNonClassFilesInPath(search_folder));

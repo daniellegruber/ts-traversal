@@ -18,6 +18,7 @@ function gotoPreorderSucc(cursor) {
 exports.gotoPreorderSucc = gotoPreorderSucc;
 function gotoPreorderSucc_OnlyMajorTypes(cursor) {
     //console.log("hello2");
+    //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         case "comment" /* g.SyntaxType.Comment */:

@@ -18,7 +18,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 4,
         n_opt_args: 3,
-        opt_arg_defaults: ['null', '0', 'none']
+        opt_arg_defaults: ['null', '0', 'none'],
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'sort',
@@ -42,63 +45,106 @@ exports.builtin_functions = [
         },
         n_req_args: 2,
         n_opt_args: 1,
-        opt_arg_defaults: ['0']
+        opt_arg_defaults: ['0'],
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'ttest',
         fun_c: 'ttestM',
         args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null
+        n_req_args: 2,
+        n_opt_args: 1,
+        opt_arg_defaults: ['0'],
+        ptr_args: ['h', 'pval', 'ci', 'tstat', 'df', 'sd'],
+        ptr_arg_types: [
+            'bool* restrict',
+            'double* restrict',
+            'double* restrict *',
+            'double* restrict',
+            'double* restrict',
+            'double* restrict'
+        ],
+        return_type: null
     },
     {
         fun_matlab: 'ztest',
         fun_c: 'ztestM',
         args_transform: null,
-        n_req_args: 1,
+        n_req_args: 3,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: ['h', 'pval', 'ci', 'z', 'zcrit'],
+        ptr_arg_types: [
+            'bool* restrict',
+            'double* restrict',
+            'double* restrict *',
+            'double* restrict',
+            'double* restrict'
+        ],
+        return_type: null
     },
     {
         fun_matlab: 'vartest',
         fun_c: 'vartestM',
         args_transform: null,
-        n_req_args: 1,
+        n_req_args: 2,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: ['h', 'pval', 'ci', 'chisqstat', 'df'],
+        ptr_arg_types: [
+            'bool* restrict',
+            'double* restrict',
+            'double* restrict *',
+            'double* restrict',
+            'double* restrict'
+        ],
+        return_type: null
     },
     {
         fun_matlab: 'betapdf',
         fun_c: 'betapdfM',
         args_transform: null,
-        n_req_args: 1,
+        n_req_args: 3,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'exppdf',
         fun_c: 'exppdfM',
         args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null
+        n_req_args: 2,
+        n_opt_args: 1,
+        opt_arg_defaults: ['1'],
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'normpdf',
         fun_c: 'normpdfM',
         args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null
+        n_req_args: 3,
+        n_opt_args: 2,
+        opt_arg_defaults: ['0', '1'],
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'unidpdf',
         fun_c: 'unidpdfM',
         args_transform: null,
-        n_req_args: 1,
+        n_req_args: 2,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'normfit',
@@ -106,7 +152,13 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: ['mu', 'sigma'],
+        ptr_arg_types: [
+            'void* restrict',
+            'void* restrict'
+        ],
+        return_type: null
     },
     {
         fun_matlab: 'unifit',
@@ -114,7 +166,13 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: ['a', 'b'],
+        ptr_arg_types: [
+            'void* restrict',
+            'void* restrict'
+        ],
+        return_type: null
     },
     {
         fun_matlab: 'containers.Map',
@@ -122,7 +180,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'eig',
@@ -130,7 +191,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'abs',
@@ -138,7 +202,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'round',
@@ -146,7 +213,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'floor',
@@ -154,7 +224,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'ceil',
@@ -162,7 +235,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'zeros',
@@ -174,7 +250,10 @@ exports.builtin_functions = [
         },
         n_req_args: null,
         n_opt_args: null,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'ones',
@@ -186,7 +265,10 @@ exports.builtin_functions = [
         },
         n_req_args: null,
         n_opt_args: null,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'strcmp',
@@ -194,7 +276,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 2,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'strcmpi',
@@ -202,7 +287,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 2,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'struct',
@@ -210,7 +298,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'size',
@@ -218,7 +309,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'length',
@@ -226,7 +320,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'sum',
@@ -234,15 +331,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
-    },
-    {
-        fun_matlab: 'std',
-        fun_c: null,
-        args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'prod',
@@ -250,7 +342,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'error',
@@ -258,7 +353,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'permute',
@@ -266,7 +364,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'rand',
@@ -278,7 +379,10 @@ exports.builtin_functions = [
         },
         n_req_args: null,
         n_opt_args: null,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'randn',
@@ -290,7 +394,10 @@ exports.builtin_functions = [
         },
         n_req_args: null,
         n_opt_args: null,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'memmapfile',
@@ -298,15 +405,32 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
     {
         fun_matlab: 'mean',
+        fun_c: 'meanM',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
+    },
+    {
+        fun_matlab: 'std',
         fun_c: null,
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: 'Matrix *'
     },
     {
         fun_matlab: 'isa',
@@ -314,7 +438,10 @@ exports.builtin_functions = [
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
-        opt_arg_defaults: null
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: null
     },
 ];
 //# sourceMappingURL=builtinFunctions.js.map

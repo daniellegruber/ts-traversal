@@ -324,27 +324,18 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             args.push(transformNode(node.namedChildren[i]));
                         }
                         var tmp_var = generateTmpVar();
-                        if (obj_2.args_transform) { // c function has different args than matlab function
-                            var dim_1 = "{" + args.join(", ") + "}";
-                            var ndim_1 = args.length;
-                            if (current_code == "main") {
-                                main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(ndim_1, ", ").concat(dim_1, ");"));
-                            }
-                            else if (current_code == "subprogram") {
-                                function_definitions.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(ndim_1, ", ").concat(dim_1, ");"));
-                            }
+                        if (obj_2.args_transform != null) {
+                            args = obj_2.args_transform(args);
                         }
-                        else { // c function has same args as matlab function
-                            var n_args = node.namedChildCount - 1;
-                            if (n_args < obj_2.n_req_args) {
-                                args = args.concat(obj_2.opt_arg_defaults.slice(0, obj_2.n_req_args - n_args));
-                            }
-                            if (current_code == "main") {
-                                main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(args, ");"));
-                            }
-                            else if (current_code == "subprogram") {
-                                function_definitions.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(args, ");"));
-                            }
+                        var n_args = node.namedChildCount - 1;
+                        if (n_args < obj_2.n_req_args) {
+                            args = args.concat(obj_2.opt_arg_defaults.slice(0, obj_2.n_req_args - n_args));
+                        }
+                        if (current_code == "main") {
+                            main_function.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(args, ");"));
+                        }
+                        else if (current_code == "subprogram") {
+                            function_definitions.push("Matrix * ".concat(tmp_var, " = ").concat(obj_2.fun_c, "(").concat(args, ");"));
                         }
                         return tmp_var;
                         // Is a subscript

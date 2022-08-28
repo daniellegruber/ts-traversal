@@ -397,26 +397,21 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         }
                 
                         var tmp_var = generateTmpVar();
-                        if (obj.args_transform) { // c function has different args than matlab function
-                            let dim = "{" + args.join(", ") + "}";
-                            let ndim = args.length;
-                            if (current_code == "main") {
-                                main_function.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${ndim}, ${dim});`);
-                            } else if (current_code == "subprogram") {
-                                function_definitions.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${ndim}, ${dim});`);
-                            }
+                        if (obj.args_transform != null) {
+                            args = obj.args_transform(args);
                         }
-                        else { // c function has same args as matlab function
-                            let n_args = node.namedChildCount - 1;
-                            if (n_args < obj.n_req_args) {
-                                args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
-                            }
-                            if (current_code == "main") {
-                                main_function.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${args});`);
-                            } else if (current_code == "subprogram") {
-                                function_definitions.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${args});`)
-                            }
+                        
+                        let n_args = node.namedChildCount - 1;
+                        if (n_args < obj.n_req_args) {
+                            args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
                         }
+                        
+                        if (current_code == "main") {
+                            main_function.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${args});`);
+                        } else if (current_code == "subprogram") {
+                            function_definitions.push(`Matrix * ${tmp_var} = ${obj.fun_c}(${args});`)
+                        }
+                        
                 
                         return tmp_var;
                         

@@ -21,7 +21,10 @@ exports.builtin_functions = [
         opt_arg_defaults: ['null', '0', 'none'],
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'sort',
@@ -48,7 +51,10 @@ exports.builtin_functions = [
         opt_arg_defaults: ['0'],
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'ttest',
@@ -111,7 +117,10 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'exppdf',
@@ -122,7 +131,10 @@ exports.builtin_functions = [
         opt_arg_defaults: ['1'],
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'normpdf',
@@ -133,7 +145,10 @@ exports.builtin_functions = [
         opt_arg_defaults: ['0', '1'],
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'unidpdf',
@@ -144,7 +159,10 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'normfit',
@@ -174,7 +192,7 @@ exports.builtin_functions = [
         ],
         return_type: null
     },
-    {
+    /*{ // Matrix * reindexM(Matrix* restrict m, int size, ...)
         fun_matlab: 'containers.Map',
         fun_c: 'reindexM',
         args_transform: null,
@@ -183,8 +201,11 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
-    },
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
+    },*/
     {
         fun_matlab: 'eig',
         fun_c: 'eigM',
@@ -253,7 +274,10 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'ones',
@@ -268,51 +292,89 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'strcmp',
-        fun_c: null,
+        fun_c: 'strcmp',
         args_transform: null,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            type: 'int',
+            ndim: 2,
+            dim: [1, 1],
+            ismatrix: false,
+            ispointer: false
+        }
     },
     {
         fun_matlab: 'strcmpi',
-        fun_c: null,
+        fun_c: 'strcmpi',
         args_transform: null,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            type: 'int',
+            ndim: 2,
+            dim: [1, 1],
+            ismatrix: false,
+            ispointer: false
+        }
     },
     {
         fun_matlab: 'struct',
         fun_c: null,
         args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
+        n_req_args: null,
+        n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
         return_type: null
     },
     {
-        fun_matlab: 'size',
-        fun_c: null,
+        fun_matlab: 'numel',
+        fun_c: 'getsizeM',
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            type: 'int',
+            ndim: 2,
+            dim: [1, 1],
+            ismatrix: false,
+            ispointer: false
+        }
+    },
+    {
+        fun_matlab: 'size',
+        fun_c: 'getDimsM',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: 'int',
+            ndim: null,
+            dim: null,
+            ismatrix: false,
+            ispointer: true
+        }
     },
     {
         fun_matlab: 'length',
@@ -382,7 +444,9 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true
+        }
     },
     {
         fun_matlab: 'randn',
@@ -397,7 +461,9 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true
+        }
     },
     {
         fun_matlab: 'memmapfile',
@@ -419,7 +485,9 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true
+        }
     },
     {
         fun_matlab: 'std',
@@ -430,7 +498,9 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: 'Matrix *'
+        return_type: {
+            ismatrix: true
+        }
     },
     {
         fun_matlab: 'isa',

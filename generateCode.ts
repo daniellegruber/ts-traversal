@@ -263,7 +263,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 // If LHS is a subscript
                 if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript) {
                     var lhs:string = generateTmpVar();
-                    let [,,dim,] = inferType(node.leftNode, var_types, custom_functions, classes);
+                    let [,,dim,,] = inferType(node.leftNode, var_types, custom_functions, classes);
                     
                     // already a linear idx
                     if (node.leftNode.namedChildCount == 2) {
@@ -288,17 +288,16 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         console.log(idx);
                     }
                     
-                    //pushToMain(`Vector *data = ${node.leftNode.valueNode.text}.data;`)
-                    pushToMain(`void *data = ${node.leftNode.valueNode.text}.data.data;`)
+                    pushToMain(`void *data = getdataM(${node.leftNode.valueNode.text});`)
                 } else {
                     var lhs:string = transformNode(node.leftNode);
                 }
                     
                 
-                
+                var [type, ndim, dim, ismatrix, ispointer] = inferType(node.rightNode, var_types, custom_functions, classes);
+                var init_flag = false;
                 if (node.rightNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Cell) {
                     // https://www.mathworks.com/help/coder/ug/homogeneous-vs-heterogeneous-cell-arrays.html
-                    var [type, ndim, dim, ismatrix] = inferType(node.rightNode, var_types, custom_functions, classes);
                 
                     if (type == 'heterogeneous') {
                         let expression1 = [];
@@ -320,7 +319,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                                     expression2.push(`strcpy(${lhs}.f${i}, ${child.text.replace(/'/g, '"')});`);
                             } else {
                                 expression1.push(`${child_type} f${i};`);
-                                expression2.push(`${lhs}.f${i} = ${child.text}`)
+                                expression2.push(`${lhs}.f${i} = ${child.text};`)
                             }
                             
                         }
@@ -329,11 +328,13 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         numCellStruct += 1;
                         expression1.push(expression2.join("\n"));
                         pushToMain(expression1.join("\n") + "\n");
+                       
                     } else {
                         let obj = type_to_matrix_type.find(x => x.type === type);
                         if (obj != null) {
                             pushToMain(initializeMatrix(node.rightNode, lhs, ndim, dim, type));
                         }
+                        
                     }
                 // TO DO: what do when RHS is class or function call
                 } else if (node.rightNode.type == g.SyntaxType.CallOrSubscript) {
@@ -345,18 +346,55 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         // Is a function call
                         var rhs:string = transformNode(node.rightNode);
                     }
-                    pushToMain(`${lhs} = ${rhs}`);
+                    init_flag = true;
                 } else {
                     var rhs:string = transformNode(node.rightNode);
-                    pushToMain(`${lhs} = ${rhs}`);
+                    init_flag = true;
+                }
+                
+                // COME BACK HERE
+                
+                if (init_flag) {
+                    let var_type = var_types.find(x => x.name === lhs);
+                    if (var_type != null && var_type != undefined) {
+                        if (var_type.initialized || (var_type.type != type)) {
+                            (`${lhs} = ${rhs}`);
+                        } else {
+                            if (ismatrix) {
+                                pushToMain(`Matrix * ${lhs} = ${rhs};`);
+                            } else if (ispointer) {
+                                pushToMain(`${type} * ${lhs} = ${rhs};`);
+                            } else {
+                                pushToMain(`${type} ${lhs} = ${rhs};`);
+                            }
+                            var_types = var_types.filter(function(e) { return e.name !== var_type.name });
+                            var_type.initialized = true;
+                            var_types.push(var_type);
+                        }
+                    } else {
+                        if (ismatrix) {
+                            pushToMain(`Matrix * ${lhs} = ${rhs};`);
+                        } else if (ispointer) {
+                            pushToMain(`${type} * ${lhs} = ${rhs};`);
+                        } else {
+                            pushToMain(`${type} ${lhs} = ${rhs};`);
+                        }
+                        var_types.push({
+                            name: lhs,
+                            type: type,
+                            ndim: ndim,
+                            dim: dim,
+                            ismatrix: ismatrix,
+                            initialized: true
+                        });
+                    }
                 }
                 
                 // If LHS is a subscript
                 if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript) {
                     
                     if (ismatrix) {
-                        //pushToMain(`Vector *data2 = ${lhs}.data;`)
-                        pushToMain(`void *data2 = ${lhs}.data.data;`)
+                        pushToMain(`void *data2 = getdataM(${lhs});`)
                         for (let i = 0; i < idx.length; i++) {
                             pushToMain(`memcpy(&data[${idx[i]}], data2[${i}]);`); 
                         }
@@ -526,21 +564,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         }
     }
     
-    // Initialize variables
-    // -----------------------------------------------------------------------------
-    var var_initializations = [];
-    function initializeVariables() {
-        for (let var_type of var_types) {
-            if (var_type.type == 'char' && !var_type.ismatrix) {
-                var_initializations.push("char * " + var_type.name + ";");
-            }
-            else if (!var_type.ismatrix) {
-                var_initializations.push(var_type.type + " " + var_type.name + ";");
-            }
-        }
-    }
-    
-    
     // Initialize matrices
     // -----------------------------------------------------------------------------
     
@@ -580,7 +603,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         switch (node.type) {
             case g.SyntaxType.UnaryOperator: {
                 let obj = unaryMapping.find(x => x.operator === node.operatorNode.type);
-                let [type, , , ismatrix] = inferType(node.argumentNode, var_types, custom_functions, classes);
+                let [type,,,ismatrix,] = inferType(node.argumentNode, var_types, custom_functions, classes);
                 
                 if (ismatrix) {
                     pushToMain(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
@@ -594,7 +617,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             }
             case g.SyntaxType.TransposeOperator: {
                 let obj = transposeMapping.find(x => x.operator === node.operatorNode.type);
-                let [type, , , ismatrix] = inferType(node.argumentNode, var_types, custom_functions, classes);
+                let [type,,,ismatrix,] = inferType(node.argumentNode, var_types, custom_functions, classes);
                 
                 if (ismatrix) {
                     pushToMain(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
@@ -608,8 +631,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             case g.SyntaxType.BooleanOperator:
             case g.SyntaxType.BinaryOperator: {
                 let obj = binaryMapping.find(x => x.operator === node.operatorNode.type);
-                let [left_type, , , left_ismatrix] = inferType(node.leftNode, var_types, custom_functions, classes);
-                let [right_type, , , right_ismatrix] = inferType(node.rightNode, var_types, custom_functions, classes);
+                let [left_type,,,left_ismatrix,] = inferType(node.leftNode, var_types, custom_functions, classes);
+                let [right_type,,,right_ismatrix,] = inferType(node.rightNode, var_types, custom_functions, classes);
                 
                 if (left_ismatrix || right_ismatrix) {
                     pushToMain(`Matrix * ${tmp_var} = ${obj.function}(${node.leftNode.text}, ${node.rightNode.text})`);
@@ -628,8 +651,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         if (node.isNamed && node.nameNode != null) {
             var param_list = [];
             for (let param of node.parametersNode.namedChildren) {
-                let [param_type, , ,] = inferType(param, var_types, custom_functions, classes);
-                param_list.push(param_type + " " + param.text);
+                let [param_type,,,,] = inferType(param, var_types, custom_functions, classes);
+                param_list.push(`${param_type} ${param.text}`);
             }
             
             if (node.children[1].type == g.SyntaxType.ReturnValue) {
@@ -639,9 +662,9 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 if (return_node.type == g.SyntaxType.Matrix) {
                     let ptr_declaration = [];
                     for (let return_var of return_node.namedChildren) {
-                        ptr_declaration.push("*p_" + return_var.text + " = " + return_var.text + ";");
-                        var [return_type, , ,] = inferType(return_var, var_types, custom_functions, classes);
-                        param_list.push(return_type + "* p_" + return_var.text)
+                        ptr_declaration.push(`*p_${return_var.text} = ${return_var.text};`);
+                        var [return_type,,,,] = inferType(return_var, var_types, custom_functions, classes);
+                        param_list.push(`${return_type}* p_${return_var.text}`)
                     }
                     var ptr_declaration_joined = ptr_declaration.join("\n");
                     
@@ -670,17 +693,17 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         var param_list_joined = "(" + param_list.join(", ") + ")";
                     }
                     
-                    var [return_type, , ,] = inferType(return_node, var_types, custom_functions, classes);
-                    if (return_type == "char") {
-                        return_type = "char *";
+                    var [return_type,,,,ispointer] = inferType(return_node, var_types, custom_functions, classes);
+                    if (ispointer) {
+                        return_type = `${return_type} *`;
                     }
                     
-                    function_declarations.push(return_type + " " + node.nameNode.text + param_list_joined + ";");
+                    function_declarations.push(`${return_type} ${node.nameNode.text}${param_list_joined};`);
                     if (file_is_function) {
-                        main_function.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
+                        main_function.push(`\n${return_type} ${node.nameNode.text}${param_list_joined};`);
                         main_function.push("{");
                     } else {
-                        function_definitions.push("\n" + return_type + " " + node.nameNode.text + param_list_joined);
+                        function_definitions.push(`\n${return_type} ${node.nameNode.text}${param_list_joined};`);
                         function_definitions.push("{");
                     }
                 }
@@ -727,11 +750,11 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 
         for (let i=0; i<node.namedChildCount; i++) {
             let child = node.namedChildren[i];
-            let [child_type,,,] = inferType(child, var_types, custom_functions, classes);
+            let [child_type,,,,] = inferType(child, var_types, custom_functions, classes);
             
             if (child_type == "keyword") {
                 
-                let [,ndim,dim,] = inferType(node.parent.valueNode, var_types, custom_functions, classes);
+                let [,ndim,dim,,] = inferType(node.parent.valueNode, var_types, custom_functions, classes);
                 let firstNode = node.parent.namedChildren[1];
                 let current_dim = 0;
                 let dummyNode = node;
@@ -801,15 +824,11 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         return idx;
         
     }
-    // Call functions
+    
+    // Put together generated code
     // -----------------------------------------------------------------------------
     
-    
-    
-    initializeVariables();
-    
     main();
-    
     
     generated_code.push(link.join("\n"));
     if (function_definitions.length != 0) {
@@ -822,8 +841,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
 int ${filename}(void)
 {`);
     }
-    generated_code.push("\n// Initialize variables");
-    generated_code.push(var_initializations.join("\n"));
+    //generated_code.push("\n// Initialize variables");
+    //generated_code.push(var_initializations.join("\n"));
     generated_code.push("\n" + main_function.join("\n"));
     if (!file_is_function){
         generated_code.push("return 0;");

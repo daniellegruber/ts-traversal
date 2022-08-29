@@ -13,13 +13,6 @@ unknown myfun2(void);
 int main(void)
 {
 
-// Initialize variables
-float a;
-bool c;
-complex d;
-unknown myarr;
-unknown b;
-
 
 int ndim = 2;
 int dim = {2,3};
@@ -49,13 +42,13 @@ free(input);
 
 
 Matrix * tmp1 = mtimesM(B, A)
-C = tmp1
+Matrix * C = tmp1;
 
-a = 2.5
+float a = 2.5;
 
-c = a < b
+bool c = a < b;
 
-d = 1 + 3.444*I
+complex d = 1 + 3.444*I;
 
 
 int ndim = 2;
@@ -70,11 +63,11 @@ free(input);
 
 
 Matrix * tmp4 = ctransposeM(D)
-E = tmp4
+Matrix * E = tmp4;
 
 unknown* p_F
 unknown* p_G
-undefined = myfun1(1, 2, *p_F, *p_G)
+unknown undefined = myfun1(1, 2, *p_F, *p_G);
 
 
 struct cell0 {
@@ -84,12 +77,12 @@ int f1;
 
 cell0 H;
 strcpy(H.f0, "hello");
-H.f1 = 1
+H.f1 = 1;
 
 
 double tmp5;
 indexM(A, &tmp5, {1, 2}, {1, 2, 3});
-myvar = tmp5
+Matrix * myvar = tmp5;
 
 // This is a comment
 
@@ -106,11 +99,11 @@ else
 {
 f;
 }
-myarr = zerosM(2,{2, 3})
+Matrix * myarr = zerosM(2,{2, 3});
 
 double tmp7;
 indexM(myfun3, &tmp7, a);
-b = tmp7
+unknown b = tmp7;
 
 
 
@@ -132,8 +125,8 @@ for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
 indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
 a;
 }
-F = f + g
-G = f - g
+unknown F = f + g;
+unknown G = f - g;
 return 0;
 }
 
@@ -155,9 +148,9 @@ a;
 }
 }
 
-unknown myfun2(void)
+unknown myfun2(void);
 {
-outstr = "hello world"
+char * outstr = "hello world";
 
 
 }

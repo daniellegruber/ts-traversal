@@ -1,6 +1,6 @@
 const fs = require("fs");
 import * as g from "./generated";
-import { typeInference, inferType, Type } from "./typeInference";
+import { Type } from "./typeInference";
 import { 
     gotoPreorderSucc, 
     gotoPreorderSucc_OnlyMajorTypes, 

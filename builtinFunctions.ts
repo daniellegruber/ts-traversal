@@ -3,6 +3,7 @@ import {Type} from "./typeInference";
 type functionMapping = {
       fun_matlab: string;
       fun_c: string;
+      arg_types: Array<string>;
       args_transform: { (data: Array<string>): Array<string>; }; // boolean; // true if the c function takes different arguments than the matlab function
       n_req_args: number; // # required args
       n_opt_args: number; // # optional args
@@ -21,8 +22,505 @@ function parseCharArg(arg) {
         return null;
     }
 }
+    
+    
+export const binaryMapping: functionMapping[] = [
+    { // Matrix * plusM(Matrix *m, Matrix *n)
+        fun_matlab: '+', 
+        fun_c: 'plusM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * minusM(Matrix *m, Matrix *n)
+        fun_matlab: '-', 
+        fun_c: 'minusM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * scaleM(Matrix* restrict m, void* restrict scalar, int type)
+        fun_matlab: '*', 
+        fun_c: 'scaleM', 
+        arg_types: ['matrix','scalar'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * mtimesM(Matrix *m, Matrix *n)
+        fun_matlab: '*', 
+        fun_c: 'mtimesM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * mrdivideM(Matrix *m, Matrix *n)
+        fun_matlab: '/', 
+        fun_c: 'mrdivideM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * mldivideM(Matrix *m, Matrix *n)
+        fun_matlab: '\\', 
+        fun_c: 'mldivideM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * mpowerM(Matrix *m, void *scalar, int type)
+        fun_matlab: '^', 
+        fun_c: 'mpowerM', 
+        arg_types: ['matrix','scalar'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * timesM(Matrix *m, Matrix *n)
+        fun_matlab: '.*', 
+        fun_c: 'timesM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * rdivideM(Matrix *m, Matrix *n)
+        fun_matlab: './', 
+        fun_c: 'rdivideM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * ldivideM(Matrix *m, Matrix *n)
+        fun_matlab: '.\\', 
+        fun_c: 'ldivideM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * powerM(Matrix *m, Matrix *n)
+        fun_matlab: '.^', 
+        fun_c: 'powerM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * ltM(Matrix *m, Matrix *n)
+        fun_matlab: '<', 
+        fun_c: 'ltM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * leM(Matrix *m, Matrix *n)
+        fun_matlab: '<=', 
+        fun_c: 'leM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * gtM(Matrix *m, Matrix *n)
+        fun_matlab: '>', 
+        fun_c: 'gtM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * geM(Matrix *m, Matrix *n)
+        fun_matlab: '>=', 
+        fun_c: 'geM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * equalM(Matrix *m, Matrix *n)
+        fun_matlab: '==', 
+        fun_c: 'equalM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * neM(Matrix *m, Matrix *n)
+        fun_matlab: '~=', 
+        fun_c: 'neM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * andM(Matrix *m, Matrix *n)
+        fun_matlab: '&', 
+        fun_c: 'andM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * orM(Matrix *m, Matrix *n)
+        fun_matlab: '|', 
+        fun_c: 'orM', 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { 
+        fun_matlab: '&&', 
+        fun_c: null, 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { 
+        fun_matlab: '||', 
+        fun_c: null, 
+        arg_types: ['matrix','matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+];    
+
+
+export const unaryMapping: functionMapping[] = [
+    { 
+        fun_matlab: '+', 
+        fun_c: null, 
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { 
+        fun_matlab: '-', 
+        fun_c: null, 
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * notM(Matrix* restrict m)
+        fun_matlab: '~', 
+        fun_c: 'notM', 
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    }
+];
+
+export const transposeMapping: functionMapping[] = [
+    { // Matrix * ctransposeM(Matrix* restrict m)
+        fun_matlab: "'", 
+        fun_c: 'ctransposeM', 
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    { // Matrix * transposeM(Matrix* restrict m)
+        fun_matlab: ".'", 
+        fun_c: 'transposeM', 
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    }
+];
+
 
 export const builtin_functions = [
+    { // bool isEqualM(Matrix *m, Matrix *n)
+        fun_matlab: 'isequal', 
+        fun_c: 'isEqualM', 
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: 'bool',
+            ndim: 2,
+            dim: [1,1],
+            ismatrix: false,
+            ispointer: false
+        }
+    },
     { // Matrix * xcorrM(Matrix *x, Matrix *y, int maxlag, char *scale)
         fun_matlab: 'xcorr', 
         fun_c: 'xcorrM', 
@@ -389,8 +887,8 @@ export const builtin_functions = [
         fun_matlab: 'length', 
         fun_c: null, 
         args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
+        n_req_args: null,
+        n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,

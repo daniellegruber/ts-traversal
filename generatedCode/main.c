@@ -44,6 +44,9 @@ free(input);
 Matrix * tmp1 = mtimesM(B, A)
 Matrix * C = tmp1;
 
+Matrix * tmp2 = scaleM(3, C)
+Matrix * C_scaled = tmp2;
+
 float a = 2.5;
 
 bool c = a < b;
@@ -62,8 +65,8 @@ writeM( D, 2, input);
 free(input);
 
 
-Matrix * tmp4 = ctransposeM(D)
-Matrix * E = tmp4;
+Matrix * tmp5 = ctransposeM(D)
+Matrix * E = tmp5;
 
 unknown* p_F
 unknown* p_G
@@ -80,9 +83,9 @@ strcpy(H.f0, "hello");
 H.f1 = 1;
 
 
-double tmp5;
-indexM(A, &tmp5, {1, 2}, {1, 2, 3});
-Matrix * myvar = tmp5;
+double tmp6;
+indexM(A, &tmp6, {1, 2}, {1, 2, 3});
+Matrix * myvar = tmp6;
 
 // This is a comment
 
@@ -101,9 +104,9 @@ f;
 }
 Matrix * myarr = zerosM(2,{2, 3});
 
-double tmp7;
-indexM(myfun3, &tmp7, a);
-unknown b = tmp7;
+double tmp8;
+indexM(myfun3, &tmp8, a);
+unknown b = tmp8;
 
 
 
@@ -120,9 +123,9 @@ writeM( i, 3, input);
 free(input);
 
 
-int tmp9;
-for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
-indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
+int tmp10;
+for (tmp10 = 1; tmp10 <= 3; ++tmp10) {
+indexM(tmp9, &i, tmp9 -> ndim=1, tmp10);
 a;
 }
 unknown F = f + g;

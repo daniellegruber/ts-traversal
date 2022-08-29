@@ -10,7 +10,7 @@ import {
     findEntryFunction
 } from "./treeTraversal";
 import { writeToFile } from "./helperFunctions";
-import { builtin_functions } from "./builtinFunctions";
+import { binaryMapping, unaryMapping, transposeMapping, builtin_functions } from "./builtinFunctions";
 
 // Main
 export function generateCode(filename, tree, out_folder, custom_functions, classes, var_types) {
@@ -60,46 +60,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         {type: "complex", matrix_type: 2},
         {type: "char", matrix_type: 3}
     ];
-
-    
-    type operatorMapping = {
-      operator: string;
-      function: string;
-    };
-    
-    
-    const binaryMapping: operatorMapping[] = [
-            {operator: '+', function: "addM"},
-            {operator: '-', function: "minusM"},
-            {operator: '*', function: "mtimesM"},
-            {operator: '/', function: "mrdivideM"},
-            {operator: '\\', function: "mldivideM"},
-            {operator: '^', function: "mpowerM"},
-            {operator: '.*', function: "timesM"},
-            {operator: './', function: "rdivideM"},
-            {operator: '.\\', function: "ldivideM"},
-            {operator: '.^', function: "powerM"},
-            {operator: '<', function: "ltM"},
-            {operator: '<=', function: "leM"},
-            {operator: '==', function: "eqM"},
-            {operator: '>', function: "gtM"},
-            {operator: '>=', function: "geM"},
-            {operator: '~=', function: "neqM"},
-            {operator: '&&', function: "FILLIN"},
-            {operator: '||', function: "FILLIN"},
-            {operator: '&', function: "andM"},
-            {operator: '|', function: "orM"},
-        ];    
-    const unaryMapping: operatorMapping[] = [
-            {operator: "+", function: "FILLIN"},
-            {operator: "-", function: "FILLIN"},
-            {operator: "~", function: "notM"}
-        ];
-    
-    const transposeMapping: operatorMapping[] = [
-            {operator: "'", function: "ctransposeM"},
-            {operator: ".'", function: "tranposeM"}
-        ];
     
     var file_is_function = false;
     
@@ -602,45 +562,92 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         var tmp_var = generateTmpVar();
         switch (node.type) {
             case g.SyntaxType.UnaryOperator: {
-                let obj = unaryMapping.find(x => x.operator === node.operatorNode.type);
                 let [type,,,ismatrix,] = inferType(node.argumentNode, var_types, custom_functions, classes);
-                
+                let arg_types = [];
                 if (ismatrix) {
-                    pushToMain(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
-                    return tmp_var;
+                    arg_types.push('matrix');
                 } else {
-                    return `${obj.operator}${transformNode(node.argumentNode)}`;
+                    arg_types.push('scalar');
                 }
-                
+                let matches = unaryMapping.filter(function(e) { return e.fun_matlab === node.operatorNode.type });
+                let obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types));
+                if (obj == null || obj == undefined) {
+                    obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types.reverse()));
+                    if (obj == null || obj == undefined) {
+                        return `${node.operatorNode.type}${transformNode(node.argumentNode)}`;
+                    } 
+                }
+                if (obj.return_type.ismatrix) {
+                    var return_type = `Matrix *`;
+                } else if (obj.return_type.ispointer) {
+                    var return_type = `${obj.return_type.type} *`;
+                } else {
+                    var return_type = `${obj.return_type.type}`;
+                }
+                pushToMain(`${return_type} ${tmp_var} = ${obj.fun_c}(${node.argumentNode.text})`);
+                return tmp_var;
                 break;
-                        
             }
             case g.SyntaxType.TransposeOperator: {
-                let obj = transposeMapping.find(x => x.operator === node.operatorNode.type);
                 let [type,,,ismatrix,] = inferType(node.argumentNode, var_types, custom_functions, classes);
-                
+                let arg_types = [];
                 if (ismatrix) {
-                    pushToMain(`Matrix * ${tmp_var} = ${obj.function}(${node.argumentNode.text})`);
-                    return tmp_var;
+                    arg_types.push('matrix');
                 } else {
-                    return `${transformNode(node.argumentNode)}${obj.operator}`;
+                    arg_types.push('scalar');
                 }
+                let matches = transposeMapping.filter(function(e) { return e.fun_matlab === node.operatorNode.type });
+                let obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types));
+                if (obj == null || obj == undefined) {
+                    obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types.reverse()));
+                    if (obj == null || obj == undefined) {
+                        return `${transformNode(node.argumentNode)}${node.operatorNode.type}`;
+                    } 
+                }
+                if (obj.return_type.ismatrix) {
+                    var return_type = `Matrix *`;
+                } else if (obj.return_type.ispointer) {
+                    var return_type = `${obj.return_type.type} *`;
+                } else {
+                    var return_type = `${obj.return_type.type}`;
+                }
+                pushToMain(`${return_type} ${tmp_var} = ${obj.fun_c}(${node.argumentNode.text})`);
+                return tmp_var;
                 break;
             }
             case g.SyntaxType.ComparisonOperator:
             case g.SyntaxType.BooleanOperator:
             case g.SyntaxType.BinaryOperator: {
-                let obj = binaryMapping.find(x => x.operator === node.operatorNode.type);
                 let [left_type,,,left_ismatrix,] = inferType(node.leftNode, var_types, custom_functions, classes);
                 let [right_type,,,right_ismatrix,] = inferType(node.rightNode, var_types, custom_functions, classes);
-                
-                if (left_ismatrix || right_ismatrix) {
-                    pushToMain(`Matrix * ${tmp_var} = ${obj.function}(${node.leftNode.text}, ${node.rightNode.text})`);
-                    return tmp_var;
+                let arg_types = [];
+                if (left_ismatrix) {
+                    arg_types.push('matrix')
                 } else {
-                    return `${transformNode(node.leftNode)} ${obj.operator} ${transformNode(node.rightNode)}`;
+                    arg_types.push('scalar')
                 }
-                
+                if (right_ismatrix) {
+                    arg_types.push('matrix')
+                } else {
+                    arg_types.push('scalar')
+                }
+                let matches = binaryMapping.filter(function(e) { return e.fun_matlab === node.operatorNode.type });
+                let obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types));
+                if (obj == null || obj == undefined) {
+                    obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types.reverse()));
+                    if (obj == null || obj == undefined) {
+                        return `${transformNode(node.leftNode)} ${node.operatorNode.type} ${transformNode(node.rightNode)}`;
+                    } 
+                }
+                if (obj.return_type.ismatrix) {
+                    var return_type = `Matrix *`;
+                } else if (obj.return_type.ispointer) {
+                    var return_type = `${obj.return_type.type} *`;
+                } else {
+                    var return_type = `${obj.return_type.type}`;
+                }
+                pushToMain(`${return_type} ${tmp_var} = ${obj.fun_c}(${node.leftNode.text}, ${node.rightNode.text})`);
+                return tmp_var;
                 break;
             }
         }

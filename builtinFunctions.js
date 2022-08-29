@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.builtin_functions = void 0;
+exports.builtin_functions = exports.transposeMapping = exports.unaryMapping = exports.binaryMapping = void 0;
 function parseCharArg(arg) {
     var regex = /(?<=')(.*?)(?=')|(?<=")(.*?)(?=")/;
     var match = arg.match(regex);
@@ -11,7 +11,498 @@ function parseCharArg(arg) {
         return null;
     }
 }
+exports.binaryMapping = [
+    {
+        fun_matlab: '+',
+        fun_c: 'plusM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '-',
+        fun_c: 'minusM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '*',
+        fun_c: 'scaleM',
+        arg_types: ['matrix', 'scalar'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '*',
+        fun_c: 'mtimesM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '/',
+        fun_c: 'mrdivideM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '\\',
+        fun_c: 'mldivideM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '^',
+        fun_c: 'mpowerM',
+        arg_types: ['matrix', 'scalar'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '.*',
+        fun_c: 'timesM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: './',
+        fun_c: 'rdivideM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '.\\',
+        fun_c: 'ldivideM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '.^',
+        fun_c: 'powerM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '<',
+        fun_c: 'ltM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '<=',
+        fun_c: 'leM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '>',
+        fun_c: 'gtM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '>=',
+        fun_c: 'geM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '==',
+        fun_c: 'equalM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '~=',
+        fun_c: 'neM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '&',
+        fun_c: 'andM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '|',
+        fun_c: 'orM',
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '&&',
+        fun_c: null,
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '||',
+        fun_c: null,
+        arg_types: ['matrix', 'matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+];
+exports.unaryMapping = [
+    {
+        fun_matlab: '+',
+        fun_c: null,
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '-',
+        fun_c: null,
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: '~',
+        fun_c: 'notM',
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    }
+];
+exports.transposeMapping = [
+    {
+        fun_matlab: "'",
+        fun_c: 'ctransposeM',
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    },
+    {
+        fun_matlab: ".'",
+        fun_c: 'transposeM',
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: null,
+            ndim: null,
+            dim: null,
+            ismatrix: true,
+            ispointer: true
+        }
+    }
+];
 exports.builtin_functions = [
+    {
+        fun_matlab: 'isequal',
+        fun_c: 'isEqualM',
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            type: 'bool',
+            ndim: 2,
+            dim: [1, 1],
+            ismatrix: false,
+            ispointer: false
+        }
+    },
     {
         fun_matlab: 'xcorr',
         fun_c: 'xcorrM',
@@ -380,8 +871,8 @@ exports.builtin_functions = [
         fun_matlab: 'length',
         fun_c: null,
         args_transform: null,
-        n_req_args: 1,
-        n_opt_args: 0,
+        n_req_args: null,
+        n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,

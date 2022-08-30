@@ -8,3 +8,5 @@ A(1:2,2:3) = [1,2;3,4];
 a = strcmp('hello', 'world');
 b = numel(A);
 c = size(A);
+M = max(A);
+[M,I] = max(A);

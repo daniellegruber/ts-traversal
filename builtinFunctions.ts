@@ -11,6 +11,7 @@ type functionMapping = {
       ptr_args: Array<string>;
       ptr_arg_types: Array<string>;
       return_type: Type;
+      n_out: number;
     };
 
 function parseCharArg(arg) {
@@ -41,7 +42,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * minusM(Matrix *m, Matrix *n)
         fun_matlab: '-', 
@@ -59,7 +61,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * scaleM(Matrix* restrict m, void* restrict scalar, int type)
         fun_matlab: '*', 
@@ -77,7 +80,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * mtimesM(Matrix *m, Matrix *n)
         fun_matlab: '*', 
@@ -95,7 +99,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * mrdivideM(Matrix *m, Matrix *n)
         fun_matlab: '/', 
@@ -113,7 +118,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * mldivideM(Matrix *m, Matrix *n)
         fun_matlab: '\\', 
@@ -131,7 +137,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * mpowerM(Matrix *m, void *scalar, int type)
         fun_matlab: '^', 
@@ -149,7 +156,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * timesM(Matrix *m, Matrix *n)
         fun_matlab: '.*', 
@@ -167,7 +175,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * rdivideM(Matrix *m, Matrix *n)
         fun_matlab: './', 
@@ -185,7 +194,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * ldivideM(Matrix *m, Matrix *n)
         fun_matlab: '.\\', 
@@ -203,7 +213,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * powerM(Matrix *m, Matrix *n)
         fun_matlab: '.^', 
@@ -221,7 +232,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * ltM(Matrix *m, Matrix *n)
         fun_matlab: '<', 
@@ -239,7 +251,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * leM(Matrix *m, Matrix *n)
         fun_matlab: '<=', 
@@ -257,7 +270,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * gtM(Matrix *m, Matrix *n)
         fun_matlab: '>', 
@@ -275,7 +289,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * geM(Matrix *m, Matrix *n)
         fun_matlab: '>=', 
@@ -293,7 +308,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * equalM(Matrix *m, Matrix *n)
         fun_matlab: '==', 
@@ -311,7 +327,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * neM(Matrix *m, Matrix *n)
         fun_matlab: '~=', 
@@ -329,7 +346,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * andM(Matrix *m, Matrix *n)
         fun_matlab: '&', 
@@ -347,7 +365,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * orM(Matrix *m, Matrix *n)
         fun_matlab: '|', 
@@ -365,7 +384,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { 
         fun_matlab: '&&', 
@@ -383,7 +403,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { 
         fun_matlab: '||', 
@@ -401,7 +422,8 @@ export const binaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
 ];    
 
@@ -423,7 +445,8 @@ export const unaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { 
         fun_matlab: '-', 
@@ -441,7 +464,8 @@ export const unaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * notM(Matrix* restrict m)
         fun_matlab: '~', 
@@ -459,7 +483,8 @@ export const unaryMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     }
 ];
 
@@ -480,7 +505,8 @@ export const transposeMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * transposeM(Matrix* restrict m)
         fun_matlab: ".'", 
@@ -498,7 +524,8 @@ export const transposeMapping: functionMapping[] = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     }
 ];
 
@@ -519,7 +546,8 @@ export const builtin_functions = [
             dim: [1,1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     { // Matrix * xcorrM(Matrix *x, Matrix *y, int maxlag, char *scale)
         fun_matlab: 'xcorr', 
@@ -533,7 +561,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * sortM(Matrix* restrict m, int direction)
         fun_matlab: 'sort', // sort(m, dim, direction)
@@ -561,7 +590,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // void ttestM(Matrix* restrict m, double mu, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict tstat, double* restrict df, double* restrict sd)
         fun_matlab: 'ttest', 
@@ -579,7 +609,8 @@ export const builtin_functions = [
             'double* restrict', 
             'double* restrict'
         ],
-        return_type: null 
+        return_type: null,
+        n_out: 6
     },
     { // void ztestM(Matrix* restrict m, double mu, double s, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict z, double* restrict zcrit)
         fun_matlab: 'ztest', 
@@ -596,7 +627,8 @@ export const builtin_functions = [
             'double* restrict', 
             'double* restrict'
         ],
-        return_type: null 
+        return_type: null,
+        n_out: 5
     },
     { // void vartestM(Matrix* restrict m, double v, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict chisqstat, double* restrict df)
         fun_matlab: 'vartest', 
@@ -613,7 +645,8 @@ export const builtin_functions = [
             'double* restrict', 
             'double* restrict'
         ],
-        return_type: null 
+        return_type: null,
+        n_out: 5
     },
     { // Matrix * betapdfM(Matrix* restrict m, double a, double b)
         fun_matlab: 'betapdf', 
@@ -627,7 +660,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * exppdfM(Matrix* restrict m, double lambda)
         fun_matlab: 'exppdf', 
@@ -641,7 +675,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * normpdfM(Matrix* restrict m, double mu, double sigma)
         fun_matlab: 'normpdf', 
@@ -655,7 +690,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * unidpdfM(Matrix* restrict m, int n)
         fun_matlab: 'unidpdf', 
@@ -669,7 +705,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // void normfitM(Matrix* restrict m, void* restrict mu, void* restrict sigma)
         fun_matlab: 'normfit', 
@@ -683,7 +720,8 @@ export const builtin_functions = [
             'void* restrict',
             'void* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 2
     },
     { // void unifitM(Matrix* restrict m, void* restrict a, void* restrict b)
         fun_matlab: 'unifit', 
@@ -697,7 +735,8 @@ export const builtin_functions = [
             'void* restrict',
             'void* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 2
     },
     /*{ // Matrix * reindexM(Matrix* restrict m, int size, ...)
         fun_matlab: 'containers.Map', 
@@ -713,18 +752,22 @@ export const builtin_functions = [
             ispointer: true
         }
     },*/
-    {
+    { // void eigM(Matrix* restrict m, Matrix* restrict *evals, Matrix* restrict *evecs)
         fun_matlab: 'eig', 
         fun_c: 'eigM', 
         args_transform: null,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
-        ptr_args: null,
-        ptr_arg_types: null,
-        return_type: null
+        ptr_args: ['evals', 'evecs'],
+        ptr_arg_types: [
+            'Matrix* restrict',
+            'Matrix* restrict'
+        ],
+        return_type: null,
+        n_out: 2
     },
-    {
+    { // Matrix * absM(Matrix* restrict m)
         fun_matlab: 'abs', 
         fun_c: 'absM', 
         args_transform: null,
@@ -733,9 +776,13 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
-    {
+    { // Matrix * roundM(Matrix* restrict m)
         fun_matlab: 'round', 
         fun_c: 'roundM', 
         args_transform: null,
@@ -744,9 +791,13 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
-    {
+    { // Matrix * floorM(Matrix* restrict m)
         fun_matlab: 'floor', 
         fun_c: 'floorM', 
         args_transform: null,
@@ -755,9 +806,13 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
-    {
+    { // Matrix * ceilM(Matrix* restrict m)
         fun_matlab: 'ceil', 
         fun_c: 'ceilM', 
         args_transform: null,
@@ -766,7 +821,71 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * maxM(Matrix* restrict m)
+        fun_matlab: 'max', 
+        fun_c: 'maxM', 
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * minM(Matrix* restrict m)
+        fun_matlab: 'min', 
+        fun_c: 'minM', 
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * maxV(Matrix* restrict m, int* restrict index)
+        fun_matlab: 'max', 
+        fun_c: 'maxV', 
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: ['index'],
+        ptr_arg_types: ['int* restrict'],
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 2
+    },
+    { // Matrix * minV(Matrix* restrict m, int* restrict index)
+        fun_matlab: 'min', 
+        fun_c: 'minV', 
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: ['index'],
+        ptr_arg_types: ['int* restrict'],
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 2
     },
     { // Matrix * zerosM(int ndim, int dim[ndim])
         fun_matlab: 'zeros', 
@@ -784,7 +903,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * onesM(int ndim, int dim[ndim])
         fun_matlab: 'ones', 
@@ -802,7 +922,8 @@ export const builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     { // int strcmp(const char* str1, const char* str2)
         fun_matlab: 'strcmp', 
@@ -819,7 +940,8 @@ export const builtin_functions = [
             dim: [1,1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     { // int strcmpi(const char * str1, const char * str2 )
         fun_matlab: 'strcmpi', 
@@ -836,7 +958,8 @@ export const builtin_functions = [
             dim: [1,1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'struct', 
@@ -847,7 +970,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     { //int getsizeM(Matrix* restrict m)
         fun_matlab: 'numel', 
@@ -864,7 +988,8 @@ export const builtin_functions = [
             dim: [1,1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     { // int * getDimsM(Matrix* restrict m)
         fun_matlab: 'size', 
@@ -881,7 +1006,8 @@ export const builtin_functions = [
             dim: null,
             ismatrix: false,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'length', 
@@ -892,7 +1018,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'sum', 
@@ -903,7 +1030,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'prod', 
@@ -914,7 +1042,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'error', 
@@ -925,7 +1054,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'permute', 
@@ -936,7 +1066,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     { // Matrix * randM(int ndim, int dim[ndim])
         fun_matlab: 'rand', 
@@ -953,7 +1084,8 @@ export const builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * randnM(int ndim, int dim[ndim])
         fun_matlab: 'randn', 
@@ -970,7 +1102,8 @@ export const builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'memmapfile', 
@@ -981,7 +1114,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     { // Matrix * meanM(Matrix* restrict m)
         fun_matlab: 'mean', 
@@ -994,7 +1128,8 @@ export const builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     { // Matrix * stdM(Matrix* restrict m)
         fun_matlab: 'std', 
@@ -1007,7 +1142,8 @@ export const builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'isa', 
@@ -1018,7 +1154,8 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
 ];
     

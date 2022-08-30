@@ -7,6 +7,7 @@ var typeInference_1 = require("./typeInference");
 var treeTraversal_1 = require("./treeTraversal");
 var helperFunctions_1 = require("./helperFunctions");
 var builtinFunctions_1 = require("./builtinFunctions");
+var builtin_funs = builtinFunctions_1.builtin_functions;
 // Main
 function generateCode(filename, tree, out_folder, custom_functions, classes, var_types) {
     function pushToMain(expression) {
@@ -166,6 +167,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             }
             // Assignment
             case "assignment" /* g.SyntaxType.Assignment */: {
+                var matrix_out = false;
                 // If LHS is a subscript
                 if (node.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */ || node.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
                     var lhs = generateTmpVar();
@@ -189,9 +191,12 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     }
                     else {
                         var idx = sub2idx(node.leftNode.namedChildren[1], node.leftNode.namedChildren[2], dim_1[0]);
-                        console.log(idx);
                     }
                     pushToMain("void *data = getdataM(".concat(node.leftNode.valueNode.text, ");"));
+                }
+                else if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                    //var lhs:string = transformNode(node.leftNode);
+                    matrix_out = true;
                 }
                 else {
                     var lhs = transformNode(node.leftNode);
@@ -243,20 +248,76 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     }
                     else {
                         // Is a function call
-                        var rhs = transformNode(node.rightNode);
+                        if (matrix_out) {
+                            var obj1 = custom_functions.find(function (x) { return x.name === node.rightNode.valueNode.text; });
+                            var matches = builtin_funs.filter(function (e) { return e.fun_matlab === node.rightNode.valueNode.text; });
+                            var obj2 = matches.find(function (x) { return x.fun_matlab === node.rightNode.valueNode.text; });
+                            if (matches != null && matches != undefined) {
+                                if (matches.length > 1) {
+                                    var n_out_1 = 1;
+                                    if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                                        n_out_1 = node.leftNode.namedChildCount;
+                                    }
+                                    obj2 = matches.find(function (x) { return x.n_out === n_out_1; });
+                                }
+                            }
+                            if (obj1 != null && obj1 != undefined) {
+                                if (obj1.return_type != null) {
+                                    lhs = node.leftNode.namedChildren[0].text;
+                                    if (obj1.ptr_args != null) {
+                                        for (var i = 0; i < node.namedChildCount; i++) {
+                                            obj1.ptr_args[i] = node.leftNode.namedChildren[i + 1].text;
+                                        }
+                                    }
+                                }
+                                else {
+                                    lhs = null;
+                                    if (obj1.ptr_args != null) {
+                                        for (var i = 0; i < node.namedChildCount; i++) {
+                                            obj1.ptr_args[i] = node.leftNode.namedChildren[i].text;
+                                        }
+                                    }
+                                }
+                                custom_functions = custom_functions.filter(function (e) { return e.name !== node.rightNode.valueNode.text; });
+                                custom_functions.push(obj1);
+                            }
+                            else if (obj2 != null && obj2 != undefined) {
+                                if (obj2.return_type != null) {
+                                    lhs = node.leftNode.namedChildren[0].text;
+                                    if (obj2.ptr_args != null) {
+                                        for (var i = 0; i < node.namedChildCount - 1; i++) {
+                                            obj2.ptr_args[i] = node.leftNode.namedChildren[i + 1].text;
+                                        }
+                                    }
+                                }
+                                else {
+                                    lhs = null;
+                                    if (obj2.ptr_args != null) {
+                                        for (var i = 0; i < node.namedChildCount; i++) {
+                                            obj2.ptr_args[i] = node.leftNode.namedChildren[i].text;
+                                        }
+                                    }
+                                }
+                                builtin_funs = builtin_funs.filter(function (e) { return e.fun_matlab !== node.rightNode.valueNode.text; });
+                                builtin_funs.push(obj2);
+                            }
+                        }
                     }
+                    var rhs = transformNode(node.rightNode);
                     init_flag = true;
                 }
                 else {
                     var rhs = transformNode(node.rightNode);
                     init_flag = true;
                 }
-                // COME BACK HERE
-                if (init_flag) {
+                if (lhs == null) {
+                    pushToMain("".concat(rhs, ";"));
+                }
+                else if (init_flag) {
                     var var_type_1 = var_types.find(function (x) { return x.name === lhs; });
                     if (var_type_1 != null && var_type_1 != undefined) {
                         if (var_type_1.initialized || (var_type_1.type != type)) {
-                            ("".concat(lhs, " = ").concat(rhs));
+                            pushToMain("".concat(lhs, " = ").concat(rhs));
                         }
                         else {
                             if (ismatrix) {
@@ -362,29 +423,39 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 }
                 else {
                     // Is a builtin function call
-                    var obj_1 = builtinFunctions_1.builtin_functions.find(function (x) { return x.fun_matlab === node.valueNode.text; });
-                    if (obj_1 != null) {
+                    var matches = builtin_funs.filter(function (e) { return e.fun_matlab === node.valueNode.text; });
+                    if (matches != null && matches != undefined) {
+                        if (matches.length > 1 && node.parent.leftNode != null && node.parent.leftNode != undefined) {
+                            var n_out_2 = 1;
+                            if (node.parent.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
+                                n_out_2 = node.parent.leftNode.namedChildCount;
+                            }
+                            obj = matches.find(function (x) { return x.n_out === n_out_2; });
+                        }
+                        else {
+                            obj = matches.find(function (x) { return x.fun_matlab === node.valueNode.text; });
+                        }
                         var args = [];
                         for (var i = 1; i < node.namedChildCount; i++) {
                             args.push(transformNode(node.namedChildren[i]));
                         }
                         var tmp_var = generateTmpVar();
-                        if (obj_1.args_transform != null) {
-                            args = obj_1.args_transform(args);
+                        if (obj.args_transform != null) {
+                            args = obj.args_transform(args);
                         }
                         var n_args = node.namedChildCount - 1;
-                        if (n_args < obj_1.n_req_args) {
-                            args = args.concat(obj_1.opt_arg_defaults.slice(0, obj_1.n_req_args - n_args));
+                        if (n_args < obj.n_req_args) {
+                            args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
                         }
-                        if (obj_1.ptr_args != null) {
-                            args = args.concat(obj_1.ptr_args);
+                        if (obj.ptr_args != null) {
+                            args = args.concat(obj.ptr_args);
                             var ptr_declaration = [];
-                            for (var i = 0; i < obj_1.ptr_args.length; i++) {
-                                ptr_declaration.push("".concat(obj_1.ptr_arg_types[i], " ").concat(obj_1.ptr_args[i], ";"));
+                            for (var i = 0; i < obj.ptr_args.length; i++) {
+                                ptr_declaration.push("".concat(obj.ptr_arg_types[i], " ").concat(obj.ptr_args[i], ";"));
                             }
                             pushToMain(ptr_declaration.join("\n"));
                         }
-                        return "".concat(obj_1.fun_c, "(").concat(args, ")");
+                        return "".concat(obj.fun_c, "(").concat(args, ")");
                         // Is a subscript
                     }
                     else {
@@ -729,7 +800,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         else {
             col = [Number(col_node.text)];
         }
-        console.log(row_node);
         var idx = [];
         for (var i = 0; i < row.length; i++) {
             for (var j = 0; j < col.length; j++) {

@@ -28,7 +28,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '-',
@@ -46,7 +47,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '*',
@@ -64,7 +66,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '*',
@@ -82,7 +85,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '/',
@@ -100,7 +104,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '\\',
@@ -118,7 +123,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '^',
@@ -136,7 +142,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '.*',
@@ -154,7 +161,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: './',
@@ -172,7 +180,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '.\\',
@@ -190,7 +199,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '.^',
@@ -208,7 +218,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '<',
@@ -226,7 +237,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '<=',
@@ -244,7 +256,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '>',
@@ -262,7 +275,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '>=',
@@ -280,7 +294,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '==',
@@ -298,7 +313,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '~=',
@@ -316,7 +332,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '&',
@@ -334,7 +351,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '|',
@@ -352,7 +370,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '&&',
@@ -370,7 +389,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '||',
@@ -388,7 +408,8 @@ exports.binaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
 ];
 exports.unaryMapping = [
@@ -408,7 +429,8 @@ exports.unaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '-',
@@ -426,7 +448,8 @@ exports.unaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: '~',
@@ -444,7 +467,8 @@ exports.unaryMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     }
 ];
 exports.transposeMapping = [
@@ -464,7 +488,8 @@ exports.transposeMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: ".'",
@@ -482,7 +507,8 @@ exports.transposeMapping = [
             dim: null,
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     }
 ];
 exports.builtin_functions = [
@@ -501,7 +527,8 @@ exports.builtin_functions = [
             dim: [1, 1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'xcorr',
@@ -515,7 +542,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'sort',
@@ -545,7 +573,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'ttest',
@@ -563,7 +592,8 @@ exports.builtin_functions = [
             'double* restrict',
             'double* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 6
     },
     {
         fun_matlab: 'ztest',
@@ -580,7 +610,8 @@ exports.builtin_functions = [
             'double* restrict',
             'double* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 5
     },
     {
         fun_matlab: 'vartest',
@@ -597,7 +628,8 @@ exports.builtin_functions = [
             'double* restrict',
             'double* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 5
     },
     {
         fun_matlab: 'betapdf',
@@ -611,7 +643,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'exppdf',
@@ -625,7 +658,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'normpdf',
@@ -639,7 +673,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'unidpdf',
@@ -653,7 +688,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'normfit',
@@ -667,7 +703,8 @@ exports.builtin_functions = [
             'void* restrict',
             'void* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 2
     },
     {
         fun_matlab: 'unifit',
@@ -681,7 +718,8 @@ exports.builtin_functions = [
             'void* restrict',
             'void* restrict'
         ],
-        return_type: null
+        return_type: null,
+        n_out: 2
     },
     /*{ // Matrix * reindexM(Matrix* restrict m, int size, ...)
         fun_matlab: 'containers.Map',
@@ -704,9 +742,13 @@ exports.builtin_functions = [
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
-        ptr_args: null,
-        ptr_arg_types: null,
-        return_type: null
+        ptr_args: ['evals', 'evecs'],
+        ptr_arg_types: [
+            'Matrix* restrict',
+            'Matrix* restrict'
+        ],
+        return_type: null,
+        n_out: 2
     },
     {
         fun_matlab: 'abs',
@@ -717,7 +759,11 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'round',
@@ -728,7 +774,11 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'floor',
@@ -739,7 +789,11 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'ceil',
@@ -750,7 +804,71 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    {
+        fun_matlab: 'max',
+        fun_c: 'maxM',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    {
+        fun_matlab: 'min',
+        fun_c: 'minM',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    {
+        fun_matlab: 'max',
+        fun_c: 'maxV',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: ['index'],
+        ptr_arg_types: ['int* restrict'],
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 2
+    },
+    {
+        fun_matlab: 'min',
+        fun_c: 'minV',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: ['index'],
+        ptr_arg_types: ['int* restrict'],
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 2
     },
     {
         fun_matlab: 'zeros',
@@ -768,7 +886,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'ones',
@@ -786,7 +905,8 @@ exports.builtin_functions = [
         return_type: {
             ismatrix: true,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'strcmp',
@@ -803,7 +923,8 @@ exports.builtin_functions = [
             dim: [1, 1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'strcmpi',
@@ -820,7 +941,8 @@ exports.builtin_functions = [
             dim: [1, 1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'struct',
@@ -831,7 +953,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'numel',
@@ -848,7 +971,8 @@ exports.builtin_functions = [
             dim: [1, 1],
             ismatrix: false,
             ispointer: false
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'size',
@@ -865,7 +989,8 @@ exports.builtin_functions = [
             dim: null,
             ismatrix: false,
             ispointer: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'length',
@@ -876,7 +1001,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'sum',
@@ -887,7 +1013,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'prod',
@@ -898,7 +1025,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'error',
@@ -909,7 +1037,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'permute',
@@ -920,7 +1049,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'rand',
@@ -937,7 +1067,8 @@ exports.builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'randn',
@@ -954,7 +1085,8 @@ exports.builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'memmapfile',
@@ -965,7 +1097,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
     {
         fun_matlab: 'mean',
@@ -978,7 +1111,8 @@ exports.builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'std',
@@ -991,7 +1125,8 @@ exports.builtin_functions = [
         ptr_arg_types: null,
         return_type: {
             ismatrix: true
-        }
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'isa',
@@ -1002,7 +1137,8 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: null,
         ptr_arg_types: null,
-        return_type: null
+        return_type: null,
+        n_out: null
     },
 ];
 //# sourceMappingURL=builtinFunctions.js.map

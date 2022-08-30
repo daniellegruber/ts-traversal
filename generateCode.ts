@@ -308,17 +308,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         // Is a function call
                         if (matrix_out) {
                             let obj1 = custom_functions.find(x => x.name === node.rightNode.valueNode.text);
-                            let matches = builtin_funs.filter(function(e) { return e.fun_matlab === node.rightNode.valueNode.text });
-                            let obj2 = matches.find(x => x.fun_matlab === node.rightNode.valueNode.text);
-                            if (matches != null && matches!= undefined) {
-                                if (matches.length > 1) {
-                                    let n_out = 1;
-                                    if (node.leftNode.type == g.SyntaxType.Matrix) {
-                                        n_out = node.leftNode.namedChildCount;
-                                    }
-                                    obj2 = matches.find(x => x.n_out === n_out);
-                                }
-                            }
+                            let obj2 = findFunction(node, builtin_funs);
+                            
                             if (obj1 != null && obj1 != undefined) {
                                 if (obj1.return_type != null) {
                                     lhs = node.leftNode.namedChildren[0].text;
@@ -485,20 +476,13 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                 } else {
                     // Is a builtin function call
-                    let matches = builtin_funs.filter(function(e) { return e.fun_matlab === node.valueNode.text });
-
-                    if (matches != null && matches!= undefined) {
-                        
-                        if (matches.length > 1 && node.parent.leftNode != null && node.parent.leftNode != undefined) {
-                            let n_out = 1;
-                            if (node.parent.leftNode.type == g.SyntaxType.Matrix) {
-                                n_out = node.parent.leftNode.namedChildCount;
-                            }
-                            obj = matches.find(x => x.n_out === n_out);
-                        } else {
-                            obj = matches.find(x => x.fun_matlab === node.valueNode.text);
-                        }
-                        
+                    let obj = findFunction(node, builtin_funs);
+                    if (node.parent.type == g.SyntaxType.Assignment) {
+                        obj = findFunction(node.parent, builtin_funs);
+                    }
+                    
+                    
+                    if (obj != null) {
                         let args = [];
                         for (let i=1; i<node.namedChildCount; i++) {
                             if (transformNode(node.namedChildren[i]) != undefined) {
@@ -507,7 +491,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                                 args.push(node.namedChildren[i].text);
                             }
                         }
-                
+                        
                         var tmp_var = generateTmpVar();
                         if (obj.args_transform != null) {
                             args = obj.args_transform(args);
@@ -591,6 +575,67 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 let expression = slice2list(node);
                 return `{${expression.join(", ")}}`;
             }
+        }
+    }
+    
+    // Find corresponding C function from assignment node where RHS is MATLAB function call
+    function findFunction(node, function_dictionary) {
+        console.log(node.text);
+        if (node.leftNode != undefined) {
+            var left_node = node.leftNode;
+        } else {
+            var left_node = null;
+        }
+        if (node.rightNode != undefined) {
+            var right_node = node.rightNode;
+        } else {
+            var right_node = node;
+        }
+        
+        let matches = function_dictionary.filter(function(e) { return e.fun_matlab === right_node.valueNode.text });
+        let obj2 = matches.find(x => x.fun_matlab === right_node.valueNode.text);
+        
+        if (matches.length != 0) {
+            if (matches.length > 1) {
+                if (matches[0].arg_types != null) {
+                    let arg_types = [];
+                    for (let i = 1; i < right_node.namedChildCount; i++) {
+                        let [type,,,ismatrix,] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes);
+                        if (ismatrix) {
+                            arg_types.push('matrix');
+                        } else {
+                            arg_types.push('scalar');
+                        }
+                    }
+                    console.log(matches[0].arg_types);
+                    console.log(arg_types);
+                    var matches2 = matches.filter(function(e) { return JSON.stringify(e.arg_types) === JSON.stringify(arg_types) });
+                    if (matches2.length == 0) {
+                        matches2 = matches.filter(function(e) { return JSON.stringify(e.arg_types) === JSON.stringify(arg_types.reverse()) });
+                    }
+                } else {
+                    var matches2 = matches;
+                }
+                
+                console.log(matches2);
+                
+                var obj = matches2[0];
+                if (matches2.length > 1 && left_node != null) {
+                    let n_out = 1;
+                    if (left_node.type == g.SyntaxType.Matrix) {
+                        n_out = left_node.namedChildCount;
+                    }
+                    obj = matches2.find(x => x.n_out === n_out);
+                } else {
+                    obj = matches2[0];
+                }
+                
+                return obj
+            } else {
+                return matches[0]
+            }
+        } else {
+            return null;
         }
     }
     

@@ -1,6 +1,4 @@
 #ifndef MAIN_H
 #define MAIN_H
-
-// Function declarations
-
+int main(void);
 #endif

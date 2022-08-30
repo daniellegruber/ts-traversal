@@ -619,6 +619,27 @@ export const builtin_functions = [
     { // void ttestM(Matrix* restrict m, double mu, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict tstat, double* restrict df, double* restrict sd)
         fun_matlab: 'ttest', 
         fun_c: 'ttestM', 
+        arg_types: ['matrix'],
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 1,
+        opt_arg_defaults: ['0'],
+        ptr_args: ['h','pval', 'ci', 'tstat', 'df', 'sd'],
+        ptr_arg_types: [
+            'bool* restrict',
+            'double* restrict', 
+            'double* restrict *', 
+            'double* restrict', 
+            'double* restrict', 
+            'double* restrict'
+        ],
+        return_type: null,
+        n_out: 6
+    },
+    { // void ttestM_xy(Matrix *x, Matrix *y, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict tstat, double* restrict df, double* restrict sd)
+        fun_matlab: 'ttest', 
+        fun_c: 'ttestM_xy', 
+        arg_types: ['matrix','matrix'],
         args_transform: null,
         n_req_args: 2,
         n_opt_args: 1,
@@ -693,6 +714,51 @@ export const builtin_functions = [
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['1'],
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * chi2pdfM(Matrix* restrict m, double n)
+        fun_matlab: 'chi2pdf', 
+        fun_c: 'chi2pdfM', 
+        args_transform: null,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * gampdfM(Matrix* restrict m, double a, double b)
+        fun_matlab: 'gampdf', 
+        fun_c: 'gampdfM', 
+        args_transform: null,
+        n_req_args: 3,
+        n_opt_args: 1,
+        opt_arg_defaults: ['1'],
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * lognpdfM(Matrix* restrict m, double mu, double sigma)
+        fun_matlab: 'lognpdf', 
+        fun_c: 'lognpdfM', 
+        args_transform: null,
+        n_req_args: 3,
+        n_opt_args: 2,
+        opt_arg_defaults: ['0','1'],
         ptr_args: null,
         ptr_arg_types: null,
         return_type: {

@@ -250,17 +250,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         // Is a function call
                         if (matrix_out) {
                             var obj1 = custom_functions.find(function (x) { return x.name === node.rightNode.valueNode.text; });
-                            var matches = builtin_funs.filter(function (e) { return e.fun_matlab === node.rightNode.valueNode.text; });
-                            var obj2 = matches.find(function (x) { return x.fun_matlab === node.rightNode.valueNode.text; });
-                            if (matches != null && matches != undefined) {
-                                if (matches.length > 1) {
-                                    var n_out_1 = 1;
-                                    if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
-                                        n_out_1 = node.leftNode.namedChildCount;
-                                    }
-                                    obj2 = matches.find(function (x) { return x.n_out === n_out_1; });
-                                }
-                            }
+                            var obj2 = findFunction(node, builtin_funs);
                             if (obj1 != null && obj1 != undefined) {
                                 if (obj1.return_type != null) {
                                     lhs = node.leftNode.namedChildren[0].text;
@@ -423,18 +413,11 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 }
                 else {
                     // Is a builtin function call
-                    var matches = builtin_funs.filter(function (e) { return e.fun_matlab === node.valueNode.text; });
-                    if (matches != null && matches != undefined) {
-                        if (matches.length > 1 && node.parent.leftNode != null && node.parent.leftNode != undefined) {
-                            var n_out_2 = 1;
-                            if (node.parent.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
-                                n_out_2 = node.parent.leftNode.namedChildCount;
-                            }
-                            obj = matches.find(function (x) { return x.n_out === n_out_2; });
-                        }
-                        else {
-                            obj = matches.find(function (x) { return x.fun_matlab === node.valueNode.text; });
-                        }
+                    var obj_1 = findFunction(node, builtin_funs);
+                    if (node.parent.type == "assignment" /* g.SyntaxType.Assignment */) {
+                        obj_1 = findFunction(node.parent, builtin_funs);
+                    }
+                    if (obj_1 != null) {
                         var args = [];
                         for (var i = 1; i < node.namedChildCount; i++) {
                             if (transformNode(node.namedChildren[i]) != undefined) {
@@ -445,22 +428,22 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             }
                         }
                         var tmp_var = generateTmpVar();
-                        if (obj.args_transform != null) {
-                            args = obj.args_transform(args);
+                        if (obj_1.args_transform != null) {
+                            args = obj_1.args_transform(args);
                         }
                         var n_args = node.namedChildCount - 1;
-                        if (n_args < obj.n_req_args) {
-                            args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
+                        if (n_args < obj_1.n_req_args) {
+                            args = args.concat(obj_1.opt_arg_defaults.slice(0, obj_1.n_req_args - n_args));
                         }
-                        if (obj.ptr_args != null) {
-                            args = args.concat(obj.ptr_args);
+                        if (obj_1.ptr_args != null) {
+                            args = args.concat(obj_1.ptr_args);
                             var ptr_declaration = [];
-                            for (var i = 0; i < obj.ptr_args.length; i++) {
-                                ptr_declaration.push("".concat(obj.ptr_arg_types[i], " ").concat(obj.ptr_args[i], ";"));
+                            for (var i = 0; i < obj_1.ptr_args.length; i++) {
+                                ptr_declaration.push("".concat(obj_1.ptr_arg_types[i], " ").concat(obj_1.ptr_args[i], ";"));
                             }
                             pushToMain(ptr_declaration.join("\n"));
                         }
-                        return "".concat(obj.fun_c, "(").concat(args, ")");
+                        return "".concat(obj_1.fun_c, "(").concat(args, ")");
                         // Is a subscript
                     }
                     else {
@@ -517,6 +500,68 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             }
         }
     }
+    // Find corresponding C function from assignment node where RHS is MATLAB function call
+    function findFunction(node, function_dictionary) {
+        console.log(node.text);
+        if (node.leftNode != undefined) {
+            var left_node = node.leftNode;
+        }
+        else {
+            var left_node = null;
+        }
+        if (node.rightNode != undefined) {
+            var right_node = node.rightNode;
+        }
+        else {
+            var right_node = node;
+        }
+        var matches = function_dictionary.filter(function (e) { return e.fun_matlab === right_node.valueNode.text; });
+        var obj2 = matches.find(function (x) { return x.fun_matlab === right_node.valueNode.text; });
+        if (matches.length != 0) {
+            if (matches.length > 1) {
+                if (matches[0].arg_types != null) {
+                    var arg_types_1 = [];
+                    for (var i = 1; i < right_node.namedChildCount; i++) {
+                        var _a = (0, typeInference_1.inferType)(right_node.namedChildren[i], var_types, custom_functions, classes), type = _a[0], ismatrix = _a[3];
+                        if (ismatrix) {
+                            arg_types_1.push('matrix');
+                        }
+                        else {
+                            arg_types_1.push('scalar');
+                        }
+                    }
+                    console.log(matches[0].arg_types);
+                    console.log(arg_types_1);
+                    var matches2 = matches.filter(function (e) { return JSON.stringify(e.arg_types) === JSON.stringify(arg_types_1); });
+                    if (matches2.length == 0) {
+                        matches2 = matches.filter(function (e) { return JSON.stringify(e.arg_types) === JSON.stringify(arg_types_1.reverse()); });
+                    }
+                }
+                else {
+                    var matches2 = matches;
+                }
+                console.log(matches2);
+                var obj = matches2[0];
+                if (matches2.length > 1 && left_node != null) {
+                    var n_out_1 = 1;
+                    if (left_node.type == "matrix" /* g.SyntaxType.Matrix */) {
+                        n_out_1 = left_node.namedChildCount;
+                    }
+                    obj = matches2.find(function (x) { return x.n_out === n_out_1; });
+                }
+                else {
+                    obj = matches2[0];
+                }
+                return obj;
+            }
+            else {
+                return matches[0];
+            }
+        }
+        else {
+            return null;
+        }
+    }
     // Initialize matrices
     // -----------------------------------------------------------------------------
     function initializeMatrix(node, name, ndim, dim, type) {
@@ -550,17 +595,17 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         switch (node.type) {
             case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
                 var _a = (0, typeInference_1.inferType)(node.argumentNode, var_types, custom_functions, classes), type = _a[0], ismatrix = _a[3];
-                var arg_types_1 = [];
+                var arg_types_2 = [];
                 if (ismatrix) {
-                    arg_types_1.push('matrix');
+                    arg_types_2.push('matrix');
                 }
                 else {
-                    arg_types_1.push('scalar');
+                    arg_types_2.push('scalar');
                 }
                 var matches = builtinFunctions_1.unaryMapping.filter(function (e) { return e.fun_matlab === node.operatorNode.type; });
-                var obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_1); });
+                var obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_2); });
                 if (obj == null || obj == undefined) {
-                    obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_1.reverse()); });
+                    obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_2.reverse()); });
                     if (obj == null || obj == undefined) {
                         return "".concat(node.operatorNode.type).concat(transformNode(node.argumentNode));
                     }
@@ -580,17 +625,17 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             }
             case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
                 var _b = (0, typeInference_1.inferType)(node.argumentNode, var_types, custom_functions, classes), type = _b[0], ismatrix = _b[3];
-                var arg_types_2 = [];
+                var arg_types_3 = [];
                 if (ismatrix) {
-                    arg_types_2.push('matrix');
+                    arg_types_3.push('matrix');
                 }
                 else {
-                    arg_types_2.push('scalar');
+                    arg_types_3.push('scalar');
                 }
                 var matches = builtinFunctions_1.transposeMapping.filter(function (e) { return e.fun_matlab === node.operatorNode.type; });
-                var obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_2); });
+                var obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_3); });
                 if (obj == null || obj == undefined) {
-                    obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_2.reverse()); });
+                    obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_3.reverse()); });
                     if (obj == null || obj == undefined) {
                         return "".concat(transformNode(node.argumentNode)).concat(node.operatorNode.type);
                     }
@@ -613,23 +658,23 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
                 var _c = (0, typeInference_1.inferType)(node.leftNode, var_types, custom_functions, classes), left_type = _c[0], left_ismatrix = _c[3];
                 var _d = (0, typeInference_1.inferType)(node.rightNode, var_types, custom_functions, classes), right_type = _d[0], right_ismatrix = _d[3];
-                var arg_types_3 = [];
+                var arg_types_4 = [];
                 if (left_ismatrix) {
-                    arg_types_3.push('matrix');
+                    arg_types_4.push('matrix');
                 }
                 else {
-                    arg_types_3.push('scalar');
+                    arg_types_4.push('scalar');
                 }
                 if (right_ismatrix) {
-                    arg_types_3.push('matrix');
+                    arg_types_4.push('matrix');
                 }
                 else {
-                    arg_types_3.push('scalar');
+                    arg_types_4.push('scalar');
                 }
                 var matches = builtinFunctions_1.binaryMapping.filter(function (e) { return e.fun_matlab === node.operatorNode.type; });
-                var obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_3); });
+                var obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_4); });
                 if (obj == null || obj == undefined) {
-                    obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_3.reverse()); });
+                    obj = matches.find(function (x) { return JSON.stringify(x.arg_types) === JSON.stringify(arg_types_4.reverse()); });
                     if (obj == null || obj == undefined) {
                         return "".concat(transformNode(node.leftNode), " ").concat(node.operatorNode.type, " ").concat(transformNode(node.rightNode));
                     }

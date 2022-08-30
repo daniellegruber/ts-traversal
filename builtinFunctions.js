@@ -8,7 +8,29 @@ function parseCharArg(arg) {
         return match[0];
     }
     else {
-        return null;
+        return arg;
+    }
+}
+function parseVectorArg(arg) {
+    var regex = /(?<=\[)(.*?)(?=\])/;
+    var match1 = arg.match(regex);
+    if (match1 != null) {
+        var vec_str = match1[0];
+        var regex2 = /".*?"|[^,; ]*/g;
+        var match2 = vec_str.match(regex2);
+        var vec_elements = [];
+        if (match2 != null) {
+            for (var _i = 0, match2_1 = match2; _i < match2_1.length; _i++) {
+                var element = match2_1[_i];
+                if (element != "") {
+                    vec_elements.push(parseCharArg(element));
+                }
+            }
+        }
+        return ["{".concat(vec_str, "}"), vec_elements];
+    }
+    else {
+        return [arg, null];
     }
 }
 exports.binaryMapping = [
@@ -869,6 +891,53 @@ exports.builtin_functions = [
             ispointer: true
         },
         n_out: 2
+    },
+    {
+        fun_matlab: 'var',
+        fun_c: 'varM',
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    {
+        fun_matlab: 'quantile',
+        fun_c: 'quantileM_vec',
+        args_transform: function (args) {
+            var quantile_specifier = Number(args[1]);
+            if (Number.isInteger(quantile_specifier)) {
+                var n_quantiles = quantile_specifier;
+                var arr = [];
+                var step = 1 / (quantile_specifier + 1);
+                for (var i = 0; i < 1; i += step) {
+                    arr.push(i);
+                }
+                var quantiles = "{".concat(arr.toString(), "}");
+            }
+            else {
+                var _a = parseVectorArg(args[1]), vec_str = _a[0], vec_elements = _a[1];
+                var n_quantiles = vec_elements.length;
+                var quantiles = vec_str.toString();
+            }
+            return [args[0], n_quantiles, quantiles];
+        },
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
     {
         fun_matlab: 'zeros',

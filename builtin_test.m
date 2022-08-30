@@ -10,3 +10,5 @@ b = numel(A);
 c = size(A);
 M = max(A);
 [M,I] = max(A);
+D = quantile(A,4)
+D = quantile(A,[0.2 0.4 0.6 0.8])

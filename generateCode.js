@@ -437,7 +437,12 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         }
                         var args = [];
                         for (var i = 1; i < node.namedChildCount; i++) {
-                            args.push(transformNode(node.namedChildren[i]));
+                            if (transformNode(node.namedChildren[i]) != undefined) {
+                                args.push(transformNode(node.namedChildren[i]));
+                            }
+                            else {
+                                args.push(node.namedChildren[i].text);
+                            }
                         }
                         var tmp_var = generateTmpVar();
                         if (obj.args_transform != null) {

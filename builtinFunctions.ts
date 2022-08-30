@@ -1,4 +1,6 @@
 import {Type} from "./typeInference";
+import {SyntaxNode} from "./generated";
+
 
 type functionMapping = {
       fun_matlab: string;
@@ -14,13 +16,34 @@ type functionMapping = {
       n_out: number;
     };
 
-function parseCharArg(arg) {
+function parseCharArg(arg:string) {
     let regex = /(?<=')(.*?)(?=')|(?<=")(.*?)(?=")/;
     let match = arg.match(regex);
     if (match != null) {
         return match[0];
     } else {
-        return null;
+        return arg;
+    }
+}
+
+function parseVectorArg(arg:string) {
+    let regex = /(?<=\[)(.*?)(?=\])/;
+    let match1 = arg.match(regex);
+    if (match1 != null) {
+        let vec_str = match1[0];
+        let regex2 = /".*?"|[^,; ]*/g;
+        let match2 = vec_str.match(regex2);
+        let vec_elements = [];
+        if (match2 != null) {
+            for (let element of match2) {
+                if (element != "") {
+                    vec_elements.push(parseCharArg(element));
+                }
+            }
+        }
+        return [`{${vec_str}}`, vec_elements];
+    } else {
+        return [arg, null];
     }
 }
     
@@ -571,7 +594,7 @@ export const builtin_functions = [
             let args_transformed = [];
             for (let i=0; i < args.length; i++) {
                 if (i == 0) {
-                    args_transformed.push(args[i])
+                    args_transformed.push(args[i]);
                 } else {
                     if (parseCharArg(args[i]) == 'ascend') {
                         args_transformed.push('0');
@@ -886,6 +909,52 @@ export const builtin_functions = [
             ispointer: true
         },
         n_out: 2
+    },
+    { // Matrix * varM(Matrix* restrict m)
+        fun_matlab: 'var', 
+        fun_c: 'varM', 
+        args_transform: null,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
+    },
+    { // Matrix * quantileM_vec(Matrix* restrict m, int N, double* restrict quantiles)
+        fun_matlab: 'quantile', 
+        fun_c: 'quantileM_vec', 
+        args_transform: args => {
+            let quantile_specifier = Number(args[1]);
+            if (Number.isInteger(quantile_specifier)) {
+                var n_quantiles:number = quantile_specifier;
+                let arr = [];
+                let step = 1/(quantile_specifier + 1);
+                for (let i = 0; i < 1; i += step) {
+                    arr.push(i);
+                }
+                var quantiles:string = `{${arr.toString()}}`;
+            } else {
+                let [vec_str, vec_elements] = parseVectorArg(args[1]);
+                var n_quantiles:number = vec_elements.length;
+                var quantiles:string = vec_str.toString();
+            }
+            return [args[0], n_quantiles, quantiles];
+        },
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: null,
+        ptr_arg_types: null,
+        return_type: {
+            ismatrix: true,
+            ispointer: true
+        },
+        n_out: 1
     },
     { // Matrix * zerosM(int ndim, int dim[ndim])
         fun_matlab: 'zeros', 

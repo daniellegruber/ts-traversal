@@ -501,7 +501,11 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         
                         let args = [];
                         for (let i=1; i<node.namedChildCount; i++) {
-                            args.push(transformNode(node.namedChildren[i]));
+                            if (transformNode(node.namedChildren[i]) != undefined) {
+                                args.push(transformNode(node.namedChildren[i]));
+                            } else {
+                                args.push(node.namedChildren[i].text);
+                            }
                         }
                 
                         var tmp_var = generateTmpVar();

@@ -54,7 +54,6 @@ for (let file of file_traversal_order) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
     [var_types, custom_functions] = typeInference(tree, custom_functions, classes);
-    
     if (file == args[0]) {
         var filename = "main";
     } else {

@@ -8,117 +8,111 @@
 int main(void)
 {
 
-// Initialize variables
-unknown tmpobj;
-unknown obj2;
-unknown obj1;
-unknown data1;
-unknown data2;
-unknown newFileName;
-unknown fid;
-unknown s1;
-char * ss.type;
-unknown tmpdata;
-unknown obj3;
-
-Matrix * tmp1 = null(obj2,'mmo');
+unknown tmpobj = obj2;
+unknown obj2 = obj1;
+unknown obj1 = tmpobj;
 
 
-if (tmp1)
+if (null(obj2,'mmo'))
 {
-tmpobj = obj2;
-obj2 = obj1;
-obj1 = tmpobj;
+
+
+
 clear;
 tmpobj;
 }
-Matrix * tmp4 = null(obj1);
-Matrix * tmp5 = null(obj2);
-double tmp6;
-indexM(isequal, &tmp6, tmp4, tmp5);
-Matrix * tmp8 = null(obj2);
-Matrix * tmp9 = null(tmp8);
-Matrix * tmp10 = null('Matrix dimensions must agree.');
 
 
-if (~tmp6 && tmp9 ~= 1)
+if (~isEqualM(getDimsM(obj1),getDimsM(obj2)) && null(getDimsM(obj2)) ~= 1)
 {
-tmp10;
+null('Matrix dimensions must agree.');
 }
-Matrix * tmp11 = null(obj1.dataFile,'writable',obj1.writable,'format',);
-data1 = tmp11;
-Matrix * tmp12 = null(obj2,'mmo');
-Matrix * tmp13 = null(obj2.dataFile,'writable',obj2.writable,'format',);
+unknown data1 = null(obj1.dataFile,'writable',obj1.writable,'format',{ 'single' obj1.dimensions 'x' });
+
+unknown data2 = null(obj2.dataFile,'writable',obj2.writable,'format',{ 'single' obj2.dimensions 'x' });
+data2 = obj2
 
 
-if (tmp12)
+if (null(obj2,'mmo'))
 {
-data2 = tmp13;
+
 }
 else
 {
-data2 = obj2;
+
 }
 // make new memory mapped data file (blank)
 // --------------------------------
-newFileName = mmo.getnewfilename;
-double tmp14;
-indexM(fopen, &tmp14, newFileName, 'w');
-fid = tmp14;
-Matrix * tmp15 = null(obj1);
-s1 = tmp15;
-ss.type = '()';
+unknown newFileName = mmo.getnewfilename;
+
+double tmp17;
+indexM(fopen, &tmp17, newFileName, 'w');
+unknown fid = tmp17;
+
+int * s1 = getDimsM(obj1);
+
+char * ss.type = '()';
+
+void *data = getdataM(ss.subs);
 
 int ndim = 2;
 int dim = {1,1};
-Matrix * ss.subs(1:length(s1)-1) = createM(ndim, dim, 3);
+Matrix * tmp19 = createM(ndim, dim, 3);
 double char *input = NULL;
 input = malloc( 1*sizeof(*input));
 input[0][] = ":";
-writeM( ss.subs(1:length(s1)-1), 1, input);
+writeM( tmp19, 1, input);
 free(input);
 
-Matrix * tmp16 = null(s1);
-double tmp17;
-indexM(ss.subs, &tmp17, tmp16);
-Matrix * tmp19 = null(data2);
-Matrix * tmp20 = null(tmp19);
-double tmp21;
-indexM(subsref, &tmp21, data1.Data.x, ss);
-double tmp22;
-indexM(f, &tmp22, tmp21, data2);
-double tmp23;
-indexM(subsref, &tmp23, data1.Data.x, ss);
-double tmp24;
-indexM(subsref, &tmp24, data2.Data.x, ss);
+void *data2 = getdataM(tmp19);
+ss.subs.data = data;
+
+void *data = getdataM(ss.subs);
+unknown tmp20 = index;
+memcpy(&data[NaN], tmp20[0]);
+ss.subs.data = data;
 double tmp25;
-indexM(f, &tmp25, tmp23, tmp24);
+indexM(subsref, &tmp25, data1.Data.x, ss);
 double tmp26;
-indexM(fwrite, &tmp26, fid, tmpdata, 'float');
+indexM(f, &tmp26, tmp25, data2);
+unknown tmpdata = tmp26;
+double tmp27;
+indexM(subsref, &tmp27, data1.Data.x, ss);
+double tmp28;
+indexM(subsref, &tmp28, data2.Data.x, ss);
+double tmp29;
+indexM(f, &tmp29, tmp27, tmp28);
+tmpdata = tmp29
+double tmp30;
+indexM(fwrite, &tmp30, fid, tmpdata, 'float');
 
 
 int index;
 for (index =  1; index <= s1(end); ++ index) {
-tmp17 = index;
 
-if (tmp20 == 1)
+
+if (null(getDimsM(data2)) == 1)
 {
-tmpdata = tmp22;
+
 }
 else
 {
-tmpdata = tmp25;
+
 }
-tmp26;
+tmp30;
 }
-double tmp27;
-indexM(fclose, &tmp27, fid);
-tmp27;
+double tmp31;
+indexM(fclose, &tmp31, fid);
+tmp31;
 // create object
 // -------------
-mmo;
-double tmp28;
-indexM(updateWorkspace, &tmp28, obj3);
-obj3 = tmp28;
+double tmp32;
+indexM(mmo, &tmp32, newFileName, s1, true, obj1.transposed);
+obj3 = tmp32
+
+double tmp33;
+indexM(updateWorkspace, &tmp33, obj3);
+unknown obj3 = tmp33;
+
 return 0;
 }

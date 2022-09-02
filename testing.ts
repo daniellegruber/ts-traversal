@@ -21,8 +21,6 @@ import {
     getNonClassFilesInPath
 } from "./helperFunctions";
 
-import { parseMatlabFun } from "./builtinFunctions";
-
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
 
@@ -69,7 +67,7 @@ do {
     console.log(c.currentNode.text);
 } while(gotoPreorderSucc_OnlyMajorTypes(cursor));*/
 
-let tree1 = parser.parse(`
+/*let tree1 = parser.parse(`
 % this is a comment 1
 xcorr(x,y)
 A = zeros(2,2)
@@ -85,7 +83,7 @@ do {
     }
 } while(gotoPreorderSucc(cursor));
 
-
+*/
     
 
 
@@ -105,11 +103,11 @@ console.log(findEntryFunction(tree5));*/
 
 //console.log("class folders");
 //console.log(getClassFolders(search_folder));
-/*console.log("classes");
+console.log("classes");
 let classes = getClasses(search_folder);
 console.log(classes);
 for (let c of classes) {
     console.log(c.methods);
-}*/
+}
 //console.log("non-class files");
 //console.log(getNonClassFilesInPath(search_folder));

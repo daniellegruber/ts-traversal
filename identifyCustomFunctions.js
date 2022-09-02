@@ -36,6 +36,8 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
         switch (c.nodeType) {
             case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
                 var node_1 = c.currentNode;
+                //let obj1 = findFunction(node, builtin_functions);
+                //let obj2 = custom_functions.find(x => x.name === node.valueNode.text);
                 var obj_1 = custom_functions.find(function (x) { return x.name === node_1.valueNode.text; });
                 if (obj_1 == null) {
                     var match = files.find(function (element) {

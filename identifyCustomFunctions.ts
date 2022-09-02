@@ -31,7 +31,7 @@ export type CustomFunction = {
 
     
 export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order) {
-    
+
     // Internal functions
     let cursor = tree.walk();
     do {
@@ -62,6 +62,8 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
         switch (c.nodeType) {            
             case g.SyntaxType.CallOrSubscript: {
                 let node = c.currentNode;
+                //let obj1 = findFunction(node, builtin_functions);
+                //let obj2 = custom_functions.find(x => x.name === node.valueNode.text);
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
                 if (obj == null) {
                     const match = files.find(element => {

@@ -21,6 +21,7 @@ function gotoPreorderSucc_OnlyMajorTypes(cursor) {
     //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
+        case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */:
         case "comment" /* g.SyntaxType.Comment */:
         case "expression_statement" /* g.SyntaxType.ExpressionStatement */:
         case "function_definition" /* g.SyntaxType.FunctionDefinition */:
@@ -54,6 +55,8 @@ function gotoPreorderSucc_SkipFunctionDef(cursor) {
     //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
+        //case g.SyntaxType.CallOrSubscript:
+        //console.log("hello");
         case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
             while (!cursor.gotoNextSibling()) {
                 if (!cursor.gotoParent()) {

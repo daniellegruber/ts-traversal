@@ -394,18 +394,33 @@ function inferType(node, var_types, custom_functions, classes) {
                     // Is a function call
                     var obj1 = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
                     var obj2 = builtinFunctions_1.builtin_functions.find(function (x) { return x.fun_matlab === node.valueNode.text; });
-                    if ((obj1 != null && obj1 != undefined) || (obj2 != null && obj2 != undefined)) {
-                        var obj_4 = (obj1 != null && obj1 != undefined) ? obj1 : obj2;
-                        if (obj_4.return_type == null) {
+                    if (obj1 != null && obj1 != undefined) {
+                        if (obj1.return_type == null) {
                             return unknown_type;
                         }
                         else {
                             return [
-                                obj_4.return_type.type,
-                                obj_4.return_type.ndim,
-                                obj_4.return_type.dim,
-                                obj_4.return_type.ismatrix,
-                                obj_4.return_type.ispointer
+                                obj1.return_type.type,
+                                obj1.return_type.ndim,
+                                obj1.return_type.dim,
+                                obj1.return_type.ismatrix,
+                                obj1.return_type.ispointer
+                            ];
+                        }
+                    }
+                    else if (obj2 != null && obj2 != undefined) {
+                        var _o = parseFunctionCallNode(node), args = _o[0], arg_types = _o[1], outs = _o[2];
+                        var return_type = obj2.return_type(args, arg_types, outs);
+                        if (return_type == null) {
+                            return unknown_type;
+                        }
+                        else {
+                            return [
+                                return_type.type,
+                                return_type.ndim,
+                                return_type.dim,
+                                return_type.ismatrix,
+                                return_type.ispointer
                             ];
                         }
                     }
@@ -421,7 +436,7 @@ function inferType(node, var_types, custom_functions, classes) {
             var children_vals = [];
             for (var i = 0; i < node.namedChildCount; i++) {
                 var child = node.namedChildren[i];
-                var _o = inferType(child, var_types, custom_functions, classes), child_type_2 = _o[0];
+                var _p = inferType(child, var_types, custom_functions, classes), child_type_2 = _p[0];
                 if (child_type_2 == "keyword") {
                     _a = inferType(node.parent.valueNode, var_types, custom_functions, classes), ndim = _a[1], dim = _a[2];
                     var firstNode = node.parent.namedChildren[1];
@@ -468,6 +483,115 @@ function inferType(node, var_types, custom_functions, classes) {
         }
         // Default
         default: return unknown_type;
+    }
+    // Return args, arg_types, outs from function
+    function parseFunctionCallNode(node) {
+        if (node.parent.type == "assignment" /* g.SyntaxType.Assignment */) {
+            return parseFunctionCallNode(node.parent);
+        }
+        else {
+            switch (node.type) {
+                case "assignment" /* g.SyntaxType.Assignment */: {
+                    var left_node = node.leftNode;
+                    var right_node = node.rightNode;
+                    break;
+                }
+                default: {
+                    var left_node = null;
+                    var right_node = node;
+                    break;
+                }
+            }
+            var args = [];
+            var arg_types = [];
+            switch (right_node.type) {
+                case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
+                    for (var i = 1; i < right_node.namedChildCount; i++) {
+                        //if (transformNode(right_node.namedChildren[i]) != undefined) {
+                        //    args.push(transformNode(right_node.namedChildren[i]));   
+                        //} else {
+                        args.push(right_node.namedChildren[i].text);
+                        //}
+                        var _a = inferType(right_node.namedChildren[i], var_types, custom_functions, classes), type_5 = _a[0], ndim_4 = _a[1], dim_6 = _a[2], ismatrix_2 = _a[3], ispointer = _a[4];
+                        arg_types.push({
+                            type: type_5,
+                            ndim: ndim_4,
+                            dim: dim_6,
+                            ismatrix: ismatrix_2,
+                            ispointer: ispointer
+                        });
+                    }
+                    break;
+                }
+                case "comparison_operator" /* g.SyntaxType.ComparisonOperator */:
+                case "boolean_operator" /* g.SyntaxType.BooleanOperator */:
+                case "binary_operator" /* g.SyntaxType.BinaryOperator */: {
+                    var _b = inferType(right_node.leftNode, var_types, custom_functions, classes), l_type = _b[0], l_ndim = _b[1], l_dim = _b[2], l_ismatrix = _b[3], l_ispointer = _b[4];
+                    var _c = inferType(right_node.rightNode, var_types, custom_functions, classes), r_type = _c[0], r_ndim = _c[1], r_dim = _c[2], r_ismatrix = _c[3], r_ispointer = _c[4];
+                    arg_types.push({
+                        type: l_type,
+                        ndim: l_ndim,
+                        dim: l_dim,
+                        ismatrix: l_ismatrix,
+                        ispointer: l_ispointer
+                    });
+                    arg_types.push({
+                        type: r_type,
+                        ndim: r_ndim,
+                        dim: r_dim,
+                        ismatrix: r_ismatrix,
+                        ispointer: r_ispointer
+                    });
+                    //if (transformNode(right_node.leftNode) != undefined) {
+                    //    args.push(transformNode(right_node.leftNode));   
+                    //} else {
+                    args.push(right_node.leftNode.text);
+                    //}
+                    //if (transformNode(right_node.rightNode) != undefined) {
+                    //    args.push(transformNode(right_node.rightNode));   
+                    //} else {
+                    args.push(right_node.rightNode.text);
+                    //}
+                    break;
+                }
+                case "unary_operator" /* g.SyntaxType.UnaryOperator */:
+                case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
+                    var _d = inferType(right_node.argumentNode, var_types, custom_functions, classes), type_6 = _d[0], ndim_5 = _d[1], dim_7 = _d[2], ismatrix_3 = _d[3], ispointer = _d[4];
+                    arg_types.push({
+                        type: type_6,
+                        ndim: ndim_5,
+                        dim: dim_7,
+                        ismatrix: ismatrix_3,
+                        ispointer: ispointer
+                    });
+                    //if (transformNode(right_node.argumentNode) != undefined) {
+                    //    args.push(transformNode(right_node.argumentNode));   
+                    //} else {
+                    args.push(right_node.argumentNode.text);
+                    //}
+                    break;
+                }
+            }
+            var outs = [];
+            if (left_node.type == "matrix" /* g.SyntaxType.Matrix */) {
+                for (var _i = 0, _e = left_node.namedChildren; _i < _e.length; _i++) {
+                    var child = _e[_i];
+                    //if (transformNode(child) != undefined) {
+                    //    outs.push(transformNode(child));   
+                    //} else {
+                    outs.push(child.text);
+                    //}
+                }
+            }
+            else {
+                //if (transformNode(left_node) != undefined) {
+                //    outs.push(transformNode(left_node));   
+                //} else {
+                outs.push(left_node.text);
+                //}
+            }
+            return [args, arg_types, outs];
+        }
     }
 }
 exports.inferType = inferType;

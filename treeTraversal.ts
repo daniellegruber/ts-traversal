@@ -21,6 +21,7 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
     //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
+        case g.SyntaxType.CallOrSubscript:
         case g.SyntaxType.Comment:
         case g.SyntaxType.ExpressionStatement:
         case g.SyntaxType.FunctionDefinition:
@@ -55,6 +56,8 @@ export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean 
     //console.log(cursor.currentNode);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
+        //case g.SyntaxType.CallOrSubscript:
+            //console.log("hello");
         case g.SyntaxType.FunctionDefinition: {
             while (!cursor.gotoNextSibling()) {
                 if (!cursor.gotoParent()) {

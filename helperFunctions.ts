@@ -4,7 +4,7 @@ var gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
 const path = require("path");
 const glob = require("glob");
-import { CustomFunction } from "./identifyCustomFunctions";
+import { identifyCustomFunctions, CustomFunction } from "./identifyCustomFunctions";
 import { typeInference, inferType, VarType } from "./typeInference";
 import * as g from "./generated";
 import Parser = require("tree-sitter");
@@ -54,8 +54,18 @@ export function getClasses(src) {
     let classes: Class[] = [];
     // Loop 1
     for (let folder of folders) {
+        let class_name = folder.substr(folder.indexOf("@") + 1);
         let files = getFilesInPath(folder);
-        let methods: CustomFunction[] = [];
+        let class_file = files.find(x => x.includes(`${class_name}.m`));
+        const sourceCode = fs.readFileSync(class_file, "utf8");
+        let tree = parser.parse(sourceCode);
+        //let [methods, file_traversal_order] = identifyCustomFunctions(tree, [], files, class_file, [class_file]);
+        //methods = methods.filter(function(e) { return !e.external });
+        let [methods, file_traversal_order] = identifyCustomFunctions(tree, [], [], class_file, [class_file]);
+        //let methods = custom_functions.filter(function(e) { return !e.external });
+        //console.log(custom_functions);
+        console.log(methods);
+        /*let methods: CustomFunction[] = [];
         for (let file of files) {
             // Placeholder
             const m: CustomFunction = { 
@@ -67,9 +77,9 @@ export function getClasses(src) {
                 file: file
             };
             methods.push(m);
-        }
+        }*/
         const c: Class = {
-            name: folder.substr(folder.indexOf("@") + 1),
+            name: class_name,
             methods: methods,
             folder: folder
         }
@@ -82,6 +92,7 @@ export function getClasses(src) {
         let files = getFilesInPath(c1.folder);
         let methods = c1.methods;
         for (let file of files) {
+            console.log(file);
             // Update placeholders
             const sourceCode = fs.readFileSync(file, "utf8");
             let tree = parser.parse(sourceCode);

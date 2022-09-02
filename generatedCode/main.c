@@ -28,6 +28,7 @@ input[5] = 1;
 writeM( A, 6, input);
 free(input);
 
+undefined;
 
 
 int ndim = 2;
@@ -40,18 +41,19 @@ input[1] = A;
 writeM( B, 12, input);
 free(input);
 
+undefined;
 
 Matrix * tmp1 = mtimesM(B, A)
-Matrix * C = tmp1;
+tmp1;
 
-Matrix * tmp2 = scaleM(3, C)
-Matrix * C_scaled = tmp2;
+Matrix * tmp2 = scaleM(3, C, 1)
+tmp2;
 
-float a = 2.5;
+2.5;
 
-bool c = a < b;
+a < b;
 
-complex d = 1 + 3.444*I;
+1 + 3.444*I;
 
 
 int ndim = 2;
@@ -64,9 +66,10 @@ input[1][] = "world";
 writeM( D, 2, input);
 free(input);
 
+undefined;
 
 Matrix * tmp5 = ctransposeM(D)
-Matrix * E = tmp5;
+tmp5;
 
 unknown* p_F
 unknown* p_G
@@ -82,10 +85,11 @@ cell0 H;
 strcpy(H.f0, "hello");
 H.f1 = 1;
 
+undefined;
 
 double tmp6;
 indexM(A, &tmp6, {1, 2}, {1, 2, 3});
-Matrix * myvar = tmp6;
+tmp6;
 
 // This is a comment
 
@@ -102,11 +106,11 @@ else
 {
 f;
 }
-Matrix * myarr = zerosM(2,{2, 3});
+Matrix * myarr = zerosM(2, {2, 3});
 
 double tmp8;
 indexM(myfun3, &tmp8, a);
-unknown b = tmp8;
+tmp8;
 
 
 
@@ -128,8 +132,8 @@ for (tmp10 = 1; tmp10 <= 3; ++tmp10) {
 indexM(tmp9, &i, tmp9 -> ndim=1, tmp10);
 a;
 }
-unknown F = f + g;
-unknown G = f - g;
+f + g;
+f - g;
 return 0;
 }
 
@@ -153,7 +157,7 @@ a;
 
 unknown myfun2(void);
 {
-char * outstr = "hello world";
+"hello world";
 
 
 }

@@ -54,7 +54,6 @@ function typeInference(tree, custom_functions, classes) {
                 if (obj != null) {
                     
                     custom_functions = custom_functions.filter(function(e) { return e.name !== obj.name });
-                    
                     if (node.children[1].type == g.SyntaxType.ReturnValue) {
                         let return_node = node.children[1].firstChild;
                         
@@ -291,7 +290,6 @@ function inferType(node, var_types, custom_functions, classes) {
             
             let [left_type, left_ndim, left_dim, left_ismatrix,] = inferType(node.leftNode, var_types, custom_functions, classes);
             let [right_type, right_ndim, right_dim, right_ismatrix,] = inferType(node.rightNode, var_types, custom_functions, classes);
-            
             switch (node.operatorNode.type) {
                 case "+": 
                 case "-": 
@@ -440,17 +438,30 @@ function inferType(node, var_types, custom_functions, classes) {
                     // Is a function call
                     let obj1 = custom_functions.find(x => x.name === node.valueNode.text);
                     let obj2 = builtin_functions.find(x => x.fun_matlab === node.valueNode.text);
-                    if ((obj1 != null && obj1 != undefined) || (obj2 != null && obj2 != undefined)) {
-                        let obj = (obj1 != null && obj1 != undefined) ? obj1 : obj2;
-                        if (obj.return_type == null) {
+                    if (obj1 != null && obj1 != undefined) {
+                        if (obj1.return_type == null) {
                             return unknown_type;
                         } else {
                             return [
-                                obj.return_type.type, 
-                                obj.return_type.ndim, 
-                                obj.return_type.dim, 
-                                obj.return_type.ismatrix,
-                                obj.return_type.ispointer
+                                obj1.return_type.type, 
+                                obj1.return_type.ndim, 
+                                obj1.return_type.dim, 
+                                obj1.return_type.ismatrix,
+                                obj1.return_type.ispointer
+                            ];
+                        }
+                    } else if (obj2 != null && obj2 != undefined) {
+                        let [args, arg_types, outs] = parseFunctionCallNode(node);
+                        let return_type = obj2.return_type(args, arg_types, outs);
+                        if (return_type == null) {
+                            return unknown_type;
+                        } else {
+                            return [
+                                return_type.type, 
+                                return_type.ndim, 
+                                return_type.dim, 
+                                return_type.ismatrix,
+                                return_type.ispointer
                             ];
                         }
                     } else {
@@ -526,6 +537,115 @@ function inferType(node, var_types, custom_functions, classes) {
         // Default
         default: return unknown_type;
     }
+    
+    // Return args, arg_types, outs from function
+    function parseFunctionCallNode(node) {
+        if (node.parent.type == g.SyntaxType.Assignment) {
+            return parseFunctionCallNode(node.parent);
+        } else {
+            switch (node.type) {
+                case g.SyntaxType.Assignment: {
+                    var left_node = node.leftNode;
+                    var right_node = node.rightNode;
+                    break;
+                }
+                default: {
+                    var left_node = null;
+                    var right_node = node;
+                    break;
+                }
+            }
+            let args = [];
+            let arg_types: Type[] = [];
+            switch (right_node.type) {
+                case g.SyntaxType.CallOrSubscript: {
+                    for (let i = 1; i < right_node.namedChildCount; i++) {
+                        //if (transformNode(right_node.namedChildren[i]) != undefined) {
+                        //    args.push(transformNode(right_node.namedChildren[i]));   
+                        //} else {
+                            args.push(right_node.namedChildren[i].text);
+                        //}
+                        let [type, ndim, dim, ismatrix, ispointer] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes);
+                        arg_types.push({
+                            type: type, 
+                            ndim: ndim, 
+                            dim: dim, 
+                            ismatrix: ismatrix, 
+                            ispointer: ispointer
+                        });
+                    }
+                    break;
+                }
+                case g.SyntaxType.ComparisonOperator:
+                case g.SyntaxType.BooleanOperator:
+                case g.SyntaxType.BinaryOperator: {
+                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer] = inferType(right_node.leftNode, var_types, custom_functions, classes);
+                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer] = inferType(right_node.rightNode, var_types, custom_functions, classes);
+                    arg_types.push({
+                        type: l_type, 
+                        ndim: l_ndim, 
+                        dim: l_dim, 
+                        ismatrix: l_ismatrix, 
+                        ispointer: l_ispointer
+                    });
+                    arg_types.push({
+                        type: r_type, 
+                        ndim: r_ndim, 
+                        dim: r_dim, 
+                        ismatrix: r_ismatrix, 
+                        ispointer: r_ispointer
+                    });
+                    //if (transformNode(right_node.leftNode) != undefined) {
+                    //    args.push(transformNode(right_node.leftNode));   
+                    //} else {
+                        args.push(right_node.leftNode.text);
+                    //}
+                    //if (transformNode(right_node.rightNode) != undefined) {
+                    //    args.push(transformNode(right_node.rightNode));   
+                    //} else {
+                        args.push(right_node.rightNode.text);
+                    //}
+                    break;
+                }
+                case g.SyntaxType.UnaryOperator:
+                case g.SyntaxType.TransposeOperator: {
+                    let [type, ndim, dim, ismatrix, ispointer] = inferType(right_node.argumentNode, var_types, custom_functions, classes);
+                    arg_types.push({
+                        type: type, 
+                        ndim: ndim, 
+                        dim: dim, 
+                        ismatrix: ismatrix, 
+                        ispointer: ispointer
+                    });
+                    //if (transformNode(right_node.argumentNode) != undefined) {
+                    //    args.push(transformNode(right_node.argumentNode));   
+                    //} else {
+                        args.push(right_node.argumentNode.text);
+                    //}
+                    break;
+                }
+            }
+            
+            let outs = [];
+            if (left_node.type == g.SyntaxType.Matrix) {
+                for (let child of left_node.namedChildren) {
+                    //if (transformNode(child) != undefined) {
+                    //    outs.push(transformNode(child));   
+                    //} else {
+                        outs.push(child.text);
+                    //}
+                }
+            } else {
+                //if (transformNode(left_node) != undefined) {
+                //    outs.push(transformNode(left_node));   
+                //} else {
+                    outs.push(left_node.text);
+                //}
+            }
+                    
+            return [args, arg_types, outs];
+        }
+    }
 }
-
+    
 export {Type, VarType, typeInference, inferType};

@@ -1,7 +1,7 @@
 const fs = require("fs");
 var path = require("path");
 import * as g from "./generated";
-import { typeInference, inferType, VarType } from "./typeInference";
+import { typeInference, inferType, VarType, Type } from "./typeInference";
 import { 
     gotoPreorderSucc, 
     gotoPreorderSucc_OnlyMajorTypes, 
@@ -10,7 +10,7 @@ import {
     findEntryFunction
 } from "./treeTraversal";
 import { writeToFile } from "./helperFunctions";
-import { binaryMapping, unaryMapping, transposeMapping, builtin_functions } from "./builtinFunctions";
+import { operatorMapping, builtin_functions } from "./builtinFunctions";
 let builtin_funs = builtin_functions;
 // Main
 export function generateCode(filename, tree, out_folder, custom_functions, classes, var_types) {
@@ -219,43 +219,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             
             // Assignment
             case g.SyntaxType.Assignment: {
-                var matrix_out = false;
-                // If LHS is a subscript
-                if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript) {
-                    var lhs:string = generateTmpVar();
-                    let [,,dim,,] = inferType(node.leftNode, var_types, custom_functions, classes);
-                    
-                    // already a linear idx
-                    if (node.leftNode.namedChildCount == 2) {
-                        if (node.leftNode.namedChildren[1].type == g.SyntaxType.Slice) {
-                            var list = slice2list(node.leftNode.namedChildren[1])
-                        } else if (node.leftNode.namedChildren[1].type == g.SyntaxType.Matrix) {
-                            var list = matrix2list(node.leftNode.namedChildren[1])
-                        } else {
-                            var list = [node.leftNode.namedChildren[1].text];
-                        }
-                        var idx = [];
-                        for (let l of list) {
-                            idx.push(Number(l));
-                        }
-                    }
-                    else {
-                        var idx = sub2idx(
-                            node.leftNode.namedChildren[1], 
-                            node.leftNode.namedChildren[2], 
-                            dim[0]
-                        );
-                    }
-                    
-                    pushToMain(`void *data = getdataM(${node.leftNode.valueNode.text});`)
-                } else if (node.leftNode.type == g.SyntaxType.Matrix) {
-                    //var lhs:string = transformNode(node.leftNode);
-                    matrix_out = true;
-                } else {
-                    var lhs:string = transformNode(node.leftNode);
-                }
-                    
-                
+                let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
                 var [type, ndim, dim, ismatrix, ispointer] = inferType(node.rightNode, var_types, custom_functions, classes);
                 var init_flag = false;
                 if (node.rightNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Cell) {
@@ -265,7 +229,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         let expression1 = [];
                         let expression2 = [];
                         expression1.push(`\nstruct cell${numCellStruct} {`);
-                        expression2.push(`cell${numCellStruct} ${lhs};`)
+                        expression2.push(`cell${numCellStruct} ${outs[0]};`)
                         
                         for (let i=0; i<node.rightNode.namedChildCount; i++) {
                             let child = node.rightNode.namedChildren[i];
@@ -274,14 +238,14 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                             if (child.type == g.SyntaxType.Matrix) {
                                 
                                 expression1.push(`Matrix f${i}[${numel}];`);
-                                expression2.push(initializeMatrix(node.rightNode, `${lhs}.f${i}`, child_ndim, child_dim, type));
+                                expression2.push(initializeMatrix(node.rightNode, `${outs[0]}.f${i}`, child_ndim, child_dim, type));
           
                             } else if (child_type == 'char') {
                                     expression1.push(`${child_type} f${i}[${numel}];`);
-                                    expression2.push(`strcpy(${lhs}.f${i}, ${child.text.replace(/'/g, '"')});`);
+                                    expression2.push(`strcpy(${outs[0]}.f${i}, ${child.text.replace(/'/g, '"')});`);
                             } else {
                                 expression1.push(`${child_type} f${i};`);
-                                expression2.push(`${lhs}.f${i} = ${child.text};`)
+                                expression2.push(`${outs[0]}.f${i} = ${child.text};`)
                             }
                             
                         }
@@ -294,59 +258,32 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     } else {
                         let obj = type_to_matrix_type.find(x => x.type === type);
                         if (obj != null) {
-                            pushToMain(initializeMatrix(node.rightNode, lhs, ndim, dim, type));
+                            pushToMain(initializeMatrix(node.rightNode, outs[0], ndim, dim, type));
                         }
                         
                     }
                 // TO DO: what do when RHS is class or function call
+                var lhs = null;
                 } else if (node.rightNode.type == g.SyntaxType.CallOrSubscript) {
                     let obj = classes.find(x => x.name === node.rightNode.valueNode.text);
                     // Is a class
                     if (obj != null) {
                         var rhs:string = obj.name;
                     } else {
-                        // Is a function call
-                        if (matrix_out) {
-                            let obj1 = custom_functions.find(x => x.name === node.rightNode.valueNode.text);
-                            let obj2 = findFunction(node, builtin_funs);
-                            
-                            if (obj1 != null && obj1 != undefined) {
-                                if (obj1.return_type != null) {
-                                    lhs = node.leftNode.namedChildren[0].text;
-                                    if (obj1.ptr_args != null) {
-                                        for (let i = 0; i < node.namedChildCount; i++) {
-                                            obj1.ptr_args[i] = node.leftNode.namedChildren[i+1].text
-                                        }
-                                    }
-                                } else {
-                                    lhs = null;
-                                    if (obj1.ptr_args != null) {
-                                        for (let i = 0; i < node.namedChildCount; i++) {
-                                            obj1.ptr_args[i] = node.leftNode.namedChildren[i].text
-                                        }
-                                    }
-                                }
-                                custom_functions = custom_functions.filter(function(e) { return e.name !== node.rightNode.valueNode.text });
-                                custom_functions.push(obj1);
-                            } else if (obj2 != null && obj2 != undefined) {
-                                if (obj2.return_type != null) {
-                                    lhs = node.leftNode.namedChildren[0].text;
-                                    if (obj2.ptr_args != null) {
-                                        for (let i = 0; i < node.namedChildCount-1; i++) {
-                                            obj2.ptr_args[i] = node.leftNode.namedChildren[i+1].text;
-                                        }
-                                    }
-                                } else {
-                                    lhs = null;
-                                    if (obj2.ptr_args != null) {
-                                        for (let i = 0; i < node.namedChildCount; i++) {
-                                            obj2.ptr_args[i] = node.leftNode.namedChildren[i].text;
-                                        }
-                                    }
-                                }
-                                builtin_funs = builtin_funs.filter(function(e) { return e.fun_matlab !== node.rightNode.valueNode.text });
-                                builtin_funs.push(obj2);
+                        let obj1 = custom_functions.find(x => x.name === node.rightNode.valueNode.text);
+                        let obj2 = builtin_funs.find(x => x.fun_matlab === node.rightNode.valueNode.text);
+                        if (obj1 != null && obj1 != undefined) {
+                            if (obj1.return_type != null) {
+                                lhs = node.leftNode.namedChildren[0].text;
                             }
+                        } else if (obj2 != null && obj2 != undefined) {
+                            //let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
+                            let return_type = obj2.return_type(args, arg_types, outs);
+                            let fun_c = obj2.fun_c(arg_types, outs);
+                            if (obj2.args_transform(args, arg_types, outs) != null) {
+                                args = obj2.args_transform(args, arg_types, outs);
+                            }
+                            lhs = obj2.outs_transform(outs);
                         }
                     }
                     var rhs:string = transformNode(node.rightNode);
@@ -355,7 +292,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     var rhs:string = transformNode(node.rightNode);
                     init_flag = true;
                 }
-                
+
                 if (lhs == null) {
                     pushToMain(`${rhs};`);    
                 } else if (init_flag) {
@@ -394,24 +331,45 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         });
                     }
                 }
-                
-                // If LHS is a subscript
-                if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript) {
-                    
-                    if (ismatrix) {
-                        pushToMain(`void *data2 = getdataM(${lhs});`)
-                        for (let i = 0; i < idx.length; i++) {
-                            pushToMain(`memcpy(&data[${idx[i]}], data2[${i}]);`); 
-                        }
-                    } else {
-                        for (let i = 0; i < idx.length; i++) {
-                            pushToMain(`memcpy(&data[${idx[i]}], ${lhs}[${i}]);`); 
+
+                if (node.leftNode.Type == g.SyntaxType.Matrix) {
+                    for (let j = 0; j < node.leftNode.namedChildCount; j++) {
+                        let child = node.leftNode.namedChildren[j];
+                        if (is_subscript[j]) {
+                            let idx = getSubscriptIdx(child);
+                            pushToMain(`void *data = getdataM(${child.valueNode.text});`)
+                            let [,,,ismatrix,] = inferType(outs[j], var_types, custom_functions, classes);
+                            if (ismatrix) {
+                                pushToMain(`void *data2 = getdataM(${outs[j]});`)
+                                for (let i = 0; i < idx.length; i++) {
+                                    pushToMain(`memcpy(&data[${idx[i]}], data2[${i}]);`); 
+                                }
+                            } else {
+                                for (let i = 0; i < idx.length; i++) {
+                                    pushToMain(`memcpy(&data[${idx[i]}], ${outs[j]}[${i}]);`); 
+                                }
+                            }
+                            pushToMain(`${child.valueNode.text}.data = data;`);
                         }
                     }
-                    
-                    pushToMain(`${node.leftNode.valueNode.text}.data = data;`);
-                } 
-                
+                } else {
+                    if (is_subscript[0]) {
+                        let idx = getSubscriptIdx(node.leftNode);
+                        pushToMain(`void *data = getdataM(${node.leftNode.valueNode.text});`)
+                        let [,,,ismatrix,] = inferType(outs[0], var_types, custom_functions, classes);
+                        if (ismatrix) {
+                            pushToMain(`void *data2 = getdataM(${outs[0]});`)
+                            for (let i = 0; i < idx.length; i++) {
+                                pushToMain(`memcpy(&data[${idx[i]}], data2[${i}]);`); 
+                            }
+                        } else {
+                            for (let i = 0; i < idx.length; i++) {
+                                pushToMain(`memcpy(&data[${idx[i]}], ${outs[0]}[${i}]);`); 
+                            }
+                        }
+                        pushToMain(`${node.leftNode.valueNode.text}.data = data;`);
+                    }
+                }
                 return null; 
                 break;
             }
@@ -425,6 +383,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 return printMatrixFunctions(node);
                 break;
             }
+            
+            
             
             case g.SyntaxType.Block: {
                 let expression = [];
@@ -476,43 +436,34 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                 } else {
                     // Is a builtin function call
-                    let obj = findFunction(node, builtin_funs);
-                    if (node.parent.type == g.SyntaxType.Assignment) {
-                        obj = findFunction(node.parent, builtin_funs);
-                    }
-                    
+                    let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
                     
                     if (obj != null) {
-                        let args = [];
-                        for (let i=1; i<node.namedChildCount; i++) {
-                            if (transformNode(node.namedChildren[i]) != undefined) {
-                                args.push(transformNode(node.namedChildren[i]));
-                            } else {
-                                args.push(node.namedChildren[i].text);
-                            }
-                        }
-                        
+                        let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
+                        let return_type = obj.return_type(args, arg_types, outs);
+                        let fun_c = obj.fun_c(arg_types, outs);
                         var tmp_var = generateTmpVar();
-                        if (obj.args_transform != null) {
-                            args = obj.args_transform(args);
-                        }
+                        args = obj.args_transform(args, arg_types, outs);
+                        
                         
                         let n_args = node.namedChildCount - 1;
                         if (n_args < obj.n_req_args) {
                             args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
                         }
                         
-                        if (obj.ptr_args != null) {
-                            args = args.concat(obj.ptr_args);
+                        let ptr_args = obj.ptr_args(arg_types, outs);
+                        if (ptr_args != null) {
                             let ptr_declaration = [];
-                            for (let i = 0; i < obj.ptr_args.length; i++) {
-                                ptr_declaration.push(`${obj.ptr_arg_types[i]} ${obj.ptr_args[i]};`)
+                            for (let i = 0; i < ptr_args.length; i++) {
+                                args.push(ptr_args[i].name);
+                                ptr_declaration.push(`${ptr_args[i].type} * restrict ${ptr_args[i].name};`)
+                                var_types.push(ptr_args[i]);
                             }
                             pushToMain(ptr_declaration.join("\n"));
                             
                         }
                         
-                        return `${obj.fun_c}(${args})`;
+                        return `${fun_c}(${args.join(", ")})`;
                         
                     // Is a subscript
                     } else {
@@ -578,67 +529,122 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         }
     }
     
-    // Find corresponding C function from assignment node where RHS is MATLAB function call
-    function findFunction(node, function_dictionary) {
-        console.log(node.text);
-        if (node.leftNode != undefined) {
-            var left_node = node.leftNode;
+    // Return args, arg_types, outs from function
+    function parseFunctionCallNode(node) {
+        if (node.parent.type == g.SyntaxType.Assignment) {
+            return parseFunctionCallNode(node.parent);
         } else {
-            var left_node = null;
-        }
-        if (node.rightNode != undefined) {
-            var right_node = node.rightNode;
-        } else {
-            var right_node = node;
-        }
-        
-        let matches = function_dictionary.filter(function(e) { return e.fun_matlab === right_node.valueNode.text });
-        let obj2 = matches.find(x => x.fun_matlab === right_node.valueNode.text);
-        
-        if (matches.length != 0) {
-            if (matches.length > 1) {
-                if (matches[0].arg_types != null) {
-                    let arg_types = [];
-                    for (let i = 1; i < right_node.namedChildCount; i++) {
-                        let [type,,,ismatrix,] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes);
-                        if (ismatrix) {
-                            arg_types.push('matrix');
-                        } else {
-                            arg_types.push('scalar');
-                        }
-                    }
-                    console.log(matches[0].arg_types);
-                    console.log(arg_types);
-                    var matches2 = matches.filter(function(e) { return JSON.stringify(e.arg_types) === JSON.stringify(arg_types) });
-                    if (matches2.length == 0) {
-                        matches2 = matches.filter(function(e) { return JSON.stringify(e.arg_types) === JSON.stringify(arg_types.reverse()) });
-                    }
-                } else {
-                    var matches2 = matches;
+            switch (node.type) {
+                case g.SyntaxType.Assignment: {
+                    var left_node = node.leftNode;
+                    var right_node = node.rightNode;
+                    break;
                 }
-                
-                console.log(matches2);
-                
-                var obj = matches2[0];
-                if (matches2.length > 1 && left_node != null) {
-                    let n_out = 1;
-                    if (left_node.type == g.SyntaxType.Matrix) {
-                        n_out = left_node.namedChildCount;
-                    }
-                    obj = matches2.find(x => x.n_out === n_out);
-                } else {
-                    obj = matches2[0];
+                default: {
+                    var left_node = null;
+                    var right_node = node;
+                    break;
                 }
-                
-                return obj
-            } else {
-                return matches[0]
             }
-        } else {
-            return null;
+            let args = [];
+            let arg_types: Type[] = [];
+            switch (right_node.type) {
+                case g.SyntaxType.CallOrSubscript: {
+                    for (let i = 1; i < right_node.namedChildCount; i++) {
+                        if (transformNode(right_node.namedChildren[i]) != undefined) {
+                            args.push(transformNode(right_node.namedChildren[i]));   
+                        } else {
+                            args.push(right_node.namedChildren[i].text);
+                        }
+                        let [type, ndim, dim, ismatrix, ispointer] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes);
+                        arg_types.push({
+                            type: type, 
+                            ndim: ndim, 
+                            dim: dim, 
+                            ismatrix: ismatrix, 
+                            ispointer: ispointer
+                        });
+                    }
+                    break;
+                }
+                case g.SyntaxType.ComparisonOperator:
+                case g.SyntaxType.BooleanOperator:
+                case g.SyntaxType.BinaryOperator: {
+                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer] = inferType(right_node.leftNode, var_types, custom_functions, classes);
+                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer] = inferType(right_node.rightNode, var_types, custom_functions, classes);
+                    arg_types.push({
+                        type: l_type, 
+                        ndim: l_ndim, 
+                        dim: l_dim, 
+                        ismatrix: l_ismatrix, 
+                        ispointer: l_ispointer
+                    });
+                    arg_types.push({
+                        type: r_type, 
+                        ndim: r_ndim, 
+                        dim: r_dim, 
+                        ismatrix: r_ismatrix, 
+                        ispointer: r_ispointer
+                    });
+                    if (transformNode(right_node.leftNode) != undefined) {
+                        args.push(transformNode(right_node.leftNode));   
+                    } else {
+                        args.push(right_node.leftNode.text);
+                    }
+                    if (transformNode(right_node.rightNode) != undefined) {
+                        args.push(transformNode(right_node.rightNode));   
+                    } else {
+                        args.push(right_node.rightNode.text);
+                    }
+                    break;
+                }
+                case g.SyntaxType.UnaryOperator:
+                case g.SyntaxType.TransposeOperator: {
+                    let [type, ndim, dim, ismatrix, ispointer] = inferType(right_node.argumentNode, var_types, custom_functions, classes);
+                    arg_types.push({
+                        type: type, 
+                        ndim: ndim, 
+                        dim: dim, 
+                        ismatrix: ismatrix, 
+                        ispointer: ispointer
+                    });
+                    if (transformNode(right_node.argumentNode) != undefined) {
+                        args.push(transformNode(right_node.argumentNode));   
+                    } else {
+                        args.push(right_node.argumentNode.text);
+                    }
+                    break;
+                }
+            }
+            
+            let outs = [];
+            let is_subscript = [];
+            if (left_node == null) {
+            } else if (left_node.type == g.SyntaxType.Matrix) {
+                for (let child of left_node.namedChildren) {
+                    if (child.type == g.SyntaxType.CallOrSubscript || child.type == g.SyntaxType.CellSubscript) {
+                        outs.push(generateTmpVar());
+                        is_subscript.push(true);
+                    } else if (transformNode(child) != undefined) {
+                        outs.push(transformNode(child));   
+                    } else {
+                        outs.push(child.text);
+                    }
+                }
+            } else {
+                if (left_node.type == g.SyntaxType.CallOrSubscript || left_node.type == g.SyntaxType.CellSubscript) {
+                    outs.push(generateTmpVar());
+                    is_subscript.push(true);
+                } else if (transformNode(left_node) != undefined) {
+                    outs.push(transformNode(left_node));   
+                } else {
+                    outs.push(left_node.text);
+                }
+            }
+                    
+            return [args, arg_types, outs, is_subscript];
         }
     }
-    
     // Initialize matrices
     // -----------------------------------------------------------------------------
     
@@ -675,96 +681,55 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     // -----------------------------------------------------------------------------
     function printMatrixFunctions(node) {
         var tmp_var = generateTmpVar();
-        switch (node.type) {
-            case g.SyntaxType.UnaryOperator: {
-                let [type,,,ismatrix,] = inferType(node.argumentNode, var_types, custom_functions, classes);
-                let arg_types = [];
-                if (ismatrix) {
-                    arg_types.push('matrix');
-                } else {
-                    arg_types.push('scalar');
+        let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
+        let obj = operatorMapping.find(x => x.fun_matlab === node.operatorNode.type );
+        let return_type = obj.return_type(args, arg_types, outs);
+        let fun_c = obj.fun_c(arg_types, outs);
+        if (obj.args_transform(args, arg_types, outs) != null) {
+            args = obj.args_transform(args, arg_types, outs);
+        }
+        if (fun_c == null) {
+            switch (node.type) {
+                case g.SyntaxType.UnaryOperator: {
+                    return `${node.operatorNode.type}${transformNode(node.argumentNode)}`;
+                    break;
                 }
-                let matches = unaryMapping.filter(function(e) { return e.fun_matlab === node.operatorNode.type });
-                let obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types));
-                if (obj == null || obj == undefined) {
-                    obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types.reverse()));
-                    if (obj == null || obj == undefined) {
-                        return `${node.operatorNode.type}${transformNode(node.argumentNode)}`;
-                    } 
+                case g.SyntaxType.TransposeOperator: {
+                    return `${transformNode(node.argumentNode)}${node.operatorNode.type}`;
+                    break;
                 }
-                if (obj.return_type.ismatrix) {
-                    var return_type = `Matrix *`;
-                } else if (obj.return_type.ispointer) {
-                    var return_type = `${obj.return_type.type} *`;
-                } else {
-                    var return_type = `${obj.return_type.type}`;
+                case g.SyntaxType.ComparisonOperator:
+                case g.SyntaxType.BooleanOperator:
+                case g.SyntaxType.BinaryOperator: {
+                    return `${transformNode(node.leftNode)} ${node.operatorNode.type} ${transformNode(node.rightNode)}`;
+                    break;
                 }
-                pushToMain(`${return_type} ${tmp_var} = ${obj.fun_c}(${node.argumentNode.text})`);
-                return tmp_var;
-                break;
             }
-            case g.SyntaxType.TransposeOperator: {
-                let [type,,,ismatrix,] = inferType(node.argumentNode, var_types, custom_functions, classes);
-                let arg_types = [];
-                if (ismatrix) {
-                    arg_types.push('matrix');
-                } else {
-                    arg_types.push('scalar');
-                }
-                let matches = transposeMapping.filter(function(e) { return e.fun_matlab === node.operatorNode.type });
-                let obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types));
-                if (obj == null || obj == undefined) {
-                    obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types.reverse()));
-                    if (obj == null || obj == undefined) {
-                        return `${transformNode(node.argumentNode)}${node.operatorNode.type}`;
-                    } 
-                }
-                if (obj.return_type.ismatrix) {
-                    var return_type = `Matrix *`;
-                } else if (obj.return_type.ispointer) {
-                    var return_type = `${obj.return_type.type} *`;
-                } else {
-                    var return_type = `${obj.return_type.type}`;
-                }
-                pushToMain(`${return_type} ${tmp_var} = ${obj.fun_c}(${node.argumentNode.text})`);
-                return tmp_var;
-                break;
+        } else {
+            if (return_type.ismatrix) {
+                var init_type = `Matrix *`;
+            } else if (return_type.ispointer) {
+                var init_type = `${return_type.type} *`;
+            } else {
+                var init_type = `${return_type.type}`;
             }
-            case g.SyntaxType.ComparisonOperator:
-            case g.SyntaxType.BooleanOperator:
-            case g.SyntaxType.BinaryOperator: {
-                let [left_type,,,left_ismatrix,] = inferType(node.leftNode, var_types, custom_functions, classes);
-                let [right_type,,,right_ismatrix,] = inferType(node.rightNode, var_types, custom_functions, classes);
-                let arg_types = [];
-                if (left_ismatrix) {
-                    arg_types.push('matrix')
-                } else {
-                    arg_types.push('scalar')
+            switch (node.type) {
+                case g.SyntaxType.UnaryOperator: {
+                    pushToMain(`${return_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`);
+                    break;
                 }
-                if (right_ismatrix) {
-                    arg_types.push('matrix')
-                } else {
-                    arg_types.push('scalar')
+                case g.SyntaxType.TransposeOperator: {
+                    pushToMain(`${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`);
+                    break;
                 }
-                let matches = binaryMapping.filter(function(e) { return e.fun_matlab === node.operatorNode.type });
-                let obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types));
-                if (obj == null || obj == undefined) {
-                    obj = matches.find(x => JSON.stringify(x.arg_types) === JSON.stringify(arg_types.reverse()));
-                    if (obj == null || obj == undefined) {
-                        return `${transformNode(node.leftNode)} ${node.operatorNode.type} ${transformNode(node.rightNode)}`;
-                    } 
+                case g.SyntaxType.ComparisonOperator:
+                case g.SyntaxType.BooleanOperator:
+                case g.SyntaxType.BinaryOperator: {
+                    pushToMain(`${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`);
+                    break;
                 }
-                if (obj.return_type.ismatrix) {
-                    var return_type = `Matrix *`;
-                } else if (obj.return_type.ispointer) {
-                    var return_type = `${obj.return_type.type} *`;
-                } else {
-                    var return_type = `${obj.return_type.type}`;
-                }
-                pushToMain(`${return_type} ${tmp_var} = ${obj.fun_c}(${node.leftNode.text}, ${node.rightNode.text})`);
-                return tmp_var;
-                break;
             }
+            return tmp_var;
         }
     }
     
@@ -946,6 +911,31 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         
     }
     
+    function getSubscriptIdx(node) {
+        let [,,dim,,] = inferType(node, var_types, custom_functions, classes);
+        // already a linear idx
+        if (node.namedChildCount == 2) {
+            if (node.namedChildren[1].type == g.SyntaxType.Slice) {
+                var list = slice2list(node.namedChildren[1])
+            } else if (node.namedChildren[1].type == g.SyntaxType.Matrix) {
+                var list = matrix2list(node.namedChildren[1])
+            } else {
+                var list = [node.namedChildren[1].text];
+            }
+            var idx = [];
+            for (let l of list) {
+                idx.push(Number(l));
+            }
+        }
+        else {
+            var idx = sub2idx(
+                node.namedChildren[1], 
+                node.namedChildren[2], 
+                dim[0]
+            );
+        }
+        return idx;
+    }
     // Put together generated code
     // -----------------------------------------------------------------------------
     

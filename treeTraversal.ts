@@ -1,4 +1,5 @@
 import * as g from "./generated";
+import { parseFunctionDefNode } from "./helperFunctions";
 
 // Tree traversal function
 // -----------------------------------------------------------------------------
@@ -57,7 +58,7 @@ export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean 
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         //case g.SyntaxType.CallOrSubscript:
-            //console.log("hello");
+        case g.SyntaxType.ERROR:
         case g.SyntaxType.FunctionDefinition: {
             while (!cursor.gotoNextSibling()) {
                 if (!cursor.gotoParent()) {
@@ -92,6 +93,24 @@ export function fileIsFunction(tree): boolean {
         //console.log("hello4");
         //console.log(cursor.currentNode);
         switch (node.type) {
+            case g.SyntaxType.ERROR:
+                node = parseFunctionDefNode(c.currentNode);
+                if (node != null) {
+                    if (encountered_function) {
+                        return false;
+                    }
+                    encountered_function = true;
+                    if (encountered_code_before) {
+                        return false;
+                    }
+                } else {
+                    if (encountered_function) {
+                        encountered_code_after = true;
+                    } else {
+                        encountered_code_before = true;
+                    }
+                }
+                break;
             case g.SyntaxType.FunctionDefinition: {
                 if (encountered_function) {
                     return false;
@@ -128,8 +147,10 @@ export function findEntryFunction (tree) {
         let cursor = tree.walk(); 
         do {
             const c = cursor as g.TypedTreeCursor;
-            if (c.currentNode.type == g.SyntaxType.FunctionDefinition) {
-                return c.currentNode
+            let node = parseFunctionDefNode(c.currentNode);
+            if (node != null) {
+                //console.log(node);
+                return node;
             }
         } while(gotoPreorderSucc(cursor));
     }

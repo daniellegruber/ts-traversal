@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.findEntryFunction = exports.fileIsFunction = exports.gotoPreorderSucc_SkipFunctionDef = exports.gotoPreorderSucc_OnlyMajorTypes = exports.gotoPreorderSucc = void 0;
+var helperFunctions_1 = require("./helperFunctions");
 // Tree traversal function
 // -----------------------------------------------------------------------------
 function gotoPreorderSucc(cursor) {
@@ -56,7 +57,7 @@ function gotoPreorderSucc_SkipFunctionDef(cursor) {
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         //case g.SyntaxType.CallOrSubscript:
-        //console.log("hello");
+        case "ERROR" /* g.SyntaxType.ERROR */:
         case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
             while (!cursor.gotoNextSibling()) {
                 if (!cursor.gotoParent()) {
@@ -90,6 +91,26 @@ function fileIsFunction(tree) {
         //console.log("hello4");
         //console.log(cursor.currentNode);
         switch (node.type) {
+            case "ERROR" /* g.SyntaxType.ERROR */:
+                node = (0, helperFunctions_1.parseFunctionDefNode)(c.currentNode);
+                if (node != null) {
+                    if (encountered_function) {
+                        return false;
+                    }
+                    encountered_function = true;
+                    if (encountered_code_before) {
+                        return false;
+                    }
+                }
+                else {
+                    if (encountered_function) {
+                        encountered_code_after = true;
+                    }
+                    else {
+                        encountered_code_before = true;
+                    }
+                }
+                break;
             case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
                 if (encountered_function) {
                     return false;
@@ -127,8 +148,10 @@ function findEntryFunction(tree) {
         var cursor = tree.walk();
         do {
             var c = cursor;
-            if (c.currentNode.type == "function_definition" /* g.SyntaxType.FunctionDefinition */) {
-                return c.currentNode;
+            var node = (0, helperFunctions_1.parseFunctionDefNode)(c.currentNode);
+            if (node != null) {
+                //console.log(node);
+                return node;
             }
         } while (gotoPreorderSucc(cursor));
     }

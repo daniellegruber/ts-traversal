@@ -4,12 +4,10 @@
 #include <complex.h>
 #include <string.h>
 
-// Initialize variables
-int b;
 
-
-int myfun3(unknown a)
+int myfun3(unknown a);
 {
-b = 1;
+int b = 1;
+
 
 }

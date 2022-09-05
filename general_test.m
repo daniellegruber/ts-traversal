@@ -29,6 +29,8 @@ end
 
 myarr = zeros(2,3);
 
+[F, G] = myfun1(f,g);
+
 b = myfun3(a);
 
 for i = [2, 7, 9]

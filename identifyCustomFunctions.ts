@@ -1,6 +1,7 @@
 const fs = require("fs");
 import * as g from "./generated";
-import { Type } from "./typeInference";
+import { VarType, Type } from "./typeInference";
+import { parseFunctionDefNode } from "./helperFunctions";
 import { 
     gotoPreorderSucc, 
     gotoPreorderSucc_OnlyMajorTypes, 
@@ -21,14 +22,17 @@ parser.setLanguage(Matlab);
 
 export type CustomFunction = {
     name: string;
+    arg_types: Array<VarType>;
     return_type:Type;
-    ptr_param: string;
-    ptr_declaration:string;
+    //return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+    //ptr_param: string;
+    //ptr_declaration:string;
+    outs_transform: { (outs: Array<string>): Array<string>; }; 
+    ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
     external: boolean;
     file: string;
+    def_node: g.SyntaxNode;
 };
-
-
     
 export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order) {
 
@@ -36,22 +40,33 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
     let cursor = tree.walk();
     do {
         const c = cursor as g.TypedTreeCursor;
-        switch (c.nodeType) {
-            case g.SyntaxType.FunctionDefinition: {
-                let node = c.currentNode;
+        let node = parseFunctionDefNode(c.currentNode);
+        if (node != null) {
             
-                const v1: CustomFunction = { 
-                    name: node.nameNode.text, 
-                    return_type: null,
-                    ptr_param: null, 
-                    ptr_declaration: null,
-                    external: filename !== file_traversal_order.slice(-1),
-                    file: filename
-                };
-                
-                custom_functions.push(v1);
-                break;
+            let arg_types = [];
+            for (let arg of node.parametersNode.namedChildren) {
+                // Placeholder
+                arg_types.push({
+                    name: arg.text,
+                    type: null,
+                    ndim: null,
+                    dim: null,
+                    ismatrix: null,
+                    ispointer: null
+                });
             }
+            const v1: CustomFunction = { 
+                name: node.nameNode.text, 
+                arg_types: arg_types,
+                return_type: null,
+                outs_transform: (outs) => outs,
+                ptr_args: (arg_types, outs) => null,
+                external: filename !== file_traversal_order.slice(-1),
+                file: filename,
+                def_node: node
+            };
+            custom_functions.push(v1);
+            break;
         }
     } while(gotoPreorderSucc(cursor));
     
@@ -62,8 +77,6 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
         switch (c.nodeType) {            
             case g.SyntaxType.CallOrSubscript: {
                 let node = c.currentNode;
-                //let obj1 = findFunction(node, builtin_functions);
-                //let obj2 = custom_functions.find(x => x.name === node.valueNode.text);
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
                 if (obj == null) {
                     const match = files.find(element => {

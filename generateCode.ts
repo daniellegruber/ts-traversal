@@ -13,7 +13,7 @@ import { writeToFile } from "./helperFunctions";
 import { operatorMapping, builtin_functions } from "./builtinFunctions";
 let builtin_funs = builtin_functions;
 // Main
-export function generateCode(filename, tree, out_folder, custom_functions, classes, var_types) {
+export function generateCode(filename, tree, out_folder, custom_functions, classes, var_types, file) {
     
     function pushToMain(expression) {
         if (current_code == "main") {
@@ -173,7 +173,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 } else if (node.rightNode.type == g.SyntaxType.Matrix) {
                     var tmp_var1 = generateTmpVar();
                     var tmp_var2 = generateTmpVar();
-                    var [type, ndim, dim, ] = inferType(node.rightNode, var_types, custom_functions, classes);
+                    var [type, ndim, dim,,,, c] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                    custom_functions = c;
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
                         expression1.push(initializeMatrix(node.rightNode, node.leftNode.text, ndim, dim, type));
@@ -220,8 +221,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             // Assignment
             case g.SyntaxType.Assignment: {
                 let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
-                var [type, ndim, dim, ismatrix, ispointer] = inferType(node.rightNode, var_types, custom_functions, classes);
+                var [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                custom_functions = c;
                 var init_flag = false;
+                var lhs = null;
                 if (node.rightNode.type == g.SyntaxType.Matrix || node.rightNode.type == g.SyntaxType.Cell) {
                     // https://www.mathworks.com/help/coder/ug/homogeneous-vs-heterogeneous-cell-arrays.html
                 
@@ -233,7 +236,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         
                         for (let i=0; i<node.rightNode.namedChildCount; i++) {
                             let child = node.rightNode.namedChildren[i];
-                            let [child_type, child_ndim, child_dim, child_ismatrix] = inferType(child, var_types, custom_functions, classes);
+                            let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(child, var_types, custom_functions, classes, file);
+                            custom_functions = c;
                             let numel = dim.reduce(function(a, b) {return a * b;});
                             if (child.type == g.SyntaxType.Matrix) {
                                 
@@ -262,8 +266,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         }
                         
                     }
-                // TO DO: what do when RHS is class or function call
-                var lhs = null;
+                    lhs = null;
                 } else if (node.rightNode.type == g.SyntaxType.CallOrSubscript) {
                     let obj = classes.find(x => x.name === node.rightNode.valueNode.text);
                     // Is a class
@@ -273,16 +276,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         let obj1 = custom_functions.find(x => x.name === node.rightNode.valueNode.text);
                         let obj2 = builtin_funs.find(x => x.fun_matlab === node.rightNode.valueNode.text);
                         if (obj1 != null && obj1 != undefined) {
-                            if (obj1.return_type != null) {
-                                lhs = node.leftNode.namedChildren[0].text;
-                            }
+                            lhs = obj1.outs_transform(outs);
                         } else if (obj2 != null && obj2 != undefined) {
-                            //let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
-                            let return_type = obj2.return_type(args, arg_types, outs);
-                            let fun_c = obj2.fun_c(arg_types, outs);
-                            if (obj2.args_transform(args, arg_types, outs) != null) {
-                                args = obj2.args_transform(args, arg_types, outs);
-                            }
                             lhs = obj2.outs_transform(outs);
                         }
                     }
@@ -291,6 +286,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 } else {
                     var rhs:string = transformNode(node.rightNode);
                     init_flag = true;
+                    lhs = transformNode(node.leftNode);
                 }
 
                 if (lhs == null) {
@@ -338,7 +334,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         if (is_subscript[j]) {
                             let idx = getSubscriptIdx(child);
                             pushToMain(`void *data = getdataM(${child.valueNode.text});`)
-                            let [,,,ismatrix,] = inferType(outs[j], var_types, custom_functions, classes);
+                            let [,,,ismatrix,,, c] = inferType(outs[j], var_types, custom_functions, classes, file);
+                            custom_functions = c;
                             if (ismatrix) {
                                 pushToMain(`void *data2 = getdataM(${outs[j]});`)
                                 for (let i = 0; i < idx.length; i++) {
@@ -356,7 +353,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     if (is_subscript[0]) {
                         let idx = getSubscriptIdx(node.leftNode);
                         pushToMain(`void *data = getdataM(${node.leftNode.valueNode.text});`)
-                        let [,,,ismatrix,] = inferType(outs[0], var_types, custom_functions, classes);
+                        let [,,,ismatrix,,, c] = inferType(outs[0], var_types, custom_functions, classes, file);
+                        custom_functions = c;
                         if (ismatrix) {
                             pushToMain(`void *data2 = getdataM(${outs[0]});`)
                             for (let i = 0; i < idx.length; i++) {
@@ -413,34 +411,32 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             case g.SyntaxType.CallOrSubscript: {
                 // Is a custom function call
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
+                let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
                 if (obj != null) {
-                    let arg_list = [];
-                    for (let i=2; i<node.childCount; i++) {
-                        if (node.children[i].isNamed) {
-                            arg_list.push(transformNode(node.children[i]));
+                    let ptr_args = obj.ptr_args(arg_types, outs);
+                    if (ptr_args != null) {
+                        let ptr_declaration = [];
+                        for (let i = 0; i < ptr_args.length; i++) {
+                            args.push(ptr_args[i].name);
+                            ptr_declaration.push(`${ptr_args[i].type} * restrict ${ptr_args[i].name};`)
+                            var_types.push(ptr_args[i]);
                         }
+                        pushToMain(ptr_declaration.join("\n"));
+                        
                     }
-                    
-                    pushToMain(obj.ptr_declaration);
-                    
-                    if (obj.ptr_param !== null) {
-                        arg_list.push(obj.ptr_param);
-                    }
-                    
                     
                     if (path.parse(obj.file).name !== filename) {
                         link.push(`#include <${path.parse(obj.file).name}.h>`);
                     }
                     
-                    return obj.name + "(" + arg_list.join(", ") + ")";
+                    return `${obj.name}(${args.join(", ")})`;
                     
                 } else {
                     // Is a builtin function call
                     let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
                     
                     if (obj != null) {
-                        let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
-                        let return_type = obj.return_type(args, arg_types, outs);
+                        //let return_type = obj.return_type(args, arg_types, outs);
                         let fun_c = obj.fun_c(arg_types, outs);
                         var tmp_var = generateTmpVar();
                         args = obj.args_transform(args, arg_types, outs);
@@ -556,13 +552,15 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         } else {
                             args.push(right_node.namedChildren[i].text);
                         }
-                        let [type, ndim, dim, ismatrix, ispointer] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes);
+                        let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes, file);
+                        custom_functions = c;
                         arg_types.push({
                             type: type, 
                             ndim: ndim, 
                             dim: dim, 
                             ismatrix: ismatrix, 
-                            ispointer: ispointer
+                            ispointer: ispointer,
+                            isstruct: isstruct
                         });
                     }
                     break;
@@ -570,21 +568,25 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 case g.SyntaxType.ComparisonOperator:
                 case g.SyntaxType.BooleanOperator:
                 case g.SyntaxType.BinaryOperator: {
-                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer] = inferType(right_node.leftNode, var_types, custom_functions, classes);
-                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer] = inferType(right_node.rightNode, var_types, custom_functions, classes);
+                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer, l_isstruct, c1] = inferType(right_node.leftNode, var_types, custom_functions, classes, file);
+                    custom_functions = c1;
+                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer, r_isstruct, c2] = inferType(right_node.rightNode, var_types, custom_functions, classes, file);
+                    custom_functions = c2;
                     arg_types.push({
                         type: l_type, 
                         ndim: l_ndim, 
                         dim: l_dim, 
                         ismatrix: l_ismatrix, 
-                        ispointer: l_ispointer
+                        ispointer: l_ispointer,
+                        isstruct: l_isstruct
                     });
                     arg_types.push({
                         type: r_type, 
                         ndim: r_ndim, 
                         dim: r_dim, 
                         ismatrix: r_ismatrix, 
-                        ispointer: r_ispointer
+                        ispointer: r_ispointer,
+                        isstruct: r_isstruct
                     });
                     if (transformNode(right_node.leftNode) != undefined) {
                         args.push(transformNode(right_node.leftNode));   
@@ -600,13 +602,15 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 }
                 case g.SyntaxType.UnaryOperator:
                 case g.SyntaxType.TransposeOperator: {
-                    let [type, ndim, dim, ismatrix, ispointer] = inferType(right_node.argumentNode, var_types, custom_functions, classes);
+                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(right_node.argumentNode, var_types, custom_functions, classes, file);
+                    custom_functions = c;
                     arg_types.push({
                         type: type, 
                         ndim: ndim, 
                         dim: dim, 
                         ismatrix: ismatrix, 
-                        ispointer: ispointer
+                        ispointer: ispointer,
+                        isstruct: isstruct
                     });
                     if (transformNode(right_node.argumentNode) != undefined) {
                         args.push(transformNode(right_node.argumentNode));   
@@ -738,7 +742,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         if (node.isNamed && node.nameNode != null) {
             var param_list = [];
             for (let param of node.parametersNode.namedChildren) {
-                let [param_type,,,,] = inferType(param, var_types, custom_functions, classes);
+                let [param_type,,,,,, c] = inferType(param, var_types, custom_functions, classes, file);
+                custom_functions = c;
                 param_list.push(`${param_type} ${param.text}`);
             }
             
@@ -750,7 +755,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     let ptr_declaration = [];
                     for (let return_var of return_node.namedChildren) {
                         ptr_declaration.push(`*p_${return_var.text} = ${return_var.text};`);
-                        var [return_type,,,,] = inferType(return_var, var_types, custom_functions, classes);
+                        var [return_type,,,,,, c] = inferType(return_var, var_types, custom_functions, classes, file);
+                        custom_functions = c;
                         param_list.push(`${return_type}* p_${return_var.text}`)
                     }
                     var ptr_declaration_joined = ptr_declaration.join("\n");
@@ -780,7 +786,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         var param_list_joined = "(" + param_list.join(", ") + ")";
                     }
                     
-                    var [return_type,,,,ispointer] = inferType(return_node, var_types, custom_functions, classes);
+                    var [return_type,,,,ispointer,, c] = inferType(return_node, var_types, custom_functions, classes, file);
+                    custom_functions = c;
                     if (ispointer) {
                         return_type = `${return_type} *`;
                     }
@@ -837,11 +844,13 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 
         for (let i=0; i<node.namedChildCount; i++) {
             let child = node.namedChildren[i];
-            let [child_type,,,,] = inferType(child, var_types, custom_functions, classes);
+            let [child_type,,,,,, c] = inferType(child, var_types, custom_functions, classes, file);
+            custom_functions = c;
             
             if (child_type == "keyword") {
                 
-                let [,ndim,dim,,] = inferType(node.parent.valueNode, var_types, custom_functions, classes);
+                let [,ndim,dim,,,, c] = inferType(node.parent.valueNode, var_types, custom_functions, classes, file);
+                custom_functions = c;
                 let firstNode = node.parent.namedChildren[1];
                 let current_dim = 0;
                 let dummyNode = node;
@@ -912,7 +921,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     }
     
     function getSubscriptIdx(node) {
-        let [,,dim,,] = inferType(node, var_types, custom_functions, classes);
+        let [,,dim,,,, c] = inferType(node, var_types, custom_functions, classes, file);
+        custom_functions = c;
         // already a linear idx
         if (node.namedChildCount == 2) {
             if (node.namedChildren[1].type == g.SyntaxType.Slice) {

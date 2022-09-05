@@ -4,6 +4,8 @@
 #include <complex.h>
 #include <string.h>
 #include <general_test.h>
+#include <general_test.h>
+#include <myfun3.h>
 
 // Function declarations
 void myfun1(unknown f, unknown g, unknown* p_F, unknown* p_G);
@@ -44,16 +46,16 @@ free(input);
 undefined;
 
 Matrix * tmp1 = mtimesM(B, A)
-tmp1;
+Matrix * C = tmp1;
 
 Matrix * tmp2 = scaleM(3, C, 1)
-tmp2;
+Matrix * C_scaled = tmp2;
 
-2.5;
+float a = 2.5;
 
-a < b;
+bool c = a < b;
 
-1 + 3.444*I;
+complex d = 1 + 3.444*I;
 
 
 int ndim = 2;
@@ -69,11 +71,11 @@ free(input);
 undefined;
 
 Matrix * tmp5 = ctransposeM(D)
-tmp5;
+Matrix * E = tmp5;
 
-unknown* p_F
-unknown* p_G
-myfun1(1, 2, *p_F, *p_G);
+unknown * restrict F;
+unknown * restrict G;
+myfun1(1, 2, F, G);
 
 
 struct cell0 {
@@ -108,9 +110,11 @@ f;
 }
 Matrix * myarr = zerosM(2, {2, 3});
 
-double tmp8;
-indexM(myfun3, &tmp8, a);
-tmp8;
+unknown * restrict F;
+unknown * restrict G;
+myfun1(f, g, F, G);
+
+unknown b = myfun3(a);
 
 
 
@@ -127,13 +131,13 @@ writeM( i, 3, input);
 free(input);
 
 
-int tmp10;
-for (tmp10 = 1; tmp10 <= 3; ++tmp10) {
-indexM(tmp9, &i, tmp9 -> ndim=1, tmp10);
+int tmp9;
+for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
+indexM(tmp8, &i, tmp8 -> ndim=1, tmp9);
 a;
 }
-f + g;
-f - g;
+unknown F = f + g;
+unknown G = f - g;
 return 0;
 }
 
@@ -157,7 +161,7 @@ a;
 
 unknown myfun2(void);
 {
-"hello world";
+char * outstr = "hello world";
 
 
 }

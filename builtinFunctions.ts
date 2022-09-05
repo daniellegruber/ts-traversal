@@ -15,16 +15,16 @@ const type_to_matrix_type: typeToMatrixType[] = [
 ];
 
 type functionMapping = {
-      fun_matlab: string;
-      fun_c: { (arg_types: Array<Type>, outs: Array<string>): string; };
-      args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
-      outs_transform: { (outs: Array<string>): Array<string>; }; 
-      n_req_args: number; // # required args
-      n_opt_args: number; // # optional args
-      opt_arg_defaults: Array<string>;
-      ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
-      return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
-    };
+    fun_matlab: string;
+    fun_c: { (arg_types: Array<Type>, outs: Array<string>): string; };
+    args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
+    outs_transform: { (outs: Array<string>): Array<string>; }; 
+    n_req_args: number; // # required args
+    n_opt_args: number; // # optional args
+    opt_arg_defaults: Array<string>;
+    ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
+    return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+};
 
 function parseCharArg(arg:string) {
     let regex = /(?<=')(.*?)(?=')|(?<=")(.*?)(?=")/;
@@ -105,7 +105,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false
             };
         }
     },
@@ -140,7 +141,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -195,7 +197,8 @@ export const operatorMapping: functionMapping[] = [
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
-                    ispointer: true 
+                    ispointer: true,
+                    isstruct: false 
                 };
             } else {
                 return {
@@ -203,7 +206,8 @@ export const operatorMapping: functionMapping[] = [
                     ndim: left_ndim,
                     dim: [left_dim[0], right_dim[1]],
                     ismatrix: true,
-                    ispointer: true 
+                    ispointer: true,
+                    isstruct: false 
                 };
             }
         }
@@ -236,7 +240,7 @@ export const operatorMapping: functionMapping[] = [
                 return [args[0], `1/(${args[1]})`, obj.matrix_type.toString()];
             }
         },
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -255,7 +259,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -287,7 +292,7 @@ export const operatorMapping: functionMapping[] = [
                 return [`1/(${args[0]})`, args[1], obj.matrix_type.toString()];
             }
         },
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -306,7 +311,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false
             };
         }
     },
@@ -322,7 +328,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -341,7 +347,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -357,7 +364,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -376,7 +383,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -392,7 +400,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -411,7 +419,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -427,7 +436,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -446,7 +455,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -462,7 +472,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },   
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -481,7 +491,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -497,7 +508,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },   
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -516,7 +527,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -532,7 +544,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -551,7 +563,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -567,7 +580,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -586,7 +599,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -602,7 +616,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -621,7 +635,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -637,7 +652,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },   
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -656,7 +671,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -672,7 +688,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -691,7 +707,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -707,7 +724,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },   
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -726,7 +743,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -742,7 +760,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -761,7 +779,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -769,7 +788,7 @@ export const operatorMapping: functionMapping[] = [
         fun_matlab: '&&', 
         fun_c: (arg_types, outs) => null, 
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -788,7 +807,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -796,7 +816,7 @@ export const operatorMapping: functionMapping[] = [
         fun_matlab: '||', 
         fun_c: (arg_types, outs) => null, 
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -815,7 +835,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -839,7 +860,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -847,7 +869,7 @@ export const operatorMapping: functionMapping[] = [
         fun_matlab: '-', 
         fun_c: (arg_types, outs) => null, 
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -863,7 +885,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -878,7 +901,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -894,7 +917,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -909,7 +933,7 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -925,7 +949,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -956,7 +981,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     }
@@ -980,7 +1006,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
-                ispointer: false
+                ispointer: false,
+                isstruct: false
             };
         }
     },
@@ -1033,7 +1060,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1071,7 +1099,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1189,7 +1218,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_pval,
@@ -1197,7 +1227,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_ci,
@@ -1205,7 +1236,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,2],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_z,
@@ -1213,7 +1245,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: 'zcrit',
@@ -1221,7 +1254,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    }
 			];
 		},
@@ -1255,7 +1289,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_pval,
@@ -1263,7 +1298,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_ci,
@@ -1271,7 +1307,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,2],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: 'chisqstat',
@@ -1279,7 +1316,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: 'df',
@@ -1287,7 +1325,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    }
 			];
 		},
@@ -1316,7 +1355,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1343,7 +1383,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false
             };
         }
     },
@@ -1370,7 +1411,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false
             };
         }
     },
@@ -1397,7 +1439,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1424,7 +1467,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1451,7 +1495,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1478,7 +1523,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1506,7 +1552,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_sigma,
@@ -1514,7 +1561,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    }
 			];
 		},
@@ -1544,7 +1592,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_b,
@@ -1552,7 +1601,8 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    }
 			];
 		},
@@ -1597,7 +1647,8 @@ export const builtin_functions = [
 			        ndim: arg_types[0].ndim,
 			        dim: arg_types[0].dim,
 			        ismatrix: true,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    },
 			    {
 			        name: arg_evecs,
@@ -1605,7 +1656,8 @@ export const builtin_functions = [
 			        ndim: arg_types[0].ndim,
 			        dim: arg_types[0].dim,
 			        ismatrix: true,
-			        ispointer: true
+			        ispointer: true,
+                    isstruct: false
 			    }
 			];
 		},
@@ -1630,7 +1682,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1653,7 +1706,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1676,7 +1730,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1699,7 +1754,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1732,7 +1788,8 @@ export const builtin_functions = [
                         ndim: 2,
                         dim: [1,1],
                         ismatrix: false,
-                        ispointer: true
+                        ispointer: true,
+                        isstruct: false
                     }
                 ];
             }
@@ -1745,7 +1802,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1791,7 +1849,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1815,7 +1874,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1864,7 +1924,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [n_quantiles, arg0_dim[1]],
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1902,7 +1963,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1940,7 +2002,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -1959,7 +2022,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
-                ispointer: false
+                ispointer: false,
+                isstruct: false
             };
         }
     },
@@ -1979,7 +2043,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
-                ispointer: false
+                ispointer: false,
+                isstruct: false
             };
         }
     },
@@ -2009,7 +2074,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
-                ispointer: false
+                ispointer: false,
+                isstruct: false
             };
         }
     },
@@ -2023,11 +2089,10 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            let [,ndim,dim,,] = arg_types[0]; 
             return {
                 type: 'int',
-                ndim: ndim,
-                dim: dim,
+                ndim: arg_types[0].ndim,
+                dim: arg_types[0].dim,
                 ismatrix: false,
                 ispointer: true
             };
@@ -2114,7 +2179,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -2144,7 +2210,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -2181,7 +2248,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -2207,7 +2275,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true 
+                ispointer: true,
+                isstruct: false 
             };
         }
     },
@@ -2221,5 +2290,36 @@ export const builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: 'fieldnames', 
+        fun_c: (arg_types, outs) => null, 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => null
+    },
+    { // TO DO: fix this
+        fun_matlab: 'struct', 
+        fun_c: (arg_types, outs) => null, 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'unknown', 
+                ndim: 2,
+                dim: [1,1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: true 
+            };
+        }
     },
 ];

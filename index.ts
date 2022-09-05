@@ -53,14 +53,15 @@ console.log("---------------------\n");
 for (let file of file_traversal_order) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
-    [var_types, custom_functions] = typeInference(tree, custom_functions, classes);
+    //[var_types, custom_functions] = typeInference(tree, custom_functions, classes);
+    [var_types, custom_functions] = typeInference(file, custom_functions, classes);
     if (file == args[0]) {
         var filename = "main";
     } else {
         var filename:string = path.parse(file).name;
     }
 
-    let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types);
+    let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, file);
         
     if (show_output==1) {
         console.log(`---------------------\nInferred types for ${filename}.c:\n`);

@@ -2,11 +2,19 @@
 
 **ts-traversal** generates C code from MATLAB code by generating a parse tree, traversing the tree, and performing "operations" on each node.
 
-## Built With
+## Built with
 
 * [tree-sitter](https://github.com/tree-sitter/tree-sitter)
 * [dts-tree-sitter](https://github.com/asgerf/dts-tree-sitter)
 * [tree-sitter-matlab](https://github.com/daniellegruber/tree-sitter-matlab)
+
+## Loading modules
+
+It is important you load binutils before nodejs.
+```sh
+module load binutils
+module load nodejs
+``` 
 
 ## Usage
 

@@ -228,7 +228,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                             let child = node.rightNode.namedChildren[i];
                             let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(child, var_types, custom_functions, classes, file);
                             custom_functions = c;
-                            let numel = dim.reduce(function(a, b) {return a * b;});
+                            let numel = child_dim.reduce(function(a, b) {return a * b;});
                             if (child.type == g.SyntaxType.Matrix) {
                                 
                                 expression1.push(`Matrix f${i}[${numel}];`);

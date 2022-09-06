@@ -51,13 +51,13 @@ bool c = a < b;
 complex d = 1 + 3.444*I;
 
 int ndim = 2;
-int dim = {1,2};
+int dim = {1,14};
 Matrix * D = createM(ndim, dim, 3);
 double char *input = NULL;
-input = malloc( 2*sizeof(*input));
+input = malloc( 14*sizeof(*input));
 input[0][] = "hello";
 input[1][] = "world";
-writeM( D, 2, input);
+writeM( D, 14, input);
 free(input);
 
 undefined;
@@ -68,7 +68,7 @@ int G;
 myfun1(1, 2, &F, &G);
 
 struct cell0 {
-char f0[2];
+char f0[7];
 int f1;
 }
 

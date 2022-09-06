@@ -190,7 +190,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             var child = node.rightNode.namedChildren[i];
                             var _e = (0, typeInference_1.inferType)(child, var_types, custom_functions, classes, file), child_type = _e[0], child_ndim = _e[1], child_dim = _e[2], child_ismatrix = _e[3], child_ispointer = _e[4], child_isstruct = _e[5], c_1 = _e[6];
                             custom_functions = c_1;
-                            var numel = dim.reduce(function (a, b) { return a * b; });
+                            var numel = child_dim.reduce(function (a, b) { return a * b; });
                             if (child.type == "matrix" /* g.SyntaxType.Matrix */) {
                                 expression1.push("Matrix f".concat(i, "[").concat(numel, "];"));
                                 expression2.push(initializeMatrix(node.rightNode, "".concat(outs[0], ".f").concat(i), child_ndim, child_dim, type));

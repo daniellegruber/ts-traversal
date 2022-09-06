@@ -1,10 +1,7 @@
 var fs = require('fs');
 import * as g from "./generated";
 import { 
-    gotoPreorderSucc, 
-    gotoPreorderSucc_OnlyMajorTypes, 
     gotoPreorderSucc_SkipFunctionDef, 
-    fileIsFunction,
     findEntryFunction
 } from "./treeTraversal";
 import { CustomFunction } from "./identifyCustomFunctions";
@@ -119,7 +116,8 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
     let obj = fun_dictionary.find(x => x.name === fun_name);
     if (obj != null) {
         let tree2 = parser.parse(obj.def_node.bodyNode.text);
-        let var_types2 = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file);
+        let [var_types2, c] = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file);
+        custom_functions = c;
         fun_dictionary = fun_dictionary.filter(function(e) { return e.name !== fun_name });
         let return_node = obj.def_node.return_variableNode;
         if (obj.def_node.namedChildren[0].type == g.SyntaxType.ReturnValue) {
@@ -182,8 +180,6 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                         ispointer: ispointer,
                         isstruct: isstruct
                     },
-                    //ptr_param: null, 
-                    //ptr_declaration: null,
                     ptr_args: (arg_types, outs) => null,
                     external: obj.external,
                     file: obj.file,

@@ -2,13 +2,7 @@ const fs = require("fs");
 import * as g from "./generated";
 import { VarType, Type } from "./typeInference";
 import { parseFunctionDefNode } from "./helperFunctions";
-import { 
-    gotoPreorderSucc, 
-    gotoPreorderSucc_OnlyMajorTypes, 
-    gotoPreorderSucc_SkipFunctionDef, 
-    fileIsFunction,
-    findEntryFunction
-} from "./treeTraversal";
+import { gotoPreorderSucc } from "./treeTraversal";
 import { generateCode } from "./generateCode";
 
 import Parser = require("tree-sitter");
@@ -25,8 +19,6 @@ export type CustomFunction = {
     arg_types: Array<VarType>;
     return_type:Type;
     //return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
-    //ptr_param: string;
-    //ptr_declaration:string;
     outs_transform: { (outs: Array<string>): Array<string>; }; 
     ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
     external: boolean;

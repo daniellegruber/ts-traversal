@@ -43,6 +43,7 @@ if (show_output==1) {
 }
 
 var files = getNonClassFilesInPath(search_folder);
+files = files.filter(function(e) { return path.parse(e).name !== path.parse(args[0]).name });
 
 var var_types: VarType[] = [];
 var [custom_functions, file_traversal_order] = identifyCustomFunctions(tree, [], files, args[0], [args[0]]);
@@ -53,7 +54,6 @@ console.log("---------------------\n");
 for (let file of file_traversal_order) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
-    //[var_types, custom_functions] = typeInference(tree, custom_functions, classes);
     [var_types, custom_functions] = typeInference(file, custom_functions, classes);
     if (file == args[0]) {
         var filename = "main";

@@ -34,6 +34,7 @@ if (show_output == 1) {
     console.log("---------------------\n");
 }
 var files = (0, helperFunctions_1.getNonClassFilesInPath)(search_folder);
+files = files.filter(function (e) { return path.parse(e).name !== path.parse(args[0]).name; });
 var var_types = [];
 var _b = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, [], files, args[0], [args[0]]), custom_functions = _b[0], file_traversal_order = _b[1];
 console.log("File traversal order");
@@ -43,7 +44,6 @@ for (var _i = 0, file_traversal_order_1 = file_traversal_order; _i < file_traver
     var file = file_traversal_order_1[_i];
     var sourceCode_1 = fs.readFileSync(file, "utf8");
     var tree_1 = parser.parse(sourceCode_1);
-    //[var_types, custom_functions] = typeInference(tree, custom_functions, classes);
     _a = (0, typeInference_1.typeInference)(file, custom_functions, classes), var_types = _a[0], custom_functions = _a[1];
     if (file == args[0]) {
         var filename = "main";

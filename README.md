@@ -2,6 +2,12 @@
 
 **ts-traversal** generates C code from MATLAB code by generating a parse tree, traversing the tree, and performing "operations" on each node.
 
+## Built With
+
+* [tree-sitter](https://github.com/tree-sitter/tree-sitter)
+* [dts-tree-sitter](https://github.com/asgerf/dts-tree-sitter)
+* [tree-sitter-matlab](https://github.com/daniellegruber/tree-sitter-matlab)
+
 ## Usage
 
 ```sh
@@ -23,3 +29,15 @@ The first line is for debugging purposes and only needs to be used when a file i
 npx tsc -sourcemap index.ts
 npx ts-node index.ts test.m $TS_TRAVERSAL $TS_TRAVERSAL 1
 ```
+
+## Updating tree-sitter-matlab module
+Whenever the tree-sitter-matlab grammar is updated, the corresponding module as well as the .d.ts files should be updated via the following commands:
+```sh
+export YARN="$TS_TRAVERSAL/node_modules/yarn/bin/"
+$YARN/yarn add tree-sitter-matlab
+export TS_MATLAB="$TS_TRAVERSAL/node_modules/tree-sitter-matlab"
+node ./node_modules/@asgerf/dts-tree-sitter/build/src/index.js $TS_MATLAB > OUTPUT.d.ts
+node ./node_modules/@asgerf/dts-tree-sitter/build/src/index.js tree-sitter-matlab > generated.d.ts
+```
+
+where `$TS_TRAVERSAL` is the path to your ts-traversal folder.

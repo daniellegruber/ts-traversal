@@ -59,7 +59,8 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Overview
     - Generates code based on node types and values
   - Functions
-    -
+    - `main`:
+    - `transformNode`: based on inferred node type (from typeInference) and node content, transforms node into C equivalent
 ### typeInference.ts
   - Overview
     - Infers types of variabes used in program
@@ -83,6 +84,11 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Overview 
     - Contains algorithms for traversing tree
   - Functions
+    - `gotoPreorderSucc`: cursor function, traverses nodes of tree preorder
+    - `gotoPreorderSucc_OnlyMajorTypes`: same as cursor function above but does not traverse children of "major types": function definitions, if statements, while statements, for statements, call/subscripts, expression statements and comments 
+    - `gotoPreorderSucc_SkipFunctionDef`: same as cursor function above but does not traverse children of function definitions
+    - `fileIsFunction`: determines whether file is a function
+    - `findEntryFunction`: if file is a function, determines the function
 
 ## Example 1
 

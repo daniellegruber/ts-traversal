@@ -52,16 +52,56 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 
 ## Under the hood
 ### index.ts
-  - Entry-point code
+  - Overview
+    - Entry-point code
+  - Details
 ### generateCode.ts
-  - Generates code based on node types and values
+  - Overview
+    - Generates code based on node types and values
+  - Functions
+    -
 ### typeInference.ts
-  - Infers types of variabes used in program
+  - Overview
+    - Infers types of variabes used in program
+  - Functions
+    -
 ### identifyCustomFunctions.ts
-  - Identifies user-defined functions to create a dictionary of custom functions
+  - Overview
+    - Identifies user-defined functions to create a dictionary of custom functions
+  - Exports
+    - `custom_functions`: "dictionary" of custom functions
+    - `file_traversal_order`: order in which to traverse files for type inference and code generation
 ### helperFunctions.ts
-  - Helper functions
-## builtinFunctions.ts
-  - Transforms built-in (not user-defined) MATLAB functions into C functions
+  - Overview
+    - Helper functions
+  - Functions
+    -
+### builtinFunctions.ts
+  - Overview
+    - Transforms built-in (not user-defined) MATLAB functions into C functions
 ### treeTraversal.ts
-  - Contains algorithms for traversing tree
+  - Overview 
+    - Contains algorithms for traversing tree
+  - Functions
+
+## Example 1
+
+```matlab
+A = [1, 2.1, 1;
+    3, 4, 1];
+B = [A;A];
+C = B*A;
+C_scaled = 3 * C;
+function [F, G] = myfun1(f,g)
+    F = f + g;
+    G = f - g;
+end
+```
+
+1. identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "dictionary:"
+
+
+2. typeInference.ts infers the following variable types:
+
+
+3. generateCode.ts

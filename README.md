@@ -65,7 +65,10 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Overview
     - Infers types of variabes used in program
   - Functions
-    -
+    - typeInference
+    - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
+    - getFunctionReturnType
+    - inferType
 ### identifyCustomFunctions.ts
   - Overview
     - Identifies user-defined functions to create a dictionary of custom functions
@@ -80,6 +83,22 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 ### builtinFunctions.ts
   - Overview
     - Transforms built-in (not user-defined) MATLAB functions into C functions
+  - Exports
+    - `builtin_functions`: Typed array of type `functionMapping` (see below) containing information about how to transform each built-in MATLAB function to one or more C functions.
+
+```typescript
+type functionMapping = {
+    fun_matlab: string;
+    fun_c: { (arg_types: Array<Type>, outs: Array<string>): string; };
+    args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
+    outs_transform: { (outs: Array<string>): Array<string>; }; 
+    n_req_args: number; // # required args
+    n_opt_args: number; // # optional args
+    opt_arg_defaults: Array<string>;
+    ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
+    return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+};
+```
 ### treeTraversal.ts
   - Overview 
     - Contains algorithms for traversing tree

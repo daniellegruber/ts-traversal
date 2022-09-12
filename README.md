@@ -101,7 +101,14 @@ end
 1. identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "dictionary:"
 
 
-2. typeInference.ts infers the following variable types:
+2. typeInference.ts 
+    - First, the program encounters the assignment statement `A = ...` in lines 1-2.
+    - `var_types` is thus updated to the following:
+    
+
+    - Next, the program encounters the assignment statement `B = ...` in line 3.
+    - `var_types` is thus updated to the following:
+    - Next, the program encounters the assignment statement `C = ...` in line 3.
 
 
 3. generateCode.ts

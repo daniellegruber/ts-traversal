@@ -49,3 +49,19 @@ node ./node_modules/@asgerf/dts-tree-sitter/build/src/index.js tree-sitter-matla
 ```
 
 where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
+
+## Under the hood
+### index.ts
+  - Entry-point code
+### generateCode.ts
+  - Generates code based on node types and values
+### typeInference.ts
+  - Infers types of variabes used in program
+### identifyCustomFunctions.ts
+  - Identifies user-defined functions to create a dictionary of custom functions
+### helperFunctions.ts
+  - Helper functions
+## builtinFunctions.ts
+  - Transforms built-in (not user-defined) MATLAB functions into C functions
+### treeTraversal.ts
+  - Contains algorithms for traversing tree

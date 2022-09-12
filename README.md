@@ -59,27 +59,45 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Overview
     - Generates code based on node types and values
   - Functions
-    - `main`:
+    - `main`: entry-point function
     - `transformNode`: based on inferred node type (from typeInference) and node content, transforms node into C equivalent
 ### typeInference.ts
   - Overview
     - Infers types of variabes used in program
   - Functions
-    - typeInference
+    - `typeInference`: entry-point function
     - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
-    - getFunctionReturnType
-    - inferType
+    - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions`
+    - `inferType`: main type inference procedure
 ### identifyCustomFunctions.ts
   - Overview
     - Identifies user-defined functions to create a dictionary of custom functions
   - Exports
-    - `custom_functions`: "dictionary" of custom functions
-    - `file_traversal_order`: order in which to traverse files for type inference and code generation
+    - `custom_functions`: Typed array of custom functions of type `customFunction` (see below)
+    - `file_traversal_order`: Order in which to traverse files for type inference and code generation, necessary since most deeply nested functions should have their types inferred first
+
+```typescript
+type CustomFunction = {
+    name: string;
+    arg_types: Array<VarType>;
+    return_type:Type;
+    //return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+    outs_transform: { (outs: Array<string>): Array<string>; }; 
+    ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
+    external: boolean;
+    file: string;
+    def_node: g.SyntaxNode;
+};
+```
 ### helperFunctions.ts
   - Overview
     - Helper functions
   - Functions
-    -
+    - `getFilesInPath`: gets files in a given directory
+    - `getNonClassFilesInPath`: gets non-class files in a given directory
+    - `getClassFolders`: returns folders containing class definitions
+    - `getClasses`: returns user-defined classes (using `getClassFolders`)
+    - `parseFunctionDefNode`: necessary since sometimes function definitions present as ERROR type (due to missing end at the end of function definition)
 ### builtinFunctions.ts
   - Overview
     - Transforms built-in (not user-defined) MATLAB functions into C functions

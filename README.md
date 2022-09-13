@@ -127,7 +127,7 @@ type functionMapping = {
     - `fileIsFunction`: determines whether file is a function
     - `findEntryFunction`: if file is a function, determines the function
 
-## Example 1
+# Example 1
 
 ```matlab
 A = [1, 2.1, 1;
@@ -141,13 +141,15 @@ function [F, G] = myfun1(f,g)
 end
 ```
 
-1. identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "dictionary:"
+## 1. Identify custom functions
+identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "dictionary:"
 
 
-2. typeInference.ts 
-    1. The program encounters the assignment statement `A = ...` in lines 1-2.
-      - Since the RHS is of type `g.SyntaxType.Matrix`,
-      - `var_types` is thus updated to the following:
+## 2. Type inference
+typeInference.ts 
+1. The program encounters the assignment statement `A = ...` in lines 1-2.
+  - We call `inferType` on the RHS node. Since the RHS is of type `g.SyntaxType.Matrix`, no recursion is needed and we return the defining features of the matrix node: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`.
+  - We update `var_types` with a new entry, the variable being the LHS of the assignment statement and all of its features being those received from the call to `inferType` on the RHS node:
     ```typescript
     {
       name: 'A',
@@ -161,11 +163,11 @@ end
     }
     ```
 
-    2. The program encounters the assignment statement `B = ...` in line 3.
-      - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, we call `inferType` on the the argument node.
-      - Since the argument node is of type `g.SyntaxType.Identifier`, we look up the name of the node (`A`) in `var_types`. We just updated `var_types` with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`.
-      - Since this is a transpose operation, we take `dim` and swap `dim[0]` and `dim[1]` to arrive at the new dimensions. All the other variables are preserved.
-      - `var_types` is thus updated to the following:
+2. The program encounters the assignment statement `B = ...` in line 3.
+  - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, we call `inferType` on the the argument node.
+  - Since the argument node is of type `g.SyntaxType.Identifier`, we look up the name of the node (`A`) in `var_types`. We just updated `var_types` with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`.
+  - Since this is a transpose operation, we take `dim` and swap `dim[0]` and `dim[1]` to arrive at the new dimensions. All the other variables are preserved.
+  - `var_types` is thus updated to the following:
 
     ```typescript
       {
@@ -191,45 +193,46 @@ end
         }
       }
       ```
-    
-    3. The program encounters the assignment statement `C = ...` in line 3.
-      - Since the RHS is of type `g.SyntaxType.BinaryOperator`, we call `inferType` on each of the two operand nodes.
-      -
-      - `var_types` is thus updated to the following:
 
-      ```typesecript
-      {
-          {
-            name: 'A',
-            type: 'float',
-            ndim: 2,
-            dim: [ 2, 3 ],
-            ismatrix: true,
-            ispointer: true,
-            isstruct: false,
-            initialized: false
-          },
-          {
-            name: 'A_transposed',
-            type: 'float',
-            ndim: 2,
-            dim: [ 3, 2 ],
-            ismatrix: true,
-            ispointer: true,
-            isstruct: false,
-            initialized: false
-          },
+3. The program encounters the assignment statement `C = ...` in line 3.
+  - Since the RHS is of type `g.SyntaxType.BinaryOperator`, we call `inferType` on each of the two operand nodes.
+  -
+  - `var_types` is thus updated to the following:
+
+    ```typesecript
+    {
         {
-          name: 'C',
+          name: 'A',
           type: 'float',
           ndim: 2,
-          dim: [ 4, 3 ],
+          dim: [ 2, 3 ],
           ismatrix: true,
           ispointer: true,
           isstruct: false,
-          initialized: true
-        }
+          initialized: false
+        },
+        {
+          name: 'A_transposed',
+          type: 'float',
+          ndim: 2,
+          dim: [ 3, 2 ],
+          ismatrix: true,
+          ispointer: true,
+          isstruct: false,
+          initialized: false
+        },
+      {
+        name: 'C',
+        type: 'float',
+        ndim: 2,
+        dim: [ 4, 3 ],
+        ismatrix: true,
+        ispointer: true,
+        isstruct: false,
+        initialized: true
       }
-      ```
+    }
+    ```
 
-3. generateCode.ts
+## 3. Generate code
+generateCode.ts

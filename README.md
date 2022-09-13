@@ -167,69 +167,69 @@ end
       - Since this is a transpose operation, we take `dim` and swap `dim[0]` and `dim[1]` to arrive at the new dimensions. All the other variables are preserved.
       - `var_types` is thus updated to the following:
 
-  ```typescript
-    {
+    ```typescript
       {
-        name: 'A',
-        type: 'float',
-        ndim: 2,
-        dim: [ 2, 3 ],
-        ismatrix: true,
-        ispointer: true,
-        isstruct: false,
-        initialized: false
-      },
-      {
-        name: 'A_transposed',
-        type: 'float',
-        ndim: 2,
-        dim: [ 3, 2 ],
-        ismatrix: true,
-        ispointer: true,
-        isstruct: false,
-        initialized: false
+        {
+          name: 'A',
+          type: 'float',
+          ndim: 2,
+          dim: [ 2, 3 ],
+          ismatrix: true,
+          ispointer: true,
+          isstruct: false,
+          initialized: false
+        },
+        {
+          name: 'A_transposed',
+          type: 'float',
+          ndim: 2,
+          dim: [ 3, 2 ],
+          ismatrix: true,
+          ispointer: true,
+          isstruct: false,
+          initialized: false
+        }
       }
-    }
-    ```
+      ```
     
     3. The program encounters the assignment statement `C = ...` in line 3.
       - Since the RHS is of type `g.SyntaxType.BinaryOperator`, we call `inferType` on each of the two operand nodes.
       -
       - `var_types` is thus updated to the following:
 
-  ```typesecript
-  {
+      ```typesecript
       {
-        name: 'A',
-        type: 'float',
-        ndim: 2,
-        dim: [ 2, 3 ],
-        ismatrix: true,
-        ispointer: true,
-        isstruct: false,
-        initialized: false
-      },
-      {
-        name: 'A_transposed',
-        type: 'float',
-        ndim: 2,
-        dim: [ 3, 2 ],
-        ismatrix: true,
-        ispointer: true,
-        isstruct: false,
-        initialized: false
-      },
-    {
-      name: 'C',
-      type: 'float',
-      ndim: 2,
-      dim: [ 4, 3 ],
-      ismatrix: true,
-      ispointer: true,
-      isstruct: false,
-      initialized: true
-    }
-  }
-  ```
+          {
+            name: 'A',
+            type: 'float',
+            ndim: 2,
+            dim: [ 2, 3 ],
+            ismatrix: true,
+            ispointer: true,
+            isstruct: false,
+            initialized: false
+          },
+          {
+            name: 'A_transposed',
+            type: 'float',
+            ndim: 2,
+            dim: [ 3, 2 ],
+            ismatrix: true,
+            ispointer: true,
+            isstruct: false,
+            initialized: false
+          },
+        {
+          name: 'C',
+          type: 'float',
+          ndim: 2,
+          dim: [ 4, 3 ],
+          ismatrix: true,
+          ispointer: true,
+          isstruct: false,
+          initialized: true
+        }
+      }
+      ```
 
 3. generateCode.ts

@@ -158,7 +158,7 @@ end
       ispointer: true,
       isstruct: false,
       initialized: false
-    },
+    }
     ```
 
     2. The program encounters the assignment statement `B = ...` in line 3.
@@ -169,25 +169,27 @@ end
 
   ```typescript
     {
-      name: 'A',
-      type: 'float',
-      ndim: 2,
-      dim: [ 2, 3 ],
-      ismatrix: true,
-      ispointer: true,
-      isstruct: false,
-      initialized: false
-    },
-    {
-      name: 'A_transposed',
-      type: 'float',
-      ndim: 2,
-      dim: [ 3, 2 ],
-      ismatrix: true,
-      ispointer: true,
-      isstruct: false,
-      initialized: false
-    },
+      {
+        name: 'A',
+        type: 'float',
+        ndim: 2,
+        dim: [ 2, 3 ],
+        ismatrix: true,
+        ispointer: true,
+        isstruct: false,
+        initialized: false
+      },
+      {
+        name: 'A_transposed',
+        type: 'float',
+        ndim: 2,
+        dim: [ 3, 2 ],
+        ismatrix: true,
+        ispointer: true,
+        isstruct: false,
+        initialized: false
+      }
+    }
     ```
     
     3. The program encounters the assignment statement `C = ...` in line 3.
@@ -196,15 +198,37 @@ end
 
   ```typesecript
   {
-    name: 'C',
-    type: 'float',
-    ndim: 2,
-    dim: [ 4, 3 ],
-    ismatrix: true,
-    ispointer: true,
-    isstruct: false,
-    initialized: true
-  },
+      {
+        name: 'A',
+        type: 'float',
+        ndim: 2,
+        dim: [ 2, 3 ],
+        ismatrix: true,
+        ispointer: true,
+        isstruct: false,
+        initialized: false
+      },
+      {
+        name: 'A_transposed',
+        type: 'float',
+        ndim: 2,
+        dim: [ 3, 2 ],
+        ismatrix: true,
+        ispointer: true,
+        isstruct: false,
+        initialized: false
+      },
+    {
+      name: 'C',
+      type: 'float',
+      ndim: 2,
+      dim: [ 4, 3 ],
+      ismatrix: true,
+      ispointer: true,
+      isstruct: false,
+      initialized: true
+    }
+  }
   ```
 
 3. generateCode.ts

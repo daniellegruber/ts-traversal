@@ -162,8 +162,8 @@ end
     ```
 
     2. The program encounters the assignment statement `B = ...` in line 3.
-      - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, we call `inferType` on the first child.
-      - Since the first child node is of type `g.SyntaxType.Identifier`, we look up the name of the node (`A`) in `var_types`. We just updated `var_types` with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`.
+      - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, we call `inferType` on the the argument node.
+      - Since the argument node is of type `g.SyntaxType.Identifier`, we look up the name of the node (`A`) in `var_types`. We just updated `var_types` with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`.
       - Since this is a transpose operation, we take `dim` and swap `dim[0]` and `dim[1]` to arrive at the new dimensions. All the other variables are preserved.
       - `var_types` is thus updated to the following:
 
@@ -193,7 +193,8 @@ end
     ```
     
     3. The program encounters the assignment statement `C = ...` in line 3.
-      - Since the RHS is of type `g.SyntaxType.BinaryOperator`,
+      - Since the RHS is of type `g.SyntaxType.BinaryOperator`, we call `inferType` on each of the two operand nodes.
+      -
       - `var_types` is thus updated to the following:
 
   ```typesecript

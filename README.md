@@ -189,8 +189,22 @@ end
       initialized: false
     },
     ```
+    
     3. The program encounters the assignment statement `C = ...` in line 3.
       - Since the RHS is of type `g.SyntaxType.BinaryOperator`,
+      - `var_types` is thus updated to the following:
 
+  ```typesecript
+  {
+    name: 'C',
+    type: 'float',
+    ndim: 2,
+    dim: [ 4, 3 ],
+    ismatrix: true,
+    ispointer: true,
+    isstruct: false,
+    initialized: true
+  },
+  ```
 
 3. generateCode.ts

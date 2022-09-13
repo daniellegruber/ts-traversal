@@ -132,8 +132,8 @@ type functionMapping = {
 ```matlab
 A = [1, 2.1, 1;
     3, 4, 1];
-B = [A;A];
-C = B*A;
+A_transposed = A';
+C = A * B;
 C_scaled = 3 * C;
 function [F, G] = myfun1(f,g)
     F = f + g;
@@ -145,13 +145,27 @@ end
 
 
 2. typeInference.ts 
-    - First, the program encounters the assignment statement `A = ...` in lines 1-2.
-    - `var_types` is thus updated to the following:
-    
+    1. The program encounters the assignment statement `A = ...` in lines 1-2.
+      - Since the RHS is of type `g.SyntaxType.Matrix`,
+      - `var_types` is thus updated to the following:
+    ```typescript
+    {
+      name: 'A',
+      type: 'float',
+      ndim: 2,
+      dim: [ 2, 3 ],
+      ismatrix: true,
+      ispointer: true,
+      isstruct: false,
+      initialized: false
+    },
+    ```
 
-    - Next, the program encounters the assignment statement `B = ...` in line 3.
-    - `var_types` is thus updated to the following:
-    - Next, the program encounters the assignment statement `C = ...` in line 3.
+    2. The program encounters the assignment statement `B = ...` in line 3.
+      - 
+      - `var_types` is thus updated to the following:
+    3. The program encounters the assignment statement `C = ...` in line 3.
+      - Since the RHS is of type `g.SyntaxType.BinaryOperator`,
 
 
 3. generateCode.ts

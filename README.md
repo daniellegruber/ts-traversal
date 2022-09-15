@@ -66,10 +66,13 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Infers types of variabes used in program
 - Functions
   - `typeInference`: entry-point function
+    - returns: `[var_types, custom_functions]`
   - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
+    - returns: `[var_types, custom_functions]`
   - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions`
+    - returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
   - `inferType`: main type inference procedure
-    - returns: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`
+    - returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
 ### identifyCustomFunctions.ts
 - Overview
   - Identifies user-defined functions to create a dictionary of custom functions

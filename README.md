@@ -180,10 +180,10 @@ identifyCustomFunctions.ts identifies myfun1 as a custom function and thus retur
 
 ## 2. Type inference
 typeInference.ts
-We begin by traversing all of the assignment statements in the function `inferTypesFromAssignment`:
+The program begins by traversing all of the assignment statements in the function `inferTypesFromAssignment`:
 1. The program encounters the assignment statement `A = ...` in lines 1-2.
-  - We call `inferType` on the RHS node. Since the RHS is of type `g.SyntaxType.Matrix`, no recursion is needed and we return the defining features of the matrix node: `type, ndim, dim, ismatrix,ispointer, isstruct`.
-  - We update `var_types` with a new entry, the variable being the LHS of the assignment statement and all of its features being those received from the call to `inferType` on the RHS node:
+  - `inferType` is called on the RHS node. Since the RHS is of type `g.SyntaxType.Matrix`, no recursion is needed and the defining features of the matrix node are returned: `type, ndim, dim, ismatrix,ispointer, isstruct`.
+  - `var_types` is updated with a new entry, the variable being the LHS of the assignment statement and all of its features being those received from the call to `inferType` on the RHS node:
     ```typescript
     {
       name: 'A',
@@ -198,9 +198,9 @@ We begin by traversing all of the assignment statements in the function `inferTy
     ```
 
 2. The program encounters the assignment statement `A_transposed = ...` in line 3.
-  - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, we call `inferType` on the the argument node.
-  - Since the argument node is of type `g.SyntaxType.Identifier`, we look up the name of the node (`A`) in `var_types`. We just updated `var_types` with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `type, ndim, dim, ismatrix, ispointer, isstruct`.
-  - Since this is a transpose operation, we take `dim` and swap `dim[0]` and `dim[1]` to arrive at the new dimensions. All the other variables are preserved.
+  - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, `inferType` is called on the the argument node.
+  - Since the argument node is of type `g.SyntaxType.Identifier`, the name of the node (`A`) is looked up in `var_types`. `var_types` was just updated with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `type, ndim, dim, ismatrix, ispointer, isstruct`.
+  - Since this is a transpose operation, `dim[0]` and `dim[1]` are swapped to arrive at the new dimensions. All the other variables are preserved.
   - `var_types` is thus updated to the following:
 
     ```typescript
@@ -229,8 +229,8 @@ We begin by traversing all of the assignment statements in the function `inferTy
       ```
 
 3. The program encounters the assignment statement `B = ...` in line 3.
-  - Since the RHS is of type `g.SyntaxType.BinaryOperator`, we call `inferType` on each of the two operand nodes.
-  - Since both the left and right operand nodes are of type `g.SyntaxType.Identifier`, `inferType` looks up their names in `var_types` and we get the definining features of each: `left_type, left_ndim, left_dim, left_ismatrix, ...` and `right_type, right_ndim, right_dim, right_ismatrix, ...` 
+  - Since the RHS is of type `g.SyntaxType.BinaryOperator`, `inferType` is called on each of the two operand nodes.
+  - Since both the left and right operand nodes are of type `g.SyntaxType.Identifier`, `inferType` looks up their names in `var_types` and to get the definining features of each: `left_type, left_ndim, left_dim, left_ismatrix, ...` and `right_type, right_ndim, right_dim, right_ismatrix, ...` 
   - `left_ismatrix` and `right_ismatrix` are compared to yield `ismatrix = true`
   - `left_type` and `right_type` are compared to yield `type = float`
   - Since the operator is `*`, the new dimensions are constructed as `[ left_dim[0], right_dim[1] ] = [2, 2]`
@@ -279,4 +279,6 @@ generateCode.ts
   - Since the RHS node is of type `g.SyntaxType.Matrix`, the `initializeMatrix` function is called
 2. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `A_transposed = ...` in line 3.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`
-  - Since the RHS node is not of type `g.SyntaxType.Matrix`, `g.SyntaxType.Cell`, or `g.SyntaxType.CallOrSubscript`, we `transformNode` is called on the RHS node
+  - Since the RHS node is not of type `g.SyntaxType.Matrix`, `g.SyntaxType.Cell`, or `g.SyntaxType.CallOrSubscript`, `transformNode` is called on the RHS node
+  - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, the node is passed is to the function `printMatrixFunctions`
+  - `parseFunctionCallNode(node)` returns `[args, arg_types, outs, is_subscript]` 

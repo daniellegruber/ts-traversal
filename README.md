@@ -52,29 +52,30 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 
 ## Under the hood
 ### index.ts
-  - Overview
-    - Entry-point code
-  - Details
+- Overview
+  - Entry-point code
+- Details
 ### generateCode.ts
-  - Overview
-    - Generates code based on node types and values
-  - Functions
-    - `main`: entry-point function
-    - `transformNode`: based on inferred node type (from typeInference) and node content, transforms node into C equivalent
+- Overview
+  - Generates code based on node types and values
+- Functions
+  - `main`: entry-point function
+  - `transformNode`: based on inferred node type (from typeInference) and node content, transforms node into C equivalent
 ### typeInference.ts
-  - Overview
-    - Infers types of variabes used in program
-  - Functions
-    - `typeInference`: entry-point function
-    - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
-    - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions`
-    - `inferType`: main type inference procedure
+- Overview
+  - Infers types of variabes used in program
+- Functions
+  - `typeInference`: entry-point function
+  - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
+  - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions`
+  - `inferType`: main type inference procedure
+   - returns: `[type, ndim, dim, ismatrix,ispointer, isstruct, custom_functions]`
 ### identifyCustomFunctions.ts
-  - Overview
-    - Identifies user-defined functions to create a dictionary of custom functions
-  - Exports
-    - `custom_functions`: Typed array of custom functions of type `customFunction` (see below)
-    - `file_traversal_order`: Order in which to traverse files for type inference and code generation, necessary since most deeply nested functions should have their types inferred first
+- Overview
+  - Identifies user-defined functions to create a dictionary of custom functions
+- Exports
+  - `custom_functions`: Typed array of custom functions of type `customFunction` (see below)
+  - `file_traversal_order`: Order in which to traverse files for type inference and code generation, necessary since most deeply nested functions should have their types inferred first
 
 ```typescript
 type CustomFunction = {

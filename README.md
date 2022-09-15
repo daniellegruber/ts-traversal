@@ -73,6 +73,35 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     - returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
   - `inferType`: main type inference procedure
     - returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
+- Exports
+  - Type
+
+    ``` typescript
+    type Type = {
+      type: string;
+      ndim: number;
+      dim: Array<number>;
+      ismatrix: boolean;
+      ispointer: boolean;
+      isstruct: boolean;
+    };
+    ```
+    
+  - VarType
+  
+  ``` typescript
+  type VarType = {
+    name: string;
+    type: string;
+    ndim: number;
+    dim: Array<number>;
+    ismatrix: boolean;
+    ispointer: boolean;
+    isstruct: boolean;
+    initialized: boolean;
+  };
+  ```
+  
 ### identifyCustomFunctions.ts
 - Overview
   - Identifies user-defined functions to create a dictionary of custom functions

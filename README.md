@@ -301,3 +301,8 @@ generateCode.ts
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp2.
   - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp2 = mtimesM(A, A_transposed)`, is pushed to the main body of the code.
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
+4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `B_scaled = ...` in line 5.
+  - The program proceeds the same as in (3) until `fun_c = obj.fun_c(arg_types, outs)` is evaluated. In this case, `obj.fun_c(arg_types, outs)` returns `scaleM` because only one operand is a matrix. 
+  - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp3.
+  - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp3 = scaleM(B, 3)`, is pushed to the main body of the code.
+  - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.

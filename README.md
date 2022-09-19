@@ -291,6 +291,10 @@ The program begins by traversing all of the assignment statements in the functio
       }
     }
     ```
+4. The program encounters the assignment statement `B_scaled = ...` in line 5.
+5. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
+  - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj1`.
+  - `getFunctionReturnType` is called to determine the type of the return variable of the function.
 
 ## 3. Generate code
 generateCode.ts
@@ -325,13 +329,13 @@ generateCode.ts
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp3.
   - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp3 = scaleM(B, 3)`, is pushed to the main body of the code.
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
-4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
+5. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj1`.
   - The LHS for the generated expression is evaluated using the `outs_transform` field of `obj1`: `lhs = obj1.outs_transform(outs);`. This evaluates as `NULL` since the `outs_transform` function returns `NULL` for any custom function with multiple return variables (the multiple outputs are converted to pointer inputs).
   - THE RHS for the generated expression is evaluated by calling `transformNode` on the RHS node: `rhs:string = transformNode(node.rightNode);`.
   - Since `lhs == NULL`, only `rhs` is pushed to the main body of the code.
-5. The program encounters the function definition (of type `g.SyntaxType.FunctionDefinition`) `function [F,G] = myfun1(f,g) ...` in lines 6-8.
+6. The program encounters the function definition (of type `g.SyntaxType.FunctionDefinition`) `function [F,G] = myfun1(f,g) ...` in lines 6-8.
   - The node is passed to `printFunctionDefDeclare`.
   - The parameter of the function are parsed and their types and values and stored in the array `param_list`.
   - Since the function returns an output and this output is a matrix, each of the elements of the output matrix are transformed into pointer variables. Their declarations are stored in the array `ptr_declarations` and their types and values are pushed onto `param_list` so that they are treated as inputs to the function.

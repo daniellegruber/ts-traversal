@@ -72,9 +72,9 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 let node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
-                    const [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.rightNode, var_types, custom_functions, classes, file);
                     custom_functions = c;
-                    const v1: VarType = { 
+                    let v1: VarType = { 
                         name: node.leftNode.text, 
                         type: type, 
                         ndim: ndim, 
@@ -84,12 +84,13 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         isstruct: isstruct,
                         initialized: false
                         };
+                    
                     var_types = var_types.filter(function(e) { return e.name !== v1.name }); // replace if already in var_types
                     var_types.push(v1);
                     
                 // If LHS is subscript, type is matrix
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript ) {
-                    const v1: VarType = { 
+                    let v1: VarType = { 
                         name: node.leftNode.valueNode.text, 
                         type: 'unknown', 
                         ndim: 2, 
@@ -212,6 +213,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
 function inferType(node, var_types, custom_functions, classes, file) {
     // var unknown_type = ['unknown', null, null, null, null, null, custom_functions];
     // var unknown_type = ['unknown', 2, [1, 1], false, false, false, custom_functions];
+    
     switch (node.type) {
         case g.SyntaxType.ParenthesizedExpression: {
             return inferType(node.firstChild, var_types, custom_functions, classes, file);
@@ -220,28 +222,34 @@ function inferType(node, var_types, custom_functions, classes, file) {
         
         // Named types
         case g.SyntaxType.Ellipsis: {
-            return ['ellipsis', 2, [1, 1], false, false, false, custom_functions];
+            //return ['ellipsis', 2, [1, 1], false, false, false, custom_functions];
+            return ['ellipsis', 1, [1], false, false, false, custom_functions];
             break
         }
         case (g.SyntaxType.True || g.SyntaxType.False): {
-            return ['bool',  2, [1, 1], false, false, false, custom_functions];
+            //return ['bool',  2, [1, 1], false, false, false, custom_functions];
+            return ['bool',  1, [1], false, false, false, custom_functions];
             break
         }
         case g.SyntaxType.Float: {
-            return ['float',  2, [1, 1], false, false, false, custom_functions];
+            //return ['float',  2, [1, 1], false, false, false, custom_functions];
+            return ['float',  1, [1], false, false, false, custom_functions];
             break
         }
         case g.SyntaxType.Integer: {
-            return ['int',  2, [1, 1], false, false, false, custom_functions];
+            //return ['int',  2, [1, 1], false, false, false, custom_functions];
+            return ['int',  1, [1], false, false, false, custom_functions];
             break
         }
         case g.SyntaxType.Complex: {
-            return ['complex',  2, [1, 1], false, false, false, custom_functions];
+            //return ['complex',  2, [1, 1], false, false, false, custom_functions];
+            return ['complex',  1, [1], false, false, false, custom_functions];
             break
         }
         case g.SyntaxType.String: {
             //return ['char',  2, [1, 1], false, true, false, custom_functions];
-            return ['char',  2, [1, node.text.length], false, true, false, custom_functions];
+            //return ['char',  2, [1, node.text.length], false, true, false, custom_functions];
+            return ['char',  1, [node.text.length], false, true, false, custom_functions];
             break
         }
         case g.SyntaxType.Cell:
@@ -262,7 +270,11 @@ function inferType(node, var_types, custom_functions, classes, file) {
                     if (row == 0) {
                         const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file);
                         custom_functions = c;
-                        ncols += dim[1];
+                        if (ndim > 1) {
+                            ncols += dim[1];
+                        } else {
+                            ncols += dim[0];
+                        }
                     }
                     if (col == 0) {
                         const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file);
@@ -330,34 +342,40 @@ function inferType(node, var_types, custom_functions, classes, file) {
             custom_functions = c1;
             let [right_type, right_ndim, right_dim, right_ismatrix,,, c2] = inferType(node.rightNode, var_types, custom_functions, classes, file);
             custom_functions = c2;
+            let ndim = left_ndim;
+            let dim = left_dim;
             switch (node.operatorNode.type) {
-                case "+": 
+                /*case "+": 
                 case "-": 
                 case ".*": 
                 case "./": 
                 case ".\\":
                 case "^":
                 case ".^": {
-                    var ndim = left_ndim;
-                    var dim = left_dim;
                     break;
-                }
+                }*/
                 case "*": 
                 case "/":
                 case "\\": {
-                    var ndim = left_ndim;
-                    var dim = left_dim;
-                    dim[1] = right_dim[1];
+                    if (left_ndim == 1) {
+                        ndim = right_ndim;
+                        dim = right_dim; 
+                    } else if (right_ndim == 1) {
+                        ndim = left_ndim;
+                        dim = left_dim;
+                    } else {
+                        dim = [left_dim[0], right_dim[1]];
+                    }
                     break;
                 }
             }
-            
+                
             if (left_ismatrix || right_ismatrix) {
                 var ismatrix = true;
             } else {
                 var ismatrix = false;
             }
-                
+                    
             if (left_type == right_type) {
                 return [left_type, ndim, dim, ismatrix, false, false, custom_functions];
             } else if (left_type == 'complex' || right_type == 'complex') {
@@ -583,7 +601,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 
                 if (child_type == "keyword") {
                     
-                    [,ndim,dim,,,, c] = inferType(node.parent.valueNode, var_types, custom_functions, classes, file);
+                    let [,ndim,dim,,,, c] = inferType(node.parent.valueNode, var_types, custom_functions, classes, file);
                     custom_functions = c;
                     let firstNode = node.parent.namedChildren[1];
                     let current_dim = 0;

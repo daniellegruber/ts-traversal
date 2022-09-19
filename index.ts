@@ -64,6 +64,8 @@ for (let file of file_traversal_order) {
     let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, file);
         
     if (show_output==1) {
+        console.log(`---------------------\nCustom functions for ${filename}.c:\n`);
+        console.log(custom_functions);
         console.log(`---------------------\nInferred types for ${filename}.c:\n`);
         console.log(var_types);
         console.log(`---------------------\nGenerated code for ${filename}.c:\n`);

@@ -1,6 +1,7 @@
 const fs = require("fs");
 var path = require("path");
 import * as g from "./generated";
+import { parseFunctionDefNode } from "./helperFunctions";
 import { inferType, Type } from "./typeInference";
 import { 
     gotoPreorderSucc_OnlyMajorTypes, 
@@ -526,6 +527,18 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     var right_node = node.rightNode;
                     break;
                 }
+                case g.SyntaxType.FunctionDefinition: {
+                    node = parseFunctionDefNode(node);
+                    if (node.return_variableNode != undefined) {
+                        left_node = node.return_variableNode;
+                    } else if (node.namedChildren[0].type == g.SyntaxType.ReturnValue) {
+                        left_node = node.namedChildren[0];
+                    } else {
+                        left_node = null;
+                    }
+                    var right_node = node.parametersNode;
+                    break;
+                }
                 default: {
                     var left_node = null;
                     var right_node = node;
@@ -535,6 +548,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             let args = [];
             let arg_types: Type[] = [];
             switch (right_node.type) {
+                case g.SyntaxType.FunctionDefinition:
                 case g.SyntaxType.CallOrSubscript: {
                     for (let i = 1; i < right_node.namedChildCount; i++) {
                         if (transformNode(right_node.namedChildren[i]) != undefined) {
@@ -729,25 +743,25 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     
     // Print function declarations and definitions
     function printFunctionDefDeclare(node) {
-        if (node.isNamed && node.nameNode != null) {
+        let obj = custom_functions.find(x => x.name === node.nameNode.text);
+        if (obj != null) {
+            let [, , outs, ] = parseFunctionCallNode(node);
+            let ptr_args = obj.ptr_args(obj.arg_types, outs);
             var param_list = [];
-            for (let param of node.parametersNode.namedChildren) {
-                let [param_type,,,,,, c] = inferType(param, var_types, custom_functions, classes, file);
-                custom_functions = c;
-                param_list.push(`${param_type} ${param.text}`);
+            for (let i = 0; i < node.parametersNode.namedChildCount; i++) {
+                let param = node.parametersNode.namedChildren[i];
+                param_list.push(`${obj.arg_types[i].type} ${param.text}`);
             }
-            
             if (node.children[1].type == g.SyntaxType.ReturnValue) {
                 let return_node = node.children[1].firstChild;
                 
                 // If multiple return values, use pointers
                 if (return_node.type == g.SyntaxType.Matrix) {
                     var ptr_declaration = [];
-                    for (let return_var of return_node.namedChildren) {
+                    for (let i = 0; i < return_node.namedChildCount; i++) {
+                        let return_var = return_node.namedChildren[i];
                         ptr_declaration.push(`*p_${return_var.text} = ${return_var.text};`);
-                        var [return_type,,,,,, c] = inferType(return_var, var_types, custom_functions, classes, file);
-                        custom_functions = c;
-                        param_list.push(`${return_type}* p_${return_var.text}`)
+                        param_list.push(`${ptr_args[i].type}* p_${return_var.text}`)
                     }
                     var ptr_declaration_joined = ptr_declaration.join("\n");
                     
@@ -760,7 +774,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     function_declarations.push("void " + node.nameNode.text + param_list_joined + ";");
                     pushToMain("\nvoid " + node.nameNode.text + param_list_joined);
                     pushToMain("{");
-                    //pushToMain(ptr_declaration_joined);
                     
                 // If single return value, don't use pointers 
                 } else {
@@ -770,10 +783,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         var param_list_joined = "(" + param_list.join(", ") + ")";
                     }
                     
-                    var [return_type,,,,ispointer,, c] = inferType(return_node, var_types, custom_functions, classes, file);
-                    custom_functions = c;
-                    if (ispointer) {
-                        return_type = `${return_type} *`;
+                    if (obj.return_type.ispointer) {
+                        var return_type = `${obj.return_type.type} *`;
+                    } else {
+                        var return_type = `${obj.return_type.type}`;
                     }
                     
                     function_declarations.push(`${return_type} ${node.nameNode.text}${param_list_joined};`);
@@ -781,7 +794,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     pushToMain("{");
                 }
             }
-
             for (let child of node.bodyNode.namedChildren) {
                 pushToMain(transformNode(child));
             }
@@ -790,7 +802,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             }
             pushToMain("}");
         }
-        
     }
     
     

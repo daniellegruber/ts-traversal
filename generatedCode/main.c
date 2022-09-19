@@ -4,11 +4,9 @@
 #include <complex.h>
 #include <string.h>
 #include <main.h>
-#include <myfun3.h>
 
 // Function declarations
-void myfun1(unknown f, unknown g, int* p_F, int* p_G);
-unknown myfun2(void);
+void myfun1(int f, int g, int* p_F, int* p_G);
 
 // Entry-point function
 int main(void)
@@ -30,117 +28,25 @@ writeM( A, 6, input);
 free(input);
 
 undefined;
-
-int ndim = 2;
-int dim = {4,3};
-Matrix * B = createM(ndim, dim, 1);
-double float *input = NULL;
-input = malloc( 12*sizeof(*input));
-input[0] = A;
-input[1] = A;
-writeM( B, 12, input);
-free(input);
-
-undefined;
-Matrix * tmp1 = mtimesM(B, A)
-Matrix * C = tmp1;
-Matrix * tmp2 = scaleM(3, C, 1)
-Matrix * C_scaled = tmp2;
-float a = 2.5;
-bool c = a < b;
-complex d = 1 + 3.444*I;
-
-int ndim = 2;
-int dim = {1,14};
-Matrix * D = createM(ndim, dim, 3);
-double char *input = NULL;
-input = malloc( 14*sizeof(*input));
-input[0][] = "hello";
-input[1][] = "world";
-writeM( D, 14, input);
-free(input);
-
-undefined;
-Matrix * tmp5 = ctransposeM(D)
-Matrix * E = tmp5;
+Matrix * tmp1 = ctransposeM(A)
+Matrix * A_transposed = tmp1;
+Matrix * tmp2 = mtimesM(A, A_transposed)
+Matrix * B = tmp2;
+Matrix * tmp3 = scaleM(3, B, 1)
+Matrix * B_scaled = tmp3;
 int F;
 int G;
 myfun1(1, 2, &F, &G);
-
-struct cell0 {
-char f0[7];
-int f1;
-}
-
-cell0 H;
-strcpy(H.f0, "hello");
-H.f1 = 1;
-
-undefined;
-double tmp6;
-indexM(A, &tmp6, {1, 2}, {1, 2, 3});
-tmp6;
-// This is a comment
-
-
-if (a)
-{
-b;
-}
-else if (c)
-{
-d;
-}
-else
-{
-f;
-}
-Matrix * myarr = zerosM(2, {2, 3});
-unknown F;
-unknown G;
-myfun1(f, g, &F, &G);
-int b = myfun3(a);
-
-
-
-int ndim = 2;
-int dim = {1,3};
-Matrix * tmp8 = createM(ndim, dim, 0);
-double int *input = NULL;
-input = malloc( 3*sizeof(*input));
-input[0] = 2;
-input[1] = 7;
-input[2] = 9;
-writeM( tmp8, 3, input);
-free(input);
-
-
-int i;
-int tmp9;
-for (tmp9 = 1; tmp9 <= 3; ++tmp9) {
-indexM(tmp8, &i, 1, tmp9);
-a;
-}
 return 0;
 }
 
 
 // Subprograms
 
-void myfun1(unknown f, unknown g, int* p_F, int* p_G)
+void myfun1(int f, int g, int* p_F, int* p_G)
 {
 F = f + g
 G = f - g
-
-int i;
-for (i =  1; i <= 5; i += 2) {
-a;
-}
 *p_F = F;
 *p_G = G;
-}
-
-unknown myfun2(void);
-{
-char * outstr = "hello world";
 }

@@ -170,7 +170,7 @@ A = [1, 2.1, 1;
 A_transposed = A';
 B = A * A_transposed;
 B _scaled = 3 * B;
-[F, G] = myfun1(f, g);
+[F, G] = myfun1(1, 2);
 function [F, G] = myfun1(f, g)
     F = f + g;
     G = f - g;
@@ -178,7 +178,25 @@ end
 ```
 
 ## 1. Identify custom functions
-identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "dictionary:"
+identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "placeholder dictionary." Some of the fields will be updated during the type inference program, in particular in the body of function `getFunctionReturnType.`
+
+```typescript
+{
+    name: 'myfun1',
+    arg_types: [ [Object], [Object] ],
+    return_type: null,
+    outs_transform: [Function: outs_transform],
+    ptr_args: [Function: ptr_args],
+    external: true,
+    file: 'simple_test.m',
+    def_node: FunctionDefinitionNode {
+      type: function_definition,
+      startPosition: {row: 6, column: 0},
+      endPosition: {row: 9, column: 3},
+      childCount: 7,
+    }
+  }
+```
 
 
 ## 2. Type inference
@@ -307,7 +325,7 @@ generateCode.ts
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp3.
   - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp3 = scaleM(B, 3)`, is pushed to the main body of the code.
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
-4. The program encounters the The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
+4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj1`.
   - The LHS for the generated expression is evaluated using the `outs_transform` field of `obj1`: `lhs = obj1.outs_transform(outs);`. This evaluates as `NULL` since the `outs_transform` function returns `NULL` for any custom function with multiple return variables (the multiple outputs are converted to pointer inputs).

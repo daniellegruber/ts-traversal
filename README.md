@@ -293,8 +293,9 @@ The program begins by traversing all of the assignment statements in the functio
     ```
 4. The program encounters the assignment statement `B_scaled = ...` in line 5.
 5. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
-  - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj1`.
-  - `getFunctionReturnType` is called to determine the type of the return variable of the function.
+  - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj2`.
+  - `getFunctionReturnType` is called to determine the type of the return variable of the function as well as update the function's entry in `custom_functions` using the arguments passed to the function call node.
+  - Since the return variable is a matrix, the `CustomFunction` field `ptr_args` is updated to return an array of pointers corresponding to each of the elements of the returned matrix.
 
 ## 3. Generate code
 generateCode.ts

@@ -1,3 +1,25 @@
+# Table of contents
+
+- [ts-traversal](#ts-traversal)
+  * [Built with](#built-with)
+  * [Loading modules](#loading-modules)
+  * [Usage](#usage)
+  * [Example](#example)
+  * [Updating tree-sitter-matlab module](#updating-tree-sitter-matlab-module)
+  * [Under the hood](#under-the-hood)
+    + [index.ts](#indexts)
+    + [generateCode.ts](#generatecodets)
+    + [typeInference.ts](#typeinferencets)
+    + [identifyCustomFunctions.ts](#identifycustomfunctionsts)
+    + [helperFunctions.ts](#helperfunctionsts)
+    + [builtinFunctions.ts](#builtinfunctionsts)
+    + [treeTraversal.ts](#treetraversalts)
+- [Example 1](#example-1)
+  * [1. Identify custom functions](#1-identify-custom-functions)
+  * [2. Type inference](#2-type-inference)
+  * [3. Generate code](#3-generate-code)
+- [Current limitations](#current-limitations)
+
 # ts-traversal
 
 **ts-traversal** generates C code from MATLAB code by generating a parse tree, traversing the tree, and performing "operations" on each node.
@@ -35,7 +57,7 @@ The first line is for debugging purposes and only needs to be used when a file i
 
 ```sh
 npx tsc -sourcemap index.ts
-npx ts-node index.ts test.m $TS_TRAVERSAL $TS_TRAVERSAL 1
+npx ts-node index.ts general_test.m $TS_TRAVERSAL $TS_TRAVERSAL 1
 ```
 
 ## Updating tree-sitter-matlab module
@@ -404,3 +426,5 @@ generateCode.ts
   - Since the function returns an output and this output is a matrix, each of the elements of the output matrix are transformed into pointer variables. Their declarations are stored in the array `ptr_declarations` and their types and values are pushed onto `param_list` so that they are treated as inputs to the function.
   - The transformed output (`"void"`) and parameters are pushed to `function_declarations`.
   - The transformed output (`"void"`) and parameters, the transformed body of the function, and `ptr_declaration` are pushed to `function_definitions`.
+
+# Current limitations

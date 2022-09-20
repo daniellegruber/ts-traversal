@@ -2,5 +2,5 @@
 #define MYFUN3_H
 
 // Function declarations
-int myfun3(unknown a);
+void myfun3undefined;
 #endif

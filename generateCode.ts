@@ -85,7 +85,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 case g.SyntaxType.Comment:
                 case g.SyntaxType.ExpressionStatement: {
                     let expression = transformNode(node);
-                    if (expression != ";") {
+                    if (expression != ";" && expression != null) {
                         pushToMain(expression);
                     }
                     break;
@@ -280,14 +280,14 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     lhs = transformNode(node.leftNode);
                 }
                 
-                if (lhs == null) {
+                if (lhs == null && rhs != undefined) {
                     pushToMain(`${rhs};`);    
                 } else if (init_flag) {
                     let var_type = var_types.find(x => x.name === lhs);
                     if (var_type != null && var_type != undefined) {
                         
                         if (var_type.initialized || (var_type.type != type)) {
-                            pushToMain(`${lhs} = ${rhs}`);
+                            pushToMain(`${lhs} = ${rhs};`);
                         } else {
                             if (ismatrix) {
                                 pushToMain(`Matrix * ${lhs} = ${rhs};`);
@@ -776,7 +776,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     pushToMain("{");
                     
                 // If single return value, don't use pointers 
-                } else {
+                } else if (obj.return_type != null) {
                     if (param_list.length == 0) {
                         var param_list_joined = "(void)";
                     } else {
@@ -791,6 +791,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                     function_declarations.push(`${return_type} ${node.nameNode.text}${param_list_joined};`);
                     pushToMain(`\n${return_type} ${node.nameNode.text}${param_list_joined};`);
+                    pushToMain("{");
+                } else {
+                    function_declarations.push(`void ${node.nameNode.text}${param_list_joined};`);
+                    pushToMain(`\nvoid ${node.nameNode.text}${param_list_joined};`);
                     pushToMain("{");
                 }
             }

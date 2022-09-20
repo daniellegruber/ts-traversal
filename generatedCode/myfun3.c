@@ -6,7 +6,7 @@
 #include <myfun3.h>
 
 
-int myfun3(unknown a);
+void myfun3undefined;
 {
 int b = 1;
 }

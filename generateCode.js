@@ -63,7 +63,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 case "comment" /* g.SyntaxType.Comment */:
                 case "expression_statement" /* g.SyntaxType.ExpressionStatement */: {
                     var expression = transformNode(node);
-                    if (expression != ";") {
+                    if (expression != ";" && expression != null) {
                         pushToMain(expression);
                     }
                     break;
@@ -242,14 +242,14 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     init_flag = true;
                     lhs = transformNode(node.leftNode);
                 }
-                if (lhs == null) {
+                if (lhs == null && rhs != undefined) {
                     pushToMain("".concat(rhs, ";"));
                 }
                 else if (init_flag) {
                     var var_type_1 = var_types.find(function (x) { return x.name === lhs; });
                     if (var_type_1 != null && var_type_1 != undefined) {
                         if (var_type_1.initialized || (var_type_1.type != type)) {
-                            pushToMain("".concat(lhs, " = ").concat(rhs));
+                            pushToMain("".concat(lhs, " = ").concat(rhs, ";"));
                         }
                         else {
                             if (ismatrix) {
@@ -727,7 +727,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     pushToMain("{");
                     // If single return value, don't use pointers 
                 }
-                else {
+                else if (obj.return_type != null) {
                     if (param_list.length == 0) {
                         var param_list_joined = "(void)";
                     }
@@ -742,6 +742,11 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     }
                     function_declarations.push("".concat(return_type, " ").concat(node.nameNode.text).concat(param_list_joined, ";"));
                     pushToMain("\n".concat(return_type, " ").concat(node.nameNode.text).concat(param_list_joined, ";"));
+                    pushToMain("{");
+                }
+                else {
+                    function_declarations.push("void ".concat(node.nameNode.text).concat(param_list_joined, ";"));
+                    pushToMain("\nvoid ".concat(node.nameNode.text).concat(param_list_joined, ";"));
                     pushToMain("{");
                 }
             }

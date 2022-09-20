@@ -248,8 +248,8 @@ function inferType(node, var_types, custom_functions, classes, file) {
         }
         case g.SyntaxType.String: {
             //return ['char',  2, [1, 1], false, true, false, custom_functions];
-            //return ['char',  2, [1, node.text.length], false, true, false, custom_functions];
-            return ['char',  1, [node.text.length], false, true, false, custom_functions];
+            return ['char',  2, [1, node.text.length], false, true, false, custom_functions];
+            //return ['char',  1, [node.text.length], false, true, false, custom_functions];
             break
         }
         case g.SyntaxType.Cell:

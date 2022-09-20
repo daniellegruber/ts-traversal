@@ -427,4 +427,9 @@ generateCode.ts
   - The transformed output (`"void"`) and parameters are pushed to `function_declarations`.
   - The transformed output (`"void"`) and parameters, the transformed body of the function, and `ptr_declaration` are pushed to `function_definitions`.
 
-# Current limitations
+# Current limitations/works in progress
+- Initializing cell matrices containing strings
+ - In generateCode.ts, initalizeMatrix (lines 659 - 686)
+- Input/output types for a custom function are unknown unless a call to that function is issued at some point in the source code
+
+

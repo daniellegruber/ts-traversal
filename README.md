@@ -69,7 +69,9 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     - returns: `[var_types, custom_functions]`
   - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
     - returns: `[var_types, custom_functions]`
-  - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions`
+  - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions` and updates the function's entry in `custom_functions` or `builtin_functions` with information regarding input/output types
+    - When inferring the type of the function's return variable via `inferType`, `arg_types` (the types of the arguments of the function call) is passed as the `var_types` parameter, thus instantiating parameters with known types
+    - Additionally, since `custom_functions` or `builtin_functions` is updated, this allows function calls to provide information about input/output types for other instances of the function (both in function calls and in the function definition, if it exists)
     - returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
   - `inferType`: main type inference procedure
     - returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
@@ -164,6 +166,8 @@ type functionMapping = {
 
 # Example 1
 
+Source code:
+
 ```matlab
 A = [1, 2.1, 1;
     3, 4, 1];
@@ -175,6 +179,63 @@ function [F, G] = myfun1(f, g)
     F = f + g;
     G = f - g;
 end
+```
+
+Generated code for main.c:
+
+```c
+//Link
+#include <stdio.h>
+#include <stdbool.h>
+#include <complex.h>
+#include <string.h>
+#include <main.h>
+// Function declarations
+void myfun1(int f, int g, int* p_F, int* p_G);
+// Entry-point function
+int main(void)
+{
+int ndim = 2;
+int dim = {2,3};
+Matrix * A = createM(ndim, dim, 1);
+double float *input = NULL;
+input = malloc( 6*sizeof(*input));
+input[0] = 1;
+input[1] = 2.1;
+input[2] = 1;
+input[3] = 3;
+input[4] = 4;
+input[5] = 1;
+writeM( A, 6, input);
+free(input);
+
+Matrix * tmp1 = ctransposeM(A)
+Matrix * A_transposed = tmp1;
+Matrix * tmp2 = mtimesM(A, A_transposed)
+Matrix * B = tmp2;
+Matrix * tmp3 = scaleM(3, B, 1)
+int F;
+int G;
+myfun1(1, 2, &F, &G);
+return 0;
+}
+// Subprograms
+void myfun1(int f, int g, int* p_F, int* p_G)
+{
+F = f + g
+G = f - g
+*p_F = F;
+*p_G = G;
+}
+```
+
+Generated code for main.h:
+
+```c
+#ifndef MAIN_H
+#define MAIN_H
+int main(void);
+#endif
 ```
 
 ## 1. Identify custom functions
@@ -295,7 +356,7 @@ The program begins by traversing all of the assignment statements in the functio
 5. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj2`.
   - `getFunctionReturnType` is called to determine the type of the return variable of the function as well as update the function's entry in `custom_functions` using the arguments passed to the function call node.
-  - Since the return variable is a matrix, the `CustomFunction` field `ptr_args` is updated to return an array of pointers corresponding to each of the elements of the returned matrix. For our given return matrix `[F, G]`, `ptr_args(arg_types, outs)` yields `[p_F, p_G]`.
+  - Since the return variable is a matrix, the `CustomFunction` field `ptr_args` is updated to return an array of type `VarType` containing the names and types of pointer variables corresponding to each of the elements of the returned matrix. The type of each pointer is found by calling `inferType.` For the given function call node, `ptr_args(arg_types, outs)` yields:
   - Additionally, `outs_transform` returns `NULL` since all of the outputs are treated as inputs to the function. For this reason `return_type` is `NULL` as well.
 
 ## 3. Generate code

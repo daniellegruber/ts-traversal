@@ -57,32 +57,15 @@ export function getClasses(src) {
     for (let folder of folders) {
         let class_name = folder.substr(folder.indexOf("@") + 1);
         let files = getFilesInPath(folder);
-        //let class_file = files.find(x => x.includes(`${class_name}.m`));
-        //const sourceCode = fs.readFileSync(class_file, "utf8");
-        //let tree = parser.parse(sourceCode);
-        //let [methods, file_traversal_order] = identifyCustomFunctions(tree, [], [], class_file, [class_file]);
         let methods: CustomFunction[] = [];
-        //console.log("ALOHA");
+
         for (let file of files) {
             let sourceCode = fs.readFileSync(file, "utf8");
             let tree = parser.parse(sourceCode);
             [methods,] = identifyCustomFunctions(tree, methods, [], file, []);
-            // Placeholder
-            /*const m: CustomFunction = { 
-                name: path.parse(file).name, 
-                arg_types: null,
-                return_type: null,
-                ptr_param: null, 
-                ptr_declaration: null,
-                external: true,
-                file: file,
-                def_node: null
-            };*/
-            //console.log(file);
-            //console.log(m);
-            //methods = methods.concat(m);
+            
         }
-        //console.log(methods);
+        // Placeholder
         const c: Class = {
             name: class_name,
             methods: methods,
@@ -94,7 +77,6 @@ export function getClasses(src) {
     // Loop 2
     let classes2: Class[] = [];
     for (let c1 of classes) {
-        console.log(c1.name);
         let files = getFilesInPath(c1.folder);
         let methods = c1.methods;
         for (let file of files) {

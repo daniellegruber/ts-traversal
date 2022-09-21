@@ -91,8 +91,10 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
         custom_functions = c;
         fun_dictionary = fun_dictionary.filter(function (e) { return e.name !== fun_name; });
         var return_node_1 = obj.def_node.return_variableNode;
-        if (obj.def_node.namedChildren[0].type == "return_value" /* g.SyntaxType.ReturnValue */) {
-            return_node_1 = obj.def_node.namedChildren[0];
+        if (return_node_1 == undefined) {
+            if (obj.def_node.namedChildren[0].type == "return_value" /* g.SyntaxType.ReturnValue */) {
+                return_node_1 = obj.def_node.namedChildren[0];
+            }
         }
         if (return_node_1 != undefined) {
             return_node_1 = return_node_1.firstChild;
@@ -176,9 +178,9 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
     }
 }
 function inferType(node, var_types, custom_functions, classes, file) {
+    var _a, _b;
     // var unknown_type = ['unknown', null, null, null, null, null, custom_functions];
     // var unknown_type = ['unknown', 2, [1, 1], false, false, false, custom_functions];
-    var _a, _b;
     switch (node.type) {
         case "parenthesized_expression" /* g.SyntaxType.ParenthesizedExpression */: {
             return inferType(node.firstChild, var_types, custom_functions, classes, file);

@@ -54,33 +54,14 @@ function getClasses(src) {
         var folder = folders_1[_i];
         var class_name = folder.substr(folder.indexOf("@") + 1);
         var files = getFilesInPath(folder);
-        //let class_file = files.find(x => x.includes(`${class_name}.m`));
-        //const sourceCode = fs.readFileSync(class_file, "utf8");
-        //let tree = parser.parse(sourceCode);
-        //let [methods, file_traversal_order] = identifyCustomFunctions(tree, [], [], class_file, [class_file]);
         var methods = [];
-        //console.log("ALOHA");
         for (var _b = 0, files_1 = files; _b < files_1.length; _b++) {
             var file = files_1[_b];
             var sourceCode = fs.readFileSync(file, "utf8");
             var tree = parser.parse(sourceCode);
             methods = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, methods, [], file, [])[0];
-            // Placeholder
-            /*const m: CustomFunction = {
-                name: path.parse(file).name,
-                arg_types: null,
-                return_type: null,
-                ptr_param: null,
-                ptr_declaration: null,
-                external: true,
-                file: file,
-                def_node: null
-            };*/
-            //console.log(file);
-            //console.log(m);
-            //methods = methods.concat(m);
         }
-        //console.log(methods);
+        // Placeholder
         var c = {
             name: class_name,
             methods: methods,
@@ -92,7 +73,6 @@ function getClasses(src) {
     var classes2 = [];
     for (var _c = 0, classes_1 = classes; _c < classes_1.length; _c++) {
         var c1 = classes_1[_c];
-        console.log(c1.name);
         var files = getFilesInPath(c1.folder);
         var methods = c1.methods;
         for (var _d = 0, files_2 = files; _d < files_2.length; _d++) {

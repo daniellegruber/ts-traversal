@@ -54,6 +54,7 @@ exports.gotoPreorderSucc_OnlyMajorTypes = gotoPreorderSucc_OnlyMajorTypes;
 function gotoPreorderSucc_SkipFunctionDef(cursor) {
     //console.log("hello3");
     //console.log(cursor.currentNode);
+    //console.log(cursor.currentNode.text);
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         //case g.SyntaxType.CallOrSubscript:

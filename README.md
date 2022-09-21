@@ -433,5 +433,6 @@ generateCode.ts
 - Initializing cell matrices containing strings
  - In generateCode.ts, initalizeMatrix (lines 659 - 686)
 - Input/output types for a custom function are unknown unless a call to that function is issued at some point in the source code
+- Currently, assume the type of first input argument to class method is an instance of that class. Holds true most of the time but doesn't always, e.g., @mmo\bsxfun.m
 
 

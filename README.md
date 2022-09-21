@@ -55,9 +55,20 @@ The first line is for debugging purposes and only needs to be used when a file i
 
 ## Example
 
+Here is an example using one of the MATLAB test files in the folder.
+
 ```sh
 npx tsc -sourcemap index.ts
 npx ts-node index.ts general_test.m $TS_TRAVERSAL $TS_TRAVERSAL 1
+```
+
+Here is a "real life" example using one of the EEGLAB functions. (You can download EEGLAB [here.](https://sccn.ucsd.edu/eeglab/download.php))
+
+```sh
+npx ts-node index.ts \
+$EEGLAB/functions/@mmo/binaryopp.m \
+$EEGLAB/functions \
+$TS_TRAVERSAL/eeglab_test 0
 ```
 
 ## Updating tree-sitter-matlab module

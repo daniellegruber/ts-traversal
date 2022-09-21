@@ -375,6 +375,8 @@ The program begins by traversing all of the assignment statements in the functio
     }
     ```
 4. The program encounters the assignment statement `B_scaled = ...` in line 5.
+  - The program procedes through the same steps as in (3) until calculation of the new dimensions. Since the left operand is a scalar new dimensions are set to the dimensions of the right operand, i.e., `right_dim = [2, 2]`.
+  - `var_types` is thus updated to the following:
 5. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj2`.
   - `getFunctionReturnType` is called to determine the type of the return variable of the function as well as update the function's entry in `custom_functions` using the arguments passed to the function call node.

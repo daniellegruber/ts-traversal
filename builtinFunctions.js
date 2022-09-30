@@ -1872,7 +1872,7 @@ exports.builtin_functions = [
             }
             return [ndim, dim];
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,

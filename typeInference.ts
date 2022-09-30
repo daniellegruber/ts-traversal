@@ -71,9 +71,9 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
             case g.SyntaxType.Assignment: {
                 let node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                custom_functions = cf;
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
-                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.rightNode, var_types, custom_functions, classes, file);
-                    custom_functions = c;
                     let v1: VarType = { 
                         name: node.leftNode.text, 
                         type: type, 
@@ -83,26 +83,31 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         ispointer: type == 'char' || ismatrix,
                         isstruct: isstruct,
                         initialized: false
-                        };
-                    
-                    var_types = var_types.filter(function(e) { return e.name !== v1.name }); // replace if already in var_types
+                    };
+                        
+                    var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
                     var_types.push(v1);
-                    
                 // If LHS is subscript, type is matrix
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript ) {
-                    let v1: VarType = { 
-                        name: node.leftNode.valueNode.text, 
-                        type: 'unknown', 
-                        ndim: 2, 
-                        dim: [1,1], 
-                        ismatrix: true,
-                        ispointer: true,
-                        isstruct: false,
-                        initialized: false
-                    };
-                    var_types = var_types.filter(function(e) { return e.name !== v1.name }); // replace if already in var_types
-                    var_types.push(v1);
+                    let name = node.leftNode.valueNode.text;
+                    let v1 = var_types.find(x => x.name === name);
+                    if (v1 != null) {
+                        v1.type = type;
+                    } else {
+                            v1 = { 
+                            name: name, 
+                            type: type, 
+                            ndim: 2, 
+                            dim: [1,1], 
+                            ismatrix: true,
+                            ispointer: true,
+                            isstruct: false,
+                            initialized: false
+                        };
+                    }
                     
+                    var_types = var_types.filter(function(e) { return e.name != name }); // replace if already in var_types
+                    var_types.push(v1);
                 }
 
                 break;

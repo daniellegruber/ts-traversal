@@ -1941,7 +1941,7 @@ export const builtin_functions = [
             }
             return [ndim, dim];
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,

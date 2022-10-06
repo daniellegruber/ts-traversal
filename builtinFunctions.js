@@ -94,7 +94,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '-',
@@ -129,7 +131,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         // Matrix * mtimesM(Matrix *m, Matrix *n)
@@ -195,7 +199,9 @@ exports.operatorMapping = [
                     isstruct: false
                 };
             }
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '/',
@@ -246,7 +252,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '\\',
@@ -297,7 +305,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '^',
@@ -332,7 +342,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '.*',
@@ -367,7 +379,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: './',
@@ -402,7 +416,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '.\\',
@@ -437,7 +453,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '.^',
@@ -472,7 +490,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '<',
@@ -507,7 +527,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '<=',
@@ -542,7 +564,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '>',
@@ -577,7 +601,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '>=',
@@ -612,7 +638,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '==',
@@ -647,7 +675,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '~=',
@@ -682,7 +712,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '&',
@@ -717,7 +749,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '|',
@@ -752,7 +786,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '&&',
@@ -778,7 +814,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '||',
@@ -804,7 +842,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '+',
@@ -827,7 +867,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '-',
@@ -850,7 +892,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '~',
@@ -881,7 +925,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: "'",
@@ -912,7 +958,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: ".'",
@@ -943,7 +991,9 @@ exports.operatorMapping = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     }
 ];
 exports.builtin_functions = [
@@ -965,7 +1015,9 @@ exports.builtin_functions = [
                 ispointer: false,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'xcorr',
@@ -1016,7 +1068,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sort',
@@ -1055,7 +1109,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         // [h,p,ci,stats] = ttest(___)  
@@ -1137,7 +1193,9 @@ exports.builtin_functions = [
                 },
             ];
         },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ztest',
@@ -1212,7 +1270,9 @@ exports.builtin_functions = [
                 }
             ];
         },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'vartest',
@@ -1283,7 +1343,9 @@ exports.builtin_functions = [
                 }
             ];
         },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'betapdf',
@@ -1309,7 +1371,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'exppdf',
@@ -1335,7 +1399,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'chi2pdf',
@@ -1361,7 +1427,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'gampdf',
@@ -1387,7 +1455,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'lognpdf',
@@ -1413,7 +1483,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'normpdf',
@@ -1439,7 +1511,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'unidpdf',
@@ -1465,7 +1539,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'normfit',
@@ -1505,7 +1581,9 @@ exports.builtin_functions = [
                 }
             ];
         },
-        return_type: function (arg_types) { return null; }
+        return_type: function (arg_types) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'unifit',
@@ -1545,7 +1623,9 @@ exports.builtin_functions = [
                 }
             ];
         },
-        return_type: function (arg_types) { return null; }
+        return_type: function (arg_types) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     /*{ // Matrix * reindexM(Matrix* restrict m, int size, ...)
         fun_matlab: 'containers.Map',
@@ -1600,7 +1680,9 @@ exports.builtin_functions = [
                 }
             ];
         },
-        return_type: function (arg_types) { return null; }
+        return_type: function (arg_types) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'abs',
@@ -1623,7 +1705,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'round',
@@ -1646,7 +1730,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'floor',
@@ -1669,7 +1755,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ceil',
@@ -1692,7 +1780,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'max',
@@ -1739,7 +1829,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'min',
@@ -1785,7 +1877,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'var',
@@ -1808,7 +1902,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'quantile',
@@ -1858,7 +1954,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'zeros',
@@ -1870,7 +1968,8 @@ exports.builtin_functions = [
                 dim = "{".concat(args[0], ",").concat(args[0], "}");
                 ndim = 2;
             }
-            return [ndim, dim];
+            //return [ndim, dim];
+            return ['ndim', 'dim'];
         },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,
@@ -1898,7 +1997,17 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) {
+            var dim = "{".concat(args.join(", "), "}");
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                ndim = 2;
+            }
+            return "int ndim = ".concat(ndim, ";\nint dim[").concat(ndim, "] = ").concat(dim, ";");
+        },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ones',
@@ -1910,7 +2019,8 @@ exports.builtin_functions = [
                 dim = "{".concat(args[0], ",").concat(args[0], "}");
                 ndim = 2;
             }
-            return [ndim, dim];
+            //return [ndim, dim];
+            return ['ndim', 'dim'];
         },
         outs_transform: function (outs) { return outs; },
         n_req_args: null,
@@ -1938,7 +2048,17 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) {
+            var dim = "{".concat(args.join(", "), "}");
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                ndim = 2;
+            }
+            return "int ndim = ".concat(ndim, ";\nint dim[").concat(ndim, "] = ").concat(dim, ";");
+        },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'strcmp',
@@ -1958,7 +2078,9 @@ exports.builtin_functions = [
                 ispointer: false,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'strcmpi',
@@ -1978,7 +2100,9 @@ exports.builtin_functions = [
                 ispointer: false,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'struct',
@@ -1989,7 +2113,9 @@ exports.builtin_functions = [
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'numel',
@@ -2009,7 +2135,9 @@ exports.builtin_functions = [
                 ispointer: false,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'size',
@@ -2028,7 +2156,9 @@ exports.builtin_functions = [
                 ismatrix: false,
                 ispointer: true
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'length',
@@ -2039,7 +2169,9 @@ exports.builtin_functions = [
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sum',
@@ -2050,7 +2182,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'prod',
@@ -2061,7 +2195,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'error',
@@ -2072,7 +2208,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'permute',
@@ -2083,7 +2221,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'rand',
@@ -2113,7 +2253,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'randn',
@@ -2143,7 +2285,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'memmapfile',
@@ -2154,7 +2298,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (arg_types) { return null; }
+        return_type: function (arg_types) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'mean',
@@ -2180,7 +2326,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'std',
@@ -2206,7 +2354,9 @@ exports.builtin_functions = [
                 ispointer: true,
                 isstruct: false
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'isa',
@@ -2217,7 +2367,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'fieldnames',
@@ -2228,7 +2380,9 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; }
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'struct',
@@ -2248,7 +2402,37 @@ exports.builtin_functions = [
                 ispointer: false,
                 isstruct: true
             };
-        }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
     },
+    {
+        fun_matlab: 'disp',
+        fun_c: function (arg_types, outs) { return 'printf'; },
+        args_transform: function (args, arg_types, outs) {
+            return ['"%d"', args[0]];
+        },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'sprintf',
+        fun_c: function (arg_types, outs) { return 'printf'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; }
+    }
 ];
 //# sourceMappingURL=builtinFunctions.js.map

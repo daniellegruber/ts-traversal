@@ -16,6 +16,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     
     let entry_fun_node = findEntryFunction(tree);
     
+    let loop_iterators = [];
+    
     function pushToMain(expression) {
         if (expression != null) {
             if (current_code == "main") {
@@ -26,6 +28,38 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 }
             } else {
                 function_definitions.push(expression)
+            }
+        }
+    }
+    
+    function insertMain(expression, search_exp, num_back) { 
+        // num_back: if more than one instance of search_exp is found, which instance to choose as formatted as
+        // matches[matches.length - num_back]
+        let idx = main_function.reduce(function(a, e, i) {
+            if (e.includes(search_exp))
+                a.push(i);
+            return a;
+        }, []); 
+        if (idx.length > 1) {
+            idx = idx[idx.length - num_back];
+        }
+        if (expression != null) {
+            if (current_code == "main") {
+                main_function.splice(idx, 0, expression);
+            } else if (entry_fun_node != null) {
+                if (entry_fun_node.nameNode.text == current_code) {
+                    main_function.splice(idx, 0, expression);
+                }
+            } else {
+                let idx = function_definitions.reduce(function(a, e, i) {
+                    if (e.includes(search_exp))
+                        a.push(i);
+                    return a;
+                }, []); 
+                if (idx.length > 1) {
+                    idx = idx[idx.length - num_back];
+                }
+                function_definitions.splice(idx, 0, expression)
             }
         }
     }
@@ -45,6 +79,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <matrix.h>
 #include <${filename}.h>`];
           
     var cursor_adjust = false;
@@ -55,6 +90,13 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         tmpVarCnt += 1;
         return "tmp" + tmpVarCnt;
     }
+    
+    type Alias = {
+      name: string;
+      tmp_var: string;
+    };
+    
+    let alias_tbl: Alias[] = [];
     
     type typeToMatrixType = {
       type: string;
@@ -93,7 +135,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 case g.SyntaxType.IfStatement:
                 case g.SyntaxType.WhileStatement:
                 case g.SyntaxType.ForStatement: {
-                    pushToMain("\n" + transformNode(node));
+                    //pushToMain("\n" + transformNode(node));
+                    transformNode(node);
                     break;
                 }
             }
@@ -145,6 +188,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     expression2.push("for (" + node.leftNode.text + " = ");
                     expression2.push(node.rightNode.children[0].text + ";");
                     
+                    loop_iterators.push(node.leftNode.text);
+                    
                     if (node.rightNode.childCount == 5) {
                         expression2.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
                         expression2.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
@@ -178,14 +223,25 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     expression1.push(`indexM(${tmp_var1}, &${node.leftNode.text}, 1, ${tmp_var2});`);
                     // node.leftNode now equal to value of matrix tmp_var1 at index tmp_var2
                     
+                    loop_iterators.push(tmp_var2);
                 }
                
+                console.log("ENTERED NEW LOOP");
+                console.log(loop_iterators);
+                    
                 pushToMain("\n" + expression1.join("\n"));
                 for (let child of node.bodyNode.namedChildren) {
                     //expression1.push(transformNode(child));
                     pushToMain(transformNode(child));
                 }
                 pushToMain("\n}")
+                
+                let idx = loop_iterators.indexOf(node.leftNode.text);
+                if (node.rightNode.type == g.SyntaxType.Matrix) {
+                    idx = loop_iterators.indexOf(tmp_var2);
+                }
+                loop_iterators.splice(idx, 1);
+                
                 //return "\n" + expression1.join("\n") + "\n}";
                 return null;
                 break;
@@ -213,7 +269,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             
             // Assignment
             case g.SyntaxType.Assignment: {
-                let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
+                let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node, false);
                 var [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.rightNode, var_types, custom_functions, classes, file);
                 custom_functions = c;
                 var init_flag = false;
@@ -296,7 +352,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     let var_type = var_types.find(x => x.name === lhs);
                     if (var_type != null && var_type != undefined) {
                         
-                        if (var_type.initialized || (var_type.type != type)) {
+                        if (var_type.initialized && (var_type.type == type)) {
                             pushToMain(`${lhs} = ${rhs};`);
                         } else {
                             if (ismatrix) {
@@ -329,7 +385,14 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     }
                 }
                 
+                // TO DO: if this is inside of a for loop then the getdataM function call should be outside of for body
                 // When LHS is/contains subscript
+                // void *memcpy(void *dest, const void * src, size_t n)
+                let [left_args, , , ] = parseFunctionCallNode(node.leftNode, true);
+                console.log("NODE");
+                console.log(node.text);
+                console.log("LEFT ARGS");
+                console.log(left_args);
                 if (node.leftNode.type == g.SyntaxType.Matrix) {
                     for (let j = 0; j < node.leftNode.namedChildCount; j++) {
                         let child = node.leftNode.namedChildren[j];
@@ -363,10 +426,25 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 } else {
                     // If LHS is a subscript
                     if (is_subscript[0]) {
-    
+                        
+                        let num_back = 0;
+                        for (let i = 0; i <= loop_iterators.length; i++) {
+                            
+                            if (left_args.includes(loop_iterators[i])) {
+                                num_back = num_back + 1;
+                                
+                            }
+                        }
+                        console.log("NUM BACK");
+                        console.log(num_back);
+                        
                         // Convert to linear idx
                         let idx = getSubscriptIdx(node.leftNode);
-                        pushToMain(`void *data = getdataM(${node.leftNode.valueNode.text});`)
+                        if (num_back == 0) {
+                            pushToMain(`void *data = getdataM(${node.leftNode.valueNode.text});`)                
+                        } else {
+                            insertMain(`void *data = getdataM(${node.leftNode.valueNode.text});`, 'for', num_back)
+                        }
                         let [,,,ismatrix,,, c] = inferType(outs[0], var_types, custom_functions, classes, file);
                         custom_functions = c;
                         
@@ -381,11 +459,11 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         // If RHS not matrix
                         } else {
                             if (idx.length == 1) {
-                                pushToMain(`memcpy(&data[${idx[0]}], ${outs[0]});`);
+                                pushToMain(`memcpy(&data[${idx[0]}], &${outs[0]}, 1);`); 
                             } else {
                                 for (let i = 0; i < idx.length; i++) {
                                     // Copy data[i] to outs[i]
-                                    pushToMain(`memcpy(&data[${idx[i]}], ${outs[0]}[${i}]);`); 
+                                    pushToMain(`memcpy(&data[${idx[i]}], &${outs[0]}[${i}], 1);`);
                                 }
                             }
                         }
@@ -417,16 +495,25 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 break;
             }
             
-            // COME BACK HERE 1
+            
             case g.SyntaxType.CellSubscript: {
                 let index = [];
                 for (let i=1; i<node.namedChildCount; i++) {
                     index.push(transformNode(node.namedChildren[i]));
                 }
                 
+                let obj = alias_tbl.find(x => x.name === node.text);
                 var tmp_var = generateTmpVar();
-                pushToMain("double " + tmp_var + ";");
-                pushToMain("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");
+                if (obj == null) {
+                    pushToMain(`double ${tmp_var};`);
+                    pushToMain(`indexM(${node.valueNode.text}, &${tmp_var}, ${index.join(", ")});`);
+                    alias_tbl.push({
+                        name: node.text,
+                        tmp_var: tmp_var
+                    });
+                } else {
+                    tmp_var = obj.tmp_var;
+                }
                 
                 return tmp_var;
                 break;
@@ -435,7 +522,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             case g.SyntaxType.CallOrSubscript: {
                 // Is a custom function call
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
-                let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
+                let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node, false);
                 if (obj != null) {
                     let ptr_args = obj.ptr_args(arg_types, outs);
                     if (ptr_args != null) {
@@ -461,6 +548,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                     if (obj != null) {
                         //let return_type = obj.return_type(args, arg_types, outs);
+                        pushToMain(obj.push_main_before(args, arg_types, outs));
+                        
                         let fun_c = obj.fun_c(arg_types, outs);
                         var tmp_var = generateTmpVar();
                         args = obj.args_transform(args, arg_types, outs);
@@ -483,6 +572,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                             
                         }
                         
+                        //pushToMain(obj.push_main_after(args, arg_types, outs));
                         return `${fun_c}(${args.join(", ")})`;
                         
                     // Is a subscript
@@ -493,15 +583,19 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                             index.push(transformNode(node.namedChildren[i]));
                         }
                         
+                        let obj = alias_tbl.find(x => x.name === node.text);
                         var tmp_var = generateTmpVar();
-                        if (current_code == "main") {
-                            main_function.push("double " + tmp_var + ";");
-                            main_function.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
-                        } else if (current_code == "subprogram") {
-                            function_definitions.push("double " + tmp_var + ";");
-                            function_definitions.push("indexM(" + node.valueNode.text + ", &" + tmp_var + ", " + index.join(", ") + ");");    
+                        if (obj == null) {
+                            pushToMain(`double ${tmp_var};`);
+                            pushToMain(`indexM(${node.valueNode.text}, &${tmp_var}, ${index.join(", ")});`);
+                            alias_tbl.push({
+                                name: node.text,
+                                tmp_var: tmp_var
+                            });
+                        } else {
+                            tmp_var = obj.tmp_var;
                         }
-                        
+                
                         return tmp_var;
                     }
                 }    
@@ -550,9 +644,9 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     }
     
     // Return args, arg_types, outs from function
-    function parseFunctionCallNode(node) {
-        if (node.parent.type == g.SyntaxType.Assignment) {
-            return parseFunctionCallNode(node.parent);
+    function parseFunctionCallNode(node, ignore_parent) {
+        if (node.parent.type == g.SyntaxType.Assignment && ignore_parent == false) {
+            return parseFunctionCallNode(node.parent, false);
         } else {
             switch (node.type) {
                 case g.SyntaxType.Assignment: {
@@ -722,7 +816,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     // -----------------------------------------------------------------------------
     function printMatrixFunctions(node) {
         var tmp_var = generateTmpVar();
-        let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node);
+        let [args, arg_types, outs, is_subscript] = parseFunctionCallNode(node, false);
         let obj = operatorMapping.find(x => x.fun_matlab === node.operatorNode.type );
         let return_type = obj.return_type(args, arg_types, outs);
         let fun_c = obj.fun_c(arg_types, outs);
@@ -778,7 +872,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     function printFunctionDefDeclare(node) {
         let obj = custom_functions.find(x => x.name === node.nameNode.text);
         if (obj != null) {
-            let [, , outs, ] = parseFunctionCallNode(node);
+            let [, , outs, ] = parseFunctionCallNode(node, false);
             let ptr_args = obj.ptr_args(obj.arg_types, outs);
             var param_list = [];
             for (let i = 0; i < node.parametersNode.namedChildCount; i++) {
@@ -968,12 +1062,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 dim2 = [dim2_node.text];
             }
         }
-        /*console.log("HELLO");
-        console.log(dim0);
-        console.log(dim1);
-        console.log(dim2);
-        console.log(d0);
-        console.log(d1);*/
         let idx = [];
         for (let i = 0; i < dim0.length; i++) {
             for (let j = 0; j < dim1.length; j++) {

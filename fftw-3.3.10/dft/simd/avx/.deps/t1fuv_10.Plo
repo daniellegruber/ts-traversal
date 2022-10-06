@@ -1,0 +1,209 @@
+t1fuv_10.lo: t1fuv_10.c /usr/include/stdc-predef.h ../common/t1fuv_10.c \
+ ../../../dft/codelet-dft.h ../../../kernel/ifftw.h ../../../config.h \
+ /usr/include/stdlib.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-64.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/stddef.h \
+ /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
+ /usr/include/endian.h /usr/include/bits/endian.h \
+ /usr/include/bits/byteswap.h /usr/include/bits/types.h \
+ /usr/include/bits/typesizes.h /usr/include/bits/byteswap-16.h \
+ /usr/include/sys/types.h /usr/include/time.h /usr/include/sys/select.h \
+ /usr/include/bits/select.h /usr/include/bits/sigset.h \
+ /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
+ /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
+ /usr/include/bits/stdlib-float.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/stdarg.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/limits.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/syslimits.h \
+ /usr/include/limits.h /usr/include/bits/posix1_lim.h \
+ /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
+ /usr/include/bits/posix2_lim.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/wchar.h /usr/include/inttypes.h \
+ /usr/include/sys/time.h /usr/include/xlocale.h ../../../dft/simd/t1fu.h \
+ ../../../simd-support/simd-avx.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/immintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/mmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xmmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/mm_malloc.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/emmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/pmmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/tmmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/smmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/popcntintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/wmmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/fxsrintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsaveintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsaveoptintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsavesintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsavecintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avxintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx2intrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512fintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512erintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512pfintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512cdintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bwintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512dqintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vlbwintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vldqintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512ifmaintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512ifmavlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmiintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmivlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx5124fmapsintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx5124vnniwintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vpopcntdqintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmi2intrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmi2vlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vnniintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vnnivlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vpopcntdqvlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bitalgintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vp2intersectintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vp2intersectvlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/shaintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/lzcntintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/bmiintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/bmi2intrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/fmaintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/f16cintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/rtmintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xtestintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/cetintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/gfniintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/vaesintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/vpclmulqdqintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/movdirintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/sgxintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/pconfigintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/waitpkgintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/cldemoteintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bf16vlintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bf16intrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/enqcmdintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/rdseedintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/prfchwintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/adxintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/clwbintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/clflushoptintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/wbnoinvdintrin.h \
+ /vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/pkuintrin.h \
+ ../../../simd-support/simd-common.h
+/usr/include/stdc-predef.h:
+../common/t1fuv_10.c:
+../../../dft/codelet-dft.h:
+../../../kernel/ifftw.h:
+../../../config.h:
+/usr/include/stdlib.h:
+/usr/include/features.h:
+/usr/include/sys/cdefs.h:
+/usr/include/bits/wordsize.h:
+/usr/include/gnu/stubs.h:
+/usr/include/gnu/stubs-64.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/stddef.h:
+/usr/include/bits/waitflags.h:
+/usr/include/bits/waitstatus.h:
+/usr/include/endian.h:
+/usr/include/bits/endian.h:
+/usr/include/bits/byteswap.h:
+/usr/include/bits/types.h:
+/usr/include/bits/typesizes.h:
+/usr/include/bits/byteswap-16.h:
+/usr/include/sys/types.h:
+/usr/include/time.h:
+/usr/include/sys/select.h:
+/usr/include/bits/select.h:
+/usr/include/bits/sigset.h:
+/usr/include/bits/time.h:
+/usr/include/sys/sysmacros.h:
+/usr/include/bits/pthreadtypes.h:
+/usr/include/alloca.h:
+/usr/include/bits/stdlib-float.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/stdarg.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/limits.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/syslimits.h:
+/usr/include/limits.h:
+/usr/include/bits/posix1_lim.h:
+/usr/include/bits/local_lim.h:
+/usr/include/linux/limits.h:
+/usr/include/bits/posix2_lim.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/stdint.h:
+/usr/include/stdint.h:
+/usr/include/bits/wchar.h:
+/usr/include/inttypes.h:
+/usr/include/sys/time.h:
+/usr/include/xlocale.h:
+../../../dft/simd/t1fu.h:
+../../../simd-support/simd-avx.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/immintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/mmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xmmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/mm_malloc.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/emmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/pmmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/tmmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/smmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/popcntintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/wmmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/fxsrintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsaveintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsaveoptintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsavesintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xsavecintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avxintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx2intrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512fintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512erintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512pfintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512cdintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bwintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512dqintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vlbwintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vldqintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512ifmaintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512ifmavlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmiintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmivlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx5124fmapsintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx5124vnniwintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vpopcntdqintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmi2intrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vbmi2vlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vnniintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vnnivlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vpopcntdqvlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bitalgintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vp2intersectintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512vp2intersectvlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/shaintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/lzcntintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/bmiintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/bmi2intrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/fmaintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/f16cintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/rtmintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/xtestintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/cetintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/gfniintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/vaesintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/vpclmulqdqintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/movdirintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/sgxintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/pconfigintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/waitpkgintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/cldemoteintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bf16vlintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/avx512bf16intrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/enqcmdintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/rdseedintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/prfchwintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/adxintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/clwbintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/clflushoptintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/wbnoinvdintrin.h:
+/vast/palmer/apps/avx.grace/software/GCCcore/10.2.0-patched/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include/pkuintrin.h:
+../../../simd-support/simd-common.h:

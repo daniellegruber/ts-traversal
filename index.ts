@@ -32,7 +32,16 @@ const search_folder = args[1];
 let classes = getClasses(search_folder);
 
 // Output code to given directory
-let out_folder = args[2] + "/generatedCode";
+//let out_folder = args[2] + "/generatedCode";
+let out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
+if (!fs.existsSync(out_folder)){
+fs.mkdirSync(out_folder);
+}
+if (!fs.existsSync(`${out_folder}/Makefile`)){
+fs.copyFile('Makefile_template', `${out_folder}/Makefile`, (err) => {
+if (err) throw err;
+});
+}
 
 // Display generated code on console
 let show_output = parseInt(args[3]);

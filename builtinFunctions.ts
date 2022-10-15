@@ -2480,11 +2480,19 @@ export const builtin_functions = [
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null
     },
-    { // TO DO: FIX THIS
+    { // TO DO: FIX THIS https://www.tutorialspoint.com/c_standard_library/c_function_printf.htm
         fun_matlab: 'disp', 
         fun_c: (arg_types, outs) => 'printf', 
         args_transform: (args, arg_types, outs) => {
-            return ['"%d"', args[0]];  
+            let format = '"\\n%d"';
+            if (arg_types[0].type == 'float') {
+                format = '"\\n%f"';
+            } else if (arg_types[0].type == 'int') {
+                format = '"\\n%d"';
+            } else if (arg_types[0].type == 'char') {
+                format = '"\\n%s"';
+            }
+            return [format, args[0]];  
         },
 		outs_transform: (outs) => outs,
         n_req_args: 1,

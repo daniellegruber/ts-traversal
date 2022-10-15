@@ -3,6 +3,7 @@ exports.__esModule = true;
 exports.generateCode = void 0;
 var fs = require("fs");
 var path = require("path");
+var ts = require("typescript");
 var helperFunctions_1 = require("./helperFunctions");
 var typeInference_1 = require("./typeInference");
 var treeTraversal_1 = require("./treeTraversal");
@@ -76,6 +77,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         return "tmp" + tmpVarCnt;
     }
     var alias_tbl = [];
+    var main_queue = [];
     var type_to_matrix_type = [
         { type: "integer", matrix_type: 0 },
         { type: "int", matrix_type: 0 },
@@ -115,6 +117,18 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
     }
     // Transform node
     function transformNode(node) {
+        // at each iteration, check each element of mainQueue, if condition true then push expression
+        var idx = 0;
+        for (var i = 0; i < main_queue.length; i++) {
+            var result = ts.transpile(main_queue[idx].condition);
+            var runnalbe = eval(result);
+            if (runnalbe) {
+                pushToMain(main_queue[idx].expression);
+                main_queue.splice(idx, 1);
+                idx = idx - 1;
+            }
+            idx = idx + 1;
+        }
         switch (node.type) {
             // Comments
             // TO DO: multiline comments
@@ -148,17 +162,17 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 var expression1 = [];
                 var expression2 = [];
                 if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
-                    expression1.push("int " + node.leftNode.text + ";");
-                    expression2.push("for (" + node.leftNode.text + " = ");
-                    expression2.push(node.rightNode.children[0].text + ";");
+                    expression1.push("int ".concat(node.leftNode.text, ";"));
+                    expression2.push("for (".concat(node.leftNode.text, " = "));
+                    expression2.push("".concat(node.rightNode.children[0].text, ";"));
                     loop_iterators.push(node.leftNode.text);
                     if (node.rightNode.childCount == 5) {
-                        expression2.push(node.leftNode.text + " <= " + node.rightNode.children[4].text + ";");
-                        expression2.push(node.leftNode.text + " += " + node.rightNode.children[2].text);
+                        expression2.push("".concat(node.leftNode.text, " <= ").concat(node.rightNode.children[4].text, ";"));
+                        expression2.push("".concat(node.leftNode.text, " += ").concat(node.rightNode.children[2].text));
                     }
                     else {
-                        expression2.push(node.leftNode.text + " <= " + node.rightNode.children[2].text + ";");
-                        expression2.push("++ " + node.leftNode.text);
+                        expression2.push("".concat(node.leftNode.text, " <= ").concat(node.rightNode.children[2].text, ";"));
+                        expression2.push("++ ".concat(node.leftNode.text));
                     }
                     expression1.push(expression2.join(" ") + ") {");
                 }
@@ -179,14 +193,13 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     expression1.push("int ".concat(tmp_var2, ";"));
                     expression2.push("for (".concat(tmp_var2, " = 1;"));
                     expression2.push("".concat(tmp_var2, " <= ").concat(node.rightNode.namedChildCount, ";"));
-                    expression2.push("++".concat(tmp_var2));
+                    // expression2.push(`++${tmp_var2}`);
+                    expression2.push("".concat(tmp_var2, "++"));
                     expression1.push(expression2.join(" ") + ") {");
                     expression1.push("indexM(".concat(tmp_var1, ", &").concat(node.leftNode.text, ", 1, ").concat(tmp_var2, ");"));
                     // node.leftNode now equal to value of matrix tmp_var1 at index tmp_var2
                     loop_iterators.push(tmp_var2);
                 }
-                console.log("ENTERED NEW LOOP");
-                console.log(loop_iterators);
                 pushToMain("\n" + expression1.join("\n"));
                 for (var _i = 0, _b = node.bodyNode.namedChildren; _i < _b.length; _i++) {
                     var child = _b[_i];
@@ -194,11 +207,11 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     pushToMain(transformNode(child));
                 }
                 pushToMain("\n}");
-                var idx = loop_iterators.indexOf(node.leftNode.text);
+                var idx_2 = loop_iterators.indexOf(node.leftNode.text);
                 if (node.rightNode.type == "matrix" /* g.SyntaxType.Matrix */) {
-                    idx = loop_iterators.indexOf(tmp_var2);
+                    idx_2 = loop_iterators.indexOf(tmp_var2);
                 }
-                loop_iterators.splice(idx, 1);
+                loop_iterators.splice(idx_2, 1);
                 //return "\n" + expression1.join("\n") + "\n}";
                 return null;
                 break;
@@ -346,36 +359,40 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 // When LHS is/contains subscript
                 // void *memcpy(void *dest, const void * src, size_t n)
                 var _f = parseFunctionCallNode(node.leftNode, true), left_args = _f[0];
-                console.log("NODE");
-                console.log(node.text);
-                console.log("LEFT ARGS");
-                console.log(left_args);
                 if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
                     for (var j = 0; j < node.leftNode.namedChildCount; j++) {
                         var child = node.leftNode.namedChildren[j];
                         // If element j of LHS matrix is a subscript
                         if (is_subscript[j]) {
                             // Convert to linear idx
-                            var idx = getSubscriptIdx(child);
+                            var idx_3 = getSubscriptIdx(child);
                             pushToMain("void *data = getdataM(".concat(child.valueNode.text, ");"));
+                            pushToMain("double* lhs_data = (double *)data;");
                             var _g = (0, typeInference_1.inferType)(outs[j], var_types, custom_functions, classes, file), ismatrix_1 = _g[3], c_2 = _g[6];
                             custom_functions = c_2;
                             // If RHS is matrix
                             if (ismatrix_1) {
-                                pushToMain("void *data2 = getdataM(".concat(outs[j], ");"));
-                                for (var i = 0; i < idx.length; i++) {
-                                    // Copy data[i] to data2[i]
-                                    pushToMain("memcpy(&data[".concat(idx[i], "], data2[").concat(i, "]);"));
+                                pushToMain("void *rhs_data = getdataM(".concat(outs[j], ");"));
+                                for (var i = 0; i < idx_3.length; i++) {
+                                    // Copy data[i] to data2[i] 
+                                    // pushToMain(`memcpy(&data[${idx[i]}], data2[${i}]);`); 
+                                    pushToMain("lhs_data[".concat(idx_3[i], "] = rhs_data[").concat(i, "];"));
                                 }
                                 // If RHS not matrix
                             }
                             else {
-                                for (var i = 0; i < idx.length; i++) {
+                                for (var i = 0; i < idx_3.length; i++) {
                                     // Copy data[i] to outs[j][i]
-                                    pushToMain("memcpy(&data[".concat(idx[i], "], ").concat(outs[j], "[").concat(i, "]);"));
+                                    // pushToMain(`memcpy(&data2[${idx[i]}], ${outs[j]}[${i}]);`); 
+                                    pushToMain("".concat(outs[j], "[").concat(i, "] = rhs_data[").concat(idx_3[i], "];"));
                                 }
                             }
-                            pushToMain("".concat(child.valueNode.text, ".data = data;"));
+                            var tmp_var_1 = generateTmpVar();
+                            pushToMain("int size = 1;\nfor (int i = 0 ; i < ndim ; i++)\n{\n\tsize *= dim[i];\n}\nMatrix *".concat(tmp_var_1, " = createM(ndim, dim, DOUBLE);\nwriteM(").concat(tmp_var_1, ", size, lhs_data);\nprintM(").concat(tmp_var_1, ");"));
+                            alias_tbl.push({
+                                name: child.valueNode.text,
+                                tmp_var: tmp_var_1
+                            });
                         }
                     }
                 }
@@ -388,39 +405,51 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 num_back = num_back + 1;
                             }
                         }
-                        console.log("NUM BACK");
-                        console.log(num_back);
                         // Convert to linear idx
-                        var idx = getSubscriptIdx(node.leftNode);
+                        var idx_4 = getSubscriptIdx(node.leftNode);
                         if (num_back == 0) {
                             pushToMain("void *data = getdataM(".concat(node.leftNode.valueNode.text, ");"));
+                            pushToMain("double* lhs_data = (double *)data;");
                         }
                         else {
                             insertMain("void *data = getdataM(".concat(node.leftNode.valueNode.text, ");"), 'for', num_back);
+                            insertMain("double* lhs_data = (double *)data;", 'for', num_back);
                         }
                         var _h = (0, typeInference_1.inferType)(outs[0], var_types, custom_functions, classes, file), ismatrix_2 = _h[3], c_3 = _h[6];
                         custom_functions = c_3;
                         // If RHS is matrix
                         if (ismatrix_2) {
-                            pushToMain("void *data2 = getdataM(".concat(outs[0], ");"));
-                            for (var i = 0; i < idx.length; i++) {
+                            pushToMain("void *rhs_data = getdataM(".concat(outs[0], ");"));
+                            for (var i = 0; i < idx_4.length; i++) {
                                 // Copy data[i] to data2[i]
-                                pushToMain("memcpy(&data[".concat(idx[i], "], data2[").concat(i, "]);"));
+                                // pushToMain(`memcpy(&data2[${idx[i]}], data3[${i}]);`); 
+                                pushToMain("lhs_data[".concat(idx_4[i], "] = rhs_data[").concat(i, "];"));
                             }
                             // If RHS not matrix
                         }
                         else {
-                            if (idx.length == 1) {
-                                pushToMain("memcpy(&data[".concat(idx[0], "], &").concat(outs[0], ", 1);"));
+                            if (idx_4.length == 1) {
+                                // pushToMain(`memcpy(&data2[${idx[0]}], &${outs[0]}, 1);`); 
+                                pushToMain("lhs_data[".concat(idx_4[0], "] = ").concat(outs[0], ";"));
                             }
                             else {
-                                for (var i = 0; i < idx.length; i++) {
+                                for (var i = 0; i < idx_4.length; i++) {
                                     // Copy data[i] to outs[i]
-                                    pushToMain("memcpy(&data[".concat(idx[i], "], &").concat(outs[0], "[").concat(i, "], 1);"));
+                                    // pushToMain(`memcpy(&data2[${idx[i]}], &${outs[0]}[${i}], 1);`);
+                                    pushToMain("lhs_data[".concat(idx_4[i], "] = ").concat(outs[0], "[").concat(i, "];"));
                                 }
                             }
                         }
-                        pushToMain("".concat(node.leftNode.valueNode.text, ".data = data;"));
+                        var tmp_var_2 = generateTmpVar();
+                        var mq = {
+                            expression: "int size = 1;\nfor (int i = 0 ; i < ndim ; i++)\n{\n\tsize *= dim[i];\n}\nMatrix *".concat(tmp_var_2, " = createM(ndim, dim, DOUBLE);\nwriteM(").concat(tmp_var_2, ", size, lhs_data);\nprintM(").concat(tmp_var_2, ");"),
+                            condition: "loop_iterators.length == ".concat(loop_iterators.length - num_back, ";")
+                        };
+                        main_queue.push(mq);
+                        alias_tbl.push({
+                            name: node.leftNode.valueNode.text,
+                            tmp_var: tmp_var_2
+                        });
                     }
                 }
                 return null;
@@ -450,19 +479,20 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     index.push(transformNode(node.namedChildren[i]));
                 }
                 var obj = alias_tbl.find(function (x) { return x.name === node.text; });
-                var tmp_var = generateTmpVar();
+                var tmp_var_3 = generateTmpVar();
                 if (obj == null) {
-                    pushToMain("double ".concat(tmp_var, ";"));
-                    pushToMain("indexM(".concat(node.valueNode.text, ", &").concat(tmp_var, ", ").concat(index.join(", "), ");"));
+                    pushToMain("double ".concat(tmp_var_3, ";"));
+                    //pushToMain(`indexM(${node.valueNode.text}, &${tmp_var}, ${index.length}, ${index.join(", ")});`);
+                    pushToMain("indexM(".concat(transformNode(node.valueNode), ", &").concat(tmp_var_3, ", ").concat(index.length, ", ").concat(index.join(", "), ");"));
                     alias_tbl.push({
                         name: node.text,
-                        tmp_var: tmp_var
+                        tmp_var: tmp_var_3
                     });
                 }
                 else {
-                    tmp_var = obj.tmp_var;
+                    tmp_var_3 = obj.tmp_var;
                 }
-                return tmp_var;
+                return tmp_var_3;
                 break;
             }
             case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
@@ -521,7 +551,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         var tmp_var = generateTmpVar();
                         if (obj_2 == null) {
                             pushToMain("double ".concat(tmp_var, ";"));
-                            pushToMain("indexM(".concat(node.valueNode.text, ", &").concat(tmp_var, ", ").concat(index.join(", "), ");"));
+                            pushToMain("indexM(".concat(transformNode(node.valueNode), ", &").concat(tmp_var, ", ").concat(index.length, ", ").concat(index.join(", "), ");"));
+                            //pushToMain(`indexM(${node.valueNode.text}, &${tmp_var}, ${index.length}, ${index.join(", ")});`);
                             alias_tbl.push({
                                 name: node.text,
                                 tmp_var: tmp_var
@@ -549,11 +580,21 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 return expression.join("\n");
                 break;
             }
+            case "identifier" /* g.SyntaxType.Identifier */: {
+                var obj = alias_tbl.find(function (x) { return x.name === node.text; });
+                if (obj != null) {
+                    return obj.tmp_var;
+                }
+                else {
+                    return node.text;
+                }
+                break;
+            }
             // Basic types
             //case g.SyntaxType.Ellipsis:
             case "string" /* g.SyntaxType.String */:
             case "attribute" /* g.SyntaxType.Attribute */:
-            case "identifier" /* g.SyntaxType.Identifier */:
+            //case g.SyntaxType.Identifier:
             case "integer" /* g.SyntaxType.Integer */:
             case "float" /* g.SyntaxType.Float */:
             case "true" /* g.SyntaxType.True */:

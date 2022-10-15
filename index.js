@@ -26,7 +26,17 @@ var tree = parser.parse(sourceCode);
 var search_folder = args[1];
 var classes = (0, helperFunctions_1.getClasses)(search_folder);
 // Output code to given directory
-var out_folder = args[2] + "/generatedCode";
+//let out_folder = args[2] + "/generatedCode";
+var out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
+if (!fs.existsSync(out_folder)) {
+    fs.mkdirSync(out_folder);
+}
+if (!fs.existsSync("".concat(out_folder, "/Makefile"))) {
+    fs.copyFile('Makefile_template', "".concat(out_folder, "/Makefile"), function (err) {
+        if (err)
+            throw err;
+    });
+}
 // Display generated code on console
 var show_output = parseInt(args[3]);
 if (show_output == 1) {

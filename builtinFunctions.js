@@ -2410,7 +2410,17 @@ exports.builtin_functions = [
         fun_matlab: 'disp',
         fun_c: function (arg_types, outs) { return 'printf'; },
         args_transform: function (args, arg_types, outs) {
-            return ['"%d"', args[0]];
+            var format = '"\\n%d"';
+            if (arg_types[0].type == 'float') {
+                format = '"\\n%f"';
+            }
+            else if (arg_types[0].type == 'int') {
+                format = '"\\n%d"';
+            }
+            else if (arg_types[0].type == 'char') {
+                format = '"\\n%s"';
+            }
+            return [format, args[0]];
         },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,

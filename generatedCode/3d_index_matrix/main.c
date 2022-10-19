@@ -54,6 +54,7 @@ printM(tmp10);
 // 	counter++;
 // end
 
+printf("\nMETHOD 1");
 int i;
 for (i =  1; i <= 30; ++ i) {
 double tmp12;
@@ -63,7 +64,7 @@ printf("\n%f", tmp12);
 }
 //printf("\n");
 // Note that it iterates over j then i then k, since Octave matrices are stored column-major
-
+printf("\nMETHOD 2");
 int j;
 for (j =  1; j <= 3; ++ j) {
 

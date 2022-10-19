@@ -1,7 +1,7 @@
-\\\\\\\\\\\\\\\\\\\\\\\\more off
-\\\\\\\\\\\\\\\\\\\\\\format short
+%more off
+%format short
 
-\\\\\\\\\\\\\\\\\\\\\\source octaveIncludes.m;
+%source octaveIncludes.m;
 
 a = [0, 10, 10i; 
 10.102, 10.102+0.5i, -12i; 
@@ -9,5 +9,7 @@ a = [0, 10, 10i;
 
 b = abs(a);
 
-complexDisp(a);
-doubleDisp(b);
+disp(a);
+disp(b);
+%complexDisp(a);
+%doubleDisp(b);

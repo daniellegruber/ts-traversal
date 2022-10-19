@@ -25,7 +25,7 @@ for (var _i = 0, comment_lines_1 = comment_lines; _i < comment_lines_1.length; _
     var re = new RegExp("".concat(comment_line, "\\s[\\w;.]*\\n"), "g");
     var match = code.match(re);
     if (match != null) {
-        code = code.replace(re, "\\\\".concat(match));
+        code = code.replace(re, "%".concat(match));
     }
 }
 // Replace binary operators in complex numbers

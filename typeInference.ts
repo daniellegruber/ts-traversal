@@ -336,7 +336,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 return ['bool', 2, [1, 1], false, false, false, custom_functions];
             }
             else {
-                return inferType(node.firstChild, var_types, custom_functions, classes, file);
+                return inferType(node.argumentNode, var_types, custom_functions, classes, file);
             }
             
             break;
@@ -345,10 +345,15 @@ function inferType(node, var_types, custom_functions, classes, file) {
             
             let [left_type, left_ndim, left_dim, left_ismatrix,,, c1] = inferType(node.leftNode, var_types, custom_functions, classes, file);
             custom_functions = c1;
+            if (node.leftNode.type == g.SyntaxType.UnaryOperator) {
+                [left_type, left_ndim, left_dim, left_ismatrix,,, c1] = inferType(node.leftNode.argumentNode, var_types, custom_functions, classes, file);
+                custom_functions = c1;
+            }
             let [right_type, right_ndim, right_dim, right_ismatrix,,, c2] = inferType(node.rightNode, var_types, custom_functions, classes, file);
             custom_functions = c2;
             let ndim = left_ndim;
             let dim = left_dim;
+            
             switch (node.operatorNode.type) {
                 /*case "+": 
                 case "-": 
@@ -739,7 +744,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 }
                 case g.SyntaxType.UnaryOperator:
                 case g.SyntaxType.TransposeOperator: {
-                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(right_node.argumentNode, var_types, custom_functions, classes, file);
+                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.argumentNode, var_types, custom_functions, classes, file);
                     custom_functions = c;
                     arg_types.push({
                         type: type, 
@@ -749,10 +754,11 @@ function inferType(node, var_types, custom_functions, classes, file) {
                         ispointer: ispointer,
                         isstruct: isstruct
                     });
+                    
                     //if (transformNode(right_node.argumentNode) != undefined) {
                     //    args.push(transformNode(right_node.argumentNode));   
                     //} else {
-                        args.push(right_node.argumentNode.text);
+                        args.push(node.argumentNode.text);
                     //}
                     break;
                 }

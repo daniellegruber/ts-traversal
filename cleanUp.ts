@@ -28,7 +28,7 @@ for (let comment_line of comment_lines) {
     let re = new RegExp(`${comment_line}\\s[\\w;\.]*\\n`, "g");
     let match = code.match(re);
     if (match != null) {
-        code = code.replace(re, `\\\\${match}`);
+        code = code.replace(re, `%${match}`);
     }
 }
 

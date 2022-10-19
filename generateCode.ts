@@ -154,7 +154,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     
     // Transform node
     function transformNode(node) {
-        
         // at each iteration, check each element of mainQueue, if condition true then push expression
         let idx = 0;
         for (let i = 0; i < main_queue.length; i++) {

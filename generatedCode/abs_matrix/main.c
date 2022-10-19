@@ -15,7 +15,7 @@ int main(void)
 //source octaveIncludes.m;
 
 int ndim = 2;
-int dim = {3,3};
+int dim[2] = {3,3};
 Matrix * a = createM(ndim, dim, 2);
 double complex *input = NULL;
 input = malloc( 9*sizeof(*input));

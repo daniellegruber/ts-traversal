@@ -849,7 +849,7 @@ printM(${tmp_var});`,
         
         let expression = [];
         expression.push(`int ndim = ${ndim};`);
-        expression.push(`int dim = {${dim}};`);
+        expression.push(`int dim[${ndim}] = {${dim}};`);
         expression.push(`Matrix * ${name} = createM(ndim, dim, ${obj.matrix_type});`)
         expression.push(`double ${type} *input = NULL;`);
         

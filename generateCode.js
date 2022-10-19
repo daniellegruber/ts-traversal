@@ -766,7 +766,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         var obj = type_to_matrix_type.find(function (x) { return x.type === type; });
         var expression = [];
         expression.push("int ndim = ".concat(ndim, ";"));
-        expression.push("int dim = {".concat(dim, "};"));
+        expression.push("int dim[".concat(ndim, "] = {").concat(dim, "};"));
         expression.push("Matrix * ".concat(name, " = createM(ndim, dim, ").concat(obj.matrix_type, ");"));
         expression.push("double ".concat(type, " *input = NULL;"));
         var numel = dim.reduce(function (a, b) { return a * b; });

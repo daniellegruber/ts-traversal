@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require("path");
 let OCTAVEC = "/home/dlg59/project/Halo-Algorithm/OctaveC";
 import { writeToFile, waitForFileExists } from "./helperFunctions";
 
@@ -9,7 +10,12 @@ if (args.length != 2) {
 }
 
 let mfile = args[0];
-let out_folder = args[1];
+//let out_folder = args[1];
+
+let out_folder = args[1] + "/generatedCode/" + path.parse(mfile).name;
+if (!fs.existsSync(out_folder)){
+fs.mkdirSync(out_folder);
+}
 
 if (!fs.existsSync(`${out_folder}/${mfile}`)){
     fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
@@ -45,6 +51,11 @@ while (idx != -1) {
     code = code.replace(`${variable}++`, `${variable} = ${variable} + 1`);
     idx = code.indexOf("++");
 }
+
+// Replace complexDisp and doubleDisp
+code = code.replace(/complexDisp/g, 'disp');
+code = code.replace(/doubleDisp/g, 'disp');
+code = code.replace(/intDisp/g, 'disp');
 
 writeToFile(out_folder, mfile, code);
 

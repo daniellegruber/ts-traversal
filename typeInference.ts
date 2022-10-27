@@ -112,6 +112,28 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
 
                 break;
             }
+            case g.SyntaxType.ForStatement: {
+                let node = c.currentNode;
+                // If LHS is an identifier, type is same as RHS
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                custom_functions = cf;
+                if (node.leftNode.type == g.SyntaxType.Identifier) {
+                    let v1: VarType = { 
+                        name: node.leftNode.text, 
+                        type: type, 
+                        ndim: 1, 
+                        dim: [1], 
+                        ismatrix: false,
+                        ispointer: false,
+                        isstruct: false,
+                        initialized: false
+                    };
+                        
+                    var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
+                    var_types.push(v1);
+                }
+                break;
+            }
         }
     } while(gotoPreorderSucc_SkipFunctionDef(cursor));
     return [var_types, custom_functions];

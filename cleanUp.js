@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 var fs = require('fs');
+var path = require("path");
 var OCTAVEC = "/home/dlg59/project/Halo-Algorithm/OctaveC";
 var helperFunctions_1 = require("./helperFunctions");
 var args = process.argv.slice(2);
@@ -8,7 +9,11 @@ if (args.length != 2) {
     process.exit(1);
 }
 var mfile = args[0];
-var out_folder = args[1];
+//let out_folder = args[1];
+var out_folder = args[1] + "/generatedCode/" + path.parse(mfile).name;
+if (!fs.existsSync(out_folder)) {
+    fs.mkdirSync(out_folder);
+}
 if (!fs.existsSync("".concat(out_folder, "/").concat(mfile))) {
     fs.copyFile("".concat(OCTAVEC, "/tests/").concat(mfile), "".concat(out_folder, "/").concat(mfile), function (err) {
         if (err)
@@ -40,5 +45,9 @@ while (idx != -1) {
     code = code.replace("".concat(variable, "++"), "".concat(variable, " = ").concat(variable, " + 1"));
     idx = code.indexOf("++");
 }
+// Replace complexDisp and doubleDisp
+code = code.replace(/complexDisp/g, 'disp');
+code = code.replace(/doubleDisp/g, 'disp');
+code = code.replace(/intDisp/g, 'disp');
 (0, helperFunctions_1.writeToFile)(out_folder, mfile, code);
 //# sourceMappingURL=cleanUp.js.map

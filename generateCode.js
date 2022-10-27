@@ -407,6 +407,9 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         }
                         // Convert to linear idx
                         var idx_4 = getSubscriptIdx(node.leftNode);
+                        console.log(node.text);
+                        console.log("IDX");
+                        console.log(idx_4);
                         if (num_back == 0) {
                             pushToMain("void *data = getdataM(".concat(node.leftNode.valueNode.text, ");"));
                             pushToMain("double* lhs_data = (double *)data;");
@@ -1048,19 +1051,22 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         // already a linear idx
         if (node.namedChildCount == 2) {
             if (node.namedChildren[1].type == "slice" /* g.SyntaxType.Slice */) {
-                var list = slice2list(node.namedChildren[1]);
+                //var list = slice2list(node.namedChildren[1])
+                var idx = slice2list(node.namedChildren[1]);
             }
             else if (node.namedChildren[1].type == "matrix" /* g.SyntaxType.Matrix */) {
-                var list = matrix2list(node.namedChildren[1]);
+                //var list = matrix2list(node.namedChildren[1])
+                var idx = matrix2list(node.namedChildren[1]);
             }
             else {
-                var list = [node.namedChildren[1].text];
+                //var list = [node.namedChildren[1].text];
+                var idx = [node.namedChildren[1].text];
             }
-            var idx = [];
-            for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
-                var l = list_1[_i];
+            /*var idx = [];
+            for (let l of list) {
                 idx.push(Number(l));
-            }
+                idx.push(l);
+            }*/
         }
         else {
             if (node.namedChildCount == 3) {

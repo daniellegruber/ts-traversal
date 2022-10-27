@@ -82,6 +82,27 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 }
                 break;
             }
+            case "for_statement" /* g.SyntaxType.ForStatement */: {
+                var node = c.currentNode;
+                // If LHS is an identifier, type is same as RHS
+                var _b = inferType(node.rightNode, var_types, custom_functions, classes, file), type = _b[0], ndim = _b[1], dim = _b[2], ismatrix = _b[3], ispointer = _b[4], isstruct = _b[5], cf = _b[6];
+                custom_functions = cf;
+                if (node.leftNode.type == "identifier" /* g.SyntaxType.Identifier */) {
+                    var v1_2 = {
+                        name: node.leftNode.text,
+                        type: type,
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        ispointer: false,
+                        isstruct: false,
+                        initialized: false
+                    };
+                    var_types = var_types.filter(function (e) { return e.name != v1_2.name; }); // replace if already in var_types
+                    var_types.push(v1_2);
+                }
+                break;
+            }
         }
     };
     do {

@@ -455,6 +455,7 @@ generateCode.ts
 | create_1D_matrix  | Yes  |   |
 | create_2D_matrix  | Yes  |   |
 | create_one_matrix  | Yes  |   |
+| create_zero_matrix  | Yes  |   |
 | 3d_index_matrix  | No  | Created matrix itself seems to be correct, indexing seems to be off.  |
 
 # Current limitations/works in progress

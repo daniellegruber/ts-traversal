@@ -36,9 +36,16 @@ type VarType = {
   initialized: boolean;
 };
 
+type Alias = {
+  name: string;
+  tmp_var: string;
+};
+
 
 function typeInference(file, custom_functions, classes) {
+    
     var var_types: VarType[] = [];
+    let block_idxs = [];
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
     let entry_fun_node = findEntryFunction(tree);
@@ -59,11 +66,13 @@ function typeInference(file, custom_functions, classes) {
         }
     }
 
-    [var_types, custom_functions] = inferTypeFromAssignment(tree, var_types, custom_functions, classes, file);
-    return [var_types, custom_functions];
+    let alias_tbl: Alias[] = [];
+    [var_types, custom_functions, block_idxs] = inferTypeFromAssignment(tree, var_types, custom_functions, classes, file, alias_tbl);
+    return [var_types, custom_functions, block_idxs];
 }
 
-function inferTypeFromAssignment(tree, var_types, custom_functions, classes, file) {
+function inferTypeFromAssignment(tree, var_types, custom_functions, classes, file, alias_tbl) {
+    let block_idxs = [];
     let cursor = tree.walk();
     do {
         const c = cursor as g.TypedTreeCursor;
@@ -71,7 +80,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
             case g.SyntaxType.Assignment: {
                 let node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
-                let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl);
                 custom_functions = cf;
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
                     let v1: VarType = { 
@@ -115,7 +124,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
             case g.SyntaxType.ForStatement: {
                 let node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
-                let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl);
                 custom_functions = cf;
                 if (node.leftNode.type == g.SyntaxType.Identifier) {
                     let v1: VarType = { 
@@ -134,17 +143,21 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 }
                 break;
             }
+            case g.SyntaxType.Block: {
+                let node = c.currentNode;
+                block_idxs.push([node.startIndex, node.endIndex]);
+            }
         }
     } while(gotoPreorderSucc_SkipFunctionDef(cursor));
-    return [var_types, custom_functions];
+    return [var_types, custom_functions, block_idxs];
 }
 
-function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_functions, classes, file) {
+function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_functions, classes, file, alias_tbl) {
     // Update custom_functions with info on function return type
     let obj = fun_dictionary.find(x => x.name === fun_name);
     if (obj != null) {
         let tree2 = parser.parse(obj.def_node.bodyNode.text);
-        let [var_types2, c] = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file);
+        let [var_types2, c] = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file, alias_tbl);
         custom_functions = c;
         fun_dictionary = fun_dictionary.filter(function(e) { return e.name !== fun_name });
         let return_node = obj.def_node.return_variableNode;
@@ -171,7 +184,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                         let ptr_args = [];
                         for (let i = 0; i < return_node.namedChildCount; i++) {
                             let return_var = return_node.namedChildren[i];
-                            let [return_type, return_ndim, return_dim, return_ismatrix, return_ispointer, return_isstruct, c] = inferType(return_var, var_types2, custom_functions, classes, file);
+                            let [return_type, return_ndim, return_dim, return_ismatrix, return_ispointer, return_isstruct, c] = inferType(return_var, var_types2, custom_functions, classes, file, alias_tbl);
                             custom_functions = c;
                             let return_name = `*p_${return_var.text}`;
                             if (outs.length > i) {
@@ -195,7 +208,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
 
             // If single return value, don't use pointers 
             } else {
-                let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(return_node, var_types2, custom_functions, classes, file);
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(return_node, var_types2, custom_functions, classes, file, alias_tbl);
                 custom_functions = c;
                 const v1: CustomFunction = { 
                     name: obj.name, 
@@ -238,12 +251,24 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
     }
 }
 
-function inferType(node, var_types, custom_functions, classes, file) {
+function inferType(node, var_types, custom_functions, classes, file, alias_tbl) {
     // var unknown_type = ['unknown', null, null, null, null, null, custom_functions];
     // var unknown_type = ['unknown', 2, [1, 1], false, false, false, custom_functions];
+    
+    let obj1 = alias_tbl.find(x => x.name === node.text);
+    if (obj1 != null && obj1 != undefined) {
+        let obj2 = var_types.find(x => x.name === obj1.tmp_var);
+        if (obj2 != null) {
+            return [obj2.type, obj2.ndim, obj2.dim, obj2.ismatrix, obj2.ispointer, obj2.isstruct, custom_functions];
+        } else {
+            return ['unknown', 2, [1, 1], false, false, false, custom_functions];
+        }
+    }
+        
+        
     switch (node.type) {
         case g.SyntaxType.ParenthesizedExpression: {
-            return inferType(node.firstChild, var_types, custom_functions, classes, file);
+            return inferType(node.firstChild, var_types, custom_functions, classes, file, alias_tbl);
             break;
         }
         
@@ -295,7 +320,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 else if (node.children[i].isNamed) {
                     
                     if (row == 0) {
-                        const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file);
+                        const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file, alias_tbl);
                         custom_functions = c;
                         if (ndim > 1) {
                             ncols += dim[1];
@@ -304,7 +329,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                         }
                     }
                     if (col == 0) {
-                        const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file);
+                        const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file, alias_tbl);
                         custom_functions = c;
                         nrows += dim[0];
                     }
@@ -315,7 +340,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
             let children_types = [];
             
             for (let child of node.namedChildren) {
-                let [child_type,,,,,, c] = inferType(child, var_types, custom_functions, classes, file);
+                let [child_type,,,,,, c] = inferType(child, var_types, custom_functions, classes, file, alias_tbl);
                 custom_functions = c;
                 children_types.push(child_type);
             }
@@ -348,7 +373,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
             break;
         }
         case g.SyntaxType.TransposeOperator: {
-            const [type, ndim, dim, ismatrix,,, c] = inferType(node.firstChild, var_types, custom_functions, classes, file);
+            const [type, ndim, dim, ismatrix,,, c] = inferType(node.firstChild, var_types, custom_functions, classes, file, alias_tbl);
             custom_functions = c;
             return [type, 2, [dim[1], dim[0]], ismatrix, false, false, custom_functions];
             break;
@@ -358,20 +383,20 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 return ['bool', 2, [1, 1], false, false, false, custom_functions];
             }
             else {
-                return inferType(node.argumentNode, var_types, custom_functions, classes, file);
+                return inferType(node.argumentNode, var_types, custom_functions, classes, file, alias_tbl);
             }
             
             break;
         }
         case g.SyntaxType.BinaryOperator: {
             
-            let [left_type, left_ndim, left_dim, left_ismatrix,,, c1] = inferType(node.leftNode, var_types, custom_functions, classes, file);
+            let [left_type, left_ndim, left_dim, left_ismatrix,,, c1] = inferType(node.leftNode, var_types, custom_functions, classes, file, alias_tbl);
             custom_functions = c1;
             if (node.leftNode.type == g.SyntaxType.UnaryOperator) {
-                [left_type, left_ndim, left_dim, left_ismatrix,,, c1] = inferType(node.leftNode.argumentNode, var_types, custom_functions, classes, file);
+                [left_type, left_ndim, left_dim, left_ismatrix,,, c1] = inferType(node.leftNode.argumentNode, var_types, custom_functions, classes, file, alias_tbl);
                 custom_functions = c1;
             }
-            let [right_type, right_ndim, right_dim, right_ismatrix,,, c2] = inferType(node.rightNode, var_types, custom_functions, classes, file);
+            let [right_type, right_ndim, right_dim, right_ismatrix,,, c2] = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl);
             custom_functions = c2;
             let ndim = left_ndim;
             let dim = left_dim;
@@ -427,7 +452,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
         // Attribute
         case g.SyntaxType.Attribute: {
             // First check if class method
-            let [type,,,,,, c] = inferType(node.objectNode, var_types, custom_functions, classes, file);
+            let [type,,,,,, c] = inferType(node.objectNode, var_types, custom_functions, classes, file, alias_tbl);
             custom_functions = c;
             let obj = classes.find(x => x.name === type);
             if (obj !== null && obj !== undefined) {
@@ -476,7 +501,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
         case g.SyntaxType.CellSubscript: {
             let dim = [];
             for (let i=1; i<node.namedChildCount; i++) {
-                var [child_type,,child_dim,,,, c] = inferType(node.namedChildren[i], var_types, custom_functions, classes, file);
+                var [child_type,,child_dim,,,, c] = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl);
                 custom_functions = c;
                 dim.push(child_dim[1]);
             }
@@ -495,7 +520,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
         
         case g.SyntaxType.CallOrSubscript: {
    
-            let [parent_type,,,parent_ismatrix,,parent_isstruct, c] = inferType(node.valueNode, var_types, custom_functions, classes, file);
+            let [parent_type,,,parent_ismatrix,,parent_isstruct, c] = inferType(node.valueNode, var_types, custom_functions, classes, file, alias_tbl);
             custom_functions = c;
             
             // Is a subscript
@@ -503,7 +528,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 
                 let dim = [];
                 for (let i=1; i<node.namedChildCount; i++) {
-                    let [,,child_dim,,,, c] = inferType(node.namedChildren[i], var_types, custom_functions, classes, file);
+                    let [,,child_dim,,,, c] = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl);
                     custom_functions = c;
                     dim.push(child_dim[1]);
                 }
@@ -545,7 +570,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                                     obj.arg_types[i].ispointer = arg_types[i].ispointer;
                                 }
                                 let return_type = null;
-                                [return_type, obj1.methods] = getFunctionReturnType(node.valueNode.text, obj.arg_types, obj1.methods, custom_functions, classes, file); 
+                                [return_type, obj1.methods] = getFunctionReturnType(node.valueNode.text, obj.arg_types, obj1.methods, custom_functions, classes, file, alias_tbl); 
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                                 } else {
@@ -579,7 +604,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                                     obj2.arg_types[i].ispointer = arg_types[i].ispointer;
                                 }
                                 let return_type = null;
-                                [return_type, custom_functions] = getFunctionReturnType(node.valueNode.text, obj2.arg_types, custom_functions, custom_functions, classes, file);
+                                [return_type, custom_functions] = getFunctionReturnType(node.valueNode.text, obj2.arg_types, custom_functions, custom_functions, classes, file, alias_tbl);
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                                 } else {
@@ -628,12 +653,12 @@ function inferType(node, var_types, custom_functions, classes, file) {
             
             for (let i=0; i<node.namedChildCount; i++) {
                 let child = node.namedChildren[i];
-                let [child_type,,,,,, c] = inferType(child, var_types, custom_functions, classes, file);
+                let [child_type,,,,,, c] = inferType(child, var_types, custom_functions, classes, file, alias_tbl);
                 custom_functions = c;
                 
                 if (child_type == "keyword") {
                     
-                    let [,ndim,dim,,,, c] = inferType(node.parent.valueNode, var_types, custom_functions, classes, file);
+                    let [,ndim,dim,,,, c] = inferType(node.parent.valueNode, var_types, custom_functions, classes, file, alias_tbl);
                     custom_functions = c;
                     let firstNode = node.parent.namedChildren[1];
                     let current_dim = 0;
@@ -716,7 +741,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                         //} else {
                             args.push(right_node.namedChildren[i].text);
                         //}
-                        let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes, file);
+                        let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(right_node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl);
                         custom_functions = c;
                         arg_types.push({
                             type: type, 
@@ -732,9 +757,9 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 case g.SyntaxType.ComparisonOperator:
                 case g.SyntaxType.BooleanOperator:
                 case g.SyntaxType.BinaryOperator: {
-                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer, l_isstruct, c1] = inferType(right_node.leftNode, var_types, custom_functions, classes, file);
+                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer, l_isstruct, c1] = inferType(right_node.leftNode, var_types, custom_functions, classes, file, alias_tbl);
                     custom_functions = c1;
-                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer, r_isstruct, c2] = inferType(right_node.rightNode, var_types, custom_functions, classes, file);
+                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer, r_isstruct, c2] = inferType(right_node.rightNode, var_types, custom_functions, classes, file, alias_tbl);
                     custom_functions = c2;
                     arg_types.push({
                         type: l_type, 
@@ -766,7 +791,7 @@ function inferType(node, var_types, custom_functions, classes, file) {
                 }
                 case g.SyntaxType.UnaryOperator:
                 case g.SyntaxType.TransposeOperator: {
-                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.argumentNode, var_types, custom_functions, classes, file);
+                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.argumentNode, var_types, custom_functions, classes, file, alias_tbl);
                     custom_functions = c;
                     arg_types.push({
                         type: type, 

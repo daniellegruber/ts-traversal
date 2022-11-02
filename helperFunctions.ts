@@ -25,15 +25,6 @@ export function writeToFile(out_folder, filename, generated_code) {
     })
 }
 
-export async function waitForFileExists(filePath, currentTime, timeout) {
-  if (fs.existsSync(filePath)) return true;
-  if (currentTime === timeout) return false;
-  // wait for 1 second
-  await new Promise((resolve, reject) => setTimeout(() => resolve(true), 1000));
-  // waited for 1 second
-  return waitForFileExists(filePath, currentTime + 1000, timeout);
-}
-
 export function getFilesInPath(src) {
     const files = glob.sync(src + '/**/*.m');
     return files;

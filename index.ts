@@ -63,15 +63,17 @@ console.log("---------------------\n");
 for (let file of file_traversal_order) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
-    [var_types, custom_functions] = typeInference(file, custom_functions, classes);
+    let block_idxs = [];
+    [var_types, custom_functions, block_idxs] = typeInference(file, custom_functions, classes);
     if (file == args[0]) {
         var filename = "main";
     } else {
         var filename:string = path.parse(file).name;
     }
 
-    let [generated_code, header] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, file);
-        
+    let [generated_code, header, vt] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file);
+    var_types = vt;
+    
     if (show_output==1) {
         console.log(`---------------------\nCustom functions for ${filename}.c:\n`);
         console.log(custom_functions);

@@ -440,6 +440,15 @@ generateCode.ts
   - The transformed output (`"void"`) and parameters are pushed to `function_declarations`.
   - The transformed output (`"void"`) and parameters, the transformed body of the function, and `ptr_declaration` are pushed to `function_definitions`.
 
+# OctaveC Tests
+
+| Test  | Complete | Notes |
+| ------------- | ------------- | ------------- |
+| abs_matrix  | Yes  |   |
+| ceil_matrix  | Yes  |   |
+| create_1D_matrix  | Yes  |   |
+| 3d_index_matrix  | No  | Created matrix itself seems to be correct, indexing seems to be off.  |
+
 # Current limitations/works in progress
 - Initializing cell matrices containing strings
  - In generateCode.ts, initalizeMatrix (lines 659 - 686)

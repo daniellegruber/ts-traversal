@@ -84,6 +84,12 @@ node ./node_modules/@asgerf/dts-tree-sitter/build/src/index.js tree-sitter-matla
 where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 
 ## Under the hood
+### cleanOctaveC.ts 
+- Overview
+  - Use after newly downloading OctaveC folder to update matrix.c and main.h so they're compatible with ts_traversal
+### cleanUp.ts
+- Overview
+  - "Cleans up" MATLAB files in OctaveC/tests folder so that they're easier to parse and convert to C code
 ### index.ts
 - Overview
   - Entry-point code

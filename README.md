@@ -42,7 +42,7 @@ module load nodejs
 
 ```sh
 npx tsc -sourcemap index.ts
-npx ts-node index.ts MATLAB_FILE SEARCH_FOLDER OUT_FOLDER SHOW_OUTPUT
+npx ts-node index.ts MATLAB_FILE SEARCH_FOLDER OUT_FOLDER SHOW_OUTPUT DEBUG
 ```
 
 where
@@ -50,6 +50,7 @@ where
 - `SEARCH_FOLDER`: used to locate functions called upon in `MATLAB_FILE` (i.e., contains other .m files required for execution of `MATLAB_FILE`)
 - `OUT_FOLDER`: generatedCode folder generated in this folder
 - `SHOW_OUTPUT`: 1 to show generated code in console, 0 to suppress
+- `DEBUG`: 1 for debug mode in console, 0 for normal mode
 
 The first line is for debugging purposes and only needs to be used when a file is changed.
 
@@ -59,7 +60,7 @@ Here is an example using one of the MATLAB test files in the folder.
 
 ```sh
 npx tsc -sourcemap index.ts
-npx ts-node index.ts general_test.m $TS_TRAVERSAL $TS_TRAVERSAL 1
+npx ts-node index.ts general_test.m $TS_TRAVERSAL $TS_TRAVERSAL 1 0
 ```
 
 Here is a "real life" example using one of the EEGLAB functions. (You can download EEGLAB [here.](https://sccn.ucsd.edu/eeglab/download.php))

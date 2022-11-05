@@ -36,6 +36,19 @@ It is important you load binutils before nodejs.
 ```sh
 module load binutils
 module load nodejs
+module load GCC
+module load ScaLAPACK/2.1.0-gompi-2020b
+module load FFTW
+``` 
+
+For convenience, it is helpful to define several environment variables:
+
+```sh
+export TS_TRAVERSAL="$YOUR_DIR/ts-traversal"
+cd $TS_TRAVERSAL
+export EEGLAB="$YOUR_DIR/eeglab"
+export OCTAVEC="$YOUR_DIR/Halo-Algorithm/OctaveC"
+export TEST="$YOUR_DIR/Halo-Algorithm/OctaveC/tests"
 ``` 
 
 ## Usage
@@ -56,11 +69,16 @@ The first line is for debugging purposes and only needs to be used when a file i
 
 ## Example
 
-Here is an example using one of the MATLAB test files in the folder.
+Here is an example using one of the MATLAB test files in the OctaveC folder.
 
 ```sh
-npx tsc -sourcemap index.ts
-npx ts-node index.ts general_test.m $TS_TRAVERSAL $TS_TRAVERSAL 1 0
+npx ts-node cleanUp.ts areEqual_matrix.m $TS_TRAVERSAL `# Clean up mfile from OctaveC test folder`
+npx ts-node index.ts $TS_TRAVERSAL/generatedCode/areEqual_matrix/areEqual_matrix.m $TEST $TS_TRAVERSAL 1 0 `# Generate C code`
+cd generatedCode/areEqual_matrix `# Change into generated directory`
+make test `# Compile the automatically generated C code`
+make check `# Compile the manually written C code`
+./test `# Compare outputs`
+./check
 ```
 
 Here is a "real life" example using one of the EEGLAB functions. (You can download EEGLAB [here.](https://sccn.ucsd.edu/eeglab/download.php))

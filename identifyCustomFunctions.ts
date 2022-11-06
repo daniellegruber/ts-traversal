@@ -26,7 +26,7 @@ export type CustomFunction = {
     def_node: g.SyntaxNode;
 };
     
-export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order) {
+export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order, debug) {
 
     // Internal functions
     let cursor = tree.walk();
@@ -60,7 +60,7 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
             custom_functions.push(v1);
             break;
         }
-    } while(gotoPreorderSucc(cursor));
+    } while(gotoPreorderSucc(cursor, debug));
     
     // External functions
     cursor = tree.walk();
@@ -81,7 +81,7 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                         file_traversal_order.unshift(match);
                         const functionCode = fs.readFileSync(match, "utf8");
                         let tree2 = parser.parse(functionCode);
-                        [custom_functions, file_traversal_order] = identifyCustomFunctions(tree2, custom_functions, files, match, file_traversal_order);
+                        [custom_functions, file_traversal_order] = identifyCustomFunctions(tree2, custom_functions, files, match, file_traversal_order, debug);
                         
                     }
                 } else {
@@ -93,7 +93,7 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                 break; 
             }
         }
-    } while(gotoPreorderSucc(cursor));
+    } while(gotoPreorderSucc(cursor, debug));
     
     return [custom_functions, file_traversal_order];
 }

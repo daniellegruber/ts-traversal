@@ -4,24 +4,38 @@ import { parseFunctionDefNode } from "./helperFunctions";
 // Tree traversal function
 // -----------------------------------------------------------------------------
 
-export function gotoPreorderSucc(cursor: g.TreeCursor): boolean {
-    //console.log("hello1");
-    //console.log(cursor.currentNode);
+export function gotoPreorderSucc(cursor: g.TreeCursor, debug): boolean {
+    /*if (debug == 1) {
+        console.log("identifyCustomFunctions.ts");
+        console.log(cursor.currentNode);
+    }*/
     if (cursor.gotoFirstChild())
         return true;
     while (!cursor.gotoNextSibling()) {
         if (!cursor.gotoParent()) {
             return false;
         }
+        if (debug == 1) {
+            console.log("identifyCustomFunctions.ts");
+            console.log(cursor.currentNode);
+        }
     }
     return true;
 }
 
-export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
-    //console.log("hello2");
-    //console.log(cursor.currentNode);
+export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor, debug): boolean {
+    /*if (debug == 1) {
+        console.log("generateCode.ts");
+        console.log(cursor.currentNode);
+        console.log(cursor.currentNode.text);
+    }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
+        //case g.SyntaxType.BinaryOperator:
+        //case g.SyntaxType.BooleanOperator:
+        //case g.SyntaxType.ComparisonOperator:
+        //case g.SyntaxType.TransposeOperator:
+        //case g.SyntaxType.UnaryOperator:
         case g.SyntaxType.CallOrSubscript:
         case g.SyntaxType.Comment:
         case g.SyntaxType.ExpressionStatement:
@@ -34,7 +48,11 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
                     return false;
                 }
             }
-            //console.log(cursor.currentNode);
+            if (debug == 1) {
+                console.log("generateCode.ts");
+                console.log(cursor.currentNode);
+                console.log(cursor.currentNode.text);
+            }
             break;
         }
         
@@ -52,10 +70,12 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor): boolean {
     return true;
 }
 
-export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean {
-    //console.log("hello3");
-    //console.log(cursor.currentNode);
-    //console.log(cursor.currentNode.text);
+export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor, debug): boolean {
+    /*if (debug == 1) {
+        console.log("typeInference.ts");
+        console.log(cursor.currentNode);
+        console.log(cursor.currentNode.text);
+    }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         //case g.SyntaxType.CallOrSubscript:
@@ -65,6 +85,11 @@ export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean 
                 if (!cursor.gotoParent()) {
                     return false;
                 }
+                if (debug == 1) {
+                    console.log("typeInference.ts");
+                    console.log(cursor.currentNode);
+                    console.log(cursor.currentNode.text);
+                }
             }
             break;
         }
@@ -72,9 +97,19 @@ export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean 
         default: {
             if (cursor.gotoFirstChild())
                 return true;
+                if (debug == 1) {
+                    console.log("typeInference.ts");
+                    console.log(cursor.currentNode);
+                    console.log(cursor.currentNode.text);
+                }
             while (!cursor.gotoNextSibling()) {
                 if (!cursor.gotoParent()) {
                     return false;
+                }
+                if (debug == 1) {
+                    console.log("typeInference.ts");
+                    console.log(cursor.currentNode);
+                    console.log(cursor.currentNode.text);
                 }
             }
             break;
@@ -83,7 +118,7 @@ export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor): boolean 
     return true;
 }
 
-export function fileIsFunction(tree): boolean {
+export function fileIsFunction(tree, debug): boolean {
     var encountered_code_before = false;
     var encountered_function = false;
     var encountered_code_after = false;
@@ -91,8 +126,11 @@ export function fileIsFunction(tree): boolean {
     do {
         const c = cursor as g.TypedTreeCursor;
         let node = c.currentNode;
-        //console.log("hello4");
-        //console.log(cursor.currentNode);
+        if (debug == 1) {
+            console.log("fileIsFunction");
+            console.log(cursor.currentNode);
+            //console.log(cursor.currentNode.text);
+        }
         switch (node.type) {
             case g.SyntaxType.ERROR:
                 node = parseFunctionDefNode(c.currentNode);
@@ -135,7 +173,7 @@ export function fileIsFunction(tree): boolean {
                 break;
             }
         }    
-    } while(gotoPreorderSucc_SkipFunctionDef(cursor));
+    } while(gotoPreorderSucc_SkipFunctionDef(cursor, debug));
     
     if (!encountered_function || encountered_code_after) {
         return false;
@@ -143,17 +181,21 @@ export function fileIsFunction(tree): boolean {
         return true;
 }
 
-export function findEntryFunction (tree) {
-    if (fileIsFunction(tree)) {
+export function findEntryFunction(tree, debug) {
+    if (fileIsFunction(tree, debug)) {
         let cursor = tree.walk(); 
         do {
             const c = cursor as g.TypedTreeCursor;
             let node = parseFunctionDefNode(c.currentNode);
+            if (debug == 1) {
+                console.log("findEntryFunction");
+                console.log(cursor.currentNode);
+                //console.log(cursor.currentNode.text);
+            }
             if (node != null) {
-                //console.log(node);
                 return node;
             }
-        } while(gotoPreorderSucc(cursor));
+        } while(gotoPreorderSucc(cursor, debug));
     }
     else {
         return null;

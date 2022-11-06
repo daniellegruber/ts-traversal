@@ -50,7 +50,7 @@ type Class = {
 };
 
         
-export function getClasses(src) {
+export function getClasses(src, debug) {
     let folders = getClassFolders(src);
     let classes: Class[] = [];
     // Loop 1
@@ -62,7 +62,7 @@ export function getClasses(src) {
         for (let file of files) {
             let sourceCode = fs.readFileSync(file, "utf8");
             let tree = parser.parse(sourceCode);
-            [methods,] = identifyCustomFunctions(tree, methods, [], file, []);
+            [methods,] = identifyCustomFunctions(tree, methods, [], file, [], debug);
             
         }
         // Placeholder
@@ -81,7 +81,7 @@ export function getClasses(src) {
         let methods = c1.methods;
         for (let file of files) {
             // Update placeholders
-            [, methods] = typeInference(file, methods, classes);
+            [, methods] = typeInference(file, methods, classes, debug);
         }
         const c: Class = {
             name: c1.name,

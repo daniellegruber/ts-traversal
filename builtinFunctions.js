@@ -4,7 +4,7 @@ exports.builtin_functions = exports.operatorMapping = void 0;
 var type_to_matrix_type = [
     { type: "integer", matrix_type: 0 },
     { type: "int", matrix_type: 0 },
-    { type: "float", matrix_type: 1 },
+    { type: "double", matrix_type: 1 },
     { type: "complex", matrix_type: 2 },
     { type: "char", matrix_type: 3 }
 ];
@@ -47,8 +47,8 @@ var binaryOpType = function (left_type, right_type) {
     else if (left_type == 'complex' || right_type == 'complex') {
         return 'complex';
     }
-    else if (left_type == 'float' || right_type == 'float') {
-        return 'float';
+    else if (left_type == 'double' || right_type == 'double') {
+        return 'double';
     }
     else if (left_type == 'bool') {
         return right_type;
@@ -2131,17 +2131,88 @@ exports.builtin_functions = [
                 isstruct: false
             };
         },
-        push_main_before: function (args, arg_types, outs) {
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
             var dim = "{".concat(args.join(", "), "}");
             var ndim = args.length;
             if (args.length == 1) {
                 dim = "{".concat(args[0], ",").concat(args[0], "}");
                 ndim = 2;
             }
-            return "int ndim = ".concat(ndim, ";\nint dim[").concat(ndim, "] = ").concat(dim, ";");
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: "".concat(ndim),
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: "".concat(dim),
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        }
+    },
+    {
+        fun_matlab: 'eye',
+        fun_c: function (arg_types, outs) { return 'identityM'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = [Number(args[0]), Number(args[0])];
+            var ndim = 2;
+            return {
+                type: 'int',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            };
         },
+        push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) {
+            var dim = "{".concat(args[0], ", ").concat(args[0], "}");
+            var ndim = 2;
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: "".concat(ndim),
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: dim,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        }
     },
     {
         fun_matlab: 'strcmp',
@@ -2518,14 +2589,12 @@ exports.builtin_functions = [
             }
         },
         args_transform: function (args, arg_types, outs) {
-            console.log("DISP");
-            console.log(arg_types);
             if (arg_types[0].ismatrix) {
                 return args;
             }
             else {
                 var format = '"\\n%d"';
-                if (arg_types[0].type == 'float') {
+                if (arg_types[0].type == 'double') {
                     format = '"\\n%f"';
                 }
                 else if (arg_types[0].type == 'int') {

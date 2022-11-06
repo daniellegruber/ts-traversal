@@ -4,24 +4,38 @@ exports.findEntryFunction = exports.fileIsFunction = exports.gotoPreorderSucc_Sk
 var helperFunctions_1 = require("./helperFunctions");
 // Tree traversal function
 // -----------------------------------------------------------------------------
-function gotoPreorderSucc(cursor) {
-    //console.log("hello1");
-    //console.log(cursor.currentNode);
+function gotoPreorderSucc(cursor, debug) {
+    /*if (debug == 1) {
+        console.log("identifyCustomFunctions.ts");
+        console.log(cursor.currentNode);
+    }*/
     if (cursor.gotoFirstChild())
         return true;
     while (!cursor.gotoNextSibling()) {
         if (!cursor.gotoParent()) {
             return false;
         }
+        if (debug == 1) {
+            console.log("identifyCustomFunctions.ts");
+            console.log(cursor.currentNode);
+        }
     }
     return true;
 }
 exports.gotoPreorderSucc = gotoPreorderSucc;
-function gotoPreorderSucc_OnlyMajorTypes(cursor) {
-    //console.log("hello2");
-    //console.log(cursor.currentNode);
+function gotoPreorderSucc_OnlyMajorTypes(cursor, debug) {
+    /*if (debug == 1) {
+        console.log("generateCode.ts");
+        console.log(cursor.currentNode);
+        console.log(cursor.currentNode.text);
+    }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
+        //case g.SyntaxType.BinaryOperator:
+        //case g.SyntaxType.BooleanOperator:
+        //case g.SyntaxType.ComparisonOperator:
+        //case g.SyntaxType.TransposeOperator:
+        //case g.SyntaxType.UnaryOperator:
         case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */:
         case "comment" /* g.SyntaxType.Comment */:
         case "expression_statement" /* g.SyntaxType.ExpressionStatement */:
@@ -34,7 +48,11 @@ function gotoPreorderSucc_OnlyMajorTypes(cursor) {
                     return false;
                 }
             }
-            //console.log(cursor.currentNode);
+            if (debug == 1) {
+                console.log("generateCode.ts");
+                console.log(cursor.currentNode);
+                console.log(cursor.currentNode.text);
+            }
             break;
         }
         default: {
@@ -51,10 +69,12 @@ function gotoPreorderSucc_OnlyMajorTypes(cursor) {
     return true;
 }
 exports.gotoPreorderSucc_OnlyMajorTypes = gotoPreorderSucc_OnlyMajorTypes;
-function gotoPreorderSucc_SkipFunctionDef(cursor) {
-    //console.log("hello3");
-    //console.log(cursor.currentNode);
-    //console.log(cursor.currentNode.text);
+function gotoPreorderSucc_SkipFunctionDef(cursor, debug) {
+    /*if (debug == 1) {
+        console.log("typeInference.ts");
+        console.log(cursor.currentNode);
+        console.log(cursor.currentNode.text);
+    }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
         //case g.SyntaxType.CallOrSubscript:
@@ -64,15 +84,30 @@ function gotoPreorderSucc_SkipFunctionDef(cursor) {
                 if (!cursor.gotoParent()) {
                     return false;
                 }
+                if (debug == 1) {
+                    console.log("typeInference.ts");
+                    console.log(cursor.currentNode);
+                    console.log(cursor.currentNode.text);
+                }
             }
             break;
         }
         default: {
             if (cursor.gotoFirstChild())
                 return true;
+            if (debug == 1) {
+                console.log("typeInference.ts");
+                console.log(cursor.currentNode);
+                console.log(cursor.currentNode.text);
+            }
             while (!cursor.gotoNextSibling()) {
                 if (!cursor.gotoParent()) {
                     return false;
+                }
+                if (debug == 1) {
+                    console.log("typeInference.ts");
+                    console.log(cursor.currentNode);
+                    console.log(cursor.currentNode.text);
                 }
             }
             break;
@@ -81,7 +116,7 @@ function gotoPreorderSucc_SkipFunctionDef(cursor) {
     return true;
 }
 exports.gotoPreorderSucc_SkipFunctionDef = gotoPreorderSucc_SkipFunctionDef;
-function fileIsFunction(tree) {
+function fileIsFunction(tree, debug) {
     var encountered_code_before = false;
     var encountered_function = false;
     var encountered_code_after = false;
@@ -89,8 +124,11 @@ function fileIsFunction(tree) {
     do {
         var c = cursor;
         var node = c.currentNode;
-        //console.log("hello4");
-        //console.log(cursor.currentNode);
+        if (debug == 1) {
+            console.log("fileIsFunction");
+            console.log(cursor.currentNode);
+            //console.log(cursor.currentNode.text);
+        }
         switch (node.type) {
             case "ERROR" /* g.SyntaxType.ERROR */:
                 node = (0, helperFunctions_1.parseFunctionDefNode)(c.currentNode);
@@ -136,7 +174,7 @@ function fileIsFunction(tree) {
                 break;
             }
         }
-    } while (gotoPreorderSucc_SkipFunctionDef(cursor));
+    } while (gotoPreorderSucc_SkipFunctionDef(cursor, debug));
     if (!encountered_function || encountered_code_after) {
         return false;
     }
@@ -144,17 +182,21 @@ function fileIsFunction(tree) {
         return true;
 }
 exports.fileIsFunction = fileIsFunction;
-function findEntryFunction(tree) {
-    if (fileIsFunction(tree)) {
+function findEntryFunction(tree, debug) {
+    if (fileIsFunction(tree, debug)) {
         var cursor = tree.walk();
         do {
             var c = cursor;
             var node = (0, helperFunctions_1.parseFunctionDefNode)(c.currentNode);
+            if (debug == 1) {
+                console.log("findEntryFunction");
+                console.log(cursor.currentNode);
+                //console.log(cursor.currentNode.text);
+            }
             if (node != null) {
-                //console.log(node);
                 return node;
             }
-        } while (gotoPreorderSucc(cursor));
+        } while (gotoPreorderSucc(cursor, debug));
     }
     else {
         return null;

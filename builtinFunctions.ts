@@ -9,7 +9,7 @@ type typeToMatrixType = {
 const type_to_matrix_type: typeToMatrixType[] = [
     {type: "integer", matrix_type: 0},
     {type: "int", matrix_type: 0},
-    {type: "float", matrix_type: 1},
+    {type: "double", matrix_type: 1},
     {type: "complex", matrix_type: 2},
     {type: "char", matrix_type: 3}
 ];
@@ -76,8 +76,8 @@ const binaryOpType = (left_type, right_type) => {
         return left_type;
     } else if (left_type == 'complex' || right_type == 'complex') {
         return 'complex';
-    } else if (left_type == 'float' || right_type == 'float') {
-        return 'float';
+    } else if (left_type == 'double' || right_type == 'double') {
+        return 'double';
     } else if (left_type == 'bool') {
         return right_type;
     } else if (right_type == 'bool') {
@@ -115,7 +115,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
 
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -154,7 +154,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -278,7 +278,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
@@ -333,7 +333,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
@@ -372,7 +372,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -411,7 +411,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -450,7 +450,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -489,7 +489,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -528,7 +528,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -567,7 +567,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -606,7 +606,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -645,7 +645,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -684,7 +684,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -723,7 +723,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -762,7 +762,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -801,7 +801,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -840,7 +840,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: 'bool', // create function to get types giving precedence to complex, float, then int
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -871,7 +871,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -902,7 +902,7 @@ export const operatorMapping: functionMapping[] = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1148,7 +1148,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1458,7 +1458,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1489,7 +1489,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1520,7 +1520,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1551,7 +1551,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1582,7 +1582,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1613,7 +1613,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1644,7 +1644,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -2214,17 +2214,91 @@ export const builtin_functions = [
                 isstruct: false 
             };
         },
-        push_main_before: (args, arg_types, outs) => {
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
             let dim = `{${args.join(", ")}}`;
             let ndim = args.length;
             if (args.length == 1) {
                 dim = `{${args[0]},${args[0]}}`;
                 ndim = 2;
             }
-            return `int ndim = ${ndim};\nint dim[${ndim}] = ${dim};`;
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: 'ndim',
+                val: `${ndim}`,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'dim',
+                val: `${dim}`,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            })
+            return init_var;
+        }
+    },
+    { // Matrix * identityM(int size)
+        fun_matlab: 'eye', 
+        fun_c: (arg_types, outs) => 'identityM', 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs,
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            var dim = [Number(args[0]), Number(args[0])];
+            var ndim = 2;
+            
+            return {
+                type: 'int',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false 
+            };
         },
+        push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null
+        init_before: (args, arg_types, outs) => {
+            let dim = `{${args[0]}, ${args[0]}}`;
+            let ndim = 2;
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: 'ndim',
+                val: `${ndim}`,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'dim',
+                val: dim,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            })
+            return init_var;
+        }
     },
     { // int strcmp(const char* str1, const char* str2)
         fun_matlab: 'strcmp', 
@@ -2458,7 +2532,7 @@ export const builtin_functions = [
             let right_dim = arg_types[1].dim;
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, float, then int
+                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -2605,13 +2679,11 @@ export const builtin_functions = [
             }
         }, 
         args_transform: (args, arg_types, outs) => {
-            console.log("DISP");
-            console.log(arg_types);
             if (arg_types[0].ismatrix) {
                 return args;
             } else {
                 let format = '"\\n%d"';
-                if (arg_types[0].type == 'float') {
+                if (arg_types[0].type == 'double') {
                     format = '"\\n%f"';
                 } else if (arg_types[0].type == 'int') {
                     format = '"\\n%d"';

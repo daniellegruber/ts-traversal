@@ -14,33 +14,33 @@ int main(void)
 //format short
 //source octaveIncludes.m;
 
-int ndim = 2;
-int dim[2] = {2,2};
-Matrix * a = createM(ndim, dim, 0);
-int *tmp1 = NULL;
-tmp1 = malloc( 4*sizeof(*tmp1));
-tmp1[0] = 1;
-tmp1[1] = 4;
-tmp1[2] = 9;
-tmp1[3] = 16;
-writeM( a, 4, tmp1);
-free(tmp1);
+int ndim1 = 2;
+int dim1[2] = {2,2};
+Matrix * a = createM(ndim1, dim1, 0);
+int *input1 = NULL;
+input1 = malloc( 4*sizeof(*input1));
+input1[0] = 1;
+input1[1] = 4;
+input1[2] = 9;
+input1[3] = 16;
+writeM( a, 4, input1);
+free(input1);
 
 
-ndim = 2;
-dim[2] = {2,2};
-Matrix * b = createM(ndim, dim, 2);
-complex *tmp2 = NULL;
-tmp2 = malloc( 4*sizeof(*tmp2));
-tmp2[0] = 2.1+0.5i;
-tmp2[1] = 0;
-tmp2[2] = 0;
-tmp2[3] = 2.1+0.5i;
-writeM( b, 4, tmp2);
-free(tmp2);
+int ndim2 = 2;
+int dim2[2] = {2,2};
+Matrix * b = createM(ndim2, dim2, 2);
+complex *input2 = NULL;
+input2 = malloc( 4*sizeof(*input2));
+input2[0] = 2.1+0.5i;
+input2[1] = 0;
+input2[2] = 0;
+input2[3] = 2.1+0.5i;
+writeM( b, 4, input2);
+free(input2);
 
-Matrix * tmp3 = mtimesM(b, a)
-Matrix * c = tmp3;
+Matrix * tmp1 = mtimesM(b, a);
+Matrix * c = tmp1;
 printM(a);
 printM(b);
 printM(c);

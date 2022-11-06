@@ -45,7 +45,7 @@ function getClassFolders(src) {
 }
 exports.getClassFolders = getClassFolders;
 ;
-function getClasses(src) {
+function getClasses(src, debug) {
     var _a;
     var folders = getClassFolders(src);
     var classes = [];
@@ -59,7 +59,7 @@ function getClasses(src) {
             var file = files_1[_b];
             var sourceCode = fs.readFileSync(file, "utf8");
             var tree = parser.parse(sourceCode);
-            methods = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, methods, [], file, [])[0];
+            methods = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, methods, [], file, [], debug)[0];
         }
         // Placeholder
         var c = {
@@ -78,7 +78,7 @@ function getClasses(src) {
         for (var _d = 0, files_2 = files; _d < files_2.length; _d++) {
             var file = files_2[_d];
             // Update placeholders
-            _a = (0, typeInference_1.typeInference)(file, methods, classes), methods = _a[1];
+            _a = (0, typeInference_1.typeInference)(file, methods, classes, debug), methods = _a[1];
         }
         var c = {
             name: c1.name,

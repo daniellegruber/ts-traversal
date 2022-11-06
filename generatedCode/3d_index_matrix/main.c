@@ -26,10 +26,10 @@ double* lhs_data1 = (double *)data1;
 
 for (int k =  1; k <= 5; ++ k) {
 
-for (int i =  1; i <= 2; ++ i) {
-
 for (int j =  1; j <= 3; ++ j) {
-float tmp4 = counter * counter + 0.5;
+
+for (int i =  1; i <= 2; ++ i) {
+double tmp4 = counter * counter + 0.5;
 lhs_data1[(k-1) * 2 * 3 + (j-1) * 2 + (i - 1)] = tmp4;
 counter = counter + 1;
 
@@ -101,7 +101,7 @@ void *data2 = getdataM(a);
 double* lhs_data2 = (double *)data2;
 
 for (int i =  1; i <= 30; ++ i) {
-float tmp27 = counter * counter + 0.5;
+double tmp27 = counter * counter + 0.5;
 lhs_data2[i] = tmp27;
 counter = counter + 1;
 

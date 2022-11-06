@@ -26,6 +26,6 @@ d = c+c;
 disp(d);
 
 % overflowTest
-%d = INT_MAX*eye(3)+eye(3);
-%disp(d);
+d = INT_MAX*eye(3)+eye(3);
+disp(d);
 

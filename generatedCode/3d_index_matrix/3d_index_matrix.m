@@ -13,8 +13,8 @@ counter = 0;
 % Note that in Octave, the i (row) loop is outside the j (column) loop. this is
 % because Octave is natively column-major, so we must assign carefully.
 for k=1:5
-	for i=1:2
-		for j=1:3
+	for j=1:3
+		for i=1:2
 			a(i,j,k) = counter*counter + 0.5;
 			counter = counter + 1;
 		end

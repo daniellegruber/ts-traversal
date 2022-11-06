@@ -8,7 +8,7 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
-function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order) {
+function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order, debug) {
     // Internal functions
     var cursor = tree.walk();
     do {
@@ -41,7 +41,7 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
             custom_functions.push(v1);
             break;
         }
-    } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor));
+    } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
     // External functions
     cursor = tree.walk();
     var _loop_1 = function () {
@@ -62,7 +62,7 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                         file_traversal_order.unshift(match);
                         var functionCode = fs.readFileSync(match, "utf8");
                         var tree2 = parser.parse(functionCode);
-                        _b = identifyCustomFunctions(tree2, custom_functions, files, match, file_traversal_order), custom_functions = _b[0], file_traversal_order = _b[1];
+                        _b = identifyCustomFunctions(tree2, custom_functions, files, match, file_traversal_order, debug), custom_functions = _b[0], file_traversal_order = _b[1];
                     }
                 }
                 else {
@@ -77,7 +77,7 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
     };
     do {
         _loop_1();
-    } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor));
+    } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
     return [custom_functions, file_traversal_order];
 }
 exports.identifyCustomFunctions = identifyCustomFunctions;

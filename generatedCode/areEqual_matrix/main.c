@@ -14,241 +14,173 @@ int main(void)
 //format short
 //source octaveIncludes.m;
 // trueTest
-int ndim = 2;
-int dim[2] = {3,3};
-Matrix * a = zerosM(ndim, dim);
-void *data = getdataM(a);
-double* lhs_data = (double *)data;
+int ndim1 = 2;
+int dim1[2] = {3,3};
+Matrix * a = zerosM(ndim1, dim1);
+void *data1 = getdataM(a);
+double* lhs_data1 = (double *)data1;
 
-int i;
-for (i =  1; i <= 9; ++ i) {
-int tmp2 = i * i;
-lhs_data[i] = tmp2;
+for (int i =  1; i <= 9; ++ i) {
+double tmp2;
+indexM(a, &tmp2, 1, i);
+tmp2 = i * i;
+lhs_data1[i] = tmp2;
 
 }
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
+int size1 = 1;
+for (int iter1 = 0 ; iter1 < ndim1; iter1++)
 {
-	size *= dim[i];
+	size1 *= dim1[iter1];
 }
-Matrix *tmp5 = createM(ndim, dim, DOUBLE);
-writeM(tmp5, size, lhs_data);
-printM(tmp5);
-Matrix * tmp6 = transposeM(tmp5)
-Matrix * tmp5 = tmp6;
-printM(tmp5);
-Matrix * b = tmp5;
-printM(b);
-Matrix * c = tmp5;
-printM(c);
-Matrix * d = tmp5;
-printM(d);
-Matrix * tmp13 = equalM(tmp5, b)
-Matrix * tmp14 = equalM(tmp5, b)
-Matrix * tmp15 = equalM(tmp5, c)
-Matrix * tmp16 = equalM(tmp5, c)
-Matrix * tmp17 = equalM(tmp5, b)
-Matrix * tmp18 = equalM(tmp5, c)
-Matrix * tmp20 = equalM(tmp5, b)
-Matrix * tmp21 = equalM(tmp5, b)
-Matrix * tmp22 = equalM(tmp5, c)
-Matrix * tmp23 = equalM(tmp5, c)
-Matrix * tmp24 = equalM(tmp5, b)
-Matrix * tmp25 = equalM(tmp5, c)
-Matrix * tmp26 = equalM(tmp5, d)
-Matrix * tmp27 = equalM(tmp5, d)
-Matrix * tmp29 = equalM(tmp5, b)
-Matrix * tmp30 = equalM(tmp5, b)
-Matrix * tmp31 = equalM(tmp5, c)
-Matrix * tmp32 = equalM(tmp5, c)
-Matrix * tmp33 = equalM(tmp5, b)
-Matrix * tmp34 = equalM(tmp5, c)
-Matrix * tmp35 = equalM(tmp5, d)
-Matrix * tmp38 = equalM(tmp5, b)
-Matrix * tmp39 = equalM(tmp5, b)
-Matrix * tmp40 = equalM(tmp5, c)
-Matrix * tmp41 = equalM(tmp5, c)
-Matrix * tmp42 = equalM(tmp5, b)
-Matrix * tmp43 = equalM(tmp5, c)
-Matrix * tmp45 = equalM(tmp5, b)
-Matrix * tmp46 = equalM(tmp5, b)
-Matrix * tmp47 = equalM(tmp5, c)
-Matrix * tmp48 = equalM(tmp5, c)
-Matrix * tmp49 = equalM(tmp5, b)
-Matrix * tmp50 = equalM(tmp5, c)
-Matrix * tmp51 = equalM(tmp5, d)
-Matrix * tmp52 = equalM(tmp5, d)
-Matrix * tmp54 = equalM(tmp5, b)
-Matrix * tmp55 = equalM(tmp5, b)
-Matrix * tmp56 = equalM(tmp5, c)
-Matrix * tmp57 = equalM(tmp5, c)
-Matrix * tmp58 = equalM(tmp5, b)
-Matrix * tmp59 = equalM(tmp5, c)
-Matrix * tmp60 = equalM(tmp5, d)
-printf("\n%d", (tmp58) & (tmp59) & (tmp60));
+Matrix *mat1 = createM(ndim1, dim1, DOUBLE);
+writeM(mat1, size1, lhs_data1);
+Matrix * mat2 = transposeM(mat1);
+a = mat2;
+printM(mat2);
+Matrix * b = mat2;
+printM(mat2);
+Matrix * c = mat2;
+printM(mat2);
+Matrix * d = mat2;
+printM(mat2);
+Matrix * mat3 = equalM(mat2, mat2);
+Matrix * mat4 = equalM(mat2, mat2);
+Matrix * mat5 = andM((mat3), (mat4));
+Matrix * mat6 = equalM(mat2, mat2);
+Matrix * mat7 = andM(mat5, (mat6));
+printM(mat7);
 // falseTest
-printM(tmp5);
-printM(b);
-int ndim = 2;
-int dim[2] = {3,3};
-c = zerosM(ndim, dim);
-void *data = getdataM(c);
-double* lhs_data = (double *)data;
+printM(mat2);
+printM(mat2);
+int ndim2 = 2;
+int dim2[2] = {3,3};
+c = zerosM(ndim2, dim2);
+void *data2 = getdataM(c);
+double* lhs_data2 = (double *)data2;
 
-int i;
-for (i =  1; i <= 9; ++ i) {
-int tmp65 = i * i;
-lhs_data[i] = tmp65;
-
-}
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
-{
-	size *= dim[i];
-}
-Matrix *tmp68 = createM(ndim, dim, DOUBLE);
-writeM(tmp68, size, lhs_data);
-printM(tmp68);
-int tmp69 = 10;
-void *data = getdataM(c);
-double* lhs_data = (double *)data;
-lhs_data[2] = tmp69;
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
-{
-	size *= dim[i];
-}
-Matrix *tmp70 = createM(ndim, dim, DOUBLE);
-writeM(tmp70, size, lhs_data);
-printM(tmp70);
-int tmp71 = 11;
-void *data = getdataM(c);
-double* lhs_data = (double *)data;
-lhs_data[3] = tmp71;
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
-{
-	size *= dim[i];
-}
-Matrix *tmp72 = createM(ndim, dim, DOUBLE);
-writeM(tmp72, size, lhs_data);
-printM(tmp72);
-int tmp73 = 12;
-void *data = getdataM(c);
-double* lhs_data = (double *)data;
-lhs_data[6] = tmp73;
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
-{
-	size *= dim[i];
-}
-Matrix *tmp74 = createM(ndim, dim, DOUBLE);
-writeM(tmp74, size, lhs_data);
-printM(tmp74);
-Matrix * tmp75 = transposeM(tmp68)
-Matrix * tmp68 = tmp75;
-printM(tmp68);
-int ndim = 2;
-int dim[2] = {3,3};
-d = zerosM(ndim, dim);
-void *data = getdataM(d);
-double* lhs_data = (double *)data;
-
-int i;
-for (i =  1; i <= 9; ++ i) {
-int tmp78 = i * i;
-lhs_data[i] = tmp78;
+for (int i =  1; i <= 9; ++ i) {
+double tmp11;
+indexM(mat2, &tmp11, 1, i);
+tmp11 = i * i;
+lhs_data2[i] = tmp11;
 
 }
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
+int size2 = 1;
+for (int iter2 = 0 ; iter2 < ndim2; iter2++)
 {
-	size *= dim[i];
+	size2 *= dim2[iter2];
 }
-Matrix *tmp81 = createM(ndim, dim, DOUBLE);
-writeM(tmp81, size, lhs_data);
-printM(tmp81);
-int tmp82 = 13;
-void *data = getdataM(d);
-double* lhs_data = (double *)data;
-lhs_data[4] = tmp82;
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
+Matrix *mat8 = createM(ndim2, dim2, DOUBLE);
+writeM(mat8, size2, lhs_data2);
+double tmp12;
+indexM(mat8, &tmp12, 1, 2);
+tmp12 = 10;
+void *data3 = getdataM(c);
+double* lhs_data3 = (double *)data3;
+lhs_data3[2] = tmp12;
+int size3 = 1;
+for (int iter3 = 0 ; iter3 < ndim2; iter3++)
 {
-	size *= dim[i];
+	size3 *= dim2[iter3];
 }
-Matrix *tmp83 = createM(ndim, dim, DOUBLE);
-writeM(tmp83, size, lhs_data);
-printM(tmp83);
-int tmp84 = 14;
-void *data = getdataM(d);
-double* lhs_data = (double *)data;
-lhs_data[7] = tmp84;
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
+Matrix *mat9 = createM(ndim2, dim2, DOUBLE);
+writeM(mat9, size3, lhs_data3);
+double tmp13;
+indexM(mat9, &tmp13, 1, 3);
+tmp13 = 11;
+void *data4 = getdataM(c);
+double* lhs_data4 = (double *)data4;
+lhs_data4[3] = tmp13;
+int size4 = 1;
+for (int iter4 = 0 ; iter4 < ndim2; iter4++)
 {
-	size *= dim[i];
+	size4 *= dim2[iter4];
 }
-Matrix *tmp85 = createM(ndim, dim, DOUBLE);
-writeM(tmp85, size, lhs_data);
-printM(tmp85);
-int tmp86 = 15;
-void *data = getdataM(d);
-double* lhs_data = (double *)data;
-lhs_data[8] = tmp86;
-int size = 1;
-for (int i = 0 ; i < ndim ; i++)
+Matrix *mat10 = createM(ndim2, dim2, DOUBLE);
+writeM(mat10, size4, lhs_data4);
+double tmp14;
+indexM(mat10, &tmp14, 1, 6);
+tmp14 = 12;
+void *data5 = getdataM(c);
+double* lhs_data5 = (double *)data5;
+lhs_data5[6] = tmp14;
+int size5 = 1;
+for (int iter5 = 0 ; iter5 < ndim2; iter5++)
 {
-	size *= dim[i];
+	size5 *= dim2[iter5];
 }
-Matrix *tmp87 = createM(ndim, dim, DOUBLE);
-writeM(tmp87, size, lhs_data);
-printM(tmp87);
-Matrix * tmp88 = transposeM(tmp81)
-Matrix * tmp81 = tmp88;
-printM(tmp81);
-Matrix * tmp92 = equalM(tmp5, b)
-Matrix * tmp93 = equalM(tmp5, b)
-Matrix * tmp94 = equalM(tmp5, tmp68)
-Matrix * tmp95 = equalM(tmp5, tmp68)
-Matrix * tmp96 = equalM(tmp5, b)
-Matrix * tmp97 = equalM(tmp5, tmp68)
-Matrix * tmp99 = equalM(tmp5, b)
-Matrix * tmp100 = equalM(tmp5, b)
-Matrix * tmp101 = equalM(tmp5, tmp68)
-Matrix * tmp102 = equalM(tmp5, tmp68)
-Matrix * tmp103 = equalM(tmp5, b)
-Matrix * tmp104 = equalM(tmp5, tmp68)
-Matrix * tmp105 = equalM(tmp5, tmp81)
-Matrix * tmp106 = equalM(tmp5, tmp81)
-Matrix * tmp108 = equalM(tmp5, b)
-Matrix * tmp109 = equalM(tmp5, b)
-Matrix * tmp110 = equalM(tmp5, tmp68)
-Matrix * tmp111 = equalM(tmp5, tmp68)
-Matrix * tmp112 = equalM(tmp5, b)
-Matrix * tmp113 = equalM(tmp5, tmp68)
-Matrix * tmp114 = equalM(tmp5, tmp81)
-Matrix * tmp117 = equalM(tmp5, b)
-Matrix * tmp118 = equalM(tmp5, b)
-Matrix * tmp119 = equalM(tmp5, tmp68)
-Matrix * tmp120 = equalM(tmp5, tmp68)
-Matrix * tmp121 = equalM(tmp5, b)
-Matrix * tmp122 = equalM(tmp5, tmp68)
-Matrix * tmp124 = equalM(tmp5, b)
-Matrix * tmp125 = equalM(tmp5, b)
-Matrix * tmp126 = equalM(tmp5, tmp68)
-Matrix * tmp127 = equalM(tmp5, tmp68)
-Matrix * tmp128 = equalM(tmp5, b)
-Matrix * tmp129 = equalM(tmp5, tmp68)
-Matrix * tmp130 = equalM(tmp5, tmp81)
-Matrix * tmp131 = equalM(tmp5, tmp81)
-Matrix * tmp133 = equalM(tmp5, b)
-Matrix * tmp134 = equalM(tmp5, b)
-Matrix * tmp135 = equalM(tmp5, tmp68)
-Matrix * tmp136 = equalM(tmp5, tmp68)
-Matrix * tmp137 = equalM(tmp5, b)
-Matrix * tmp138 = equalM(tmp5, tmp68)
-Matrix * tmp139 = equalM(tmp5, tmp81)
-printf("\n%d", (tmp137) & (tmp138) & (tmp139));
+Matrix *mat11 = createM(ndim2, dim2, DOUBLE);
+writeM(mat11, size5, lhs_data5);
+Matrix * mat12 = transposeM(mat11);
+c = mat12;
+printM(mat12);
+int ndim3 = 2;
+int dim3[2] = {3,3};
+d = zerosM(ndim3, dim3);
+void *data6 = getdataM(d);
+double* lhs_data6 = (double *)data6;
+
+for (int i =  1; i <= 9; ++ i) {
+double tmp17;
+indexM(mat2, &tmp17, 1, i);
+tmp17 = i * i;
+lhs_data6[i] = tmp17;
+
+}
+int size6 = 1;
+for (int iter6 = 0 ; iter6 < ndim3; iter6++)
+{
+	size6 *= dim3[iter6];
+}
+Matrix *mat13 = createM(ndim3, dim3, DOUBLE);
+writeM(mat13, size6, lhs_data6);
+double tmp18;
+indexM(mat13, &tmp18, 1, 4);
+tmp18 = 13;
+void *data7 = getdataM(d);
+double* lhs_data7 = (double *)data7;
+lhs_data7[4] = tmp18;
+int size7 = 1;
+for (int iter7 = 0 ; iter7 < ndim3; iter7++)
+{
+	size7 *= dim3[iter7];
+}
+Matrix *mat14 = createM(ndim3, dim3, DOUBLE);
+writeM(mat14, size7, lhs_data7);
+double tmp19;
+indexM(mat14, &tmp19, 1, 7);
+tmp19 = 14;
+void *data8 = getdataM(d);
+double* lhs_data8 = (double *)data8;
+lhs_data8[7] = tmp19;
+int size8 = 1;
+for (int iter8 = 0 ; iter8 < ndim3; iter8++)
+{
+	size8 *= dim3[iter8];
+}
+Matrix *mat15 = createM(ndim3, dim3, DOUBLE);
+writeM(mat15, size8, lhs_data8);
+double tmp20;
+indexM(mat15, &tmp20, 1, 8);
+tmp20 = 15;
+void *data9 = getdataM(d);
+double* lhs_data9 = (double *)data9;
+lhs_data9[8] = tmp20;
+int size9 = 1;
+for (int iter9 = 0 ; iter9 < ndim3; iter9++)
+{
+	size9 *= dim3[iter9];
+}
+Matrix *mat16 = createM(ndim3, dim3, DOUBLE);
+writeM(mat16, size9, lhs_data9);
+Matrix * mat17 = transposeM(mat16);
+d = mat17;
+printM(mat17);
+Matrix * mat18 = equalM(mat2, mat2);
+Matrix * mat19 = equalM(mat2, mat12);
+Matrix * mat20 = andM((mat18), (mat19));
+Matrix * mat21 = equalM(mat2, mat17);
+Matrix * mat22 = andM(mat20, (mat21));
+printM(mat22);
 return 0;
 }

@@ -477,6 +477,7 @@ generateCode.ts
 | create_one_matrix  | Yes  |   |
 | create_identity_matrix  | Yes  |   |
 | ci_matrix_multiplication  | Yes  |   |
+| cc_matrix_multiplication  | Yes  |   |
 | 3d_index_matrix  | No  | Created matrix itself seems to be correct, indexing seems to be off.  |
 | areEqual_matrix  | No  | Indexing seems to be off.  |
 

@@ -130,13 +130,19 @@ export const operatorMapping: functionMapping[] = [
     { // Matrix * minusM(Matrix *m, Matrix *n)
         fun_matlab: '-', 
         fun_c: (arg_types, outs) => {
-            let left_ismatrix = arg_types[0].ismatrix;
-            let right_ismatrix = arg_types[1].ismatrix;
-            if (left_ismatrix && right_ismatrix) {
-                return 'minusM';
-            } else {
+            
+            if (arg_types.length == 1) {
                 return null;
+            } else {
+                let left_ismatrix = arg_types[0].ismatrix;
+                let right_ismatrix = arg_types[1].ismatrix;
+                if (left_ismatrix && right_ismatrix) {
+                    return 'minusM';
+                } else {
+                    return null;
+                }
             }
+            
         },  
         args_transform: (args, arg_types, outs) => args,
         outs_transform: (outs) => outs,
@@ -146,21 +152,32 @@ export const operatorMapping: functionMapping[] = [
         ptr_args: (arg_types, outs) => null,
         
         return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
-            return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                ispointer: true,
-                isstruct: false 
-            };
+            if (arg_types.length == 1) {
+                return {
+                    type: arg_types[0].type,
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: arg_types[0].ismatrix,
+                    ispointer: arg_types[0].ispointer,
+                    isstruct: false 
+                };
+            } else {
+                let left_type = arg_types[0].type;
+                let left_ndim = arg_types[0].ndim;
+                let left_dim = arg_types[0].dim;
+                let right_type = arg_types[1].type;
+                let right_ndim = arg_types[1].ndim;
+                let right_dim = arg_types[1].dim;
+                
+                return {
+                    type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: true,
+                    ispointer: true,
+                    isstruct: false 
+                };
+            }
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
@@ -255,12 +272,14 @@ export const operatorMapping: functionMapping[] = [
             
             if (left_ismatrix && right_ismatrix) {
                 return args;
-            } else {
+            } else if (left_ismatrix && !right_ismatrix) {
                 let left_type = arg_types[0].type;
                 let right_type = arg_types[1].type;
                 let type = binaryOpType(left_type, right_type);
                 let obj = type_to_matrix_type.find(x => x.type === type);
                 return [args[0], `1/(${args[1]})`, obj.matrix_type.toString()];
+            } else {
+                return args;
             }
         },
 		outs_transform: (outs) => outs,
@@ -919,7 +938,7 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (arg_types, outs) => null, 
         args_transform: (args, arg_types, outs) => args,
         outs_transform: (outs) => outs,
-        n_req_args: 2,
+        n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
@@ -947,7 +966,7 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (arg_types, outs) => null, 
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (outs) => outs,
-        n_req_args: 2,
+        n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
@@ -982,7 +1001,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (outs) => outs,
-        n_req_args: 2,
+        n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
@@ -2716,5 +2735,119 @@ export const builtin_functions = [
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null
-    }
+    },
+    { // Matrix * fftM(Matrix* restrict m)
+        fun_matlab: 'fft', 
+        fun_c: (arg_types, outs) => 'fftM', 
+        args_transform: (args, arg_types, outs) => [args[0]],
+		outs_transform: (outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            
+            let dim = arg_types[0].dim;
+            let ndim = arg_types[0].ndim;
+            
+            if (args.length == 2) {
+                console.log("WARNING: fftM dimensions adjusted")
+            }
+            
+            return {
+                type: 'float',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            let dim = arg_types[0].dim;
+            let ndim = arg_types[0].ndim;
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'dim',
+                val: `{${dim}}`,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            })
+            return init_var;
+        }
+    },
+    { // Matrix * ifftM(Matrix* restrict m)
+        fun_matlab: 'ifft', 
+        fun_c: (arg_types, outs) => 'ifftM', 
+        args_transform: (args, arg_types, outs) => [args[0]],
+		outs_transform: (outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            
+            let dim = arg_types[0].dim;
+            let ndim = arg_types[0].ndim;
+            
+            if (args.length == 2) {
+                console.log("WARNING: ifftM dimensions adjusted")
+            }
+            
+            return {
+                type: 'float',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            let dim = arg_types[0].dim;
+            let ndim = arg_types[0].ndim;
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'dim',
+                val: `{${dim}}`,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            })
+            return init_var;
+        }
+    },
 ];

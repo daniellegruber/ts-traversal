@@ -102,13 +102,18 @@ exports.operatorMapping = [
     {
         fun_matlab: '-',
         fun_c: function (arg_types, outs) {
-            var left_ismatrix = arg_types[0].ismatrix;
-            var right_ismatrix = arg_types[1].ismatrix;
-            if (left_ismatrix && right_ismatrix) {
-                return 'minusM';
+            if (arg_types.length == 1) {
+                return null;
             }
             else {
-                return null;
+                var left_ismatrix = arg_types[0].ismatrix;
+                var right_ismatrix = arg_types[1].ismatrix;
+                if (left_ismatrix && right_ismatrix) {
+                    return 'minusM';
+                }
+                else {
+                    return null;
+                }
             }
         },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -118,20 +123,32 @@ exports.operatorMapping = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var left_type = arg_types[0].type;
-            var left_ndim = arg_types[0].ndim;
-            var left_dim = arg_types[0].dim;
-            var right_type = arg_types[1].type;
-            var right_ndim = arg_types[1].ndim;
-            var right_dim = arg_types[1].dim;
-            return {
-                type: binaryOpType(left_type, right_type),
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                ispointer: true,
-                isstruct: false
-            };
+            if (arg_types.length == 1) {
+                return {
+                    type: arg_types[0].type,
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: arg_types[0].ismatrix,
+                    ispointer: arg_types[0].ispointer,
+                    isstruct: false
+                };
+            }
+            else {
+                var left_type = arg_types[0].type;
+                var left_ndim = arg_types[0].ndim;
+                var left_dim = arg_types[0].dim;
+                var right_type = arg_types[1].type;
+                var right_ndim = arg_types[1].ndim;
+                var right_dim = arg_types[1].dim;
+                return {
+                    type: binaryOpType(left_type, right_type),
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: true,
+                    ispointer: true,
+                    isstruct: false
+                };
+            }
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
@@ -227,12 +244,15 @@ exports.operatorMapping = [
             if (left_ismatrix && right_ismatrix) {
                 return args;
             }
-            else {
+            else if (left_ismatrix && !right_ismatrix) {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
                 var type_2 = binaryOpType(left_type, right_type);
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_2; });
                 return [args[0], "1/(".concat(args[1], ")"), obj.matrix_type.toString()];
+            }
+            else {
+                return args;
             }
         },
         outs_transform: function (outs) { return outs; },
@@ -871,7 +891,7 @@ exports.operatorMapping = [
         fun_c: function (arg_types, outs) { return null; },
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
-        n_req_args: 2,
+        n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
@@ -897,7 +917,7 @@ exports.operatorMapping = [
         fun_c: function (arg_types, outs) { return null; },
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
-        n_req_args: 2,
+        n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
@@ -931,7 +951,7 @@ exports.operatorMapping = [
         },
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
-        n_req_args: 2,
+        n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
@@ -2629,6 +2649,112 @@ exports.builtin_functions = [
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; }
-    }
+    },
+    {
+        fun_matlab: 'fft',
+        fun_c: function (arg_types, outs) { return 'fftM'; },
+        args_transform: function (args, arg_types, outs) { return [args[0]]; },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = arg_types[0].dim;
+            var ndim = arg_types[0].ndim;
+            if (args.length == 2) {
+                console.log("WARNING: fftM dimensions adjusted");
+            }
+            return {
+                type: 'float',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = arg_types[0].dim;
+            var ndim = arg_types[0].ndim;
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: "{".concat(dim, "}"),
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        }
+    },
+    {
+        fun_matlab: 'ifft',
+        fun_c: function (arg_types, outs) { return 'ifftM'; },
+        args_transform: function (args, arg_types, outs) { return [args[0]]; },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = arg_types[0].dim;
+            var ndim = arg_types[0].ndim;
+            if (args.length == 2) {
+                console.log("WARNING: ifftM dimensions adjusted");
+            }
+            return {
+                type: 'float',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = arg_types[0].dim;
+            var ndim = arg_types[0].ndim;
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: "{".concat(dim, "}"),
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        }
+    },
 ];
 //# sourceMappingURL=builtinFunctions.js.map

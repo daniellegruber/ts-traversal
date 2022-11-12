@@ -73,6 +73,10 @@ if (!fs.existsSync(`${out_folder}/${mfile}`)){
         //code = code.replace(/printf/g, 'sprintf');
         code = code.replace(/printf/g, 'disp');
         
+        // Replace endfor and endfunction
+        code = code.replace(/endfor/g, 'end');
+        code = code.replace(/endfunction/g, 'end');
+        
         writeToFile(out_folder, mfile, code);
         
     }, 8000);

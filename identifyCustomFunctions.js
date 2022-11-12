@@ -39,7 +39,6 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                 def_node: node
             };
             custom_functions.push(v1);
-            break;
         }
     } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
     // External functions

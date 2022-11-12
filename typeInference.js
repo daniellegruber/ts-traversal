@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.inferType = exports.typeInference = void 0;
+exports.inferType = exports.typeInference = exports.findVarScope = void 0;
 var fs = require('fs');
 var treeTraversal_1 = require("./treeTraversal");
 var builtinFunctions_1 = require("./builtinFunctions");
@@ -8,6 +8,31 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+function findVarScope(node, block_idxs) {
+    var entire_scope = block_idxs.find(function (x) { return x[2] == 0; });
+    var good_blocks = block_idxs.filter(function (e) { return e[2] == 1; });
+    var fundef_blocks = block_idxs.filter(function (e) { return e[2] == 2; });
+    var scope = good_blocks.find(function (x) { return x[0] <= node.startIndex && x[1] >= node.endIndex; });
+    if (scope != null && scope != undefined) {
+        return scope;
+    }
+    else {
+        for (var i = 0; i < good_blocks.length - 1; i++) {
+            if (good_blocks[i][1] < node.startIndex && good_blocks[i + 1][0] > node.endIndex) {
+                return [good_blocks[i][1], good_blocks[i + 1][0]];
+            }
+        }
+    }
+    if (fundef_blocks != null && fundef_blocks != undefined) {
+        if (node.startIndex > entire_scope[0] && node.endIndex < fundef_blocks[0][0]) {
+            return [entire_scope[0], fundef_blocks[0][0]];
+        }
+    }
+    else {
+        return [entire_scope[0], entire_scope[1]];
+    }
+}
+exports.findVarScope = findVarScope;
 function typeInference(file, custom_functions, classes, debug) {
     var _a;
     var var_types = [];
@@ -27,7 +52,8 @@ function typeInference(file, custom_functions, classes, debug) {
                 ismatrix: false,
                 ispointer: false,
                 isstruct: true,
-                initialized: false
+                initialized: false,
+                scope: findVarScope(entry_fun_node, block_idxs) // come back here
             });
         }
     }
@@ -39,6 +65,27 @@ exports.typeInference = typeInference;
 function inferTypeFromAssignment(tree, var_types, custom_functions, classes, file, alias_tbl, debug) {
     var block_idxs = [];
     var cursor = tree.walk();
+    do {
+        var c = cursor;
+        switch (c.nodeType) {
+            case "module" /* g.SyntaxType.Module */: {
+                var node = c.currentNode;
+                block_idxs.push([node.startIndex, node.endIndex, 0]); // 0 indicates entire program
+                break;
+            }
+            case "block" /* g.SyntaxType.Block */: {
+                var node = c.currentNode;
+                block_idxs.push([node.startIndex, node.endIndex, 1]); // 1 for regular blocks 
+                break;
+            }
+            case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
+                var node = c.currentNode;
+                block_idxs.push([node.startIndex, node.endIndex, 2]); // 2 for function def blocks 
+                break;
+            }
+        }
+    } while ((0, treeTraversal_1.gotoPreorderSucc_SkipFunctionDef)(cursor, debug));
+    cursor = tree.walk();
     var _loop_1 = function () {
         var c = cursor;
         switch (c.nodeType) {
@@ -56,7 +103,8 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         ismatrix: ismatrix,
                         ispointer: type == 'char' || ismatrix,
                         isstruct: isstruct,
-                        initialized: false
+                        initialized: false,
+                        scope: findVarScope(node, block_idxs)
                     };
                     var_types = var_types.filter(function (e) { return e.name != v1_1.name; }); // replace if already in var_types
                     var_types.push(v1_1);
@@ -77,7 +125,8 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                             ismatrix: true,
                             ispointer: true,
                             isstruct: false,
-                            initialized: false
+                            initialized: false,
+                            scope: findVarScope(node, block_idxs)
                         };
                     }
                     var_types = var_types.filter(function (e) { return e.name != name_1; }); // replace if already in var_types
@@ -99,16 +148,19 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         ismatrix: false,
                         ispointer: false,
                         isstruct: false,
-                        initialized: false
+                        initialized: false,
+                        scope: findVarScope(node, block_idxs)
                     };
                     var_types = var_types.filter(function (e) { return e.name != v1_2.name; }); // replace if already in var_types
                     var_types.push(v1_2);
                 }
                 break;
             }
-            case "block" /* g.SyntaxType.Block */: {
+            case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: { // This helps update the argument types of function definitions
                 var node = c.currentNode;
-                block_idxs.push([node.startIndex, node.endIndex]);
+                var _c = inferType(node, var_types, custom_functions, classes, file, alias_tbl, debug), cf = _c[6];
+                custom_functions = cf;
+                break;
             }
         }
     };

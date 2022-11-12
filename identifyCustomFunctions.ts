@@ -34,7 +34,6 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
         const c = cursor as g.TypedTreeCursor;
         let node = parseFunctionDefNode(c.currentNode);
         if (node != null) {
-            
             let arg_types = [];
             for (let arg of node.parametersNode.namedChildren) {
                 // Placeholder
@@ -58,7 +57,6 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                 def_node: node
             };
             custom_functions.push(v1);
-            break;
         }
     } while(gotoPreorderSucc(cursor, debug));
     

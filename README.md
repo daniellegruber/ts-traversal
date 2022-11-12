@@ -119,6 +119,19 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 - Functions
   - `main`: entry-point function
   - `transformNode`: based on inferred node type (from typeInference) and node content, transforms node into C equivalent
+- Structures
+  - `alias_tbl`: Array of type `Alias`. Keeps track of information about the relationship between variables and the temporary variables generated to perform operations on them.
+
+   ``` typescript
+    type Alias = {
+      name: string;
+      tmp_var: string;
+      scope: number[];
+    };
+    
+    let alias_tbl: Alias[] = [];
+    ```
+    
 ### typeInference.ts
 - Overview
   - Infers types of variabes used in program

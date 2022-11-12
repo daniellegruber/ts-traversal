@@ -1,5 +1,3 @@
-# Table of contents
-
 - [ts-traversal](#ts-traversal)
   * [Built with](#built-with)
   * [Loading modules](#loading-modules)
@@ -7,6 +5,8 @@
   * [Example](#example)
   * [Updating tree-sitter-matlab module](#updating-tree-sitter-matlab-module)
   * [Under the hood](#under-the-hood)
+    + [cleanOctaveC.ts](#cleanoctavects)
+    + [cleanUp.ts](#cleanupts)
     + [index.ts](#indexts)
     + [generateCode.ts](#generatecodets)
     + [typeInference.ts](#typeinferencets)
@@ -18,7 +18,8 @@
   * [1. Identify custom functions](#1-identify-custom-functions)
   * [2. Type inference](#2-type-inference)
   * [3. Generate code](#3-generate-code)
-- [Current limitations](#current-limitations)
+- [OctaveC Tests](#octavec-tests)
+- [Current limitations/works in progress](#current-limitations-works-in-progress)
 
 # ts-traversal
 
@@ -131,6 +132,16 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     
     let alias_tbl: Alias[] = [];
     ```
+    
+    For example, say you have the following code:
+    ```matlab
+    a = zeros(2,2);
+    for i = 1:4
+     a(i) = i^2
+    end
+    ```
+    
+    Since `zeros` is a "builtin function," it generates a temporary variable. `alias_tbl` allows the program to know that a is associated with this temporary variable.
     
 ### typeInference.ts
 - Overview

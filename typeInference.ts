@@ -42,34 +42,44 @@ type Alias = {
   tmp_var: string;
 };
 
-export function findVarScope(node, block_idxs) {
+export function findVarScope(node, block_idxs, debug) {
+    if (debug == 1) {
+        console.log("findVarScope");
+    }
+    
     let entire_scope = block_idxs.find(x => x[2] == 0);
-    let good_blocks = block_idxs.filter(function(e) { return e[2] == 1 });
-    let fundef_blocks = block_idxs.filter(function(e) { return e[2] == 2 });
-
-    let scope = good_blocks.find(x => x[0] <= node.startIndex && x[1] >= node.endIndex);
+    let good_blocks = block_idxs.filter(function(e) { return e[2] >= 1 });
+    let fundef_blocks = block_idxs.filter(function(e) { return e[2] == -1 });
+    
+    let scope = good_blocks.filter(function(e) { return e[0] <= node.startIndex && e[1] >= node.endIndex } );
+    scope = scope[scope.length - 1];
+    //let scope = good_blocks.find(x => x[0] <= node.startIndex && x[1] >= node.endIndex);
     if (scope != null && scope != undefined) {
         return scope;
-    } else {
+    } 
+    /*else {
         for (let i = 0; i < good_blocks.length - 1; i++) {
             if (good_blocks[i][1] < node.startIndex && good_blocks[i+1][0] > node.endIndex) {
                 return [good_blocks[i][1], good_blocks[i+1][0]];
             }
         }
-    }
+    }*/
     
-    if (fundef_blocks != null && fundef_blocks != undefined) {
+    if (fundef_blocks.length != 0) {
         if (node.startIndex > entire_scope[0] && node.endIndex < fundef_blocks[0][0]) {
-            return [entire_scope[0], fundef_blocks[0][0]];
+            return [entire_scope[0], fundef_blocks[0][0], -1];
         }
-    } else {
-        return [entire_scope[0], entire_scope[1]];
-    }
+    } 
+    return [entire_scope[0], entire_scope[1], 0];
+    
     
 }
 
 
 function typeInference(file, custom_functions, classes, debug) {
+    if (debug == 1) {
+        console.log("typeInference");
+    }
     
     var var_types: VarType[] = [];
     let block_idxs = [];
@@ -89,7 +99,7 @@ function typeInference(file, custom_functions, classes, debug) {
                 ispointer: false,
                 isstruct: true,
                 initialized: false,
-                scope: findVarScope(entry_fun_node, block_idxs) // come back here
+                scope: findVarScope(entry_fun_node, block_idxs, debug) // come back here
             });    
         }
     }
@@ -100,8 +110,12 @@ function typeInference(file, custom_functions, classes, debug) {
 }
 
 function inferTypeFromAssignment(tree, var_types, custom_functions, classes, file, alias_tbl, debug) {
-    let block_idxs = [];
+    if (debug == 1) {
+        console.log("inferTypeFromAssignment");
+    }
     
+    let block_idxs = [];
+    let block_level = 0;
     let cursor = tree.walk();
     do {
         const c = cursor as g.TypedTreeCursor;
@@ -113,12 +127,22 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
             }
             case g.SyntaxType.Block: {
                 let node = c.currentNode;
-                block_idxs.push([node.startIndex, node.endIndex, 1]); // 1 for regular blocks 
+                if (block_idxs[block_idxs.length - 1][0] < node.startIndex && node.endIndex < block_idxs[block_idxs.length - 1][1]) {
+                    block_level = block_level + 1;
+                } else {
+                    let prev_blocks = block_idxs.filter(function(e) { return e[1] < node.startIndex });
+                    if (prev_blocks.length != 0) {
+                        let prev_block = prev_blocks.reduce((max, block) => max[1] > block[1] ? max : block);
+                        block_level = prev_block[2];
+                    } 
+                }
+                
+                block_idxs.push([node.startIndex, node.endIndex, block_level]); // 1 for regular blocks
                 break;
             }
             case g.SyntaxType.FunctionDefinition: {
                 let node = c.currentNode;
-                block_idxs.push([node.startIndex, node.endIndex, 2]); // 2 for function def blocks 
+                block_idxs.push([node.startIndex, node.endIndex, -1]); // 2 for function def blocks 
                 break;
             }
         }
@@ -135,17 +159,28 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug);
                 custom_functions = cf;
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
-                    let v1: VarType = { 
-                        name: node.leftNode.text, 
-                        type: type, 
-                        ndim: ndim, 
-                        dim: dim, 
-                        ismatrix: ismatrix,
-                        ispointer: type == 'char' || ismatrix,
-                        isstruct: isstruct,
-                        initialized: false,
-                        scope: findVarScope(node, block_idxs)
-                    };
+                    let name = node.leftNode.text;
+                    let v1 = var_types.find(x => x.name === name);
+                    if (v1 != null) {
+                        v1.type = type;
+                        v1.ndim = ndim; 
+                        v1.dim = dim; 
+                        v1.ismatrix = ismatrix;
+                        v1.ispointer = type == 'char' || ismatrix;
+                        v1.isstruct = isstruct;
+                    } else {
+                        v1 = { 
+                            name: node.leftNode.text, 
+                            type: type, 
+                            ndim: ndim, 
+                            dim: dim, 
+                            ismatrix: ismatrix,
+                            ispointer: type == 'char' || ismatrix,
+                            isstruct: isstruct,
+                            initialized: false,
+                            scope: findVarScope(node, block_idxs, debug)
+                        };
+                    }
                         
                     var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
                     var_types.push(v1);
@@ -165,10 +200,9 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                             ispointer: true,
                             isstruct: false,
                             initialized: false,
-                            scope: findVarScope(node, block_idxs)
+                            scope: findVarScope(node, block_idxs, debug)
                         };
                     }
-                    
                     var_types = var_types.filter(function(e) { return e.name != name }); // replace if already in var_types
                     var_types.push(v1);
                 }
@@ -190,7 +224,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         ispointer: false,
                         isstruct: false,
                         initialized: false,
-                        scope: findVarScope(node, block_idxs)
+                        scope: findVarScope(node, block_idxs, debug)
                     };
                         
                     var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
@@ -212,6 +246,10 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
 
 function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_functions, classes, file, alias_tbl, debug) {
     // Update custom_functions with info on function return type
+    if (debug == 1) {
+        console.log("getFunctionReturnType");
+    }
+    
     let obj = fun_dictionary.find(x => x.name === fun_name);
     if (obj != null) {
         let tree2 = parser.parse(obj.def_node.bodyNode.text);
@@ -310,6 +348,9 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
 }
 
 function inferType(node, var_types, custom_functions, classes, file, alias_tbl, debug) {
+    if (debug == 1) {
+        console.log("inferType");
+    }
     // var unknown_type = ['unknown', null, null, null, null, null, custom_functions];
     // var unknown_type = ['unknown', 2, [1, 1], false, false, false, custom_functions];
     
@@ -585,7 +626,6 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
         case g.SyntaxType.CallOrSubscript: {
             let [parent_type,,,parent_ismatrix,,parent_isstruct, c] = inferType(node.valueNode, var_types, custom_functions, classes, file, alias_tbl, debug);
             custom_functions = c;
-            
             // Is a subscript
             if (parent_ismatrix || parent_isstruct) {
                 
@@ -779,6 +819,10 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
     
     // Return args, arg_types, outs from function
     function parseFunctionCallNode(node) {
+        if (debug == 1) {
+            console.log("parseFunctionCallNode");
+        }
+    
         if (node.parent.type == g.SyntaxType.Assignment) {
             return parseFunctionCallNode(node.parent);
         } else {

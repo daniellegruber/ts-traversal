@@ -601,6 +601,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`);
                         }
 
                         // Convert to linear idx
+                        // WAZZUP1
                         let idx = getSubscriptIdx(node.leftNode);
                         let tmp_data = generateTmpVar("data");
                         let tmp_lhs = generateTmpVar("lhs_data");
@@ -837,11 +838,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         
                     // Is a subscript
                     } else {
-                        let index = [];
-                        for (let i=1; i<node.namedChildCount; i++) {
-                            index.push(transformNode(node.namedChildren[i]));
-                        }
-                        
+                        // WAZZUP2
+                        //come back here
                         var tmp_var = generateTmpVar("tmp");
                         // only use indexM if subscript is on rhs
                         let lhs_flag = false;
@@ -850,6 +848,35 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 lhs_flag = true;
                             }
                         }
+                        
+                        let index = [];
+                        let flat_idx = getSubscriptIdx(node);
+                        if (node.namedChildCount == 2) {
+                            let obj2 = var_types.find(x => x.name === node.valueNode.text);
+                            let dim = obj2.dim;
+                            // Converts flat index to row-major flat index
+                            pushToMain(
+`int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
+int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
+if (tmp == 0) {
+    tmp = ${dim[0]} * ${dim[1]};
+}
+int d0 = tmp % ${dim[0]};
+if (d0 == 0) {
+    d0 = ${dim[0]};
+}
+int d1 = (tmp - d0)/${dim[0]} + 1;`)
+                            if (lhs_flag) { // subscript is on lhs
+                                index = flat_idx;
+                            } else {
+                                index = [`(d2-1) * ${dim[0]} * ${dim[1]} + d1 + (d0-1) * ${dim[1]}`]; // d1 - 1 -> d1 because indexM requires 1-indexing
+                            }
+                        } else {
+                            for (let i=1; i<node.namedChildCount; i++) {
+                                index.push(transformNode(node.namedChildren[i]));
+                            }
+                        }
+                        
                         if (!lhs_flag) { // subscript is on rhs
                             let obj = alias_tbl.find(x => x.name === node.text);
                             let [type, , , , , , ] = inferType(node.valueNode, var_types, custom_functions, classes, file, alias_tbl, debug);
@@ -864,13 +891,13 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     scope: scope
                                 });
                                 
-                                let idx = getSubscriptIdx(node);
+                                
                                 var_types.push({
                                     name: tmp_var,
                                     type: type,
-                                    ndim: idx.length,
-                                    dim: [idx.length],
-                                    ismatrix: idx.length > 1,
+                                    ndim: flat_idx.length,
+                                    dim: [flat_idx.length],
+                                    ismatrix: flat_idx.length > 1,
                                     ispointer: false,
                                     isstruct: false,
                                     initialized: true,
@@ -887,13 +914,13 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     tmp_var: tmp_var,
                                     scope: scope
                                 });
-                                let idx = getSubscriptIdx(node);
+                                
                                 var_types.push({
                                     name: tmp_var,
                                     type: type,
-                                    ndim: idx.length,
-                                    dim: [idx.length],
-                                    ismatrix: idx.length > 1,
+                                    ndim: flat_idx.length,
+                                    dim: [flat_idx.length],
+                                    ismatrix: flat_idx.length > 1,
                                     ispointer: false,
                                     isstruct: false,
                                     initialized: true,
@@ -1460,17 +1487,31 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
         
         let obj = var_types.find(x => x.name === node.valueNode.text);
         let dim = obj.dim;
+        let idx = [node.namedChildren[1].text];
         // already a linear idx
         if (node.namedChildCount == 2) {
             if (node.namedChildren[1].type == g.SyntaxType.Slice) {
                 //var list = slice2list(node.namedChildren[1])
-                var idx = slice2list(node.namedChildren[1])
+                idx = slice2list(node.namedChildren[1])
             } else if (node.namedChildren[1].type == g.SyntaxType.Matrix) {
                 //var list = matrix2list(node.namedChildren[1])
-                var idx = matrix2list(node.namedChildren[1])
+                idx = matrix2list(node.namedChildren[1])
             } else {
                 //var list = [node.namedChildren[1].text];
-                var idx = [node.namedChildren[1].text];
+                //var idx = [node.namedChildren[1].text];
+                /*pushToMain(
+`int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
+int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
+if (tmp == 0) {
+    tmp = ${dim[0]} * ${dim[1]};
+}
+int d0 = tmp % ${dim[0]};
+if (d0 == 0) {
+    d0 = ${dim[0]};
+}
+int d1 = (tmp - d0)/${dim[0]} + 1;`)*/
+                idx = [`(d2-1) * ${dim[0]} * ${dim[1]} + (d1-1) + (d0-1) * ${dim[1]}`];
+
             }
             /*var idx = [];
             for (let l of list) {
@@ -1480,7 +1521,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
         }
         else {
             if (node.namedChildCount == 3) {
-                var idx = sub2idx(
+                idx = sub2idx(
                     node.namedChildren[1], 
                     node.namedChildren[2],
                     null,
@@ -1488,7 +1529,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     1
                 );
             } else if (node.namedChildCount == 4) {
-                var idx = sub2idx(
+                idx = sub2idx(
                     node.namedChildren[1], 
                     node.namedChildren[2],
                     node.namedChildren[3],

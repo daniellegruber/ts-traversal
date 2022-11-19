@@ -528,6 +528,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             }
                         }
                         // Convert to linear idx
+                        // WAZZUP1
                         var idx_4 = getSubscriptIdx(node.leftNode);
                         var tmp_data = generateTmpVar("data");
                         var tmp_lhs = generateTmpVar("lhs_data");
@@ -750,16 +751,32 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         // Is a subscript
                     }
                     else {
-                        var index = [];
-                        for (var i = 1; i < node.namedChildCount; i++) {
-                            index.push(transformNode(node.namedChildren[i]));
-                        }
+                        // WAZZUP2
+                        //come back here
                         var tmp_var = generateTmpVar("tmp");
                         // only use indexM if subscript is on rhs
                         var lhs_flag = false;
                         if (node.parent.type == "assignment" /* g.SyntaxType.Assignment */) {
                             if (node.parent.leftNode.text == node.text) {
                                 lhs_flag = true;
+                            }
+                        }
+                        var index = [];
+                        var flat_idx = getSubscriptIdx(node);
+                        if (node.namedChildCount == 2) {
+                            var obj2 = var_types.find(function (x) { return x.name === node.valueNode.text; });
+                            var dim_3 = obj2.dim;
+                            pushToMain("int d2 = ceil((double) ".concat(node.namedChildren[1].text, " / (").concat(dim_3[0], " * ").concat(dim_3[1], "));\nint tmp = ").concat(node.namedChildren[1].text, " % (").concat(dim_3[0], " * ").concat(dim_3[1], ");\nif (tmp == 0) {\n    tmp = ").concat(dim_3[0], " * ").concat(dim_3[1], ";\n}\nint d0 = tmp % ").concat(dim_3[0], ";\nif (d0 == 0) {\n    d0 = ").concat(dim_3[0], ";\n}\nint d1 = (tmp - d0)/").concat(dim_3[0], " + 1;"));
+                            if (lhs_flag) { // subscript is on lhs
+                                index = flat_idx;
+                            }
+                            else {
+                                index = ["(d2-1) * ".concat(dim_3[0], " * ").concat(dim_3[1], " + d1 + (d0-1) * ").concat(dim_3[1])]; // d1 - 1 -> d1 because indexM requires 1-indexing
+                            }
+                        }
+                        else {
+                            for (var i = 1; i < node.namedChildCount; i++) {
+                                index.push(transformNode(node.namedChildren[i]));
                             }
                         }
                         if (!lhs_flag) { // subscript is on rhs
@@ -775,13 +792,12 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                     tmp_var: tmp_var,
                                     scope: scope
                                 });
-                                var idx_5 = getSubscriptIdx(node);
                                 var_types.push({
                                     name: tmp_var,
                                     type: type_3,
-                                    ndim: idx_5.length,
-                                    dim: [idx_5.length],
-                                    ismatrix: idx_5.length > 1,
+                                    ndim: flat_idx.length,
+                                    dim: [flat_idx.length],
+                                    ismatrix: flat_idx.length > 1,
                                     ispointer: false,
                                     isstruct: false,
                                     initialized: true,
@@ -799,13 +815,12 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                     tmp_var: tmp_var,
                                     scope: scope
                                 });
-                                var idx_6 = getSubscriptIdx(node);
                                 var_types.push({
                                     name: tmp_var,
                                     type: type_3,
-                                    ndim: idx_6.length,
-                                    dim: [idx_6.length],
-                                    ismatrix: idx_6.length > 1,
+                                    ndim: flat_idx.length,
+                                    dim: [flat_idx.length],
+                                    ismatrix: flat_idx.length > 1,
                                     ispointer: false,
                                     isstruct: false,
                                     initialized: true,
@@ -1332,19 +1347,32 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         }
         var obj = var_types.find(function (x) { return x.name === node.valueNode.text; });
         var dim = obj.dim;
+        var idx = [node.namedChildren[1].text];
         // already a linear idx
         if (node.namedChildCount == 2) {
             if (node.namedChildren[1].type == "slice" /* g.SyntaxType.Slice */) {
                 //var list = slice2list(node.namedChildren[1])
-                var idx = slice2list(node.namedChildren[1]);
+                idx = slice2list(node.namedChildren[1]);
             }
             else if (node.namedChildren[1].type == "matrix" /* g.SyntaxType.Matrix */) {
                 //var list = matrix2list(node.namedChildren[1])
-                var idx = matrix2list(node.namedChildren[1]);
+                idx = matrix2list(node.namedChildren[1]);
             }
             else {
                 //var list = [node.namedChildren[1].text];
-                var idx = [node.namedChildren[1].text];
+                //var idx = [node.namedChildren[1].text];
+                /*pushToMain(
+`int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
+int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
+if (tmp == 0) {
+    tmp = ${dim[0]} * ${dim[1]};
+}
+int d0 = tmp % ${dim[0]};
+if (d0 == 0) {
+    d0 = ${dim[0]};
+}
+int d1 = (tmp - d0)/${dim[0]} + 1;`)*/
+                idx = ["(d2-1) * ".concat(dim[0], " * ").concat(dim[1], " + (d1-1) + (d0-1) * ").concat(dim[1])];
             }
             /*var idx = [];
             for (let l of list) {
@@ -1354,10 +1382,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         }
         else {
             if (node.namedChildCount == 3) {
-                var idx = sub2idx(node.namedChildren[1], node.namedChildren[2], null, dim[0], 1);
+                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], null, dim[0], 1);
             }
             else if (node.namedChildCount == 4) {
-                var idx = sub2idx(node.namedChildren[1], node.namedChildren[2], node.namedChildren[3], dim[0], dim[1]);
+                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], node.namedChildren[3], dim[0], dim[1]);
             }
         }
         return idx;

@@ -22,16 +22,16 @@ int counter = 0;
 // Note that in Octave, the i (row) loop is outside the j (column) loop. this is
 // because Octave is natively column-major, so we must assign carefully.
 void *data1 = getdataM(a);
-int* lhs_data1 = (int *)data1;
+double* lhs_data1 = (double *)data1;
 
 for (int k =  1; k <= 5; ++ k) {
 
 for (int j =  1; j <= 3; ++ j) {
 
 for (int i =  1; i <= 2; ++ i) {
-//a(i,j,k) = counter*counter + 0.5;
-int tmp2 = counter;
+double tmp2 = counter * counter + 0.5;
 lhs_data1[(k-1) * 2 * 3 + (j-1) + (i-1) * 3] = tmp2;
+//a(i,j,k) = counter;
 counter = counter + 1;
 
 }
@@ -44,7 +44,7 @@ for (int iter1 = 0 ; iter1 < ndim1; iter1++)
 {
 	size1 *= dim1[iter1];
 }
-Matrix *mat1 = createM(ndim1, dim1, 0);
+Matrix *mat1 = createM(ndim1, dim1, 1);
 writeM(mat1, size1, lhs_data1);
 printM(mat1);
 // Normal indexing in C and normal indexing in Octave are the same
@@ -54,9 +54,9 @@ for (int k =  1; k <= 5; ++ k) {
 for (int j =  1; j <= 3; ++ j) {
 
 for (int i =  1; i <= 2; ++ i) {
-int tmp4;
+double tmp4;
 indexM(mat1, &tmp4, 3, i, j, k);
-printf("\n%d", tmp4);
+printf("\n%f", tmp4);
 
 }
 
@@ -67,9 +67,19 @@ printf("\n%s", "\n");
 // Flat indexing in Octave must be matched by normal indexing in C
 
 for (int i =  1; i <= 30; ++ i) {
-int tmp7;
-indexM(mat1, &tmp7, 1, i);
-printf("\n%d", tmp7);
+int d2 = ceil((double) i / (2 * 3));
+int tmp = i % (2 * 3);
+if (tmp == 0) {
+    tmp = 2 * 3;
+}
+int d0 = tmp % 2;
+if (d0 == 0) {
+    d0 = 2;
+}
+int d1 = (tmp - d0)/2 + 1;
+double tmp7;
+indexM(mat1, &tmp7, 1, (d2-1) * 2 * 3 + d1 + (d0-1) * 3);
+printf("\n%f", tmp7);
 
 }
 printf("\n%s", "\n");
@@ -80,12 +90,22 @@ int dim2[3] = {2, 3, 5};
 a = zerosM(ndim2, dim2);
 counter = 0;
 void *data2 = getdataM(a);
-int* lhs_data2 = (int *)data2;
+double* lhs_data2 = (double *)data2;
 
 for (int i =  1; i <= 30; ++ i) {
-//a(i) = counter*counter + 0.5;
-int tmp11 = counter;
-lhs_data2[i-1] = tmp11;
+int d2 = ceil((double) i / (2 * 3));
+int tmp = i % (2 * 3);
+if (tmp == 0) {
+    tmp = 2 * 3;
+}
+int d0 = tmp % 2;
+if (d0 == 0) {
+    d0 = 2;
+}
+int d1 = (tmp - d0)/2 + 1;
+double tmp11 = counter * counter + 0.5;
+lhs_data2[(d2-1) * 2 * 3 + (d1-1) + (d0-1) * 3] = tmp11;
+//a(i) = counter;
 counter = counter + 1;
 
 }
@@ -94,7 +114,7 @@ for (int iter2 = 0 ; iter2 < ndim2; iter2++)
 {
 	size2 *= dim2[iter2];
 }
-Matrix *mat2 = createM(ndim2, dim2, 0);
+Matrix *mat2 = createM(ndim2, dim2, 1);
 writeM(mat2, size2, lhs_data2);
 printM(mat2);
 // Normal indexing in C and normal indexing in Octave are the same
@@ -104,9 +124,9 @@ for (int k =  1; k <= 5; ++ k) {
 for (int j =  1; j <= 3; ++ j) {
 
 for (int i =  1; i <= 2; ++ i) {
-int tmp13;
+double tmp13;
 indexM(mat2, &tmp13, 3, i, j, k);
-printf("\n%d", tmp13);
+printf("\n%f", tmp13);
 
 }
 
@@ -117,9 +137,19 @@ printf("\n%s", "\n");
 // Flat indexing in Octave must be matched by normal indexing in C
 
 for (int i =  1; i <= 30; ++ i) {
-int tmp16;
-indexM(mat2, &tmp16, 1, i - 1);
-printf("\n%d", tmp16);
+int d2 = ceil((double) i / (2 * 3));
+int tmp = i % (2 * 3);
+if (tmp == 0) {
+    tmp = 2 * 3;
+}
+int d0 = tmp % 2;
+if (d0 == 0) {
+    d0 = 2;
+}
+int d1 = (tmp - d0)/2 + 1;
+double tmp16;
+indexM(mat2, &tmp16, 1, (d2-1) * 2 * 3 + d1 + (d0-1) * 3);
+printf("\n%f", tmp16);
 
 }
 printf("\n%s", "\n");

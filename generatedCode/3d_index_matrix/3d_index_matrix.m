@@ -15,8 +15,8 @@ counter = 0;
 for k=1:5
 	for j=1:3
 		for i=1:2
-			%a(i,j,k) = counter*counter + 0.5;
-			a(i,j,k) = counter;
+			a(i,j,k) = counter*counter + 0.5;
+			%a(i,j,k) = counter;
 			counter = counter + 1;
 		end
 	end
@@ -46,8 +46,8 @@ disp("\n");
 a = zeros(2,3,5);
 counter = 0;
 for i=1:30
-	%a(i) = counter*counter + 0.5;
-	a(i-1) = counter;
+	a(i) = counter*counter + 0.5;
+	%a(i) = counter;
 	counter = counter + 1;
 end
 disp(a);
@@ -64,7 +64,7 @@ disp("\n");
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:30
-	disp(a(i-1));
+	disp(a(i));
 end
 disp("\n");
 

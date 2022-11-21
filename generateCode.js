@@ -766,13 +766,19 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         if (node.namedChildCount == 2) {
                             var obj2 = var_types.find(function (x) { return x.name === node.valueNode.text; });
                             var dim_3 = obj2.dim;
-                            pushToMain("int d2 = ceil((double) ".concat(node.namedChildren[1].text, " / (").concat(dim_3[0], " * ").concat(dim_3[1], "));\nint tmp = ").concat(node.namedChildren[1].text, " % (").concat(dim_3[0], " * ").concat(dim_3[1], ");\nif (tmp == 0) {\n    tmp = ").concat(dim_3[0], " * ").concat(dim_3[1], ";\n}\nint d0 = tmp % ").concat(dim_3[0], ";\nif (d0 == 0) {\n    d0 = ").concat(dim_3[0], ";\n}\nint d1 = (tmp - d0)/").concat(dim_3[0], " + 1;"));
-                            if (lhs_flag) { // subscript is on lhs
+                            // Converts flat index to row-major flat index
+                            if (dim_3.length == 3) {
+                                pushToMain("int d3 = 1;\nint d2 = ceil((double) ".concat(node.namedChildren[1].text, " / (").concat(dim_3[0], " * ").concat(dim_3[1], "));\nint tmp = ").concat(node.namedChildren[1].text, " % (").concat(dim_3[0], " * ").concat(dim_3[1], ");\nif (tmp == 0) {\n    tmp = ").concat(dim_3[0], " * ").concat(dim_3[1], ";\n}\nint d0 = tmp % ").concat(dim_3[0], ";\nif (d0 == 0) {\n    d0 = ").concat(dim_3[0], ";\n}\nint d1 = (tmp - d0)/").concat(dim_3[0], " + 1;"));
+                            }
+                            else if (dim_3.length == 4) {
+                                pushToMain("int d3 = ceil((double) ".concat(node.namedChildren[1].text, " / (").concat(dim_3[0], " * ").concat(dim_3[1], " * ").concat(dim_3[2], "));\nint d2 = ((int) ceil((double) ").concat(node.namedChildren[1].text, " / (").concat(dim_3[0], " * ").concat(dim_3[1], "))) % ").concat(dim_3[2], ";\nif (d2 == 0) {\n    d2 = ").concat(dim_3[2], ";\n}\nint tmp = ").concat(node.namedChildren[1].text, " % (").concat(dim_3[0], " * ").concat(dim_3[1], ");\nif (tmp == 0) {\n    tmp = ").concat(dim_3[0], " * ").concat(dim_3[1], ";\n}\nint d0 = tmp % ").concat(dim_3[0], ";\nif (d0 == 0) {\n    d0 = ").concat(dim_3[0], ";\n}\nint d1 = (tmp - d0)/").concat(dim_3[0], " + 1;"));
+                            }
+                            index = flat_idx;
+                            /*if (lhs_flag) { // subscript is on lhs
                                 index = flat_idx;
-                            }
-                            else {
-                                index = ["(d2-1) * ".concat(dim_3[0], " * ").concat(dim_3[1], " + d1 + (d0-1) * ").concat(dim_3[1])]; // d1 - 1 -> d1 because indexM requires 1-indexing
-                            }
+                            } else {
+                                index = [`(d2-1) * ${dim[0]} * ${dim[1]} + d1 + (d0-1) * ${dim[1]}`]; // d1 - 1 -> d1 because indexM requires 1-indexing
+                            }*/
                         }
                         else {
                             for (var i = 1; i < node.namedChildCount; i++) {
@@ -1290,13 +1296,14 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         }
         return list;
     }
-    function sub2idx(dim0_node, dim1_node, dim2_node, d0, d1) {
+    function sub2idx(dim0_node, dim1_node, dim2_node, dim3_node, d0, d1, d2) {
         if (debug == 1) {
             console.log("sub2idx");
         }
         var dim0 = dim0_node.text;
         var dim1 = dim1_node.text;
         var dim2 = dim2_node;
+        var dim3 = dim3_node;
         if (dim0_node.type == "slice" /* g.SyntaxType.Slice */) {
             dim0 = slice2list(dim0_node);
         }
@@ -1329,13 +1336,32 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 dim2 = [dim2_node.text];
             }
         }
+        if (dim3_node == null) {
+            dim3 = [1];
+        }
+        else {
+            if (dim3_node.type == "slice" /* g.SyntaxType.Slice */) {
+                dim3 = slice2list(dim1_node);
+            }
+            else if (dim3_node.type == "matrix" /* g.SyntaxType.Matrix */) {
+                dim3 = matrix2list(dim1_node);
+            }
+            else {
+                dim3 = [dim3_node.text];
+            }
+        }
+        console.log("DIMS");
+        console.log([dim0, dim1, dim2]);
         var idx = [];
         for (var i = 0; i < dim0.length; i++) {
             for (var j = 0; j < dim1.length; j++) {
-                for (var k = 0; j < dim2.length; j++) {
-                    //idx.push( (Number(dim2[j])-1) * d0 * d1 + (Number(dim1[j])-1) * d0 + Number(dim0[i]) );
-                    //idx.push( `(${dim2[k]}-1) * ${d0} * ${d1} + (${dim1[j]}-1) * ${d0} + (${dim0[i]} - 1)` );
-                    idx.push("(".concat(dim2[k], "-1) * ").concat(d0, " * ").concat(d1, " + (").concat(dim1[j], "-1) + (").concat(dim0[i], "-1) * ").concat(d1));
+                for (var k = 0; k < dim2.length; k++) {
+                    for (var l = 0; l < dim3.length; l++) {
+                        //idx.push( (Number(dim2[j])-1) * d0 * d1 + (Number(dim1[j])-1) * d0 + Number(dim0[i]) );
+                        //idx.push( `(${dim2[k]}-1) * ${d0} * ${d1} + (${dim1[j]}-1) * ${d0} + (${dim0[i]} - 1)` );
+                        //idx.push( `(${dim2[k]}-1) * ${d0} * ${d1} + (${dim1[j]}-1) + (${dim0[i]}-1) * ${d1}` );
+                        idx.push("(".concat(dim1[j], "-1) + (").concat(dim0[i], "-1)*").concat(d1, " + (").concat(dim2[k], "-1)*").concat(d0, "*").concat(d1, " + (").concat(dim3[l], "-1)*").concat(d0, "*").concat(d1, "*").concat(d2));
+                    }
                 }
             }
         }
@@ -1345,8 +1371,17 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         if (debug == 1) {
             console.log("getSubscriptIdx");
         }
+        var lhs_flag = false;
+        if (node.parent.type == "assignment" /* g.SyntaxType.Assignment */) {
+            if (node.parent.leftNode.text == node.text) {
+                lhs_flag = true;
+            }
+        }
         var obj = var_types.find(function (x) { return x.name === node.valueNode.text; });
         var dim = obj.dim;
+        if (dim[2] == undefined) {
+            dim.push(1);
+        }
         var idx = [node.namedChildren[1].text];
         // already a linear idx
         if (node.namedChildCount == 2) {
@@ -1359,33 +1394,23 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 idx = matrix2list(node.namedChildren[1]);
             }
             else {
-                //var list = [node.namedChildren[1].text];
-                //var idx = [node.namedChildren[1].text];
-                /*pushToMain(
-`int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
-int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
-if (tmp == 0) {
-    tmp = ${dim[0]} * ${dim[1]};
-}
-int d0 = tmp % ${dim[0]};
-if (d0 == 0) {
-    d0 = ${dim[0]};
-}
-int d1 = (tmp - d0)/${dim[0]} + 1;`)*/
-                idx = ["(d2-1) * ".concat(dim[0], " * ").concat(dim[1], " + (d1-1) + (d0-1) * ").concat(dim[1])];
+                if (lhs_flag) {
+                    idx = ["(d1-1) + (d0-1) * ".concat(dim[1], " + (d2-1) * ").concat(dim[0], " * ").concat(dim[1], " + (d3-1) * ").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2])];
+                }
+                else {
+                    idx = ["d1 + (d0-1) * ".concat(dim[1], " + (d2-1) * ").concat(dim[0], " * ").concat(dim[1], " + (d3-1) * ").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2])];
+                }
             }
-            /*var idx = [];
-            for (let l of list) {
-                idx.push(Number(l));
-                idx.push(l);
-            }*/
         }
         else {
             if (node.namedChildCount == 3) {
-                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], null, dim[0], 1);
+                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], null, null, dim[0], 1, 1);
             }
             else if (node.namedChildCount == 4) {
-                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], node.namedChildren[3], dim[0], dim[1]);
+                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], node.namedChildren[3], null, dim[0], dim[1], 1);
+            }
+            else if (node.namedChildCount == 5) {
+                idx = sub2idx(node.namedChildren[1], node.namedChildren[2], node.namedChildren[3], node.namedChildren[4], dim[0], dim[1], dim[2]);
             }
         }
         return idx;

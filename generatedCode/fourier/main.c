@@ -232,11 +232,21 @@ int ndim13 = 2;
 int dim13[2] = {7, 9};
 a = zerosM(ndim13, dim13);
 void *data1 = getdataM(a);
-double* lhs_data1 = (double *)data1;
+int* lhs_data1 = (int *)data1;
 
 for (int k =  1; k <= 63; ++ k) {
+int d2 = ceil((double) k / (9 * 7));
+int tmp = k % (9 * 7);
+if (tmp == 0) {
+    tmp = 9 * 7;
+}
+int d0 = tmp % 9;
+if (d0 == 0) {
+    d0 = 9;
+}
+int d1 = (tmp - d0)/9 + 1;
 int tmp14 = (-1) ^ k * k ^ 2;
-lhs_data1[k] = tmp14;
+lhs_data1[(d2-1) * 9 * 7 + (d1-1) + (d0-1) * 7] = tmp14;
 
 }
 int size1 = 1;
@@ -244,9 +254,9 @@ for (int iter1 = 0 ; iter1 < ndim13; iter1++)
 {
 	size1 *= dim13[iter1];
 }
-Matrix *mat1 = createM(ndim13, dim13, DOUBLE);
+Matrix *mat1 = createM(ndim13, dim13, 0);
 writeM(mat1, size1, lhs_data1);
-Matrix * mat2 = transposeM(a);
+Matrix * mat2 = transposeM(mat1);
 a = mat2;
 printM(mat2);
 fourier_script(mat2);
@@ -255,11 +265,21 @@ int ndim14 = 2;
 int dim14[2] = {7, 9};
 a = zerosM(ndim14, dim14);
 void *data2 = getdataM(a);
-double* lhs_data2 = (double *)data2;
+int* lhs_data2 = (int *)data2;
 
 for (int k =  1; k <= 63; ++ k) {
+int d2 = ceil((double) k / (9 * 7));
+int tmp = k % (9 * 7);
+if (tmp == 0) {
+    tmp = 9 * 7;
+}
+int d0 = tmp % 9;
+if (d0 == 0) {
+    d0 = 9;
+}
+int d1 = (tmp - d0)/9 + 1;
 int tmp17 = ((-1) ^ k) * k ^ 2 / 17;
-lhs_data2[k] = tmp17;
+lhs_data2[(d2-1) * 9 * 7 + (d1-1) + (d0-1) * 7] = tmp17;
 // (-1)^k*k^2/17;
 
 }
@@ -268,9 +288,9 @@ for (int iter2 = 0 ; iter2 < ndim14; iter2++)
 {
 	size2 *= dim14[iter2];
 }
-Matrix *mat3 = createM(ndim14, dim14, DOUBLE);
+Matrix *mat3 = createM(ndim14, dim14, 0);
 writeM(mat3, size2, lhs_data2);
-Matrix * mat4 = transposeM(a);
+Matrix * mat4 = transposeM(mat3);
 a = mat4;
 printM(mat4);
 fourier_script(mat4);
@@ -279,11 +299,21 @@ int ndim15 = 2;
 int dim15[2] = {7, 9};
 a = zerosM(ndim15, dim15);
 void *data3 = getdataM(a);
-double* lhs_data3 = (double *)data3;
+complex* lhs_data3 = (complex *)data3;
 
 for (int k =  1; k <= 63; ++ k) {
+int d2 = ceil((double) k / (9 * 7));
+int tmp = k % (9 * 7);
+if (tmp == 0) {
+    tmp = 9 * 7;
+}
+int d0 = tmp % 9;
+if (d0 == 0) {
+    d0 = 9;
+}
+int d1 = (tmp - d0)/9 + 1;
 complex tmp20 = ((-1) ^ k) * k - k / 17*I;
-lhs_data3[k] = tmp20;
+lhs_data3[(d2-1) * 9 * 7 + (d1-1) + (d0-1) * 7] = tmp20;
 // (-1)^k*k-k/17i;
 
 }
@@ -292,9 +322,9 @@ for (int iter3 = 0 ; iter3 < ndim15; iter3++)
 {
 	size3 *= dim15[iter3];
 }
-Matrix *mat5 = createM(ndim15, dim15, DOUBLE);
+Matrix *mat5 = createM(ndim15, dim15, 2);
 writeM(mat5, size3, lhs_data3);
-Matrix * mat6 = transposeM(a);
+Matrix * mat6 = transposeM(mat5);
 a = mat6;
 printM(mat6);
 fourier_script(mat6);

@@ -855,8 +855,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                             let obj2 = var_types.find(x => x.name === node.valueNode.text);
                             let dim = obj2.dim;
                             // Converts flat index to row-major flat index
+                            if (dim.length == 3) {
                             pushToMain(
-`int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
+`int d3 = 1;
+int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
 int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
 if (tmp == 0) {
     tmp = ${dim[0]} * ${dim[1]};
@@ -865,12 +867,30 @@ int d0 = tmp % ${dim[0]};
 if (d0 == 0) {
     d0 = ${dim[0]};
 }
-int d1 = (tmp - d0)/${dim[0]} + 1;`)
-                            if (lhs_flag) { // subscript is on lhs
+int d1 = (tmp - d0)/${dim[0]} + 1;`) 
+                            } else if (dim.length == 4) {
+                            pushToMain(
+`int d3 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]} * ${dim[2]}));
+int d2 = ((int) ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}))) % ${dim[2]};
+if (d2 == 0) {
+    d2 = ${dim[2]};
+}
+int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
+if (tmp == 0) {
+    tmp = ${dim[0]} * ${dim[1]};
+}
+int d0 = tmp % ${dim[0]};
+if (d0 == 0) {
+    d0 = ${dim[0]};
+}
+int d1 = (tmp - d0)/${dim[0]} + 1;`) 
+                            }
+                            index = flat_idx;
+                            /*if (lhs_flag) { // subscript is on lhs
                                 index = flat_idx;
                             } else {
                                 index = [`(d2-1) * ${dim[0]} * ${dim[1]} + d1 + (d0-1) * ${dim[1]}`]; // d1 - 1 -> d1 because indexM requires 1-indexing
-                            }
+                            }*/
                         } else {
                             for (let i=1; i<node.namedChildCount; i++) {
                                 index.push(transformNode(node.namedChildren[i]));
@@ -1433,7 +1453,7 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)
     }
     
     
-    function sub2idx(dim0_node, dim1_node, dim2_node, d0, d1) {
+    function sub2idx(dim0_node, dim1_node, dim2_node, dim3_node, d0, d1, d2) {
         if (debug == 1) {
             console.log("sub2idx");
         }
@@ -1441,6 +1461,7 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)
         var dim0 = dim0_node.text;
         var dim1 = dim1_node.text;
         var dim2 = dim2_node;
+        var dim3 = dim3_node;
         if (dim0_node.type == g.SyntaxType.Slice) {
             dim0 = slice2list(dim0_node);
         } else if (dim0_node.type == g.SyntaxType.Matrix) {
@@ -1466,13 +1487,30 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)
                 dim2 = [dim2_node.text];
             }
         }
+        if (dim3_node == null) {
+            dim3 = [1];
+        } else {
+            if (dim3_node.type == g.SyntaxType.Slice) {
+                dim3 = slice2list(dim1_node);
+            } else if (dim3_node.type == g.SyntaxType.Matrix) {
+                dim3 = matrix2list(dim1_node);
+            } else {
+                dim3 = [dim3_node.text];
+            }
+        }
+        console.log("DIMS");
+        console.log([dim0, dim1, dim2]);
         let idx = [];
         for (let i = 0; i < dim0.length; i++) {
             for (let j = 0; j < dim1.length; j++) {
-                for (let k = 0; j < dim2.length; j++) {
+                for (let k = 0; k < dim2.length; k++) {
+                    for (let l = 0; l < dim3.length; l++) {
                     //idx.push( (Number(dim2[j])-1) * d0 * d1 + (Number(dim1[j])-1) * d0 + Number(dim0[i]) );
                     //idx.push( `(${dim2[k]}-1) * ${d0} * ${d1} + (${dim1[j]}-1) * ${d0} + (${dim0[i]} - 1)` );
-                    idx.push( `(${dim2[k]}-1) * ${d0} * ${d1} + (${dim1[j]}-1) + (${dim0[i]}-1) * ${d1}` );
+                    //idx.push( `(${dim2[k]}-1) * ${d0} * ${d1} + (${dim1[j]}-1) + (${dim0[i]}-1) * ${d1}` );
+                    idx.push(`(${dim1[j]}-1) + (${dim0[i]}-1)*${d1} + (${dim2[k]}-1)*${d0}*${d1} + (${dim3[l]}-1)*${d0}*${d1}*${d2}`);
+                
+                    }
                 }
             }
         }
@@ -1484,9 +1522,19 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)
         if (debug == 1) {
             console.log("getSubscriptIdx");
         }
-        
+
+        let lhs_flag = false;
+        if (node.parent.type == g.SyntaxType.Assignment) {
+            if (node.parent.leftNode.text == node.text) {
+                lhs_flag = true;
+            }
+        }
+                        
         let obj = var_types.find(x => x.name === node.valueNode.text);
         let dim = obj.dim;
+        if (dim[2] == undefined) {
+            dim.push(1);
+        }
         let idx = [node.namedChildren[1].text];
         // already a linear idx
         if (node.namedChildCount == 2) {
@@ -1497,27 +1545,17 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)
                 //var list = matrix2list(node.namedChildren[1])
                 idx = matrix2list(node.namedChildren[1])
             } else {
-                //var list = [node.namedChildren[1].text];
-                //var idx = [node.namedChildren[1].text];
-                /*pushToMain(
-`int d2 = ceil((double) ${node.namedChildren[1].text} / (${dim[0]} * ${dim[1]}));
-int tmp = ${node.namedChildren[1].text} % (${dim[0]} * ${dim[1]});
-if (tmp == 0) {
-    tmp = ${dim[0]} * ${dim[1]};
-}
-int d0 = tmp % ${dim[0]};
-if (d0 == 0) {
-    d0 = ${dim[0]};
-}
-int d1 = (tmp - d0)/${dim[0]} + 1;`)*/
-                idx = [`(d2-1) * ${dim[0]} * ${dim[1]} + (d1-1) + (d0-1) * ${dim[1]}`];
+                
+                if (lhs_flag) {
+                    idx = [`(d1-1) + (d0-1) * ${dim[1]} + (d2-1) * ${dim[0]} * ${dim[1]} + (d3-1) * ${dim[0]} * ${dim[1]} * ${dim[2]}`];
+                } else {
+                    idx = [`d1 + (d0-1) * ${dim[1]} + (d2-1) * ${dim[0]} * ${dim[1]} + (d3-1) * ${dim[0]} * ${dim[1]} * ${dim[2]}`];
+                }
+                
+                
 
             }
-            /*var idx = [];
-            for (let l of list) {
-                idx.push(Number(l));
-                idx.push(l);
-            }*/
+            
         }
         else {
             if (node.namedChildCount == 3) {
@@ -1525,7 +1563,9 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)*/
                     node.namedChildren[1], 
                     node.namedChildren[2],
                     null,
+                    null,
                     dim[0],
+                    1,
                     1
                 );
             } else if (node.namedChildCount == 4) {
@@ -1533,8 +1573,20 @@ int d1 = (tmp - d0)/${dim[0]} + 1;`)*/
                     node.namedChildren[1], 
                     node.namedChildren[2],
                     node.namedChildren[3],
+                    null,
                     dim[0],
-                    dim[1]
+                    dim[1],
+                    1
+                );
+            } else if (node.namedChildCount == 5) {
+                idx = sub2idx(
+                    node.namedChildren[1], 
+                    node.namedChildren[2],
+                    node.namedChildren[3],
+                    node.namedChildren[4],
+                    dim[0],
+                    dim[1],
+                    dim[2],
                 );
             }
         }

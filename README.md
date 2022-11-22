@@ -503,8 +503,9 @@ generateCode.ts
 | ci_matrix_multiplication  | Yes  |   |
 | cd_matrix_multiplication  | Yes  |   |
 | cc_matrix_multiplication  | Yes  |   |
-| 3d_index_matrix  | No  | Created matrix itself seems to be correct, indexing seems to be off.  |
-| areEqual_matrix  | No  | Indexing seems to be off.  |
+| 3d_index_matrix  | No  | Only works when matrix type is `int`, not `double`.  |
+| 4d_index_matrix  | No  | Only works when matrix type is `int`, not `double`.  |
+| areEqual_matrix  | Yes  | All outputs are the same, however all the matrices are stored/printed as type `int` since that it is their inferred type.  |
 
 # Current limitations/works in progress
 - Initializing cell matrices containing strings

@@ -96,22 +96,22 @@ printf("\n%s", "\n");
 // Flat indexing in Octave must be matched by normal indexing in C
 
 for (int i =  1; i <= 120; ++ i) {
-int d3 = ceil((double) i / (2 * 3 * 4));
-int d2 = ((int) ceil((double) i / (2 * 3))) % 4;
-if (d2 == 0) {
-    d2 = 4;
+int d3_4 = ceil((double) i / (2 * 3 * 4));
+int d2_4 = ((int) ceil((double) i / (2 * 3))) % 4;
+if (d2_4 == 0) {
+    d2_4 = 4;
 }
-int tmp = i % (2 * 3);
-if (tmp == 0) {
-    tmp = 2 * 3;
+int tmp_4 = i % (2 * 3);
+if (tmp_4 == 0) {
+    tmp_4 = 2 * 3;
 }
-int d0 = tmp % 2;
-if (d0 == 0) {
-    d0 = 2;
+int d0_4 = tmp_4 % 2;
+if (d0_4 == 0) {
+    d0_4 = 2;
 }
-int d1 = (tmp - d0)/2 + 1;
+int d1_4 = (tmp_4 - d0_4)/2 + 1;
 int tmp10;
-indexM(mat1, &tmp10, 1, d1 + (d0-1) * 3 + (d2-1) * 2 * 3 + (d3-1) * 2 * 3 * 4);
+indexM(mat1, &tmp10, 1, d1_4 + (d0_4-1) * 3 + (d2_4-1) * 2 * 3 + (d3_4-1) * 2 * 3 * 4);
 printf("\n%d", tmp10);
 
 }
@@ -127,22 +127,22 @@ int* lhs_data2 = (int *)data2;
 
 for (int i =  1; i <= 120; ++ i) {
 //a(i) = counter+0.5;
-int d3 = ceil((double) i / (2 * 3 * 4));
-int d2 = ((int) ceil((double) i / (2 * 3))) % 4;
-if (d2 == 0) {
-    d2 = 4;
+int d3_5 = ceil((double) i / (2 * 3 * 4));
+int d2_5 = ((int) ceil((double) i / (2 * 3))) % 4;
+if (d2_5 == 0) {
+    d2_5 = 4;
 }
-int tmp = i % (2 * 3);
-if (tmp == 0) {
-    tmp = 2 * 3;
+int tmp_5 = i % (2 * 3);
+if (tmp_5 == 0) {
+    tmp_5 = 2 * 3;
 }
-int d0 = tmp % 2;
-if (d0 == 0) {
-    d0 = 2;
+int d0_5 = tmp_5 % 2;
+if (d0_5 == 0) {
+    d0_5 = 2;
 }
-int d1 = (tmp - d0)/2 + 1;
+int d1_5 = (tmp_5 - d0_5)/2 + 1;
 int tmp14 = counter;
-lhs_data2[(d1-1) + (d0-1) * 3 + (d2-1) * 2 * 3 + (d3-1) * 2 * 3 * 4] = tmp14;
+lhs_data2[(d1_5-1) + (d0_5-1) * 3 + (d2_5-1) * 2 * 3 + (d3_5-1) * 2 * 3 * 4] = tmp14;
 counter = counter + 1;
 
 }
@@ -199,22 +199,22 @@ printf("\n%s", "\n");
 // Flat indexing in Octave must be matched by normal indexing in C
 
 for (int i =  1; i <= 120; ++ i) {
-int d3 = ceil((double) i / (2 * 3 * 4));
-int d2 = ((int) ceil((double) i / (2 * 3))) % 4;
-if (d2 == 0) {
-    d2 = 4;
+int d3_8 = ceil((double) i / (2 * 3 * 4));
+int d2_8 = ((int) ceil((double) i / (2 * 3))) % 4;
+if (d2_8 == 0) {
+    d2_8 = 4;
 }
-int tmp = i % (2 * 3);
-if (tmp == 0) {
-    tmp = 2 * 3;
+int tmp_8 = i % (2 * 3);
+if (tmp_8 == 0) {
+    tmp_8 = 2 * 3;
 }
-int d0 = tmp % 2;
-if (d0 == 0) {
-    d0 = 2;
+int d0_8 = tmp_8 % 2;
+if (d0_8 == 0) {
+    d0_8 = 2;
 }
-int d1 = (tmp - d0)/2 + 1;
+int d1_8 = (tmp_8 - d0_8)/2 + 1;
 int tmp22;
-indexM(mat2, &tmp22, 1, d1 + (d0-1) * 3 + (d2-1) * 2 * 3 + (d3-1) * 2 * 3 * 4);
+indexM(mat2, &tmp22, 1, d1_8 + (d0_8-1) * 3 + (d2_8-1) * 2 * 3 + (d3_8-1) * 2 * 3 * 4);
 printf("\n%d", tmp22);
 
 }

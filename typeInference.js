@@ -146,6 +146,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     // If LHS is subscript, type is matrix
                 }
                 else if (node.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */ || node.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
+                    //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
                     var name_2 = node.leftNode.valueNode.text;
                     var v1 = var_types.find(function (x) { return x.name === name_2; });
                     if (v1 != null) {
@@ -166,7 +167,25 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     }
                     var_types = var_types.filter(function (e) { return e.name != name_2; }); // replace if already in var_types
                     var_types.push(v1);
-                }
+                } /*else if (node.leftNode.type == g.SyntaxType.CellSubscript) {
+                    let name = node.leftNode.valueNode.text;
+                    let v1 = var_types.find(x => x.name === name);
+                    if (v1 == null) {
+                            v1 = {
+                            name: name,
+                            type: "heterogeneous",
+                            ndim: 2,
+                            dim: [1,1],
+                            ismatrix: false,
+                            ispointer: false,
+                            isstruct: true,
+                            initialized: false,
+                            scope: findVarScope(node, block_idxs, debug)
+                        };
+                    }
+                    var_types = var_types.filter(function(e) { return e.name != name }); // replace if already in var_types
+                    var_types.push(v1);
+                }*/
                 break;
             }
             case "for_statement" /* g.SyntaxType.ForStatement */: {
@@ -568,10 +587,10 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                 dim = [1, 1];
             }
             if (dim.every(function (val) { return val === 1; })) {
-                return [child_type, 2, dim, false, false, false, custom_functions];
+                return [child_type, dim.length, dim, false, false, false, custom_functions];
             }
             else {
-                return [child_type, 2, dim, true, true, false, custom_functions];
+                return [child_type, dim.length, dim, true, true, false, custom_functions];
             }
             break;
         }

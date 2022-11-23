@@ -67,19 +67,19 @@ printf("\n%s", "\n");
 // Flat indexing in Octave must be matched by normal indexing in C
 
 for (int i =  1; i <= 30; ++ i) {
-int d3 = 1;
-int d2 = ceil((double) i / (2 * 3));
-int tmp = i % (2 * 3);
-if (tmp == 0) {
-    tmp = 2 * 3;
+int d3_3 = 1;
+int d2_3 = ceil((double) i / (2 * 3));
+int tmp_3 = i % (2 * 3);
+if (tmp_3 == 0) {
+tmp_3 = 2 * 3;
 }
-int d0 = tmp % 2;
-if (d0 == 0) {
-    d0 = 2;
+int d0_3 = tmp_3 % 2;
+if (d0_3 == 0) {
+d0_3 = 2;
 }
-int d1 = (tmp - d0)/2 + 1;
+int d1_3 = (tmp_3 - d0_3)/2 + 1;
 int tmp7;
-indexM(mat1, &tmp7, 1, d1 + (d0-1) * 3 + (d2-1) * 2 * 3 + (d3-1) * 2 * 3 * 5);
+indexM(mat1, &tmp7, 1, d1_3 + (d0_3-1) * 3 + (d2_3-1) * 2 * 3 + (d3_3-1) * 2 * 3 * 5);
 printf("\n%d", tmp7);
 
 }
@@ -95,19 +95,19 @@ int* lhs_data2 = (int *)data2;
 
 for (int i =  1; i <= 30; ++ i) {
 //a(i) = counter*counter + 0.5;
-int d3 = 1;
-int d2 = ceil((double) i / (2 * 3));
-int tmp = i % (2 * 3);
-if (tmp == 0) {
-    tmp = 2 * 3;
+int d3_4 = 1;
+int d2_4 = ceil((double) i / (2 * 3));
+int tmp_4 = i % (2 * 3);
+if (tmp_4 == 0) {
+tmp_4 = 2 * 3;
 }
-int d0 = tmp % 2;
-if (d0 == 0) {
-    d0 = 2;
+int d0_4 = tmp_4 % 2;
+if (d0_4 == 0) {
+d0_4 = 2;
 }
-int d1 = (tmp - d0)/2 + 1;
+int d1_4 = (tmp_4 - d0_4)/2 + 1;
 int tmp11 = counter;
-lhs_data2[(d1-1) + (d0-1) * 3 + (d2-1) * 2 * 3 + (d3-1) * 2 * 3 * 5] = tmp11;
+lhs_data2[(d1_4-1) + (d0_4-1) * 3 + (d2_4-1) * 2 * 3 + (d3_4-1) * 2 * 3 * 5] = tmp11;
 counter = counter + 1;
 
 }
@@ -139,19 +139,19 @@ printf("\n%s", "\n");
 // Flat indexing in Octave must be matched by normal indexing in C
 
 for (int i =  1; i <= 30; ++ i) {
-int d3 = 1;
-int d2 = ceil((double) i / (2 * 3));
-int tmp = i % (2 * 3);
-if (tmp == 0) {
-    tmp = 2 * 3;
+int d3_6 = 1;
+int d2_6 = ceil((double) i / (2 * 3));
+int tmp_6 = i % (2 * 3);
+if (tmp_6 == 0) {
+tmp_6 = 2 * 3;
 }
-int d0 = tmp % 2;
-if (d0 == 0) {
-    d0 = 2;
+int d0_6 = tmp_6 % 2;
+if (d0_6 == 0) {
+d0_6 = 2;
 }
-int d1 = (tmp - d0)/2 + 1;
+int d1_6 = (tmp_6 - d0_6)/2 + 1;
 int tmp16;
-indexM(mat2, &tmp16, 1, d1 + (d0-1) * 3 + (d2-1) * 2 * 3 + (d3-1) * 2 * 3 * 5);
+indexM(mat2, &tmp16, 1, d1_6 + (d0_6-1) * 3 + (d2_6-1) * 2 * 3 + (d3_6-1) * 2 * 3 * 5);
 printf("\n%d", tmp16);
 
 }

@@ -68,6 +68,8 @@ for (let file of file_traversal_order) {
     let tree = parser.parse(sourceCode);
     let block_idxs = [];
     [var_types, custom_functions, block_idxs] = typeInference(file, custom_functions, classes, debug);
+    console.log("VARTYPES");
+    console.log(var_types);
     if (file == args[0]) {
         var filename = "main";
     } else {

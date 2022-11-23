@@ -173,15 +173,20 @@ exports.operatorMapping = [
         args_transform: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
-            if (left_ismatrix && right_ismatrix) {
-                return args;
-            }
-            else {
+            if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
                 var type_1 = binaryOpType(left_type, right_type);
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_1; });
-                return [args[0], args[1], obj.matrix_type.toString()];
+                if (left_ismatrix) {
+                    return [args[0], "&scalar", obj.matrix_type.toString()];
+                }
+                else {
+                    return [args[1], "&scalar", obj.matrix_type.toString()];
+                }
+            }
+            else {
+                return args;
             }
         },
         outs_transform: function (outs) { return outs; },
@@ -221,7 +226,35 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) {
+            var left_ismatrix = arg_types[0].ismatrix;
+            var left_type = arg_types[0].type;
+            var right_ismatrix = arg_types[1].ismatrix;
+            var right_type = arg_types[1].type;
+            if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
+                var init_var = [];
+                var val = args[0];
+                var type = left_type;
+                if (left_ismatrix) {
+                    val = args[1];
+                    type = right_type;
+                }
+                init_var.push({
+                    name: 'scalar',
+                    val: val,
+                    type: type,
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                return init_var;
+            }
+            else {
+                return null;
+            }
+        }
     },
     {
         fun_matlab: '/',
@@ -1706,7 +1739,7 @@ exports.builtin_functions = [
         fun_matlab: 'eig',
         fun_c: function (arg_types, outs) { return 'eigM'; },
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (outs) { return null; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2067,17 +2100,6 @@ exports.builtin_functions = [
                 isstruct: false
             };
         },
-        /*push_main_before: (args, arg_types, outs) => {
-            let dim = `{${args.join(", ")}}`;
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
-            }
-            
-            //return `int ndim = ${ndim};\nint dim[${ndim}] = ${dim};`;
-            return `ndim = ${ndim};\ndim[${ndim}] = ${dim};`;
-        },*/
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) {
@@ -2224,6 +2246,94 @@ exports.builtin_functions = [
             init_var.push({
                 name: 'dim',
                 val: dim,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        }
+    },
+    {
+        fun_matlab: 'cell',
+        fun_c: function (arg_types, outs) { return null; },
+        args_transform: function (args, arg_types, outs) {
+            var dim = "{".concat(args.join(", "), "}");
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                ndim = 2;
+            }
+            //return [ndim, dim];
+            return ['ndim', 'dim'];
+        },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = [];
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            }
+            else {
+                for (var _i = 0, args_3 = args; _i < args_3.length; _i++) {
+                    var arg = args_3[_i];
+                    dim.push(Number(arg));
+                }
+            }
+            return {
+                type: 'heterogeneous',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) {
+            var dim = [];
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            }
+            else {
+                for (var _i = 0, args_4 = args; _i < args_4.length; _i++) {
+                    var arg = args_4[_i];
+                    dim.push(Number(arg));
+                }
+            }
+            var numel = dim.reduce(function (a, b) { return a * b; });
+            return "\nMatrix **".concat(outs[0], " = NULL;\n").concat(outs[0], " = malloc(").concat(numel, "*sizeof(*").concat(outs[0], "));\n\t        ");
+        },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = "{".concat(args.join(", "), "}");
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                ndim = 2;
+            }
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: "".concat(ndim),
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: "".concat(dim),
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
@@ -2622,6 +2732,7 @@ exports.builtin_functions = [
                 }
                 else if (arg_types[0].type == 'char') {
                     format = '"\\n%s"';
+                    args[0] = args[0].replace(/'/g, '"');
                 }
                 return [format, args[0]];
             }

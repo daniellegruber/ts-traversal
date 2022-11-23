@@ -202,14 +202,19 @@ export const operatorMapping: functionMapping[] = [
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
             
-            if (left_ismatrix && right_ismatrix) {
-                return args;
-            } else {
+            if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
                 let left_type = arg_types[0].type;
                 let right_type = arg_types[1].type;
                 let type = binaryOpType(left_type, right_type);
                 let obj = type_to_matrix_type.find(x => x.type === type);
-                return [args[0], args[1], obj.matrix_type.toString()];
+                if (left_ismatrix) {
+                    return [args[0], "&scalar", obj.matrix_type.toString()];
+                } else {
+                    return [args[1], "&scalar", obj.matrix_type.toString()];
+                }
+                
+            } else {
+                return args;
             }
         },
 		outs_transform: (outs) => outs,
@@ -250,7 +255,34 @@ export const operatorMapping: functionMapping[] = [
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null
+        init_before: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let left_type = arg_types[0].type;
+            let right_ismatrix = arg_types[1].ismatrix;
+            let right_type = arg_types[1].type;
+            if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
+                let init_var: InitVar[] = [];
+                let val = args[0];
+                let type = left_type;
+                if (left_ismatrix) {
+                    val = args[1];
+                    type = right_type;
+                }
+                init_var.push({
+                    name: 'scalar',
+                    val: val,
+                    type: type,
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                return init_var;
+            } else {
+                return null;
+            }
+        }
     },
     { // Matrix * mrdivideM(Matrix *m, Matrix *n)
         fun_matlab: '/', 
@@ -287,7 +319,6 @@ export const operatorMapping: functionMapping[] = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -1780,7 +1811,7 @@ export const builtin_functions = [
         fun_matlab: 'eig', 
         fun_c: (arg_types, outs) => 'eigM', 
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => null,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2149,17 +2180,6 @@ export const builtin_functions = [
                 isstruct: false 
             };
         },
-        /*push_main_before: (args, arg_types, outs) => {
-            let dim = `{${args.join(", ")}}`;
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
-            }
-            
-            //return `int ndim = ${ndim};\nint dim[${ndim}] = ${dim};`;
-            return `ndim = ${ndim};\ndim[${ndim}] = ${dim};`;
-        },*/
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => {
@@ -2309,6 +2329,96 @@ export const builtin_functions = [
             init_var.push({
                 name: 'dim',
                 val: dim,
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: ndim > 1,
+                ispointer: false,
+                isstruct: false
+            })
+            return init_var;
+        }
+    },
+    { 
+        fun_matlab: 'cell', 
+        fun_c: (arg_types, outs) => null, 
+        args_transform: (args, arg_types, outs) => {
+            var dim = `{${args.join(", ")}}`;
+            var ndim = args.length;
+            
+            if (args.length == 1) {
+                dim = `{${args[0]},${args[0]}}`;
+                ndim = 2;
+            }
+            //return [ndim, dim];
+            return ['ndim', 'dim'];
+        },
+		outs_transform: (outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            var dim = [];
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            } else {
+                for (let arg of args) {
+                    dim.push(Number(arg));
+                }
+            }
+            
+            return {
+                type: 'heterogeneous',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true, //false,
+                ispointer: true,
+                isstruct: false, //true 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => {
+            var dim = [];
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            } else {
+                for (let arg of args) {
+                    dim.push(Number(arg));
+                }
+            }
+            let numel = dim.reduce(function(a, b) {return a * b;});
+            return `
+Matrix **${outs[0]} = NULL;
+${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
+	        `
+        },
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            let dim = `{${args.join(", ")}}`;
+            let ndim = args.length;
+            if (args.length == 1) {
+                dim = `{${args[0]},${args[0]}}`;
+                ndim = 2;
+            }
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: 'ndim',
+                val: `${ndim}`,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'dim',
+                val: `${dim}`,
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
@@ -2708,6 +2818,7 @@ export const builtin_functions = [
                     format = '"\\n%d"';
                 } else if (arg_types[0].type == 'char') {
                     format = '"\\n%s"';
+                    args[0] = args[0].replace(/'/g, '"');
                 }
                 return [format, args[0]];
             }

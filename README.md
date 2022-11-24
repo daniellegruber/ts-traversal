@@ -511,6 +511,8 @@ generateCode.ts
 | 4d_index_matrix  | No  | Only works when matrix type is `int`, not `double`.  |
 | areEqual_matrix  | Yes  | All outputs are the same, however all the matrices are stored/printed as type `int` since that it is their inferred type. |
 | eigen  | No  | Kind of works when I comment out `free(input)` stuff, probably a memory allocation issue? |
+| elem_divide_matrix  | No  | Casting to complex (or other type) makes all values zero. |
+
 
 # Current limitations/works in progress
 - Initializing cell matrices containing strings

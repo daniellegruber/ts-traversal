@@ -513,6 +513,7 @@ generateCode.ts
 | eigen  | No  | Kind of works when I comment out `free(input)` stuff, probably a memory allocation issue? |
 | elem_divide_matrix  | No  | Casting to complex (or other type) makes all values zero. |
 | elem_power_matrix  | Yes  |  |
+| elem_scalarpower_matrix  | No  | Choice of when to use cpow is different, e.g., line 360 in main.c/line 359 in octave_main.c. |
 | fourier  | No  | |
 
 

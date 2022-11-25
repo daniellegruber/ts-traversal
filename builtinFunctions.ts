@@ -399,11 +399,17 @@ export const operatorMapping: functionMapping[] = [
         fun_matlab: '^', 
         fun_c: (arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
+            let left_type = arg_types[0].type;
             let right_ismatrix = arg_types[1].ismatrix;
+            let right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
                 return 'mpowerM';
             } else {
-                return null;
+                if (left_type == 'complex' || right_type != 'int') {
+                    return 'cpow';
+                } else {
+                    return 'pow';
+                }
             }
         },  
         args_transform: (args, arg_types, outs) => args,
@@ -417,16 +423,22 @@ export const operatorMapping: functionMapping[] = [
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
             let left_dim = arg_types[0].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let right_ismatrix = arg_types[1].ismatrix;
+            let type = binaryOpType(left_type, right_type);
+            if (left_type == 'complex' || right_type != 'int') {
+                type = 'complex';
+            }
             
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
+                type: type, // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
-                ispointer: true,
+                ismatrix: left_ismatrix && !right_ismatrix,
+                ispointer: left_ismatrix && !right_ismatrix,
                 isstruct: false 
             };
         },
@@ -552,17 +564,42 @@ export const operatorMapping: functionMapping[] = [
         init_before: (args, arg_types, outs) => null
     },
     { // Matrix * powerM(Matrix *m, Matrix *n)
+      // Matrix * scalarpowerM(Matrix* restrict m, void* restrict exponent, int type)
         fun_matlab: '.^', 
         fun_c: (arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
+            /*if (!left_ismatrix && !right_ismatrix) {
+                return null;
+            } else {
+                return 'powerM';
+            }*/
             if (left_ismatrix && right_ismatrix) {
                 return 'powerM';
+            } if (left_ismatrix && !right_ismatrix) {
+                return 'scalarpowerM';
             } else {
                 return null;
             }
         },   
-        args_transform: (args, arg_types, outs) => args,
+        args_transform: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            let left_type = arg_types[0].type;
+            let right_type = arg_types[1].type;
+            if (left_ismatrix && !right_ismatrix) {
+                let type = binaryOpType(left_type, right_type);
+                let obj = type_to_matrix_type.find(x => x.type === type);
+                let isnum = /^\d+$/.test(args[1]);
+                    if (isnum) {
+                        return [args[0], 'scalar', `${obj.matrix_type}`];
+                    } else {
+                        return [args[0], `&${args[1]}`, `${obj.matrix_type}`];
+                    }
+            } else {
+                return args;
+            }
+        },
 		outs_transform: (outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -588,7 +625,35 @@ export const operatorMapping: functionMapping[] = [
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null
+        init_before: (args, arg_types, outs) => {
+            let left_type = arg_types[0].type;
+            let left_ndim = arg_types[0].ndim;
+            let left_dim = arg_types[0].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_type = arg_types[1].type;
+            let right_ndim = arg_types[1].ndim;
+            let right_dim = arg_types[1].dim;
+            let right_ismatrix = arg_types[1].ismatrix;
+            
+            if (left_ismatrix && !right_ismatrix) {
+                let isnum = /^\d+$/.test(args[1]);
+                if (isnum) {
+                    let init_var: InitVar[] = [];
+                    init_var.push({
+                        name: 'scalar',
+                        val: `${args[1]}`,
+                        type: right_type,
+                        ndim: right_ndim,
+                        dim: [right_ndim],
+                        ismatrix: false,
+                        ispointer: false,
+                        isstruct: false
+                    })
+                    return init_var;
+                }
+            }
+            return null;
+        }
     },
     { // Matrix * ltM(Matrix *m, Matrix *n)
         fun_matlab: '<', 
@@ -2207,7 +2272,7 @@ export const builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2280,7 +2345,7 @@ export const builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2332,7 +2397,7 @@ export const builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2422,7 +2487,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2897,7 +2962,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2954,7 +3019,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             })

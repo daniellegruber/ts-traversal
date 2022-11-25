@@ -371,12 +371,19 @@ exports.operatorMapping = [
         fun_matlab: '^',
         fun_c: function (arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
+            var left_type = arg_types[0].type;
             var right_ismatrix = arg_types[1].ismatrix;
+            var right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
                 return 'mpowerM';
             }
             else {
-                return null;
+                if (left_type == 'complex' || right_type != 'int') {
+                    return 'cpow';
+                }
+                else {
+                    return 'pow';
+                }
             }
         },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -389,15 +396,21 @@ exports.operatorMapping = [
             var left_type = arg_types[0].type;
             var left_ndim = arg_types[0].ndim;
             var left_dim = arg_types[0].dim;
+            var left_ismatrix = arg_types[0].ismatrix;
             var right_type = arg_types[1].type;
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
+            var right_ismatrix = arg_types[1].ismatrix;
+            var type = binaryOpType(left_type, right_type);
+            if (left_type == 'complex' || right_type != 'int') {
+                type = 'complex';
+            }
             return {
-                type: binaryOpType(left_type, right_type),
+                type: type,
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
-                ispointer: true,
+                ismatrix: left_ismatrix && !right_ismatrix,
+                ispointer: left_ismatrix && !right_ismatrix,
                 isstruct: false
             };
         },
@@ -520,18 +533,46 @@ exports.operatorMapping = [
         init_before: function (args, arg_types, outs) { return null; }
     },
     {
+        // Matrix * scalarpowerM(Matrix* restrict m, void* restrict exponent, int type)
         fun_matlab: '.^',
         fun_c: function (arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
+            /*if (!left_ismatrix && !right_ismatrix) {
+                return null;
+            } else {
+                return 'powerM';
+            }*/
             if (left_ismatrix && right_ismatrix) {
                 return 'powerM';
+            }
+            if (left_ismatrix && !right_ismatrix) {
+                return 'scalarpowerM';
             }
             else {
                 return null;
             }
         },
-        args_transform: function (args, arg_types, outs) { return args; },
+        args_transform: function (args, arg_types, outs) {
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_ismatrix = arg_types[1].ismatrix;
+            var left_type = arg_types[0].type;
+            var right_type = arg_types[1].type;
+            if (left_ismatrix && !right_ismatrix) {
+                var type_4 = binaryOpType(left_type, right_type);
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_4; });
+                var isnum = /^\d+$/.test(args[1]);
+                if (isnum) {
+                    return [args[0], 'scalar', "".concat(obj.matrix_type)];
+                }
+                else {
+                    return [args[0], "&".concat(args[1]), "".concat(obj.matrix_type)];
+                }
+            }
+            else {
+                return args;
+            }
+        },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
@@ -555,7 +596,34 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) {
+            var left_type = arg_types[0].type;
+            var left_ndim = arg_types[0].ndim;
+            var left_dim = arg_types[0].dim;
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_type = arg_types[1].type;
+            var right_ndim = arg_types[1].ndim;
+            var right_dim = arg_types[1].dim;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && !right_ismatrix) {
+                var isnum = /^\d+$/.test(args[1]);
+                if (isnum) {
+                    var init_var = [];
+                    init_var.push({
+                        name: 'scalar',
+                        val: "".concat(args[1]),
+                        type: right_type,
+                        ndim: right_ndim,
+                        dim: [right_ndim],
+                        ismatrix: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                    return init_var;
+                }
+            }
+            return null;
+        }
     },
     {
         fun_matlab: '<',
@@ -2126,7 +2194,7 @@ exports.builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2199,7 +2267,7 @@ exports.builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2249,7 +2317,7 @@ exports.builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2337,7 +2405,7 @@ exports.builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2807,7 +2875,7 @@ exports.builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2860,7 +2928,7 @@ exports.builtin_functions = [
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
-                ismatrix: ndim > 1,
+                ismatrix: false,
                 ispointer: false,
                 isstruct: false
             });

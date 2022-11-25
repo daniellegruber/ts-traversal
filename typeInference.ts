@@ -556,20 +556,29 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             } else {
                 var ismatrix = false;
             }
-                    
+            
+            let type = left_type;
             if (left_type == right_type) {
-                return [left_type, ndim, dim, ismatrix, false, false, custom_functions];
+                type = left_type;
             } else if (left_type == 'complex' || right_type == 'complex') {
-                return ['complex', ndim, dim, ismatrix, false, false, custom_functions];
+                type = 'complex';
             } else if (left_type == 'double' || right_type == 'double') {
-                return ['double', ndim, dim, ismatrix, false, false, custom_functions];
+                type = 'double';
             } else if (left_type == 'bool') {
-                return [right_type, ndim, dim, ismatrix, false, false, custom_functions];
+                type = right_type;
             } else if (right_type == 'bool') {
-                return [left_type, ndim, dim, ismatrix, false, false, custom_functions];
+                type = left_type;
             } else {
                 return ['unknown', 2, [1, 1], false, false, false, custom_functions];
             }
+                
+            if (node.operatorNode.type == "^") {
+                if (left_type == 'complex' || right_type != 'int') {
+                    type = 'complex';
+                }
+            }
+
+            return [type, ndim, dim, ismatrix, ismatrix, false, custom_functions];
             break;
         }
         
@@ -613,6 +622,9 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
         }
         // Identifier
         case g.SyntaxType.Identifier: {
+            if (node.text == "INT_MAX" || node.text == "INT_MIN") {
+                return ['int', 1, [1], false, false, false, custom_functions];
+            }
             let obj = var_types.find(x => x.name === node.text);
             if (obj != null) {
                 return [obj.type, obj.ndim, obj.dim, obj.ismatrix, obj.ispointer, obj.isstruct, custom_functions];

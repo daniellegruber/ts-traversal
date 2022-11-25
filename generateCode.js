@@ -462,10 +462,38 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         pushToMain("".concat(lhs, " = ").concat(rhs, ";"));
                     }
                     else {
-                        var var_type_1 = var_types.find(function (x) { return x.name === lhs; });
+                        var var_type_1 = var_types.find(function (x) { return x.name == lhs; });
                         if (var_type_1 != null && var_type_1 != undefined) {
                             if (var_type_1.initialized && (var_type_1.type == type) && (node.leftNode.startIndex > var_type_1.scope[0]) && (node.leftNode.endIndex < var_type_1.scope[1])) {
                                 pushToMain("".concat(lhs, " = ").concat(rhs, ";"));
+                            }
+                            else if (var_type_1.initialized && (var_type_1.type != type)) {
+                                var tmp = generateTmpVar(var_type_1.name);
+                                var scope = (0, typeInference_1.findVarScope)(node, block_idxs, debug);
+                                var_types.push({
+                                    name: tmp,
+                                    type: type,
+                                    ndim: ndim,
+                                    dim: dim,
+                                    ismatrix: ismatrix,
+                                    initialized: true,
+                                    scope: scope
+                                });
+                                alias_tbl = alias_tbl.filter(function (e) { return e.name !== lhs; });
+                                alias_tbl.push({
+                                    name: lhs,
+                                    tmp_var: tmp,
+                                    scope: scope
+                                });
+                                if (ismatrix) {
+                                    pushToMain("Matrix * ".concat(tmp, " = ").concat(rhs, ";"));
+                                }
+                                else if (ispointer) {
+                                    pushToMain("".concat(type, " * ").concat(tmp, " = ").concat(rhs, ";"));
+                                }
+                                else {
+                                    pushToMain("".concat(type, " ").concat(tmp, " = ").concat(rhs, ";"));
+                                }
                             }
                             else {
                                 if (ismatrix) {
@@ -502,6 +530,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         }
                         else {
                             if (ismatrix) {
+                                //console.log("HELLO2");
+                                //console.log(`Matrix * ${lhs} = ${rhs};`);
                                 pushToMain("Matrix * ".concat(lhs, " = ").concat(rhs, ";"));
                             }
                             else if (ispointer) {
@@ -520,6 +550,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 initialized: true,
                                 scope: scope
                             });
+                            //console.log(var_types);
                             var obj = tmp_tbl.find(function (x) { return "".concat(x.name).concat(x.count) === rhs; });
                             if (obj != null && obj != undefined) {
                                 alias_tbl = alias_tbl.filter(function (e) { return e.name !== lhs; });
@@ -648,7 +679,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         var _j = (0, typeInference_1.inferType)(outs[0], var_types, custom_functions, classes, file, alias_tbl, debug), ismatrix_2 = _j[3], c_4 = _j[6];
                         custom_functions = c_4;
                         if (num_back == 0) {
-                            pushToMain("void *".concat(tmp_data, " = getdataM(").concat(node.leftNode.valueNode.text, ");"));
+                            pushToMain("void *".concat(tmp_data, " = getdataM(").concat(transformNode(node.leftNode.valueNode), ");"));
                             pushToMain("".concat(type, "* ").concat(tmp_lhs, " = (").concat(type, " *)").concat(tmp_data, ";"));
                         }
                         else {
@@ -811,11 +842,16 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 var tmp_var_1 = generateTmpVar(init_before[i].name);
                                 args[args.indexOf(init_before[i].name)] = tmp_var_1;
                                 args[args.indexOf("&" + init_before[i].name)] = "&" + tmp_var_1;
-                                if (init_before[i].ndim > 1) {
-                                    pushToMain("".concat(init_before[i].type, " ").concat(tmp_var_1, "[").concat(init_before[i].ndim, "] = ").concat(init_before[i].val, ";"));
+                                if (init_before[i].ismatrix) {
+                                    pushToMain("Matrix * ".concat(tmp_var_1, " = ").concat(init_before[i].val, ";"));
                                 }
                                 else {
-                                    pushToMain("".concat(init_before[i].type, " ").concat(tmp_var_1, " = ").concat(init_before[i].val, ";"));
+                                    if (init_before[i].ndim > 1) {
+                                        pushToMain("".concat(init_before[i].type, " ").concat(tmp_var_1, "[").concat(init_before[i].ndim, "] = ").concat(init_before[i].val, ";"));
+                                    }
+                                    else {
+                                        pushToMain("".concat(init_before[i].type, " ").concat(tmp_var_1, " = ").concat(init_before[i].val, ";"));
+                                    }
                                 }
                                 var_types.push({
                                     name: tmp_var_1,
@@ -1240,11 +1276,21 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 var tmp_var = generateTmpVar(init_before[i].name);
                 args[args.indexOf(init_before[i].name)] = tmp_var;
                 args[args.indexOf("&" + init_before[i].name)] = "&" + tmp_var;
-                if (init_before[i].ndim > 1) {
-                    pushToMain("".concat(init_before[i].type, " ").concat(tmp_var, "[").concat(init_before[i].ndim, "] = ").concat(init_before[i].val, ";"));
+                for (var j = 0; j < init_before.length; j++) {
+                    //unicorn
+                    var re = new RegExp("\\b".concat(init_before[i].name, "\\b"));
+                    init_before[j].val = init_before[j].val.replace(re, tmp_var);
+                }
+                if (init_before[i].ismatrix) {
+                    pushToMain("Matrix * ".concat(tmp_var, " = ").concat(init_before[i].val, ";"));
                 }
                 else {
-                    pushToMain("".concat(init_before[i].type, " ").concat(tmp_var, " = ").concat(init_before[i].val, ";"));
+                    if (init_before[i].ndim > 1) {
+                        pushToMain("".concat(init_before[i].type, " ").concat(tmp_var, "[").concat(init_before[i].ndim, "] = ").concat(init_before[i].val, ";"));
+                    }
+                    else {
+                        pushToMain("".concat(init_before[i].type, " ").concat(tmp_var, " = ").concat(init_before[i].val, ";"));
+                    }
                 }
                 var_types.push({
                     name: tmp_var,

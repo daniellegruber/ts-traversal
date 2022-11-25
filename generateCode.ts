@@ -555,17 +555,42 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                         lhs = outs[0];
                     }
                 }
-                
+
                 if (lhs == null && rhs != undefined && rhs != null) {
                     pushToMain(`${rhs};`);   
                 } else if (init_flag && rhs != undefined && rhs != null) {
                     if (lhs[0].indexOf("[") > -1 || lhs.indexOf("[") > -1) {
                         pushToMain(`${lhs} = ${rhs};`);
                     } else {
-                        let var_type = var_types.find(x => x.name === lhs);
+                        let var_type = var_types.find(x => x.name == lhs);
                         if (var_type != null && var_type != undefined) { 
                             if (var_type.initialized && (var_type.type == type) && (node.leftNode.startIndex > var_type.scope[0]) && (node.leftNode.endIndex < var_type.scope[1])) {
                                 pushToMain(`${lhs} = ${rhs};`);
+                            } else if (var_type.initialized && (var_type.type != type)) {
+                                let tmp = generateTmpVar(var_type.name);
+                                let scope = findVarScope(node, block_idxs, debug);
+                                var_types.push({
+                                    name: tmp,
+                                    type: type,
+                                    ndim: ndim,
+                                    dim: dim,
+                                    ismatrix: ismatrix,
+                                    initialized: true,
+                                    scope: scope
+                                });
+                                alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
+                                alias_tbl.push({
+                                    name: lhs,
+                                    tmp_var: tmp,
+                                    scope: scope
+                                });
+                                if (ismatrix) {
+                                    pushToMain(`Matrix * ${tmp} = ${rhs};`);
+                                } else if (ispointer) {
+                                    pushToMain(`${type} * ${tmp} = ${rhs};`);
+                                } else {
+                                    pushToMain(`${type} ${tmp} = ${rhs};`);
+                                }
                             } else {
                                 if (ismatrix) {
                                     if (var_type.initialized) {
@@ -753,7 +778,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`);
                         let [,,, ismatrix,,, c] = inferType(outs[0], var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
                         if (num_back == 0) {
-                            pushToMain(`void *${tmp_data} = getdataM(${node.leftNode.valueNode.text});`);
+                            pushToMain(`void *${tmp_data} = getdataM(${transformNode(node.leftNode.valueNode)});`);
                             pushToMain(`${type}* ${tmp_lhs} = (${type} *)${tmp_data};`);
                         } else {
                             insertMain(`void *${tmp_data} = getdataM(${transformNode(node.leftNode.valueNode)});`, 'for', num_back);
@@ -928,15 +953,18 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         var tmp_var = generateTmpVar("tmp");
                         args = obj.args_transform(args, arg_types, outs);
                         if (init_before != null && init_before != undefined) {
-                            
                             for (let i = 0; i < init_before.length; i++) {
                                 let tmp_var = generateTmpVar(init_before[i].name);
                                 args[args.indexOf(init_before[i].name)] = tmp_var;
                                 args[args.indexOf("&" + init_before[i].name)] = "&" + tmp_var;
-                                if (init_before[i].ndim > 1) {
-                                    pushToMain(`${init_before[i].type} ${tmp_var}[${init_before[i].ndim}] = ${init_before[i].val};`)  
+                                if (init_before[i].ismatrix) {
+                                    pushToMain(`Matrix * ${tmp_var} = ${init_before[i].val};`)
                                 } else {
-                                    pushToMain(`${init_before[i].type} ${tmp_var} = ${init_before[i].val};`)
+                                    if (init_before[i].ndim > 1) {
+                                        pushToMain(`${init_before[i].type} ${tmp_var}[${init_before[i].ndim}] = ${init_before[i].val};`)  
+                                    } else {
+                                        pushToMain(`${init_before[i].type} ${tmp_var} = ${init_before[i].val};`)
+                                    }
                                 }
                                 var_types.push({
                                     name: tmp_var,
@@ -1396,10 +1424,19 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 let tmp_var = generateTmpVar(init_before[i].name);
                 args[args.indexOf(init_before[i].name)] = tmp_var;
                 args[args.indexOf("&" + init_before[i].name)] = "&" + tmp_var;
-                if (init_before[i].ndim > 1) {
-                    pushToMain(`${init_before[i].type} ${tmp_var}[${init_before[i].ndim}] = ${init_before[i].val};`)  
+                for (let j = 0; j < init_before.length; j++) {
+                    //unicorn
+                    let re = new RegExp(`\\b${init_before[i].name}\\b`);
+                    init_before[j].val = init_before[j].val.replace(re, tmp_var);
+                }
+                if (init_before[i].ismatrix) {
+                    pushToMain(`Matrix * ${tmp_var} = ${init_before[i].val};`)
                 } else {
-                    pushToMain(`${init_before[i].type} ${tmp_var} = ${init_before[i].val};`)
+                    if (init_before[i].ndim > 1) {
+                        pushToMain(`${init_before[i].type} ${tmp_var}[${init_before[i].ndim}] = ${init_before[i].val};`)  
+                    } else {
+                        pushToMain(`${init_before[i].type} ${tmp_var} = ${init_before[i].val};`)
+                    }
                 }
                 var_types.push({
                     name: tmp_var,

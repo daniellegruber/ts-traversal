@@ -235,18 +235,19 @@ void *data1 = getdataM(a);
 int* lhs_data1 = (int *)data1;
 
 for (int k =  1; k <= 63; ++ k) {
-int d2 = ceil((double) k / (9 * 7));
-int tmp = k % (9 * 7);
-if (tmp == 0) {
-    tmp = 9 * 7;
+int d3_1 = 1;
+int d2_1 = ceil((double) k / (9 * 7));
+int tmp_1 = k % (9 * 7);
+if (tmp_1 == 0) {
+tmp_1 = 9 * 7;
 }
-int d0 = tmp % 9;
-if (d0 == 0) {
-    d0 = 9;
+int d0_1 = tmp_1 % 9;
+if (d0_1 == 0) {
+d0_1 = 9;
 }
-int d1 = (tmp - d0)/9 + 1;
+int d1_1 = (tmp_1 - d0_1)/9 + 1;
 int tmp14 = (-1) ^ k * k ^ 2;
-lhs_data1[(d2-1) * 9 * 7 + (d1-1) + (d0-1) * 7] = tmp14;
+lhs_data1[(d1_1-1) + (d0_1-1) * 7 + (d2_1-1) * 9 * 7 + (d3_1-1) * 9 * 7 * 1] = tmp14;
 
 }
 int size1 = 1;
@@ -264,22 +265,23 @@ fourier_script(mat2);
 int ndim14 = 2;
 int dim14[2] = {7, 9};
 a = zerosM(ndim14, dim14);
-void *data2 = getdataM(a);
+void *data2 = getdataM(mat2);
 int* lhs_data2 = (int *)data2;
 
 for (int k =  1; k <= 63; ++ k) {
-int d2 = ceil((double) k / (9 * 7));
-int tmp = k % (9 * 7);
-if (tmp == 0) {
-    tmp = 9 * 7;
+int d3_2 = 1;
+int d2_2 = ceil((double) k / (9 * 7));
+int tmp_2 = k % (9 * 7);
+if (tmp_2 == 0) {
+tmp_2 = 9 * 7;
 }
-int d0 = tmp % 9;
-if (d0 == 0) {
-    d0 = 9;
+int d0_2 = tmp_2 % 9;
+if (d0_2 == 0) {
+d0_2 = 9;
 }
-int d1 = (tmp - d0)/9 + 1;
+int d1_2 = (tmp_2 - d0_2)/9 + 1;
 int tmp17 = ((-1) ^ k) * k ^ 2 / 17;
-lhs_data2[(d2-1) * 9 * 7 + (d1-1) + (d0-1) * 7] = tmp17;
+lhs_data2[(d1_2-1) + (d0_2-1) * 7 + (d2_2-1) * 9 * 7 + (d3_2-1) * 9 * 7 * 1] = tmp17;
 // (-1)^k*k^2/17;
 
 }
@@ -298,22 +300,23 @@ fourier_script(mat4);
 int ndim15 = 2;
 int dim15[2] = {7, 9};
 a = zerosM(ndim15, dim15);
-void *data3 = getdataM(a);
+void *data3 = getdataM(mat4);
 complex* lhs_data3 = (complex *)data3;
 
 for (int k =  1; k <= 63; ++ k) {
-int d2 = ceil((double) k / (9 * 7));
-int tmp = k % (9 * 7);
-if (tmp == 0) {
-    tmp = 9 * 7;
+int d3_3 = 1;
+int d2_3 = ceil((double) k / (9 * 7));
+int tmp_3 = k % (9 * 7);
+if (tmp_3 == 0) {
+tmp_3 = 9 * 7;
 }
-int d0 = tmp % 9;
-if (d0 == 0) {
-    d0 = 9;
+int d0_3 = tmp_3 % 9;
+if (d0_3 == 0) {
+d0_3 = 9;
 }
-int d1 = (tmp - d0)/9 + 1;
+int d1_3 = (tmp_3 - d0_3)/9 + 1;
 complex tmp20 = ((-1) ^ k) * k - k / 17*I;
-lhs_data3[(d2-1) * 9 * 7 + (d1-1) + (d0-1) * 7] = tmp20;
+lhs_data3[(d1_3-1) + (d0_3-1) * 7 + (d2_3-1) * 9 * 7 + (d3_3-1) * 9 * 7 * 1] = tmp20;
 // (-1)^k*k-k/17i;
 
 }

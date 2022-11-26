@@ -515,6 +515,7 @@ generateCode.ts
 | elem_power_matrix  | Yes  |  |
 | elem_scalarpower_matrix  | No  | Choice of when to use cpow is different, e.g., line 360 in main.c/line 359 in octave_main.c. |
 | fourier  | No  | |
+| determinant_matrix | No  | |
 
 
 # Current limitations/works in progress

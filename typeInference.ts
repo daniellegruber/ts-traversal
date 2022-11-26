@@ -148,7 +148,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
         }
     } while(gotoPreorderSucc_SkipFunctionDef(cursor, debug));
     
-    
+    let count = 0;
     cursor = tree.walk();
     do {
         const c = cursor as g.TypedTreeCursor;
@@ -158,16 +158,32 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 // If LHS is an identifier, type is same as RHS
                 let [type, ndim, dim, ismatrix, ispointer, isstruct, cf] = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug);
                 custom_functions = cf;
+                let scope = findVarScope(node, block_idxs, debug);
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
                     let name = node.leftNode.text;
-                    let v1 = var_types.find(x => x.name === name);
-                    if (v1 != null) {
-                        v1.type = type;
-                        v1.ndim = ndim; 
-                        v1.dim = dim; 
-                        v1.ismatrix = ismatrix;
-                        v1.ispointer = type == 'char' || ismatrix;
-                        v1.isstruct = isstruct;
+                    //let v1 = var_types.find(x => x.name === name);
+                    let v1 = var_types.filter(function(e) { return e.name == name});
+                    //if (v1 != null && v1 != undefined) {
+                    if (v1.length > 0) {
+                        count = count + 1;
+                        v1 = v1[v1.length - 1];
+                        //var_types = var_types.filter(function(e) { return (e.name != v1.name) && (e.scope !== v1.scope)}); // replace if already in var_types
+                        var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v1)}); // replace if already in var_types
+                        v1.scope = [v1.scope[0], node.startIndex - 1];
+                        var_types.push(v1);
+                        
+                        let v2 = {
+                            name: v1.name,
+                            type: type,
+                            ndim: ndim,
+                            dim: dim,
+                            ismatrix: ismatrix,
+                            ispointer: type == 'char' || ismatrix,
+                            isstruct: isstruct,
+                            scope: [node.startIndex, scope[1]],
+                            initialized: true//false
+                        }
+                        var_types.push(v2);
                     } else {
                         v1 = { 
                             name: node.leftNode.text, 
@@ -178,21 +194,23 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                             ispointer: type == 'char' || ismatrix,
                             isstruct: isstruct,
                             initialized: false,
-                            scope: findVarScope(node, block_idxs, debug)
+                            scope: scope
                         };
+                        var_types.push(v1);
                     }
                         
-                    var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
-                    var_types.push(v1);
+                    //var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
+                    //var_types.push(v1);
                 // If LHS is subscript, type is matrix
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript ) {
                 //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
                     let name = node.leftNode.valueNode.text;
-                    let v1 = var_types.find(x => x.name === name);
-                    if (v1 != null) {
-                        v1.type = type;
+                    let v3 = var_types.find(x => (x.name == name) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
+                    if (v3 != null && v3 != undefined) {
+                        var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v3)}); // replace if already in var_types
+                        v3.type = type;
                     } else {
-                            v1 = { 
+                            v3 = { 
                             name: name, 
                             type: type, 
                             ndim: 2, 
@@ -201,11 +219,11 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                             ispointer: true,
                             isstruct: false,
                             initialized: false,
-                            scope: findVarScope(node, block_idxs, debug)
+                            scope: scope
                         };
                     }
-                    var_types = var_types.filter(function(e) { return e.name != name }); // replace if already in var_types
-                    var_types.push(v1);
+                    
+                    var_types.push(v3);
                 } /*else if (node.leftNode.type == g.SyntaxType.CellSubscript) {
                     let name = node.leftNode.valueNode.text;
                     let v1 = var_types.find(x => x.name === name);
@@ -625,7 +643,9 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             if (node.text == "INT_MAX" || node.text == "INT_MIN") {
                 return ['int', 1, [1], false, false, false, custom_functions];
             }
-            let obj = var_types.find(x => x.name === node.text);
+            //unicorn
+            let obj = var_types.find(x => (x.name == node.text) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
+            //let obj = var_types.filter(function(e) { return e.name == node.text });
             if (obj != null) {
                 return [obj.type, obj.ndim, obj.dim, obj.ismatrix, obj.ispointer, obj.isstruct, custom_functions];
             } else {
@@ -655,6 +675,7 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
         }
         
         case g.SyntaxType.CallOrSubscript: {
+            //unicorn
             let [parent_type,,,parent_ismatrix,,parent_isstruct, c] = inferType(node.valueNode, var_types, custom_functions, classes, file, alias_tbl, debug);
             custom_functions = c;
             // Is a subscript

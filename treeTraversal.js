@@ -77,7 +77,8 @@ function gotoPreorderSucc_SkipFunctionDef(cursor, debug) {
     }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
-        //case g.SyntaxType.CallOrSubscript:
+        //case g.SyntaxType.Assignment:
+        case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */:
         case "ERROR" /* g.SyntaxType.ERROR */:
         case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
             while (!cursor.gotoNextSibling()) {

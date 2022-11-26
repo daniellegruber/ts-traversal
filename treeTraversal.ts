@@ -78,7 +78,8 @@ export function gotoPreorderSucc_SkipFunctionDef(cursor: g.TreeCursor, debug): b
     }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
-        //case g.SyntaxType.CallOrSubscript:
+        //case g.SyntaxType.Assignment:
+        case g.SyntaxType.CallOrSubscript:
         case g.SyntaxType.ERROR:
         case g.SyntaxType.FunctionDefinition: {
             while (!cursor.gotoNextSibling()) {

@@ -170,7 +170,7 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
         }
     }
     
-    function insertMain(expression, search_exp, num_back) {
+    function insertMain(expression, search_exp, num_back, before_after) {
         if (debug == 1) {
             console.log("insertMain");
         }
@@ -187,10 +187,19 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
         }
         if (expression != null) {
             if (current_code == "main") {
-                main_function.splice(idx, 0, expression);
+                if (before_after == 1) {
+                    main_function.splice(idx, 0, expression);
+                } else {
+                    main_function.splice(idx-1, 0, expression);
+                }
             } else if (entry_fun_node != null) {
                 if (entry_fun_node.nameNode.text == current_code) {
                     main_function.splice(idx, 0, expression);
+                    if (before_after == 1) {
+                        main_function.splice(idx, 0, expression);
+                    } else {
+                        main_function.splice(idx-1, 0, expression);
+                    }
                 }
             } else {
                 let idx = function_definitions.reduce(function(a, e, i) {
@@ -201,7 +210,11 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                 if (idx.length > 1) {
                     idx = idx[idx.length - num_back];
                 }
-                function_definitions.splice(idx, 0, expression)
+                if (before_after == 1) {
+                    function_definitions.splice(idx, 0, expression)
+                } else {
+                    function_definitions.splice(idx-1, 0, expression)
+                }
             }
         }
     }
@@ -346,18 +359,14 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
             }
                 
             case g.SyntaxType.IfStatement: {
-                
-                let expression = [];
-                expression.push("if (" + transformNode(node.conditionNode) + ")");
-                for (let i=2; i<node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        expression.push(transformNode(node.children[i]));
-                    }
+                pushToMain("if (" + transformNode(node.conditionNode) + ") {");
+                for (let i=1; i<node.namedChildCount; i++) {
+                    pushToMain(transformNode(node.namedChildren[i]));
                 }
-
-                return "\n" + expression.join("\n");
+                pushToMain("\n}");
+                return null
                 break;
-                } 
+            } 
             
             case g.SyntaxType.WhileStatement: {
                 let expression = [];
@@ -374,19 +383,28 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
             case g.SyntaxType.ForStatement: {
                 let expression1 = [];
                 let expression2 = [];
+                let tmp_iter = generateTmpVar("iter");
                 if (node.rightNode.type == g.SyntaxType.Slice) {
                     let obj = var_types.find(x => x.name === node.leftNode.text);
                     
-                    expression2.push(`for (int ${node.leftNode.text} = `);
+                    //expression2.push(`for (int ${node.leftNode.text} = `);
+                    expression2.push(`for (int ${tmp_iter} = `);
                     expression2.push(`${node.rightNode.children[0].text};`);
-                    loop_iterators.push(node.leftNode.text);
+                    //loop_iterators.push(node.leftNode.text);
+                    loop_iterators.push(tmp_iter);
+                    alias_tbl = alias_tbl.filter(function(e) { return e.name !== node.leftNode.text });
+                    alias_tbl.push({
+                        name: node.leftNode.text,
+                        tmp_var: tmp_iter,
+                        scope: findVarScope(node, block_idxs, debug)
+                    });
                     
                     if (node.rightNode.childCount == 5) {
-                        expression2.push(`${node.leftNode.text} <= ${node.rightNode.children[4].text};`);
-                        expression2.push(`${node.leftNode.text} += ${node.rightNode.children[2].text}`);
+                        expression2.push(`${tmp_iter} <= ${node.rightNode.children[4].text};`);
+                        expression2.push(`${tmp_iter} += ${node.rightNode.children[2].text}`);
                     } else {
-                        expression2.push(`${node.leftNode.text} <= ${node.rightNode.children[2].text};`);
-                        expression2.push(`++ ${node.leftNode.text}`);
+                        expression2.push(`${tmp_iter} <= ${node.rightNode.children[2].text};`);
+                        expression2.push(`++ ${tmp_iter}`);
                     }
                     expression1.push(expression2.join(" ") + ") {");
                     
@@ -401,7 +419,7 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                         expression1.push(initializeMatrix(node.rightNode, tmp_var1, ndim, dim, type));
                     }
                     
-                    expression1.push(`\n${type} ${node.leftNode.text};`);
+                    expression1.push(`\n${type} ${tmp_iter};`);
                     expression1.push(`int ${tmp_var2};`);
                     expression2.push(`for (${tmp_var2} = 1;`);
                     expression2.push(`${tmp_var2} <= ${node.rightNode.namedChildCount};`);
@@ -421,7 +439,7 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                 }
                 pushToMain("\n}")
                 
-                let idx = loop_iterators.indexOf(node.leftNode.text);
+                let idx = loop_iterators.indexOf(tmp_iter);
                 if (node.rightNode.type == g.SyntaxType.Matrix) {
                     idx = loop_iterators.indexOf(tmp_var2);
                 }
@@ -556,21 +574,87 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                     }
                 }
 
-                if (lhs == null && rhs != undefined && rhs != null) {
-                    pushToMain(`${rhs};`);   
-                } else if (init_flag && rhs != undefined && rhs != null) {
-                    if (lhs[0].indexOf("[") > -1 || lhs.indexOf("[") > -1) {
-                        pushToMain(`${lhs} = ${rhs};`);
-                    } else {
-                        let var_type = var_types.find(x => x.name == lhs);
-                        if (var_type != null && var_type != undefined) { 
-                            if (var_type.initialized && (var_type.type == type) && (node.leftNode.startIndex > var_type.scope[0]) && (node.leftNode.endIndex < var_type.scope[1])) {
-                                pushToMain(`${lhs} = ${rhs};`);
-                            } else if (var_type.initialized && (var_type.type != type)) {
-                                let tmp = generateTmpVar(var_type.name);
+                if (node.leftNode.type != g.SyntaxType.CallOrSubscript && node.leftNode.type != g.SyntaxType.CellSubscript) {
+                    if (lhs == null && rhs != undefined && rhs != null) {
+                        pushToMain(`${rhs};`);   
+                    } else if (init_flag && rhs != undefined && rhs != null) {
+                        if (lhs[0].indexOf("[") > -1 || lhs.indexOf("[") > -1) {
+                            pushToMain(`${lhs} = ${rhs};`);
+                        } else {
+                            let var_type = var_types.find(x => (x.name == lhs) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
+                            //let var_type = var_types.find(x => x.name == lhs);
+                            if (var_type != null && var_type != undefined) { 
+                                //if (var_type.initialized && (var_type.type == type) && (node.leftNode.startIndex > var_type.scope[0]) && (node.leftNode.endIndex < var_type.scope[1])) {
+                                if (var_type.initialized && (var_type.type == type)) {
+                                    pushToMain(`${lhs} = ${rhs};`);
+                                } else if (var_type.initialized && (var_type.type != type)) {
+                                    let tmp = generateTmpVar(var_type.name);
+                                    let scope = findVarScope(node, block_idxs, debug);
+                                    var_types.push({
+                                        name: tmp,
+                                        type: type,
+                                        ndim: ndim,
+                                        dim: dim,
+                                        ismatrix: ismatrix,
+                                        initialized: true,
+                                        scope: scope
+                                    });
+                                    alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
+                                    alias_tbl.push({
+                                        name: lhs,
+                                        tmp_var: tmp,
+                                        scope: scope
+                                    });
+                                    if (ismatrix) {
+                                        pushToMain(`Matrix * ${tmp} = ${rhs};`);
+                                    } else if (ispointer) {
+                                        pushToMain(`${type} * ${tmp} = ${rhs};`);
+                                    } else {
+                                        pushToMain(`${type} ${tmp} = ${rhs};`);
+                                    }
+                                } else {
+                                    if (ismatrix) {
+                                        if (var_type.initialized) {
+                                            pushToMain(`${lhs} = ${rhs};`);
+                                        } else {
+                                            pushToMain(`Matrix * ${lhs} = ${rhs};`);
+                                        }
+                                    } else if (ispointer) {
+                                        pushToMain(`${type} * ${lhs} = ${rhs};`);
+                                    } else {
+                                        pushToMain(`${type} ${lhs} = ${rhs};`);
+                                    }
+                                }
+                                
+                                //var_types = var_types.filter(function(e) { return e.name !== var_type.name });
+                                var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(var_type) });
+                                var_type.initialized = true;
+                                if (var_type.type == "unknown") {
+                                    var_type.type = type;
+                                }
+                                var_types.push(var_type);
+                                let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
+                                if (obj != null && obj != undefined) {
+                                    let scope = findVarScope(node, block_idxs, debug);
+                                    alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
+                                    alias_tbl.push({
+                                        name: lhs,
+                                        tmp_var: rhs,
+                                        scope: scope
+                                    });
+                                }
+                                    
+                            } else {
+                                if (ismatrix) {
+                                    pushToMain(`Matrix * ${lhs} = ${rhs};`);
+                                } else if (ispointer) {
+                                    pushToMain(`${type} * ${lhs} = ${rhs};`);
+                                } else {
+                                    pushToMain(`${type} ${lhs} = ${rhs};`);
+                                }
                                 let scope = findVarScope(node, block_idxs, debug);
                                 var_types.push({
-                                    name: tmp,
+                                    name: lhs,
                                     type: type,
                                     ndim: ndim,
                                     dim: dim,
@@ -578,86 +662,25 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                                     initialized: true,
                                     scope: scope
                                 });
-                                alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
-                                alias_tbl.push({
-                                    name: lhs,
-                                    tmp_var: tmp,
-                                    scope: scope
-                                });
-                                if (ismatrix) {
-                                    pushToMain(`Matrix * ${tmp} = ${rhs};`);
-                                } else if (ispointer) {
-                                    pushToMain(`${type} * ${tmp} = ${rhs};`);
-                                } else {
-                                    pushToMain(`${type} ${tmp} = ${rhs};`);
+                                let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
+                                if (obj != null && obj != undefined) {
+                                    alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
+                                    alias_tbl.push({
+                                        name: lhs,
+                                        tmp_var: rhs,
+                                        scope: scope
+                                    });
                                 }
-                            } else {
-                                if (ismatrix) {
-                                    if (var_type.initialized) {
-                                        pushToMain(`${lhs} = ${rhs};`);
-                                    } else {
-                                        pushToMain(`Matrix * ${lhs} = ${rhs};`);
-                                    }
-                                } else if (ispointer) {
-                                    pushToMain(`${type} * ${lhs} = ${rhs};`);
-                                } else {
-                                    pushToMain(`${type} ${lhs} = ${rhs};`);
-                                }
-                            }
-                            
-                            var_types = var_types.filter(function(e) { return e.name !== var_type.name });
-                            var_type.initialized = true;
-                            if (var_type.type == "unknown") {
-                                var_type.type = type;
-                            }
-                            var_types.push(var_type);
-                            let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
-                            if (obj != null && obj != undefined) {
-                                let scope = findVarScope(node, block_idxs, debug);
-                                alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
-                                alias_tbl.push({
-                                    name: lhs,
-                                    tmp_var: rhs,
-                                    scope: scope
-                                });
-                            }
-                                
-                        } else {
-                            if (ismatrix) {
-                                pushToMain(`Matrix * ${lhs} = ${rhs};`);
-                            } else if (ispointer) {
-                                pushToMain(`${type} * ${lhs} = ${rhs};`);
-                            } else {
-                                pushToMain(`${type} ${lhs} = ${rhs};`);
-                            }
-                            let scope = findVarScope(node, block_idxs, debug);
-                            var_types.push({
-                                name: lhs,
-                                type: type,
-                                ndim: ndim,
-                                dim: dim,
-                                ismatrix: ismatrix,
-                                initialized: true,
-                                scope: scope
-                            });
-                            let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
-                            if (obj != null && obj != undefined) {
-                                alias_tbl = alias_tbl.filter(function(e) { return e.name !== lhs });
-                                alias_tbl.push({
-                                    name: lhs,
-                                    tmp_var: rhs,
-                                    scope: scope
-                                });
                             }
                         }
                     }
                 }
-                
                 // TO DO: if this is inside of a for loop then the getdataM function call should be outside of for body
                 // When LHS is/contains subscript
                 // void *memcpy(void *dest, const void * src, size_t n)
                 let [left_args, , ] = parseNode(node.leftNode, true);
                 let processed_args = [];
+                
                 for (let i = 0; i < left_args.length; i ++) {
                     //left_args[i] = transformNode(left_args[i]);
                     if (left_args[i].namedChildCount > 0) {
@@ -669,7 +692,6 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                     }
                 }
                 
-
                 if (node.leftNode.type == g.SyntaxType.Matrix) {
                     for (let j = 0; j < node.leftNode.namedChildCount; j++) {
                         let child = node.leftNode.namedChildren[j];
@@ -723,7 +745,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`);
                                 tmp_var: tmp_mat,
                                 scope: scope
                             });
-                            let obj = var_types.find(x => x.name === child.valueNode.text);
+                            //let obj = var_types.find(x => x.name === child.valueNode.text);
+                            let obj = var_types.find(x => (x.name == child.valueNode.text) && (child.startIndex >= x.scope[0]) && (child.endIndex <= x.scope[1]));
                             var_types.push({
                                 name: tmp_mat,
                                 //type: obj.type,
@@ -744,8 +767,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`);
                         let obj4 = tmp_tbl.find(x => x.name == "d0_");
                         let idx = getSubscriptIdx(node.leftNode, obj4.count);
                         
-                        //let idx = rowMajorFlatIdx(obj4.count, dim, node.leftNode.namedChildren[1].text, true);
-                        
                         if (idx.length == 1) {
                             if (`${node.leftNode.valueNode.text}[${idx[0]}]` != outs[0]) {
                                 pushToMain(`${node.leftNode.valueNode.text}[${idx[0]}] = ${outs[0]};`);
@@ -759,92 +780,149 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`);
                         }
                         
                     } else if (is_subscript[0]) {
-                        
-                        let num_back = 0;
-                        for (let i = 0; i <= loop_iterators.length; i++) {
-                            if (processed_args.includes(loop_iterators[i])) {
-                                num_back = num_back + 1;
-                                
-                            }
-                        }
-
                         // Convert to linear idx
-                        // WAZZUP1
                         let obj4 = tmp_tbl.find(x => x.name == "d0_");
                         let idx = getSubscriptIdx(node.leftNode, obj4.count);
-                        let tmp_data = generateTmpVar("data");
-                        let tmp_lhs = generateTmpVar("lhs_data");
-                        let tmp_rhs = generateTmpVar("rhs_data");
-                        let [,,, ismatrix,,, c] = inferType(outs[0], var_types, custom_functions, classes, file, alias_tbl, debug);
-                        custom_functions = c;
-                        if (num_back == 0) {
-                            pushToMain(`void *${tmp_data} = getdataM(${transformNode(node.leftNode.valueNode)});`);
-                            pushToMain(`${type}* ${tmp_lhs} = (${type} *)${tmp_data};`);
-                        } else {
-                            insertMain(`void *${tmp_data} = getdataM(${transformNode(node.leftNode.valueNode)});`, 'for', num_back);
-                            insertMain(`${type}* ${tmp_lhs} = (${type} *)${tmp_data};`, 'for', num_back);
-                        }
-                        // If RHS is matrix
-                        if (ismatrix) {
-                            pushToMain(`void *${tmp_rhs} = getdataM(${outs[0]});`)
-                            for (let i = 0; i < idx.length; i++) {
-                                pushToMain(`${tmp_lhs}[${idx[i]}] = ${tmp_rhs}[${i}];`);
+                        let num_back = 0;
+                        for (let i = 0; i <= loop_iterators.length; i++) {
+                            let re = new RegExp(`\\b${loop_iterators[i]}\\b`);
+                            //if (re.test(node.text)) {
+                            /*if (re.test(transformNode(node.leftNode.namedChildren[1])) || re.test(rhs)) {
+                                num_back = num_back + 1;
+                            }*/
+                            if (re.test(processed_args.join(", ")) || re.test(rhs)) {
+                                num_back = num_back + 1;
                             }
+                            /*if (processed_args.includes(loop_iterators[i])) {
+                                num_back = num_back + 1;
+                                
+                            }*/
+                        }
+
+                        let scope = findVarScope(node, block_idxs, debug);
+                        if (loop_iterators.length > 0) {
+                            scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
+                            scope = scope[scope.length - 1];
+                        }
                         
-                        // If RHS not matrix
-                        } else {
-                            if (idx.length == 1) {
-                                pushToMain(`${tmp_lhs}[${idx[0]}] = ${outs[0]};`); 
-                            } else {
-                                for (let i = 0; i < idx.length; i++) {
-                                    pushToMain(`${tmp_lhs}[${idx[i]}] = ${outs[0]}[${i}];`);
+                        //let obj5 = alias_tbl.find(x => x.name === node.leftNode.valueNode.text);
+                        
+                            
+                        let obj6 = tmp_tbl.find(x => x.name == "lhs_data");
+                        let new_flag = true;
+                        let tmp_lhs = "lhs_data";
+                        if (obj6 != null && obj6 != undefined) {
+                            let obj5 = var_types.find(x => x.name == `lhs_data${obj6.count}`);
+                            if (obj5 != null && obj5 != undefined) {
+                                //if (scope[0] >= obj5.scope[0] && scope[1] <= obj5.scope[1]){
+                                //if (node.startIndex >= obj5.scope[0] && node.endIndex <= obj5.scope[1]){
+                                if (obj5.type == loop_iterators.join("")) {
+                                    new_flag = false;
+                                    tmp_lhs = obj5.name;
                                 }
                             }
                         }
-                        let tmp_size = generateTmpVar("size");
-                        let tmp_iter = generateTmpVar("iter");
-                        let tmp_mat = generateTmpVar("mat");
-                        let obj1 = tmp_tbl.find(x => x.name === "ndim");
-                        let tmp_ndim = `${obj1.name}${obj1.count}`;
-                        let obj2 = tmp_tbl.find(x => x.name === "dim");
-                        let tmp_dim = `${obj2.name}${obj2.count}`;
-                        let obj3 = type_to_matrix_type.find(x => x.type === type);
-                        let mq: MainQueue = {
-                            expression: `int ${tmp_size} = 1;
+                        if (new_flag) {
+                            // walrus
+                            let tmp_data = generateTmpVar("data");
+                            tmp_lhs = generateTmpVar("lhs_data");
+                            let tmp_rhs = generateTmpVar("rhs_data");
+                            let [,,, ismatrix,,, c] = inferType(outs[0], var_types, custom_functions, classes, file, alias_tbl, debug);
+                            custom_functions = c;
+                            if (num_back == 0) {
+                                pushToMain(`void *${tmp_data} = getdataM(${transformNode(node.leftNode.valueNode)});`);
+                                pushToMain(`${type}* ${tmp_lhs} = (${type} *)${tmp_data};`);
+                            } else {
+                                insertMain(`void *${tmp_data} = getdataM(${transformNode(node.leftNode.valueNode)});`, 'for', num_back, 0);
+                                insertMain(`${type}* ${tmp_lhs} = (${type} *)${tmp_data};`, 'for', num_back, 0);
+                            }
+                            // If RHS is matrix
+                            if (ismatrix) {
+                                pushToMain(`void *${tmp_rhs} = getdataM(${outs[0]});`)
+                                for (let i = 0; i < idx.length; i++) {
+                                    pushToMain(`${tmp_lhs}[${idx[i]}] = ${tmp_rhs}[${i}];`);
+                                }
+                            
+                            // If RHS not matrix
+                            } else {
+                                if (idx.length == 1) {
+                                    //unicorn
+                                    //pushToMain(`${tmp_lhs}[${idx[0]}] = ${outs[0]};`);
+                                    pushToMain(`${tmp_lhs}[${idx[0]}] = ${rhs};`);
+                                } else {
+                                    for (let i = 0; i < idx.length; i++) {
+                                        //pushToMain(`${tmp_lhs}[${idx[i]}] = ${outs[0]}[${i}];`);
+                                        pushToMain(`${tmp_lhs}[${idx[i]}] = ${rhs}[${i}];`);
+                                    }
+                                }
+                            }
+                            let tmp_size = generateTmpVar("size");
+                            let tmp_iter = generateTmpVar("iter");
+                            let tmp_mat = generateTmpVar("mat");
+                            let obj1 = tmp_tbl.find(x => x.name === "ndim");
+                            let tmp_ndim = `${obj1.name}${obj1.count}`;
+                            let obj2 = tmp_tbl.find(x => x.name === "dim");
+                            let tmp_dim = `${obj2.name}${obj2.count}`;
+                            let obj3 = type_to_matrix_type.find(x => x.type === type);
+                            let mq: MainQueue = {
+                                expression: `int ${tmp_size} = 1;
 for (int ${tmp_iter} = 0 ; ${tmp_iter} < ${tmp_ndim}; ${tmp_iter}++)
 {
 	${tmp_size} *= ${tmp_dim}[${tmp_iter}];
 }
 Matrix *${tmp_mat} = createM(${tmp_ndim}, ${tmp_dim}, ${obj3.matrix_type});
 writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
-                            condition: `loop_iterators.length == ${loop_iterators.length - num_back};`
-                        };
-                        main_queue.push(mq);
-                        
-                        let scope = findVarScope(node, block_idxs, debug);
-                        if (loop_iterators.length > 0) {
-                            scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
-                            scope = scope[scope.length - 1];
+                                condition: `loop_iterators.length == ${loop_iterators.length - num_back};`
+                            };
+                            main_queue.push(mq);
+                            
+                            /*let scope = findVarScope(node, block_idxs, debug);
+                            if (loop_iterators.length > 0) {
+                                scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
+                                scope = scope[scope.length - 1];
+                            }*/
+                            alias_tbl = alias_tbl.filter(function(e) { return e.name !== node.leftNode.valueNode.text });
+                            alias_tbl.push({
+                                name: node.leftNode.valueNode.text,
+                                tmp_var: tmp_mat,
+                                scope: scope
+                            });
+                            //let obj = var_types.find(x => x.name === node.leftNode.valueNode.text);
+                            let obj = var_types.find(x => (x.name == node.leftNode.valueNode.text) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
+                            var_types.push({
+                                name: tmp_mat,
+                                //type: obj.type,
+                                type: type,
+                                ndim: obj.ndim,
+                                dim: obj.dim,
+                                ismatrix: true,
+                                ispointer: true,
+                                isstruct: false,
+                                initialized: true,
+                                scope: scope
+                            });
+                            var_types.push({
+                                name: tmp_lhs,
+                                //type: obj.type,
+                                type: loop_iterators.join(""),//type,
+                                ndim: 1,
+                                dim: [obj.dim.reduce(function(a, b) {return a * b;})],
+                                ismatrix: false,
+                                ispointer: true,
+                                isstruct: false,
+                                initialized: true,
+                                scope: scope
+                            });
+                        } else {
+                            if (idx.length == 1) {
+                                pushToMain(`${tmp_lhs}[${idx[0]}] = ${rhs};`);
+                            } else {
+                                for (let i = 0; i < idx.length; i++) {
+                                    pushToMain(`${tmp_lhs}[${idx[i]}] = ${rhs}[${i}];`);
+                                }
+                            }
                         }
-                        alias_tbl = alias_tbl.filter(function(e) { return e.name !== node.leftNode.valueNode.text });
-                        alias_tbl.push({
-                            name: node.leftNode.valueNode.text,
-                            tmp_var: tmp_mat,
-                            scope: scope
-                        });
-                        let obj = var_types.find(x => x.name === node.leftNode.valueNode.text);
-                        var_types.push({
-                            name: tmp_mat,
-                            //type: obj.type,
-                            type: type,
-                            ndim: obj.ndim,
-                            dim: obj.dim,
-                            ismatrix: true,
-                            ispointer: true,
-                            isstruct: false,
-                            initialized: true,
-                            scope: scope
-                        });
+                        
                     }
                 }
                 return null; 
@@ -867,7 +945,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 for (let child of node.namedChildren) {
                     expression.push(transformNode(child));
                 }
-                return "{\n" + expression.join("\n") + "\n}";
+                //return "{\n" + expression.join("\n") + "\n}";
+                return expression.join("\n");
                 break;
             }
             
@@ -928,9 +1007,24 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     if (ptr_args != null) {
                         let ptr_declaration = [];
                         for (let i = 0; i < ptr_args.length; i++) {
-                            args.push(`&${ptr_args[i].name}`);
-                            ptr_declaration.push(`${ptr_args[i].type} ${ptr_args[i].name};`)
-                            var_types.push(ptr_args[i]);
+                            let tmp_ptr = generateTmpVar(ptr_args[i].name);
+                            //args.push(`&${ptr_args[i].name}`);
+                            args.push(`&${tmp_ptr}`);
+                            //ptr_declaration.push(`${ptr_args[i].type} ${ptr_args[i].name};`)
+                            ptr_declaration.push(`${ptr_args[i].type} ${tmp_ptr};`)
+                            //var_types.push(ptr_args[i]);
+                            //walrus
+                            var_types.push({
+                                name: tmp_ptr,
+                                type: ptr_args[i].type,
+                                ndim: ptr_args[i].ndim,
+                                dim: ptr_args[i].dim,
+                                ismatrix: ptr_args[i].ismatrix,
+                                ispointer: ptr_args[i].ispointer,
+                                isstruct: ptr_args[i].isstruct,
+                                initialized: true,
+                                scope: findVarScope(node, block_idxs, debug)
+                            });
                         }
                         pushToMain(ptr_declaration.join("\n"));
                         
@@ -949,7 +1043,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         pushToMain(obj.push_main_before(args, arg_types, outs));
                         
                         let init_before = obj.init_before(args, arg_types, outs);
-                        let fun_c = obj.fun_c(arg_types, outs);
+                        let return_type = obj.return_type(args, arg_types, outs);
+                        let fun_c = obj.fun_c(args, arg_types, outs);
                         var tmp_var = generateTmpVar("tmp");
                         args = obj.args_transform(args, arg_types, outs);
                         if (init_before != null && init_before != undefined) {
@@ -987,32 +1082,88 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let ptr_args = obj.ptr_args(arg_types, outs);
                         if (ptr_args != null) {
                             let ptr_declaration = [];
+                            let tmp_ptr = "tmp_ptr";
                             for (let i = 0; i < ptr_args.length; i++) {
-                                args.push(`&${ptr_args[i].name}`);
+                                tmp_ptr = generateTmpVar(ptr_args[i].name);
+                                //args.push(`&${ptr_args[i].name}`);
+                                args.push(`&${tmp_ptr}`);
                                 if (ptr_args[i].ismatrix) {
-                                    ptr_declaration.push(`Matrix * ${ptr_args[i].name};`)
+                                    //ptr_declaration.push(`Matrix * ${ptr_args[i].name};`)
+                                    ptr_declaration.push(`Matrix * ${tmp_ptr};`);
                                 } else if (ptr_args[i].ispointer) {
-                                    ptr_declaration.push(`${type} * ${ptr_args[i].name};`)
+                                    //ptr_declaration.push(`${type} * ${ptr_args[i].name};`)
+                                    ptr_declaration.push(`${type} * ${tmp_ptr};`);
                                 } else {
-                                    ptr_declaration.push(`${ptr_args[i].type} ${ptr_args[i].name};`)
+                                    //ptr_declaration.push(`${ptr_args[i].type} ${ptr_args[i].name};`)
+                                    ptr_declaration.push(`${ptr_args[i].type} ${tmp_ptr};`);
                                 }
-                                var_types.push(ptr_args[i]);
+                                //var_types.push(ptr_args[i]);
+                                let scope = findVarScope(node, block_idxs, debug);
+                                var_types.push({
+                                    name: tmp_ptr,
+                                    type: ptr_args[i].type,
+                                    ndim: ptr_args[i].ndim,
+                                    dim: ptr_args[i].dim,
+                                    ismatrix: ptr_args[i].ismatrix,
+                                    ispointer: ptr_args[i].ispointer,
+                                    isstruct: ptr_args[i].isstruct,
+                                    initialized: true,
+                                    scope: scope
+                                });
+                                
                             }
                             pushToMain(ptr_declaration.join("\n"));
+                            if ((ptr_args.length == 1) && (return_type == null)) {
+                                alias_tbl.push({
+                                    name: node.text,//`${fun_c}(${args.join(", ")})`,
+                                    tmp_var: tmp_ptr,
+                                    scope: findVarScope(node, block_idxs, debug)
+                                })
+                                pushToMain(`${fun_c}(${args.join(", ")});`);
+                                return tmp_ptr;
+                            }
                             
                         }
                         
-                        if (fun_c == null) {
-                            return null;
+                        if (return_type == null) {
+                            if (fun_c == null) {
+                                return null;
+                            } else {
+                                if (args == null) {
+                                    return fun_c;
+                                } else {
+                                    return `${fun_c}(${args.join(", ")})`;
+                                }
+                            }
                         } else {
-                            return `${fun_c}(${args.join(", ")})`;
+                            if (return_type.ismatrix) {
+                                var init_type = `Matrix *`;
+                            } else if (return_type.ispointer) {
+                                var init_type = `${return_type.type} *`;
+                            } else {
+                                var init_type = `${return_type.type}`;
+                            }
+                            let tmp_var = generateTmpVar("tmp");
+                            if (args == null) {
+                                pushToMain(`${init_type} ${tmp_var} = ${fun_c};`);
+                            } else {
+                                pushToMain(`${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")});`);
+                            }
+                            var_types.push({
+                                name: tmp_var,
+                                type: return_type.type,
+                                ndim: return_type.ndim,
+                                dim: return_type.dim,
+                                ismatrix: return_type.ismatrix,
+                                ispointer: return_type.ispointer,
+                                isstruct: false,
+                                initialized: true
+                            });
+                            return tmp_var;
                         }
-                        
                         
                     // Is a subscript
                     } else {
-                        // WAZZUP2
-                        //come back here
                         var tmp_var = generateTmpVar("tmp");
                         // only use indexM if subscript is on rhs
                         let lhs_flag = false;
@@ -1124,16 +1275,22 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             
             case g.SyntaxType.ElseifClause: {
                 let expression = [];
-                expression.push("else if (" + transformNode(node.conditionNode) + ")");
-                expression.push(transformNode(node.consequenceNode));
-                return expression.join("\n");
+                pushToMain("} else if (" + transformNode(node.conditionNode) + ") {");
+                // come back here
+                pushToMain(transformNode(node.consequenceNode));
+                //pushToMain("\n}")
+                return null;
                 break;
             } 
             case g.SyntaxType.ElseClause: {
                 let expression = [];
-                expression.push("else");
-                expression.push(transformNode(node.bodyNode));
-                return expression.join("\n");
+                pushToMain("} else {");
+                pushToMain(transformNode(node.bodyNode));
+                /*for (let i = 0; i < node.bodyNode.namedChildCount; i ++) {
+                    pushToMain(transformNode(node.bodyNode.namedChildren[i]));
+                }*/
+                //pushToMain("\n}")
+                return null;
                 break;
             }
             
@@ -1342,14 +1499,16 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
         });
         
         
-        let obj2 = var_types.find(x => x.name === name);
+        //let obj2 = var_types.find(x => x.name === name);
+        let obj2 = var_types.find(x => (x.name == name) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
         if (obj2 != null && obj2 != undefined) {
             if ((obj2.initialized && (node.startIndex > obj2.scope[0]) && (node.endIndex < obj2.scope[1])) || name.indexOf("[")>-1) {
                 expression.push(`${name} = createM(${tmp_ndim}, ${tmp_dim}, ${obj.matrix_type});`)    
             } else {
                 expression.push(`Matrix * ${name} = createM(${tmp_ndim}, ${tmp_dim}, ${obj.matrix_type});`)
+                //var_types = var_types.filter(function(e) { return e.name !== name });
+                var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(obj2) });
                 obj2.initialized = true;
-                var_types = var_types.filter(function(e) { return e.name !== name });
                 var_types.push(obj2);
             }
         } else {
@@ -1368,10 +1527,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
     	var j = 0;
     	for (let i=0; i<node.childCount; i++) {
             if (node.children[i].isNamed) {
+                //let transform_child = node.children[i].text;
+                let transform_child = transformNode(node.children[i]);
                 if (obj.matrix_type == 3)
-                    expression.push(`${tmp_input}[${j}][] = ${node.children[i].text.replace(/'/g, '"')};`);
+                    expression.push(`${tmp_input}[${j}][] = ${transform_child.replace(/'/g, '"')};`);
                 else {
-                    expression.push(`${tmp_input}[${j}] = ${node.children[i].text};`);
+                    expression.push(`${tmp_input}[${j}] = ${transform_child};`);
                 }
                 j++;
             }
@@ -1413,7 +1574,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
         let obj = operatorMapping.find(x => x.fun_matlab === node.operatorNode.type );
         let return_type = obj.return_type(args, arg_types, outs);
         let init_before = obj.init_before(args, arg_types, outs);
-        let fun_c = obj.fun_c(arg_types, outs);
+        let fun_c = obj.fun_c(args, arg_types, outs);
         if (obj.args_transform(args, arg_types, outs) != null) {
             args = obj.args_transform(args, arg_types, outs);
         }
@@ -1473,6 +1634,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 }
             }
         } else {
+                        
             if (return_type.ismatrix) {
                 var init_type = `Matrix *`;
             } else if (return_type.ispointer) {
@@ -1481,7 +1643,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 var init_type = `${return_type.type}`;
             }
             let tmp_var = generateTmpVar("mat");
-            pushToMain(`${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")});`);
+            if (args == null) {
+                pushToMain(`${init_type} ${tmp_var} = ${fun_c};`);
+            } else {
+                pushToMain(`${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")});`);
+            }
             var_types.push({
                 name: tmp_var,
                 type: return_type.type,
@@ -1494,6 +1660,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             });
             
             return tmp_var;
+            
         }
     }
     
@@ -1662,8 +1829,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             console.log("sub2idx");
         }
         
-        var dim0 = dim0_node.text;
-        var dim1 = dim1_node.text;
+        //var dim0 = dim0_node.text;
+        //var dim1 = dim1_node.text;
+        var dim0 = transformNode(dim0_node);
+        var dim1 = transformNode(dim1_node);
         var dim2 = dim2_node;
         var dim3 = dim3_node;
         if (dim0_node.type == g.SyntaxType.Slice) {
@@ -1671,14 +1840,14 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
         } else if (dim0_node.type == g.SyntaxType.Matrix) {
             dim0 = matrix2list(dim0_node);
         } else {
-            dim0 = [dim0_node.text];
+            dim0 = [transformNode(dim0_node)];
         }
         if (dim1_node.type == g.SyntaxType.Slice) {
             dim1 = slice2list(dim1_node);
         } else if (dim1_node.type == g.SyntaxType.Matrix) {
             dim1 = matrix2list(dim1_node);
         } else {
-            dim1 = [dim1_node.text];
+            dim1 = [transformNode(dim1_node)];
         }
         if (dim2_node == null) {
             dim2 = [1];
@@ -1688,7 +1857,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             } else if (dim2_node.type == g.SyntaxType.Matrix) {
                 dim2 = matrix2list(dim1_node);
             } else {
-                dim2 = [dim2_node.text];
+                dim2 = [transformNode(dim2_node)];
             }
         }
         if (dim3_node == null) {
@@ -1699,7 +1868,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             } else if (dim3_node.type == g.SyntaxType.Matrix) {
                 dim3 = matrix2list(dim1_node);
             } else {
-                dim3 = [dim3_node.text];
+                dim3 = [transformNode(dim3_node)];
             }
         }
 
@@ -1731,13 +1900,19 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             }
         }
                         
-        let obj = var_types.find(x => x.name === node.valueNode.text);
+        let obj = var_types.find(x => (x.name === node.valueNode.text) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
         let dim = obj.dim;
-        if (dim[1] == undefined) {
+        /*if (dim[1] == undefined) {
             dim.push(1);
         }
         if (dim[2] == undefined) {
             dim.push(1);
+        }*/
+        if (dim[3] == 1) {
+            dim.pop();
+        }
+        if (dim[2] == 1) {
+            dim.pop();
         }
         let idx = [node.namedChildren[1].text];
         // already a linear idx
@@ -1749,7 +1924,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 //var list = matrix2list(node.namedChildren[1])
                 idx = matrix2list(node.namedChildren[1])
             } else {
-                idx = rowMajorFlatIdx(count, dim, node.namedChildren[1].text, lhs_flag);
+                //idx = rowMajorFlatIdx(count, dim, node.namedChildren[1].text, lhs_flag);
+                idx = rowMajorFlatIdx(count, dim, transformNode(node.namedChildren[1]), lhs_flag);
             }
             
         }
@@ -1761,7 +1937,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     null,
                     null,
                     dim[0],
-                    1,
+                    dim[1],
                     1
                 );
             } else if (node.namedChildCount == 4) {

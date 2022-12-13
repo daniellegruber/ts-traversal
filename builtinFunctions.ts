@@ -1883,12 +1883,12 @@ export const builtin_functions = [
         ptr_args: (arg_types, outs) => {
             var arg_evals = 'evals';
             var arg_evecs = 'evecs';
-			if (outs.length >= 1) {
+			/*if (outs.length >= 1) {
 			    arg_evals = outs[0];
 			}
 			if (outs.length >= 2) {
 			    arg_evecs = outs[1];
-			}
+			}*/
 			return [
 			    {
 			        name: arg_evals,
@@ -1912,8 +1912,49 @@ export const builtin_functions = [
 		},
         return_type: arg_types => null,
         push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null
+        //push_main_after: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => {
+            let expression = [];
+            expression.push(`${outs[0]} = scaleM(evals, &complex_one, COMPLEX);`);
+            expression.push(`${outs[1]} = scaleM(evecs, &complex_one, COMPLEX);`)
+            return expression.join("\n");
+        },
+        //init_before: (args, arg_types, outs) => null
+        init_before: (args, arg_types, outs) => {
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: "complex_one",
+                val: "1",
+                type: 'complex',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: outs[0],
+                val: "NULL",
+                type: 'complex',
+                ndim: 2,
+                dim: arg_types[0].dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            })
+            init_var.push({
+                name: outs[1],
+                val: "NULL",
+                type: 'complex',
+                ndim: 2,
+                dim: arg_types[0].dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            })
+            return init_var;
+        }
     },
     { // Matrix * absM(Matrix* restrict m)
         fun_matlab: 'abs', 
@@ -2438,17 +2479,7 @@ export const builtin_functions = [
     { 
         fun_matlab: 'cell', 
         fun_c: (args, arg_types, outs) => null, 
-        args_transform: (args, arg_types, outs) => {
-            var dim = `{${args.join(", ")}}`;
-            var ndim = args.length;
-            
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
-            }
-            //return [ndim, dim];
-            return ['ndim', 'dim'];
-        },
+        args_transform: (args, arg_types, outs) => null,
 		outs_transform: (outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -2492,8 +2523,9 @@ Matrix **${outs[0]} = NULL;
 ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
 	        `
         },
-        push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => {
+        push_main_after: (args, arg_types, outs) => null,      
+        init_before: (args, arg_types, outs) => null
+        /*init_before: (args, arg_types, outs) => {
             let dim = `{${args.join(", ")}}`;
             let ndim = args.length;
             if (args.length == 1) {
@@ -2523,7 +2555,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 isstruct: false
             })
             return init_var;
-        }
+        }*/
     },
     { // int strcmp(const char* str1, const char* str2)
         fun_matlab: 'strcmp', 

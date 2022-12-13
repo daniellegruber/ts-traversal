@@ -126,8 +126,9 @@ int main()
 
 
 	// Try it ALL
+	int curriter = 1;
 	double complex complex_one = 1;
-	for (int index = 0 ; index < 14 ; index++)
+	for (int index = curriter ; index <= curriter ; index++)
 	{
 		fprintf(stdout, "Original\n");
 		Matrix *complex_mat = scaleM(matrices[index], &complex_one, COMPLEX);
@@ -201,7 +202,8 @@ int main()
 		}			
 	}
 
-	for (int index = 0 ; index < totalMatrices ; index++)
+    
+	for (int index = curriter ; index <= curriter ; index++)
 	{
 		if (!destroyM(matrices[index]))
 		{

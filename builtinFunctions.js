@@ -1814,12 +1814,12 @@ exports.builtin_functions = [
         ptr_args: function (arg_types, outs) {
             var arg_evals = 'evals';
             var arg_evecs = 'evecs';
-            if (outs.length >= 1) {
+            /*if (outs.length >= 1) {
                 arg_evals = outs[0];
             }
             if (outs.length >= 2) {
                 arg_evecs = outs[1];
-            }
+            }*/
             return [
                 {
                     name: arg_evals,
@@ -1843,8 +1843,48 @@ exports.builtin_functions = [
         },
         return_type: function (arg_types) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        //push_main_after: (args, arg_types, outs) => null,
+        push_main_after: function (args, arg_types, outs) {
+            var expression = [];
+            expression.push("".concat(outs[0], " = scaleM(evals, &complex_one, COMPLEX);"));
+            expression.push("".concat(outs[1], " = scaleM(evecs, &complex_one, COMPLEX);"));
+            return expression.join("\n");
+        },
+        //init_before: (args, arg_types, outs) => null
+        init_before: function (args, arg_types, outs) {
+            var init_var = [];
+            init_var.push({
+                name: "complex_one",
+                val: "1",
+                type: 'complex',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: outs[0],
+                val: "NULL",
+                type: 'complex',
+                ndim: 2,
+                dim: arg_types[0].dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            });
+            init_var.push({
+                name: outs[1],
+                val: "NULL",
+                type: 'complex',
+                ndim: 2,
+                dim: arg_types[0].dim,
+                ismatrix: true,
+                ispointer: true,
+                isstruct: false
+            });
+            return init_var;
+        }
     },
     {
         fun_matlab: 'abs',
@@ -2357,16 +2397,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'cell',
         fun_c: function (args, arg_types, outs) { return null; },
-        args_transform: function (args, arg_types, outs) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
-            }
-            //return [ndim, dim];
-            return ['ndim', 'dim'];
-        },
+        args_transform: function (args, arg_types, outs) { return null; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
@@ -2411,36 +2442,38 @@ exports.builtin_functions = [
             return "\nMatrix **".concat(outs[0], " = NULL;\n").concat(outs[0], " = malloc(").concat(numel, "*sizeof(*").concat(outs[0], "));\n\t        ");
         },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
+        init_before: function (args, arg_types, outs) { return null; }
+        /*init_before: (args, arg_types, outs) => {
+            let dim = `{${args.join(", ")}}`;
+            let ndim = args.length;
             if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                dim = `{${args[0]},${args[0]}}`;
                 ndim = 2;
             }
-            var init_var = [];
+            
+            let init_var: InitVar[] = [];
             init_var.push({
                 name: 'ndim',
-                val: "".concat(ndim),
+                val: `${ndim}`,
                 type: 'int',
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
                 ispointer: false,
                 isstruct: false
-            });
+            })
             init_var.push({
                 name: 'dim',
-                val: "".concat(dim),
+                val: `${dim}`,
                 type: 'int',
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
                 ispointer: false,
                 isstruct: false
-            });
+            })
             return init_var;
-        }
+        }*/
     },
     {
         fun_matlab: 'strcmp',

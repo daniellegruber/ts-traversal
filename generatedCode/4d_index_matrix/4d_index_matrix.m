@@ -16,8 +16,8 @@ for l=1:5
 	for k=1:4
 		for i=1:2
 			for j=1:3
-				%a(i,j,k,l) = counter + 0.5;
-				a(i,j,k,l) = counter;
+				a(i,j,k,l) = counter + 0.5;
+				%a(i,j,k,l) = counter;
 				counter = counter + 1;
 			end
 		end
@@ -62,8 +62,8 @@ disp("\n");
 a = zeros(2,3,4,5);
 counter = 0;
 for i=1:120
-	%a(i) = counter+0.5;
-	a(i) = counter;
+	a(i) = counter+0.5;
+	%a(i) = counter;
 	counter = counter + 1;
 end
 disp(a);

@@ -16,7 +16,6 @@ for i=1:9
 end
 matrices{5} = matrices{5}.';
 
-
 matrices{6} = zeros(3);
 for i=1:9
 	matrices{6}(i) = i*i+0.5;;

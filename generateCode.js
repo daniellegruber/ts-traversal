@@ -938,17 +938,17 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     var obj = alias_tbl.find(function (x) { return x.name === node.text; });
                     var _o = (0, typeInference_1.inferType)(node.valueNode, var_types, custom_functions, classes, file, alias_tbl, debug), type_1 = _o[0];
                     if (obj == null || obj == undefined) {
-                        if (index.length == 1) {
-                            var isnum = /^\d+$/.test(index[0]);
+                        /*if (index.length == 1) {
+                            let isnum = /^\d+$/.test(index[0]);
                             if (isnum) {
-                                index[0] = "".concat(Number(index[0]) + 1);
-                            }
-                            else {
+                                index[0] = `${Number(index[0]) + 1}`;
+                            } else {
                                 index[0] = index[0].replace(/-1/, '');
                             }
                             //index = index[0].concat("+1");
-                        }
+                        }*/
                         return "".concat(transformNode(node.valueNode), "[").concat(index[0], "]");
+                        // FORGOT REASON FOR ADDING ONE
                     }
                     else if (node.startIndex < obj.scope[0] || node.startIndex > obj.scope[1]) {
                         if (index.length == 1) {

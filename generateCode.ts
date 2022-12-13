@@ -1047,7 +1047,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     let obj = alias_tbl.find(x => x.name === node.text);
                     let [type, , , , , , ] = inferType(node.valueNode, var_types, custom_functions, classes, file, alias_tbl, debug);
                     if (obj == null || obj == undefined) {
-                        if (index.length == 1) {
+                        /*if (index.length == 1) {
                             let isnum = /^\d+$/.test(index[0]);
                             if (isnum) {
                                 index[0] = `${Number(index[0]) + 1}`;
@@ -1055,9 +1055,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 index[0] = index[0].replace(/-1/, '');
                             }
                             //index = index[0].concat("+1");
-                        }
+                        }*/
         
                         return `${transformNode(node.valueNode)}[${index[0]}]`;
+                    
+                    // FORGOT REASON FOR ADDING ONE
                     } else if (node.startIndex < obj.scope[0] || node.startIndex > obj.scope[1]){
                         if (index.length == 1) {
                             let isnum = /^\d+$/.test(index[0]);

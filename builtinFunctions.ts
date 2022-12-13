@@ -1915,8 +1915,8 @@ export const builtin_functions = [
         //push_main_after: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => {
             let expression = [];
-            expression.push(`${outs[0]} = scaleM(evals, &complex_one, COMPLEX);`);
-            expression.push(`${outs[1]} = scaleM(evecs, &complex_one, COMPLEX);`)
+            expression.push(`${outs[1]} = scaleM(evals, &complex_one, COMPLEX);`);
+            expression.push(`${outs[0]} = scaleM(evecs, &complex_one, COMPLEX);`)
             return expression.join("\n");
         },
         //init_before: (args, arg_types, outs) => null

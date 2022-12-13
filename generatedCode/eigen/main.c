@@ -312,7 +312,7 @@ if (d0_44 == 0) {
 d0_44 = 15;
 }
 int d1_44 = (iter15 - d0_44)/15 + 1;
-printM(matrices[(d1_44) + (d0_44-1) * 1 + (d2_44-1) * 15 * 1 + (d3_44-1) * 15 * 1 * 1]);
+printM(matrices[(d1_44-1) + (d0_44-1) * 1 + (d2_44-1) * 15 * 1 + (d3_44-1) * 15 * 1 * 1]);
 int d3_45 = 1;
 int d2_45 = 1;
 int d0_45 = iter15 % 15;
@@ -325,9 +325,9 @@ Matrix * V1 = NULL;
 Matrix * lambda1 = NULL;
 Matrix * evals1 = NULL;
 Matrix * evecs1 = NULL;
-eigM(matrices[(d1_45) + (d0_45-1) * 1 + (d2_45-1) * 15 * 1 + (d3_45-1) * 15 * 1 * 1], &evals1, &evecs1);
-V1 = scaleM(evals1, &complex_one, COMPLEX);
-lambda1 = scaleM(evecs1, &complex_one, COMPLEX);
+eigM(matrices[(d1_45-1) + (d0_45-1) * 1 + (d2_45-1) * 15 * 1 + (d3_45-1) * 15 * 1 * 1], &evals1, &evecs1);
+lambda1 = scaleM(evals1, &complex_one, COMPLEX);
+V1 = scaleM(evecs1, &complex_one, COMPLEX);
 printf("\n%s\n", "Eigenvalues:\n");
 printM(lambda1);
 printf("\n%s\n", "Eigenvectors:\n");

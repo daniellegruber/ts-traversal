@@ -52,8 +52,8 @@ var _b = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, [], files,
 console.log("File traversal order");
 console.log(file_traversal_order);
 console.log("---------------------\n");
-for (var _i = 0, file_traversal_order_1 = file_traversal_order; _i < file_traversal_order_1.length; _i++) {
-    var file = file_traversal_order_1[_i];
+for (var _i = 0, _c = file_traversal_order.reverse(); _i < _c.length; _i++) {
+    var file = _c[_i];
     var sourceCode_1 = fs.readFileSync(file, "utf8");
     var tree_1 = parser.parse(sourceCode_1);
     var block_idxs = [];
@@ -64,8 +64,9 @@ for (var _i = 0, file_traversal_order_1 = file_traversal_order; _i < file_traver
     else {
         var filename = path.parse(file).name;
     }
-    var _c = (0, generateCode_1.generateCode)(filename, tree_1, out_folder, custom_functions, classes, var_types, block_idxs, file, debug), generated_code = _c[0], header = _c[1], vt = _c[2];
+    var _d = (0, generateCode_1.generateCode)(filename, tree_1, out_folder, custom_functions, classes, var_types, block_idxs, file, debug), generated_code = _d[0], header = _d[1], vt = _d[2], cf = _d[3];
     var_types = vt;
+    custom_functions = cf;
     if (show_output == 1) {
         console.log("---------------------\nCustom functions for ".concat(filename, ".c:\n"));
         console.log(custom_functions);

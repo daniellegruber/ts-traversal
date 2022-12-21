@@ -25,7 +25,8 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                     ndim: null,
                     dim: null,
                     ismatrix: null,
-                    ispointer: null
+                    ispointer: null,
+                    original_out: false
                 });
             }
             var v1 = {
@@ -36,7 +37,8 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                 ptr_args: function (arg_types, outs) { return null; },
                 external: filename !== file_traversal_order.slice(-1),
                 file: filename,
-                def_node: node
+                def_node: node,
+                var_types: null
             };
             custom_functions.push(v1);
         }

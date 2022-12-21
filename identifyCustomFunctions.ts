@@ -24,6 +24,7 @@ export type CustomFunction = {
     external: boolean;
     file: string;
     def_node: g.SyntaxNode;
+    var_types: Array<VarType>;
 };
     
 export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order, debug) {
@@ -43,7 +44,8 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                     ndim: null,
                     dim: null,
                     ismatrix: null,
-                    ispointer: null
+                    ispointer: null,
+                    original_out: false
                 });
             }
             const v1: CustomFunction = { 
@@ -54,7 +56,8 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                 ptr_args: (arg_types, outs) => null,
                 external: filename !== file_traversal_order.slice(-1),
                 file: filename,
-                def_node: node
+                def_node: node,
+                var_types: null
             };
             custom_functions.push(v1);
         }

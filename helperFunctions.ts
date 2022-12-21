@@ -126,6 +126,10 @@ export function parseFunctionDefNode(node) {
         }
         case g.SyntaxType.FunctionDefinition: {
             //return [node.return_variableNode, node.nameNode, node.parametersNode, node.bodyNode];
+            if (node.return_variableNode == undefined && node.namedChildren[0].type == g.SyntaxType.ReturnValue) {
+                node.return_variableNode = node.namedChildren[0];
+            }
+                        
             return node;
             break;
         }

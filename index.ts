@@ -63,7 +63,7 @@ console.log("File traversal order");
 console.log(file_traversal_order);
 console.log("---------------------\n");
 
-for (let file of file_traversal_order) {
+for (let file of file_traversal_order.reverse()) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
     let block_idxs = [];
@@ -73,9 +73,10 @@ for (let file of file_traversal_order) {
     } else {
         var filename:string = path.parse(file).name;
     }
-
-    let [generated_code, header, vt] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file, debug);
+    
+    let [generated_code, header, vt, cf] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file, debug);
     var_types = vt;
+    custom_functions = cf;
     
     if (show_output==1) {
         console.log(`---------------------\nCustom functions for ${filename}.c:\n`);

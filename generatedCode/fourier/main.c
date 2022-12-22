@@ -11,8 +11,7 @@ void fourier_script(Matrix * a);
 void fourier_vec_script(Matrix * a);
 
 // Entry-point function
-int main(void)
-{
+int main(void) {
 
 //more off
 //format short
@@ -61,7 +60,7 @@ input3 = malloc( 4*sizeof(*input3));
 input3[0] = 3.25;
 input3[1] = -2;
 input3[2] = 0;
-input3[3] = 1-1i;
+input3[3] = 1 - 1*I;
 writeM( a, 4, input3);
 free(input3);
 
@@ -112,7 +111,7 @@ input6 = malloc( 4*sizeof(*input6));
 input6[0] = 3.25;
 input6[1] = -2;
 input6[2] = 0;
-input6[3] = 1-1i;
+input6[3] = 1 - 1*I;
 writeM( a, 4, input6);
 free(input6);
 
@@ -166,7 +165,7 @@ input9[0] = 3.25;
 input9[1] = -2;
 input9[2] = 0;
 input9[3] = 1;
-input9[4] = 5-1i;
+input9[4] = 5 - 1*I;
 input9[5] = 10;
 writeM( a, 6, input9);
 free(input9);
@@ -220,7 +219,7 @@ input12[0] = 3.25;
 input12[1] = -2;
 input12[2] = 0;
 input12[3] = 1;
-input12[4] = 5-1i;
+input12[4] = 5 - 1*I;
 input12[5] = 10;
 writeM( a, 6, input12);
 free(input12);
@@ -230,107 +229,105 @@ fourier_script(a);
 //matrices_97_i
 int ndim13 = 2;
 int dim13[2] = {7, 9};
-a = zerosM(ndim13, dim13);
-void *data1 = getdataM(a);
-int* lhs_data1 = (int *)data1;
+Matrix * tmp14 = zerosM(ndim13, dim13);
+a = tmp14;
+int* lhs_data1 = i_to_i(tmp14);
 
-for (int k =  1; k <= 63; ++ k) {
+for (int iter1 =  1; iter1 <= 63; ++ iter1) {
+int mat1 = pow((-1), iter1);
+int mat2 = pow(iter1, 2);
 int d3_1 = 1;
-int d2_1 = ceil((double) k / (9 * 7));
-int tmp_1 = k % (9 * 7);
-if (tmp_1 == 0) {
-tmp_1 = 9 * 7;
-}
-int d0_1 = tmp_1 % 9;
+int d2_1 = 1;
+int d0_1 = iter1 % 7;
 if (d0_1 == 0) {
-d0_1 = 9;
+d0_1 = 7;
 }
-int d1_1 = (tmp_1 - d0_1)/9 + 1;
-int tmp14 = (-1) ^ k * k ^ 2;
-lhs_data1[(d1_1-1) + (d0_1-1) * 7 + (d2_1-1) * 9 * 7 + (d3_1-1) * 9 * 7 * 1] = tmp14;
+int d1_1 = (iter1 - d0_1)/7 + 1;
+int mat3 = pow((-1), iter1);
+int mat4 = pow(iter1, 2);
+int tmp15 = mat3 * mat4;
+lhs_data1[(d1_1-1) + (d0_1-1) * 9 + (d2_1-1) * 7 * 9 + (d3_1-1) * 7 * 9 * 1] = mat3 * mat4;
 
 }
 int size1 = 1;
-for (int iter1 = 0 ; iter1 < ndim13; iter1++)
+for (int iter2 = 0 ; iter2 < ndim13; iter2++)
 {
-	size1 *= dim13[iter1];
+	size1 *= dim13[iter2];
 }
-Matrix *mat1 = createM(ndim13, dim13, 0);
-writeM(mat1, size1, lhs_data1);
-Matrix * mat2 = transposeM(mat1);
-a = mat2;
-printM(mat2);
-fourier_script(mat2);
-//matrices_97_d
-int ndim14 = 2;
-int dim14[2] = {7, 9};
-a = zerosM(ndim14, dim14);
-void *data2 = getdataM(mat2);
-int* lhs_data2 = (int *)data2;
-
-for (int k =  1; k <= 63; ++ k) {
-int d3_2 = 1;
-int d2_2 = ceil((double) k / (9 * 7));
-int tmp_2 = k % (9 * 7);
-if (tmp_2 == 0) {
-tmp_2 = 9 * 7;
-}
-int d0_2 = tmp_2 % 9;
-if (d0_2 == 0) {
-d0_2 = 9;
-}
-int d1_2 = (tmp_2 - d0_2)/9 + 1;
-int tmp17 = ((-1) ^ k) * k ^ 2 / 17;
-lhs_data2[(d1_2-1) + (d0_2-1) * 7 + (d2_2-1) * 9 * 7 + (d3_2-1) * 9 * 7 * 1] = tmp17;
-// (-1)^k*k^2/17;
-
-}
-int size2 = 1;
-for (int iter2 = 0 ; iter2 < ndim14; iter2++)
-{
-	size2 *= dim14[iter2];
-}
-Matrix *mat3 = createM(ndim14, dim14, 0);
-writeM(mat3, size2, lhs_data2);
-Matrix * mat4 = transposeM(mat3);
-a = mat4;
-printM(mat4);
-fourier_script(mat4);
-//matrices_97_c
-int ndim15 = 2;
-int dim15[2] = {7, 9};
-a = zerosM(ndim15, dim15);
-void *data3 = getdataM(mat4);
-complex* lhs_data3 = (complex *)data3;
-
-for (int k =  1; k <= 63; ++ k) {
-int d3_3 = 1;
-int d2_3 = ceil((double) k / (9 * 7));
-int tmp_3 = k % (9 * 7);
-if (tmp_3 == 0) {
-tmp_3 = 9 * 7;
-}
-int d0_3 = tmp_3 % 9;
-if (d0_3 == 0) {
-d0_3 = 9;
-}
-int d1_3 = (tmp_3 - d0_3)/9 + 1;
-complex tmp20 = ((-1) ^ k) * k - k / 17*I;
-lhs_data3[(d1_3-1) + (d0_3-1) * 7 + (d2_3-1) * 9 * 7 + (d3_3-1) * 9 * 7 * 1] = tmp20;
-// (-1)^k*k-k/17i;
-
-}
-int size3 = 1;
-for (int iter3 = 0 ; iter3 < ndim15; iter3++)
-{
-	size3 *= dim15[iter3];
-}
-Matrix *mat5 = createM(ndim15, dim15, 2);
-writeM(mat5, size3, lhs_data3);
+Matrix *mat5 = createM(ndim13, dim13, 0);
+writeM(mat5, size1, lhs_data1);
 Matrix * mat6 = transposeM(mat5);
 a = mat6;
 printM(mat6);
 fourier_script(mat6);
+//matrices_97_d
+int ndim14 = 2;
+int dim14[2] = {7, 9};
+Matrix * tmp18 = zerosM(ndim14, dim14);
+a = tmp18;
+int* lhs_data2 = i_to_i(tmp18);
+
+for (int iter3 =  1; iter3 <= 63; ++ iter3) {
+int mat7 = pow((-1), iter3);
+int mat8 = pow(iter3, 2);
+int d3_2 = 1;
+int d2_2 = 1;
+int d0_2 = iter3 % 7;
+if (d0_2 == 0) {
+d0_2 = 7;
+}
+int d1_2 = (iter3 - d0_2)/7 + 1;
+int mat9 = pow((-1), iter3);
+int mat10 = pow(iter3, 2);
+int tmp19 = (mat9) * mat10 / 17;
+lhs_data2[(d1_2-1) + (d0_2-1) * 9 + (d2_2-1) * 7 * 9 + (d3_2-1) * 7 * 9 * 1] = (mat9) * mat10 / 17;
+// (-1)^k*k^2/17;
+
+}
+int size2 = 1;
+for (int iter4 = 0 ; iter4 < ndim14; iter4++)
+{
+	size2 *= dim14[iter4];
+}
+Matrix *mat11 = createM(ndim14, dim14, 0);
+writeM(mat11, size2, lhs_data2);
+Matrix * mat12 = transposeM(mat11);
+a = mat12;
+printM(mat12);
+fourier_script(mat12);
+//matrices_97_c
+int ndim15 = 2;
+int dim15[2] = {7, 9};
+Matrix * tmp22 = zerosM(ndim15, dim15);
+Matrix * a1 = tmp22;
+complex* lhs_data3 = i_to_c(tmp22);
+
+for (int iter5 =  1; iter5 <= 63; ++ iter5) {
+int mat13 = pow((-1), iter5);
+int d3_3 = 1;
+int d2_3 = 1;
+int d0_3 = iter5 % 7;
+if (d0_3 == 0) {
+d0_3 = 7;
+}
+int d1_3 = (iter5 - d0_3)/7 + 1;
+int mat14 = pow((-1), iter5);
+complex tmp23 = (mat14) * iter5 - iter5 / 17*I;
+lhs_data3[(d1_3-1) + (d0_3-1) * 9 + (d2_3-1) * 7 * 9 + (d3_3-1) * 7 * 9 * 1] = (mat14) * iter5 - iter5 / 17*I;
+// (-1)^k*k-k/17i;
+
+}
+int size3 = 1;
+for (int iter6 = 0 ; iter6 < ndim15; iter6++)
+{
+	size3 *= dim15[iter6];
+}
+Matrix *mat15 = createM(ndim15, dim15, 2);
+writeM(mat15, size3, lhs_data3);
+Matrix * mat16 = transposeM(mat15);
+a = mat16;
+printM(mat16);
+fourier_script(mat16);
 return 0;
 }
 
@@ -339,22 +336,26 @@ return 0;
 
 void fourier_script(Matrix * a) {
 int ndim16 = 2;
-int dim16[2] = {7,9};
-printM(fftM(a));
+int dim16[2] = {1,1};
+Matrix * tmp26 = fftM(a);
+printM(tmp26);
 int ndim17 = 2;
-int dim17[2] = {7,9};
-printM(ifftM(a));
+int dim17[2] = {1,1};
+Matrix * tmp29 = ifftM(a);
+printM(tmp29);
 }
 
 void fourier_vec_script(Matrix * a) {
 
-for (int i =  1; i <= 20; ++ i) {
+for (int iter7 =  1; iter7 <= 20; ++ iter7) {
 int ndim18 = 2;
-int dim18[2] = {7,9};
-printM(fftM(a));
+int dim18[2] = {1,1};
+Matrix * tmp32 = fftM(a);
+printM(tmp32);
 int ndim19 = 2;
-int dim19[2] = {7,9};
-printM(ifftM(a));
+int dim19[2] = {1,1};
+Matrix * tmp35 = ifftM(a);
+printM(tmp35);
 
 }
 }

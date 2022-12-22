@@ -455,8 +455,11 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         }*/
                     }
                     if (type == 'heterogeneous') {
-                        // int:0, double:1, complex:2, char:3   
-                        pushToMain("\nstruct cell {\n    int type;\n    union {\n        int ival;\n        float fval;\n        double dval;\n        complex double cval;\n        char chval[20];\n    } data;\n};");
+                        // int:0, double:1, complex:2, char:3  
+                        numCellStruct += 1;
+                        if (numCellStruct == 1) {
+                            insertMain("// Structure for cell arrays\nstruct cell {\n    int type;\n    union {\n        int ival;\n        double dval;\n        complex double cval;\n        char chval[20];\n    } data;\n};", "int ".concat(filename, "(void) {"), 1, 0);
+                        }
                         var expression = [];
                         expression.push("struct cell ".concat(outs[0], "[").concat(node.rightNode.namedChildCount, "];"));
                         var types = [];
@@ -2011,7 +2014,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         generated_code.push(function_declarations.join("\n"));
     }
     if (!(0, treeTraversal_1.fileIsFunction)(tree, debug)) {
-        generated_code.push("\n// Entry-point function\nint ".concat(filename, "(void)\n{"));
+        generated_code.push("\n// Entry-point function\nint ".concat(filename, "(void) {"));
     }
     generated_code.push("\n" + main_function.join("\n"));
     if (!(0, treeTraversal_1.fileIsFunction)(tree, treeTraversal_1.fileIsFunction)) {

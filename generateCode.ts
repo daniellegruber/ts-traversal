@@ -553,8 +553,10 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                     }
 
                     if (type == 'heterogeneous') {
-                    // int:0, double:1, complex:2, char:3   
-pushToMain(`
+                    // int:0, double:1, complex:2, char:3  
+                    numCellStruct += 1;
+                    if (numCellStruct == 1) {
+insertMain(`// Structure for cell arrays
 struct cell {
     int type;
     union {
@@ -563,7 +565,8 @@ struct cell {
         complex double cval;
         char chval[20];
     } data;
-};`);
+};`, `int ${filename}(void) {`, 1, 0);
+                        }
                         let expression = [];
                         expression.push(`struct cell ${outs[0]}[${node.rightNode.namedChildCount}];`)
                         
@@ -612,38 +615,6 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
     }
 }
 `);
-                        
-                        /*let expression1 = [];
-                        let expression2 = [];
-                        expression1.push(`\nstruct cell${numCellStruct} {`);
-                        expression2.push(`cell${numCellStruct} ${outs[0]};`)
-                    
-                        for (let i=0; i<node.rightNode.namedChildCount; i++) {
-                            let child = node.rightNode.namedChildren[i];
-                            let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                            custom_functions = c;
-                            let numel = child_dim.reduce(function(a, b) {return a * b;});
-                            if (child.type == g.SyntaxType.Matrix) {
-                                
-                                expression1.push(`Matrix f${i}[${numel}];`);
-                                expression2.push(initializeMatrix(node.rightNode, `${outs[0]}.f${i}`, child_ndim, child_dim, type));
-          
-                            } else if (child_type == 'char') {
-                                    expression1.push(`${child_type} f${i}[${numel}];`);
-                                    expression2.push(`strcpy(${outs[0]}.f${i}, ${child.text.replace(/'/g, '"')});`);
-                            } else {
-                                expression1.push(`${child_type} f${i};`);
-                                expression2.push(`${outs[0]}.f${i} = ${child.text};`)
-                            }
-                            
-                        }
-                        expression1.push("}\n");
-                        expression1.push(expression2.join("\n"));
-                        pushToMain(expression1.join("\n") + "\n");
-                        
-                        numCellStruct += 1;*/
-                        
-                       
                     } else {
                         let obj = type_to_matrix_type.find(x => x.type === type);
                         if (obj != null) {
@@ -2227,8 +2198,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
     if (!fileIsFunction(tree, debug)){
     generated_code.push(
 `\n// Entry-point function
-int ${filename}(void)
-{`);
+int ${filename}(void) {`);
     }
     
     generated_code.push("\n" + main_function.join("\n"));

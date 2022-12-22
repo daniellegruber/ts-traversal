@@ -514,9 +514,10 @@ generateCode.ts
 | elem_divide_matrix  | No  | Casting to complex (or other type) makes all values zero. |
 | elem_power_matrix  | Yes  |  |
 | elem_scalarpower_matrix  | No  | Choice of when to use cpow is different, e.g., line 360 in main.c/line 359 in octave_main.c. |
-| fourier  | No  | |
+| fourier  | Maybe  | I'm currently comparing the outputs visually and since there are a lot of outputs it's hard to say whether everything matches up. |
 | determinant_matrix | No  | |
 | external_fun | Yes  | One of my own tests. Tests a case of custom function defined outside of main script (i.e., in separate m file). |
+| cell_test | Yes  | One of my own tests. Tests a few cases of cell arrays with heterogeneous data types. |
 
 
 # Current limitations/works in progress

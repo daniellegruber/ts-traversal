@@ -516,6 +516,7 @@ generateCode.ts
 | elem_scalarpower_matrix  | No  | Choice of when to use cpow is different, e.g., line 360 in main.c/line 359 in octave_main.c. |
 | fourier  | No  | |
 | determinant_matrix | No  | |
+| external_fun | Yes  | One of my own tests. Tests a case of custom function defined outside of main script (i.e., in separate m file). |
 
 
 # Current limitations/works in progress

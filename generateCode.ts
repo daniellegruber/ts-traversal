@@ -286,12 +286,26 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
       matrix_type: number;
     };
     
+    type typeToCellType = {
+      type: string;
+      cell_type: number;
+      cell_val: string;
+    };
+    
     const type_to_matrix_type: typeToMatrixType[] = [
         {type: "integer", matrix_type: 0},
         {type: "int", matrix_type: 0},
         {type: "double", matrix_type: 1},
         {type: "complex", matrix_type: 2},
         {type: "char", matrix_type: 3}
+    ];
+    
+    const type_to_cell_type: typeToCellType[] = [
+        {type: "integer", cell_type: 0, cell_val: "ival"},
+        {type: "int", cell_type: 0, cell_val: "ival"},
+        {type: "double", cell_type: 1, cell_val: "dval"},
+        {type: "complex", cell_type: 2, cell_val: "cval"},
+        {type: "char", cell_type: 3, cell_val: "chval"}
     ];
     
     function main() {
@@ -539,8 +553,67 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                     }
 
                     if (type == 'heterogeneous') {
+                    // int:0, double:1, complex:2, char:3   
+pushToMain(`
+struct cell {
+    int type;
+    union {
+        int ival;
+        double dval;
+        complex double cval;
+        char chval[20];
+    } data;
+};`);
+                        let expression = [];
+                        expression.push(`struct cell ${outs[0]}[${node.rightNode.namedChildCount}];`)
                         
-                        let expression1 = [];
+                        let types = [];
+                        for (let i=0; i<node.rightNode.namedChildCount; i++) {
+                            let child = node.rightNode.namedChildren[i];
+                            let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            custom_functions = c;
+                            let numel = child_dim.reduce(function(a, b) {return a * b;});
+                            if (child.type == g.SyntaxType.Matrix) {
+                                
+                                //expression1.push(`Matrix f${i}[${numel}];`);
+                                //expression2.push(initializeMatrix(node.rightNode, `${outs[0]}.f${i}`, child_ndim, child_dim, type));
+          
+                            } else if (child_type == 'char') {
+                                expression.push(`${outs[0]}[${i}].type = 3;`);
+                                //expression.push(`${outs[0]}[${i}].data.chval = ${child.text.replace(/'/g, '"')};`);
+                                expression.push(`strcpy(${outs[0]}[${i}].data.chval, ${child.text.replace(/'/g, '"')});`);
+                            } else {
+                                let obj = type_to_cell_type.find(x => x.type === child_type);
+                                expression.push(`${outs[0]}[${i}].type = ${obj.cell_type};`);
+                                expression.push(`${outs[0]}[${i}].data.${obj.cell_val} = ${child.text};`);
+                            }
+                            
+                        }
+                        pushToMain(expression.join("\n") + "\n");
+                        let tmp_iter = generateTmpVar("iter");
+pushToMain(`
+for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp_iter}++) {
+    switch(${outs[0]}[${tmp_iter}].type) {
+        case 0:
+        printf("%d\\n", ${outs[0]}[${tmp_iter}].data.ival);
+        break;
+        
+        case 1:
+        printf("%f\\n", ${outs[0]}[${tmp_iter}].data.dval);
+        break;
+        
+        case 2:
+        printf("%f\\n", ${outs[0]}[${tmp_iter}].data.cval);
+        break;
+        
+        case 3:
+        printf("%s\\n", ${outs[0]}[${tmp_iter}].data.chval);
+        break;
+    }
+}
+`);
+                        
+                        /*let expression1 = [];
                         let expression2 = [];
                         expression1.push(`\nstruct cell${numCellStruct} {`);
                         expression2.push(`cell${numCellStruct} ${outs[0]};`)
@@ -568,7 +641,7 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`)
                         expression1.push(expression2.join("\n"));
                         pushToMain(expression1.join("\n") + "\n");
                         
-                        numCellStruct += 1;
+                        numCellStruct += 1;*/
                         
                        
                     } else {

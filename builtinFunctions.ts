@@ -2462,7 +2462,7 @@ export const builtin_functions = [
 			return [
 			    {
 			        name: arg_d,
-			        type: arg_types[0].type,
+			        type: "double",
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
@@ -2965,7 +2965,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_matlab: 'mod', 
         fun_c: (args, arg_types, outs) => `${args[0]} % ${args[1]}`, 
         args_transform: (args, arg_types, outs) => null,
-		outs_transform: (outs) => null,
+		outs_transform: (outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,

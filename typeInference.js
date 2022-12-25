@@ -141,22 +141,43 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         count = count + 1;
                         v1_1 = v1_1[v1_1.length - 1];
                         if (scope[2] == v1_1.scope[2]) { // same block level
-                            //var_types = var_types.filter(function(e) { return (e.name != v1.name) && (e.scope !== v1.scope)}); // replace if already in var_types
                             var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v1_1); }); // replace if already in var_types
-                            v1_1.scope = [v1_1.scope[0], node_2.startIndex - 1, v1_1.scope[2]];
-                            var_types.push(v1_1);
-                            var v2 = {
-                                name: v1_1.name,
-                                type: type,
-                                ndim: ndim,
-                                dim: dim,
-                                ismatrix: ismatrix,
-                                ispointer: type == 'char' || ismatrix,
-                                isstruct: isstruct,
-                                scope: [node_2.startIndex, scope[1], scope[2]],
-                                initialized: true //false
-                            };
-                            var_types.push(v2);
+                            var re = new RegExp("\\b".concat(v1_1.name, "\\b"));
+                            if (re.test(node_2.rightNode.text)) {
+                                //console.log("WAZZUP");
+                                //console.log(node.text);
+                                //console.log(node.parent.nextNamedSibling.text);
+                                v1_1.scope = [v1_1.scope[0], node_2.parent.nextNamedSibling.startIndex - 1, v1_1.scope[2]];
+                                var_types.push(v1_1);
+                                var v2 = {
+                                    name: v1_1.name,
+                                    type: type,
+                                    ndim: ndim,
+                                    dim: dim,
+                                    ismatrix: ismatrix,
+                                    ispointer: type == 'char' || ismatrix,
+                                    isstruct: isstruct,
+                                    scope: [node_2.parent.nextNamedSibling.startIndex, scope[1], scope[2]],
+                                    initialized: true //false
+                                };
+                                var_types.push(v2);
+                            }
+                            else {
+                                v1_1.scope = [v1_1.scope[0], node_2.startIndex - 1, v1_1.scope[2]];
+                                var_types.push(v1_1);
+                                var v2 = {
+                                    name: v1_1.name,
+                                    type: type,
+                                    ndim: ndim,
+                                    dim: dim,
+                                    ismatrix: ismatrix,
+                                    ispointer: type == 'char' || ismatrix,
+                                    isstruct: isstruct,
+                                    scope: [node_2.startIndex, scope[1], scope[2]],
+                                    initialized: true //false
+                                };
+                                var_types.push(v2);
+                            }
                         }
                     }
                     else {

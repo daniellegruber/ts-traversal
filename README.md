@@ -525,8 +525,12 @@ generateCode.ts
  - In generateCode.ts, initalizeMatrix (lines 659 - 686)
 - Input/output types for a custom function are unknown unless a call to that function is issued at some point in the source code
 - Currently, assume the type of first input argument to class method is an instance of that class. Holds true most of the time but doesn't always, e.g., @mmo\bsxfun.m
-- Should (1 x n) and (n x 1) matrices always be initialized as matrices or vectors? Or should it depend on the context of use?
- - For example, the C function quantileM_vec requires the second argument to be a vector, so if the MATLAB code quantile([0.25 0.5 0.75]) initializes [0.25 0.5 0.75] as a matrix this would be incorrect. 
+- Matrices vs vectors
+ - Recently decided to distinguish between matrix and vector types in specifying variable type.
+ - Should (1 x n) and (n x 1) matrices always be initialized as matrices or vectors? Or should it depend on the context of use?
+ - For example, the C function `Matrix * quantileM_vec(Matrix* restrict m, int N, double* restrict quantiles)` requires the third argument to be a vector, so if the MATLAB code `quantile(A, [0.25 0.5 0.75])` initializes `[0.25 0.5 0.75]` as a matrix this would be incorrect. 
+ - (Current solution, which works, is in builtinFunctions.ts for `quantileM_vec`: if second argument has been initialized as matrix, extract data as vector and pass to function.)
  - However, in other cases, we want to preserve the matrix structure despite one dimension being "flat."
+ 
 
 

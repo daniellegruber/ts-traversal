@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.builtin_functions = exports.operatorMapping = void 0;
+var helperFunctions_1 = require("./helperFunctions");
 var type_to_matrix_type = [
     { type: "integer", matrix_type: 0 },
     { type: "int", matrix_type: 0 },
@@ -91,7 +92,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -129,7 +131,8 @@ exports.operatorMapping = [
                     ndim: arg_types[0].ndim,
                     dim: arg_types[0].dim,
                     ismatrix: arg_types[0].ismatrix,
-                    ispointer: arg_types[0].ispointer,
+                    isvector: false,
+                    ispointer: false,
                     isstruct: false
                 };
             }
@@ -145,7 +148,8 @@ exports.operatorMapping = [
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false,
                     isstruct: false
                 };
             }
@@ -209,7 +213,8 @@ exports.operatorMapping = [
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false,
                     isstruct: false
                 };
             }
@@ -219,7 +224,8 @@ exports.operatorMapping = [
                     ndim: left_ndim,
                     dim: [left_dim[0], right_dim[1]],
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false,
                     isstruct: false
                 };
             }
@@ -246,6 +252,7 @@ exports.operatorMapping = [
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: false,
                     isstruct: false
                 });
@@ -305,7 +312,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -359,7 +367,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -410,7 +419,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: left_ismatrix && !right_ismatrix,
-                ispointer: left_ismatrix && !right_ismatrix,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -448,7 +458,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -486,7 +497,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -524,7 +536,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -590,7 +603,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -613,9 +627,12 @@ exports.operatorMapping = [
                         name: 'scalar',
                         val: "".concat(args[1]),
                         type: right_type,
-                        ndim: right_ndim,
-                        dim: [right_ndim],
+                        //ndim: right_ndim,
+                        //dim: [right_ndim],
+                        ndim: 1,
+                        dim: [1],
                         ismatrix: false,
+                        isvector: false,
                         ispointer: false,
                         isstruct: false
                     });
@@ -655,7 +672,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -693,7 +711,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -731,7 +750,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -769,7 +789,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -807,7 +828,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -845,7 +867,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -883,7 +906,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -921,7 +945,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -950,7 +975,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -979,7 +1005,8 @@ exports.operatorMapping = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1005,7 +1032,8 @@ exports.operatorMapping = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1031,7 +1059,8 @@ exports.operatorMapping = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1065,7 +1094,8 @@ exports.operatorMapping = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1099,7 +1129,8 @@ exports.operatorMapping = [
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1133,7 +1164,8 @@ exports.operatorMapping = [
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1158,6 +1190,7 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -1212,7 +1245,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1254,7 +1288,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1298,6 +1333,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true
                 },
                 {
@@ -1306,6 +1342,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true
                 },
                 {
@@ -1314,6 +1351,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 2],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true
                 },
                 {
@@ -1322,6 +1360,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true
                 },
                 {
@@ -1330,6 +1369,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true
                 },
                 {
@@ -1338,6 +1378,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true
                 },
             ];
@@ -1379,6 +1420,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1388,6 +1430,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1397,6 +1440,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 2],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1406,6 +1450,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1415,6 +1460,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 }
@@ -1453,6 +1499,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1462,6 +1509,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1471,6 +1519,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 2],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1480,6 +1529,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1489,6 +1539,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 }
@@ -1520,7 +1571,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1549,7 +1601,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1578,7 +1631,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1607,7 +1661,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1636,7 +1691,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1665,7 +1721,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1694,7 +1751,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1726,6 +1784,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1735,6 +1794,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 }
@@ -1769,6 +1829,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1778,6 +1839,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: true,
                     isstruct: false
                 }
@@ -1827,7 +1889,8 @@ exports.builtin_functions = [
                     ndim: arg_types[0].ndim,
                     dim: arg_types[0].dim,
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false,
                     isstruct: false
                 },
                 {
@@ -1836,7 +1899,8 @@ exports.builtin_functions = [
                     ndim: arg_types[0].ndim,
                     dim: arg_types[0].dim,
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false,
                     isstruct: false
                 }
             ];
@@ -1860,6 +1924,7 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -1870,7 +1935,8 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: arg_types[0].dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             });
             init_var.push({
@@ -1880,7 +1946,8 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: arg_types[0].dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             });
             return init_var;
@@ -1904,7 +1971,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1930,7 +1998,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1956,7 +2025,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1982,7 +2052,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -1993,11 +2064,11 @@ exports.builtin_functions = [
     {
         fun_matlab: 'max',
         fun_c: function (args, arg_types, outs) {
-            if (outs.length == 1) {
-                return 'max';
+            if (outs.length > 1) {
+                return 'maxV';
             }
             else {
-                return 'maxV';
+                return 'maxM';
             }
         },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -2008,21 +2079,22 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) {
-            if (outs.length == 1) {
-                return null;
-            }
-            else {
+            if (outs.length > 1) {
                 return [
                     {
                         name: outs[1],
                         type: 'int',
-                        ndim: 2,
-                        dim: [1, 1],
+                        ndim: 1,
+                        dim: [1],
                         ismatrix: false,
+                        isvector: false,
                         ispointer: true,
                         isstruct: false
                     }
                 ];
+            }
+            else {
+                return null;
             }
         },
         return_type: function (args, arg_types, outs) {
@@ -2032,7 +2104,8 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2043,11 +2116,11 @@ exports.builtin_functions = [
     {
         fun_matlab: 'min',
         fun_c: function (args, arg_types, outs) {
-            if (outs.length == 1) {
-                return 'min';
+            if (outs.length > 1) {
+                return 'minV';
             }
             else {
-                return 'minV';
+                return 'minM';
             }
         },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -2058,20 +2131,22 @@ exports.builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) {
-            if (outs.length == 1) {
-                return null;
-            }
-            else {
+            if (outs.length > 1) {
                 return [
                     {
                         name: outs[1],
                         type: 'int',
-                        ndim: 2,
-                        dim: [1, 1],
+                        ndim: 1,
+                        dim: [1],
                         ismatrix: false,
-                        ispointer: true
+                        isvector: false,
+                        ispointer: true,
+                        isstruct: false
                     }
                 ];
+            }
+            else {
+                return null;
             }
         },
         return_type: function (args, arg_types, outs) {
@@ -2081,7 +2156,8 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2099,15 +2175,16 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var type = arg_types[0].type;
-            var ndim = arg_types[0].ndim;
-            var dim = arg_types[0].dim;
+            //let type = arg_types[0].type;
+            //let ndim = arg_types[0].ndim;
+            //let dim = arg_types[0].dim;
             return {
-                type: type,
-                ndim: ndim,
-                dim: dim,
+                type: "double",
+                ndim: 2,
+                dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2120,19 +2197,15 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'quantileM_vec'; },
         args_transform: function (args, arg_types, outs) {
             var quantile_specifier = Number(args[1]);
+            var quantiles = "vec";
             if (Number.isInteger(quantile_specifier)) {
                 var n_quantiles = quantile_specifier;
-                var arr = [];
-                var step = 1 / (quantile_specifier + 1);
-                for (var i = 0; i < 1; i += step) {
-                    arr.push(i);
-                }
-                var quantiles = "{".concat(arr.toString(), "}");
             }
             else {
-                var _a = parseVectorArg(args[1]), vec_str = _a[0], vec_elements = _a[1];
-                var n_quantiles = vec_elements.length;
-                var quantiles = vec_str.toString();
+                var n_quantiles = (0, helperFunctions_1.numel)(arg_types[1].dim);
+                if (!arg_types[1].ismatrix) {
+                    quantiles = args[1];
+                }
             }
             return [args[0], n_quantiles, quantiles];
         },
@@ -2150,23 +2223,85 @@ exports.builtin_functions = [
                 var n_quantiles = quantile_specifier;
             }
             else {
-                var _a = parseVectorArg(args[1]), vec_elements = _a[1];
-                var n_quantiles = vec_elements.length;
+                var n_quantiles = (0, helperFunctions_1.numel)(arg_types[1].dim);
             }
-            // If m is a row or column vector, returns a 1xN matrix with the specified  quantiles
+            // If m is a row or column vector, returns a 1xN matrix with the specified quantiles
             // If m is a matrix of size rxc, returns a Nxc matrix with the specified quantiles of each column
-            return {
-                type: arg0_type,
-                ndim: 2,
-                dim: [n_quantiles, arg0_dim[1]],
-                ismatrix: true,
-                ispointer: true,
-                isstruct: false
-            };
+            if (arg0_ndim == 2 && arg0_dim.some(function (x) { return x === 1; })) { // vector
+                return {
+                    type: arg0_type,
+                    ndim: 2,
+                    dim: [1, n_quantiles],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: arg0_type,
+                    ndim: 2,
+                    dim: [n_quantiles, arg0_dim[1]],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
         },
-        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) {
+            var quantile_specifier = Number(args[1]);
+            if (Number.isInteger(quantile_specifier)) {
+                var n_quantiles = quantile_specifier;
+                //let expression = [];
+                //expression.push(`double arr[${n_quantiles}];`);
+                var step = 1 / (quantile_specifier + 1);
+                var expression = "\nfor (int i = 0; ".concat(step, "*i < 1; i ++) {\n    vec[i] = ").concat(step, "*i;\n}\n                ");
+                return expression;
+            }
+            else {
+                return null;
+            }
+        },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) {
+            var quantile_specifier = Number(args[1]);
+            if (Number.isInteger(quantile_specifier)) {
+                var init_var = [];
+                init_var.push({
+                    name: 'vec',
+                    val: "{}",
+                    type: 'double',
+                    ndim: 1,
+                    dim: [quantile_specifier],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+                return init_var;
+            }
+            else {
+                if (arg_types[1].ismatrix) {
+                    var init_var = [];
+                    var type = arg_types[1].type;
+                    init_var.push({
+                        name: 'vec',
+                        val: "".concat(type.charAt(0), "_to_").concat(type.charAt(0), "(").concat(args[1], ")"),
+                        type: type,
+                        ndim: 1,
+                        dim: [(0, helperFunctions_1.numel)(arg_types[1].dim)],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: true,
+                        isstruct: false
+                    });
+                    return init_var;
+                }
+                return null;
+            }
+        }
     },
     {
         fun_matlab: 'zeros',
@@ -2204,7 +2339,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2225,6 +2361,7 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2232,9 +2369,10 @@ exports.builtin_functions = [
                 name: 'dim',
                 val: dim,
                 type: 'int',
-                ndim: ndim,
+                ndim: 1,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: true,
                 ispointer: false,
                 isstruct: false
             });
@@ -2277,7 +2415,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2298,16 +2437,18 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
             init_var.push({
                 name: 'dim',
-                val: "".concat(dim),
+                val: dim,
                 type: 'int',
-                ndim: ndim,
+                ndim: 1,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: true,
                 ispointer: false,
                 isstruct: false
             });
@@ -2331,7 +2472,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2348,6 +2490,7 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2358,6 +2501,7 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2384,7 +2528,8 @@ exports.builtin_functions = [
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
-                    ispointer: false,
+                    isvector: false,
+                    ispointer: true,
                     isstruct: false
                 }
             ];
@@ -2421,7 +2566,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2443,37 +2589,6 @@ exports.builtin_functions = [
         },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; }
-        /*init_before: (args, arg_types, outs) => {
-            let dim = `{${args.join(", ")}}`;
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
-            }
-            
-            let init_var: InitVar[] = [];
-            init_var.push({
-                name: 'ndim',
-                val: `${ndim}`,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                ispointer: false,
-                isstruct: false
-            })
-            init_var.push({
-                name: 'dim',
-                val: `${dim}`,
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                ispointer: false,
-                isstruct: false
-            })
-            return init_var;
-        }*/
     },
     {
         fun_matlab: 'strcmp',
@@ -2490,6 +2605,7 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2513,6 +2629,7 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2550,6 +2667,7 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2573,7 +2691,8 @@ exports.builtin_functions = [
                 ndim: arg_types[0].ndim,
                 dim: arg_types[0].dim,
                 ismatrix: false,
-                ispointer: true
+                isvector: true,
+                ispointer: false //true
             };
         },
         push_main_before: function (args, arg_types, outs) { return null; },
@@ -2675,7 +2794,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2708,7 +2828,8 @@ exports.builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2731,27 +2852,50 @@ exports.builtin_functions = [
         init_before: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'mean',
-        fun_c: function (args, arg_types, outs) { return 'meanM'; },
+        fun_matlab: 'median',
+        fun_c: function (args, arg_types, outs) { return 'medianM'; },
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var left_type = arg_types[0].type;
-            var left_ndim = arg_types[0].ndim;
-            var left_dim = arg_types[0].dim;
-            var right_type = arg_types[1].type;
-            var right_ndim = arg_types[1].ndim;
-            var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
-                ndim: left_ndim,
-                dim: left_dim,
+                type: arg_types[0].type,
+                ndim: 2,
+                dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'mean',
+        fun_c: function (args, arg_types, outs) { return 'meanM'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var type = "double";
+            if (arg_types[0].type == "complex") {
+                type = "complex";
+            }
+            return {
+                type: type,
+                ndim: 2,
+                dim: [1, 1],
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2761,26 +2905,25 @@ exports.builtin_functions = [
     },
     {
         fun_matlab: 'std',
-        fun_c: function (args, arg_types, outs) { return null; },
+        fun_c: function (args, arg_types, outs) { return 'stdM'; },
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var left_type = arg_types[0].type;
-            var left_ndim = arg_types[0].ndim;
-            var left_dim = arg_types[0].dim;
-            var right_type = arg_types[1].type;
-            var right_ndim = arg_types[1].ndim;
-            var right_dim = arg_types[1].dim;
+            var type = "double";
+            if (arg_types[0].type == "complex") {
+                type = "complex";
+            }
             return {
-                type: binaryOpType(left_type, right_type),
-                ndim: left_ndim,
-                dim: left_dim,
+                type: type,
+                ndim: 2,
+                dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2831,6 +2974,7 @@ exports.builtin_functions = [
                 ndim: 2,
                 dim: [1, 1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: true
             };
@@ -2893,6 +3037,55 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'real',
+        fun_c: function (args, arg_types, outs) { return 'creal'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'double',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'imag',
+        fun_c: function (args, arg_types, outs) { return 'cimag'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'double',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2937,7 +3130,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -2954,6 +3148,7 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2964,6 +3159,7 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -2990,7 +3186,8 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false
             };
         },
@@ -3007,6 +3204,7 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });
@@ -3017,6 +3215,7 @@ exports.builtin_functions = [
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             });

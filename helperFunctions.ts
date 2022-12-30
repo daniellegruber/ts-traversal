@@ -13,6 +13,18 @@ import Matlab = require("tree-sitter-matlab");
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
 
+export function filterByScope(obj, name, node, find_or_filter) {
+    if (find_or_filter == 0) {
+        return obj.find(x => x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+    } else if (find_or_filter == 1) {
+        return obj.filter(x => x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+    }
+}
+
+export function numel(x) {
+    return x.reduce(function(a, b) {return a * b;});
+}
+
 export function writeToFile(out_folder, filename, generated_code) {
     if (!fs.existsSync(out_folder)){
         fs.mkdirSync(out_folder);

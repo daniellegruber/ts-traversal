@@ -1,4 +1,5 @@
 import {Type, VarType} from "./typeInference";
+import {numel} from "./helperFunctions";
 //import {SyntaxNode} from "./generated";
     
 type typeToMatrixType = {
@@ -21,6 +22,7 @@ type InitVar = {
     ndim: number;
     dim: Array<number>;
     ismatrix: boolean;
+    isvector: boolean;
     ispointer: boolean;
     isstruct: boolean;
 };
@@ -119,7 +121,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false
             };
         },
@@ -158,7 +161,8 @@ export const operatorMapping: functionMapping[] = [
                     ndim: arg_types[0].ndim,
                     dim: arg_types[0].dim,
                     ismatrix: arg_types[0].ismatrix,
-                    ispointer: arg_types[0].ispointer,
+                    isvector: false,
+                    ispointer: false, //arg_types[0].ispointer,
                     isstruct: false 
                 };
             } else {
@@ -174,7 +178,8 @@ export const operatorMapping: functionMapping[] = [
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false, //true,
                     isstruct: false 
                 };
             }
@@ -239,7 +244,8 @@ export const operatorMapping: functionMapping[] = [
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false, //true,
                     isstruct: false 
                 };
             } else {
@@ -248,7 +254,8 @@ export const operatorMapping: functionMapping[] = [
                     ndim: left_ndim,
                     dim: [left_dim[0], right_dim[1]],
                     ismatrix: true,
-                    ispointer: true,
+                    isvector: false,
+                    ispointer: false, //true,
                     isstruct: false 
                 };
             }
@@ -275,6 +282,7 @@ export const operatorMapping: functionMapping[] = [
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
+                    isvector: false,
                     ispointer: false,
                     isstruct: false
                 })
@@ -332,7 +340,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -387,7 +396,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false
             };
         },
@@ -438,7 +448,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: left_ismatrix && !right_ismatrix,
-                ispointer: left_ismatrix && !right_ismatrix,
+                isvector: false,
+                ispointer: false, //left_ismatrix && !right_ismatrix,
                 isstruct: false 
             };
         },
@@ -477,7 +488,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -516,7 +528,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -555,7 +568,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -619,7 +633,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -643,9 +658,12 @@ export const operatorMapping: functionMapping[] = [
                         name: 'scalar',
                         val: `${args[1]}`,
                         type: right_type,
-                        ndim: right_ndim,
-                        dim: [right_ndim],
+                        //ndim: right_ndim,
+                        //dim: [right_ndim],
+                        ndim: 1,
+                        dim: [1],
                         ismatrix: false,
+                        isvector: false,
                         ispointer: false,
                         isstruct: false
                     })
@@ -686,7 +704,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -725,7 +744,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -764,7 +784,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -803,7 +824,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -842,7 +864,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -881,7 +904,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -920,7 +944,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -959,7 +984,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -990,7 +1016,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1021,7 +1048,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1049,7 +1077,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1077,7 +1106,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1112,7 +1142,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1147,7 +1178,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1182,7 +1214,8 @@ export const operatorMapping: functionMapping[] = [
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1210,6 +1243,7 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -1267,7 +1301,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1309,7 +1344,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1353,6 +1389,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true
 			    },
 			    {
@@ -1361,6 +1398,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true
 			    },
 			    {
@@ -1369,6 +1407,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,2],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true
 			    },
 			    {
@@ -1377,6 +1416,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true
 			    },
 			    {
@@ -1385,6 +1425,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true
 			    },
 			    {
@@ -1393,6 +1434,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true
 			    },
 			];
@@ -1434,6 +1476,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1443,6 +1486,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1452,6 +1496,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,2],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1461,6 +1506,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1470,6 +1516,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    }
@@ -1508,6 +1555,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1517,6 +1565,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1526,6 +1575,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,2],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1535,6 +1585,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1544,6 +1595,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    }
@@ -1577,7 +1629,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1608,7 +1661,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false
             };
         },
@@ -1639,7 +1693,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false
             };
         },
@@ -1670,7 +1725,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1701,7 +1757,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1732,7 +1789,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1763,7 +1821,8 @@ export const builtin_functions = [
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -1795,6 +1854,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1804,6 +1864,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    }
@@ -1838,6 +1899,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    },
@@ -1847,6 +1909,7 @@ export const builtin_functions = [
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
+			        isvector: false,
 			        ispointer: true,
                     isstruct: false
 			    }
@@ -1896,7 +1959,8 @@ export const builtin_functions = [
 			        ndim: arg_types[0].ndim,
 			        dim: arg_types[0].dim,
 			        ismatrix: true,
-			        ispointer: true,
+			        isvector: false,
+			        ispointer: false, //true,
                     isstruct: false
 			    },
 			    {
@@ -1905,7 +1969,8 @@ export const builtin_functions = [
 			        ndim: arg_types[0].ndim,
 			        dim: arg_types[0].dim,
 			        ismatrix: true,
-			        ispointer: true,
+			        isvector: false,
+			        ispointer: false, //true,
                     isstruct: false
 			    }
 			];
@@ -1930,6 +1995,7 @@ export const builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -1940,7 +2006,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: arg_types[0].dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false
             })
             init_var.push({
@@ -1950,7 +2017,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: arg_types[0].dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false
             })
             return init_var;
@@ -1975,7 +2043,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2002,7 +2071,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2029,7 +2099,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2056,7 +2127,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2067,11 +2139,11 @@ export const builtin_functions = [
     { // Matrix * maxM(Matrix* restrict m)
         fun_matlab: 'max', 
         fun_c: (args, arg_types, outs) => {
-            if (outs.length == 1) {
-                return 'max';
+            if (outs.length > 1) {
+                return 'maxV';
             }
             else {
-                return 'maxV';
+                return 'maxM';
             }
         }, 
         args_transform: (args, arg_types, outs) => args,
@@ -2082,22 +2154,22 @@ export const builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => {
-            if (outs.length == 1) {
-                return null;
-            }
-            else {
-                return [
+			if (outs.length > 1) {
+			    return [
                     {
                         name: outs[1],
                         type: 'int',
-                        ndim: 2,
-                        dim: [1,1],
+                        ndim: 1,
+                        dim: [1],
                         ismatrix: false,
+                        isvector: false,
                         ispointer: true,
                         isstruct: false
                     }
                 ];
-            }
+			} else {
+			    return null;
+			}
         },
         return_type: (args, arg_types, outs) => {
             let type = arg_types[0].type;
@@ -2107,7 +2179,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2118,11 +2191,11 @@ export const builtin_functions = [
     { // Matrix * minM(Matrix* restrict m)
         fun_matlab: 'min', 
         fun_c: (args, arg_types, outs) => {
-            if (outs.length == 1) {
-                return 'min';
+            if (outs.length > 1) {
+                return 'minV';
             }
             else {
-                return 'minV';
+                return 'minM';
             }
         },  
         args_transform: (args, arg_types, outs) => args,
@@ -2133,21 +2206,22 @@ export const builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => {
-            if (outs.length == 1) {
-                return null;
-            }
-            else {
-                return [
+			if (outs.length > 1) {
+			    return [
                     {
                         name: outs[1],
                         type: 'int',
-                        ndim: 2,
-                        dim: [1,1],
+                        ndim: 1,
+                        dim: [1],
                         ismatrix: false,
-                        ispointer: true
+                        isvector: false,
+                        ispointer: true,
+                        isstruct: false
                     }
                 ];
-            }
+			} else {
+			    return null;
+			}
         },
         return_type: (args, arg_types, outs) => {
             let type = arg_types[0].type;
@@ -2157,7 +2231,8 @@ export const builtin_functions = [
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2176,16 +2251,17 @@ export const builtin_functions = [
         ptr_args: (arg_types, outs) => null,
         
         return_type: (args, arg_types, outs) => {
-            let type = arg_types[0].type;
-            let ndim = arg_types[0].ndim;
-            let dim = arg_types[0].dim;
+            //let type = arg_types[0].type;
+            //let ndim = arg_types[0].ndim;
+            //let dim = arg_types[0].dim;
             
             return {
-                type: type,
-                ndim: ndim,
-                dim: dim,
+                type: "double",
+                ndim: 2,
+                dim: [1,1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2198,18 +2274,14 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'quantileM_vec', 
         args_transform: (args, arg_types, outs) => {
             let quantile_specifier = Number(args[1]);
+            let quantiles = "vec"
             if (Number.isInteger(quantile_specifier)) {
                 var n_quantiles:number = quantile_specifier;
-                let arr = [];
-                let step = 1/(quantile_specifier + 1);
-                for (let i = 0; i < 1; i += step) {
-                    arr.push(i);
-                }
-                var quantiles:string = `{${arr.toString()}}`;
             } else {
-                let [vec_str, vec_elements] = parseVectorArg(args[1]);
-                var n_quantiles:number = vec_elements.length;
-                var quantiles:string = vec_str.toString();
+                var n_quantiles:number = numel(arg_types[1].dim);
+                if (!arg_types[1].ismatrix) {
+                    quantiles = args[1];
+                }
             }
             return [args[0], n_quantiles, quantiles];
         },
@@ -2227,24 +2299,92 @@ export const builtin_functions = [
             if (Number.isInteger(quantile_specifier)) {
                 var n_quantiles:number = quantile_specifier;
             } else {
-                let [, vec_elements] = parseVectorArg(args[1]);
-                var n_quantiles:number = vec_elements.length;
+                var n_quantiles:number = numel(arg_types[1].dim);
             }
             
-            // If m is a row or column vector, returns a 1xN matrix with the specified  quantiles
+            // If m is a row or column vector, returns a 1xN matrix with the specified quantiles
             // If m is a matrix of size rxc, returns a Nxc matrix with the specified quantiles of each column
-            return {
-                type: arg0_type,
-                ndim: 2,
-                dim: [n_quantiles, arg0_dim[1]],
-                ismatrix: true,
-                ispointer: true,
-                isstruct: false 
-            };
+            if (arg0_ndim == 2 && arg0_dim.some(x => x === 1)) { // vector
+                return {
+                    type: arg0_type,
+                    ndim: 2,
+                    dim: [1, n_quantiles],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: arg0_type,
+                    ndim: 2,
+                    dim: [n_quantiles, arg0_dim[1]],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
+            }
+            
         },
-        push_main_before: (args, arg_types, outs) => null,
+        push_main_before: (args, arg_types, outs) => {
+            let quantile_specifier = Number(args[1]);
+            if (Number.isInteger(quantile_specifier)) {
+                var n_quantiles:number = quantile_specifier;
+                //let expression = [];
+                //expression.push(`double arr[${n_quantiles}];`);
+                let step = 1/(quantile_specifier + 1);
+                let expression = `
+for (int i = 0; ${step}*i < 1; i ++) {
+    vec[i] = ${step}*i;
+}
+                `;
+                return expression;
+            } else {
+                return null;
+            }
+        },
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null
+        init_before: (args, arg_types, outs) => {
+            let quantile_specifier = Number(args[1]);
+            if (Number.isInteger(quantile_specifier)) {
+            
+                let init_var: InitVar[] = [];
+                init_var.push({
+                    name: 'vec',
+                    val: "{}",
+                    type: 'double',
+                    ndim: 1,
+                    dim: [quantile_specifier],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false, //true,
+                    isstruct: false
+                })
+
+                return init_var;
+            } else {
+                if (arg_types[1].ismatrix) {
+                    let init_var: InitVar[] = [];
+                    
+                    let type = arg_types[1].type;
+                    init_var.push({
+                        name: 'vec',
+                        val: `${type.charAt(0)}_to_${type.charAt(0)}(${args[1]})`,
+                        type: type,
+                        ndim: 1,
+                        dim: [numel(arg_types[1].dim)],
+                        ismatrix: false,
+                        isvector: false, //true,
+                        ispointer: true,
+                        isstruct: false
+                    })
+    
+                    return init_var;
+                }
+                return null
+            }
+        }
     },
     { // Matrix * zerosM(int ndim, int dim[ndim])
         fun_matlab: 'zeros', 
@@ -2282,7 +2422,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2304,6 +2445,7 @@ export const builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2311,9 +2453,10 @@ export const builtin_functions = [
                 name: 'dim',
                 val: dim,
                 type: 'int',
-                ndim: ndim,
+                ndim: 1,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: true,
                 ispointer: false,
                 isstruct: false
             })
@@ -2355,7 +2498,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2377,16 +2521,18 @@ export const builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
             init_var.push({
                 name: 'dim',
-                val: `${dim}`,
+                val: dim,
                 type: 'int',
-                ndim: ndim,
+                ndim: 1,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: true,
                 ispointer: false,
                 isstruct: false
             })
@@ -2411,7 +2557,8 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -2429,6 +2576,7 @@ export const builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2439,6 +2587,7 @@ export const builtin_functions = [
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -2466,7 +2615,8 @@ export const builtin_functions = [
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
-                    ispointer: false,
+                    isvector: false,
+                    ispointer: true, //false,
                     isstruct: false 
 			    }
 			];
@@ -2501,9 +2651,10 @@ export const builtin_functions = [
                 type: 'heterogeneous',
                 ndim: ndim,
                 dim: dim,
-                ismatrix: true, //false,
-                ispointer: true,
-                isstruct: false, //true 
+                ismatrix: true,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false,
             };
         },
         push_main_before: (args, arg_types, outs) => {
@@ -2525,37 +2676,6 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         push_main_after: (args, arg_types, outs) => null,      
         init_before: (args, arg_types, outs) => null
-        /*init_before: (args, arg_types, outs) => {
-            let dim = `{${args.join(", ")}}`;
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
-            }
-            
-            let init_var: InitVar[] = [];
-            init_var.push({
-                name: 'ndim',
-                val: `${ndim}`,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                ispointer: false,
-                isstruct: false
-            })
-            init_var.push({
-                name: 'dim',
-                val: `${dim}`,
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                ispointer: false,
-                isstruct: false
-            })
-            return init_var;
-        }*/
     },
     { // int strcmp(const char* str1, const char* str2)
         fun_matlab: 'strcmp', 
@@ -2572,6 +2692,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2596,6 +2717,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2633,6 +2755,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             };
@@ -2656,7 +2779,8 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: arg_types[0].ndim,
                 dim: arg_types[0].dim,
                 ismatrix: false,
-                ispointer: true
+                isvector: true,
+                ispointer: false //true
             };
         },
         push_main_before: (args, arg_types, outs) => null,
@@ -2759,7 +2883,8 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,//true,
                 isstruct: false 
             };
         },
@@ -2793,7 +2918,8 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,//true,
                 isstruct: false 
             };
         },
@@ -2815,29 +2941,51 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null
     },
-    { // Matrix * meanM(Matrix* restrict m)
-        fun_matlab: 'mean', 
-        fun_c: (args, arg_types, outs) => 'meanM', 
+    { // Matrix * medianM(Matrix* restrict m)
+        fun_matlab: 'median', 
+        fun_c: (args, arg_types, outs) => 'medianM', 
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
             return {
-                type: binaryOpType(left_type, right_type), 
-                ndim: left_ndim,
-                dim: left_dim,
+                type: arg_types[0].type, 
+                ndim: 2,
+                dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    { // Matrix * meanM(Matrix* restrict m)
+        fun_matlab: 'mean', 
+        fun_c: (args, arg_types, outs) => 'meanM', 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs[0],
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            let type = "double";
+            if (arg_types[0].type == "complex") {
+                type = "complex";
+            }
+            return {
+                type: type, 
+                ndim: 2,
+                dim: [1, 1],
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false 
             };
         },
@@ -2847,27 +2995,25 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     },
     { // Matrix * stdM(Matrix* restrict m)
         fun_matlab: 'std', 
-        fun_c: (args, arg_types, outs) => null, 
+        fun_c: (args, arg_types, outs) => 'stdM', 
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
+            let type = "double";
+            if (arg_types[0].type == "complex") {
+                type = "complex";
+            }
             return {
-                type: binaryOpType(left_type, right_type), 
-                ndim: left_ndim,
-                dim: left_dim,
+                type: type, 
+                ndim: 2,
+                dim: [1, 1],
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false 
             };
         },
@@ -2918,6 +3064,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 2,
                 dim: [1,1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: true 
             };
@@ -2976,6 +3123,55 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: 'real', 
+        fun_c: (args, arg_types, outs) => 'creal', 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs[0],
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'double', 
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: 'imag', 
+        fun_c: (args, arg_types, outs) => 'cimag', 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs[0],
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'double', 
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false 
             };
@@ -3023,7 +3219,8 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false,//true,
                 isstruct: false 
             };
         },
@@ -3041,6 +3238,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -3051,6 +3249,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -3080,7 +3279,8 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
-                ispointer: true,
+                isvector: false,
+                ispointer: false, //true,
                 isstruct: false 
             };
         },
@@ -3098,6 +3298,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })
@@ -3108,6 +3309,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 ndim: ndim,
                 dim: [ndim],
                 ismatrix: false,
+                isvector: false,
                 ispointer: false,
                 isstruct: false
             })

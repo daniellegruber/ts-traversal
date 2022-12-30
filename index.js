@@ -62,9 +62,11 @@ var files = (0, helperFunctions_1.getNonClassFilesInPath)(search_folder);
 files = files.filter(function (e) { return path.parse(e).name !== path.parse(args[0]).name; });
 var var_types = [];
 var _b = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, [], files, args[0], [args[0]], debug), custom_functions = _b[0], file_traversal_order = _b[1];
-console.log("File traversal order");
-console.log(file_traversal_order);
-console.log("---------------------\n");
+if (show_output == 1) {
+    console.log("File traversal order");
+    console.log(file_traversal_order);
+    console.log("---------------------\n");
+}
 for (var _i = 0, _c = file_traversal_order.reverse(); _i < _c.length; _i++) {
     var file = _c[_i];
     var sourceCode_1 = fs.readFileSync(file, "utf8");

@@ -70,8 +70,10 @@ if (!fs.existsSync(`${out_folder}/${mfile}`)){
         code = code.replace(/complexDisp/g, 'disp');
         code = code.replace(/doubleDisp/g, 'disp');
         code = code.replace(/intDisp/g, 'disp');
-        //code = code.replace(/printf/g, 'sprintf');
-        code = code.replace(/printf/g, 'disp');
+        code = code.replace(/\bprintf\b/g, 'sprintf');
+        code = code.replace(/\bfprintf\b/g, 'sprintf');
+        code = code.replace(/fdisp/g, 'sprintf');
+        //code = code.replace(/printf/g, 'disp');
         
         // Replace endfor and endfunction
         code = code.replace(/endfor/g, 'end');

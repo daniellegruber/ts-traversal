@@ -72,9 +72,11 @@ files = files.filter(function(e) { return path.parse(e).name !== path.parse(args
 
 var var_types: VarType[] = [];
 var [custom_functions, file_traversal_order] = identifyCustomFunctions(tree, [], files, args[0], [args[0]], debug);
-console.log("File traversal order");
-console.log(file_traversal_order);
-console.log("---------------------\n");
+if (show_output==1) {
+    console.log("File traversal order");
+    console.log(file_traversal_order);
+    console.log("---------------------\n");
+}
 
 for (let file of file_traversal_order.reverse()) {
     const sourceCode = fs.readFileSync(file, "utf8");

@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.parseFunctionDefNode = exports.getClasses = exports.getClassFolders = exports.getNonClassFilesInPath = exports.getFilesInPath = exports.writeToFile = void 0;
+exports.parseFunctionDefNode = exports.getClasses = exports.getClassFolders = exports.getNonClassFilesInPath = exports.getFilesInPath = exports.writeToFile = exports.numel = exports.filterByScope = void 0;
 //const fs = require("graceful-fs");
 var fs = require('fs');
 var gracefulFs = require('graceful-fs');
@@ -13,6 +13,19 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+function filterByScope(obj, name, node, find_or_filter) {
+    if (find_or_filter == 0) {
+        return obj.find(function (x) { return x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+    }
+    else if (find_or_filter == 1) {
+        return obj.filter(function (x) { return x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+    }
+}
+exports.filterByScope = filterByScope;
+function numel(x) {
+    return x.reduce(function (a, b) { return a * b; });
+}
+exports.numel = numel;
 function writeToFile(out_folder, filename, generated_code) {
     if (!fs.existsSync(out_folder)) {
         fs.mkdirSync(out_folder);

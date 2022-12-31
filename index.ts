@@ -8,8 +8,9 @@ gracefulFs.gracefulify(fs);
 import { generateCode } from "./generateCode";
 import { getFilesInPath, getNonClassFilesInPath, getClasses, writeToFile } from "./helperFunctions";
 import * as g from "./generated";
-import { identifyCustomFunctions, CustomFunction } from "./identifyCustomFunctions";
-import { typeInference, inferType, VarType, Type } from "./typeInference";
+import { CustomFunction, VarType, Type } from "./customTypes";
+import { identifyCustomFunctions } from "./identifyCustomFunctions";
+import { typeInference, inferType } from "./typeInference";
 
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");

@@ -5,7 +5,7 @@ import {
     findEntryFunction
 } from "./treeTraversal";
 import { numel } from "./helperFunctions";
-import { CustomFunction } from "./identifyCustomFunctions";
+import { CustomFunction, VarType, Type, Alias } from "./customTypes";
 import { builtin_functions } from "./builtinFunctions";
 
 import Parser = require("tree-sitter");
@@ -17,46 +17,13 @@ parser.setLanguage(Matlab);
 // Type inference
 // -----------------------------------------------------------------------------
 
-type Type = {
-  type: string;
-  ndim: number;
-  dim: Array<number>;
-  ismatrix: boolean;
-  isvector: boolean;
-  ispointer: boolean;
-  isstruct: boolean;
-};
-    
-type VarType = {
-  name: string;
-  type: string;
-  ndim: number;
-  dim: Array<number>;
-  ismatrix: boolean;
-  isvector: boolean;
-  ispointer: boolean;
-  isstruct: boolean;
-  initialized: boolean;
-  scope: Array<number>;
-};
-
-type Alias = {
-  name: string;
-  tmp_var: string;
-};
-
 export function findVarScope(node, block_idxs, current_code, debug) {
     //console.log(node.text);
     if (debug == 1) {
         console.log("findVarScope");
     }
-    /*if (node.text.includes("greatest")) {
-        console.log(node.text);
-    }*/
     
     let entire_scope = block_idxs.find(x => x[2] == 0);
-    /*let good_blocks = block_idxs.filter(function(e) { return e[2] >= 1 });
-    let fundef_blocks = block_idxs.filter(function(e) { return e[2] == -1 });*/
     let good_blocks = [];
     if (current_code == "main") {
         good_blocks = block_idxs.filter(function(e) { return e[2] >= 1 });
@@ -66,7 +33,6 @@ export function findVarScope(node, block_idxs, current_code, debug) {
     
     let scope = good_blocks.filter(function(e) { return e[0] <= node.startIndex && e[1] >= node.endIndex } );
     scope = scope[scope.length - 1];
-    //let scope = good_blocks.find(x => x[0] <= node.startIndex && x[1] >= node.endIndex);
     if (scope != null && scope != undefined) {
         return scope;
     } 
@@ -80,9 +46,6 @@ export function findVarScope(node, block_idxs, current_code, debug) {
         } 
         return [entire_scope[0], entire_scope[1], 0];
     }
-    
-    
-    
 }
 
 
@@ -156,11 +119,6 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         block_level = prev_block[2];
                     } 
                 }
-                /*if (fun_flag) {
-                    block_idxs.push([node.startIndex + scaler, node.endIndex + scaler, block_level]);
-                } else {
-                    block_idxs.push([node.startIndex, node.endIndex, block_level]); // 1 for regular blocks
-                }*/
                 block_idxs.push([node.startIndex, node.endIndex, block_level]); // 1 for regular blocks
                 break;
             }

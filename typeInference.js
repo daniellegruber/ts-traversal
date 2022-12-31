@@ -9,17 +9,14 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+// Type inference
+// -----------------------------------------------------------------------------
 function findVarScope(node, block_idxs, current_code, debug) {
     //console.log(node.text);
     if (debug == 1) {
         console.log("findVarScope");
     }
-    /*if (node.text.includes("greatest")) {
-        console.log(node.text);
-    }*/
     var entire_scope = block_idxs.find(function (x) { return x[2] == 0; });
-    /*let good_blocks = block_idxs.filter(function(e) { return e[2] >= 1 });
-    let fundef_blocks = block_idxs.filter(function(e) { return e[2] == -1 });*/
     var good_blocks = [];
     if (current_code == "main") {
         good_blocks = block_idxs.filter(function (e) { return e[2] >= 1; });
@@ -29,7 +26,6 @@ function findVarScope(node, block_idxs, current_code, debug) {
     }
     var scope = good_blocks.filter(function (e) { return e[0] <= node.startIndex && e[1] >= node.endIndex; });
     scope = scope[scope.length - 1];
-    //let scope = good_blocks.find(x => x[0] <= node.startIndex && x[1] >= node.endIndex);
     if (scope != null && scope != undefined) {
         return scope;
     }
@@ -113,11 +109,6 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         block_level = prev_block[2];
                     }
                 }
-                /*if (fun_flag) {
-                    block_idxs.push([node.startIndex + scaler, node.endIndex + scaler, block_level]);
-                } else {
-                    block_idxs.push([node.startIndex, node.endIndex, block_level]); // 1 for regular blocks
-                }*/
                 block_idxs.push([node_1.startIndex, node_1.endIndex, block_level]); // 1 for regular blocks
                 break;
             }

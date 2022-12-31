@@ -1,10 +1,9 @@
 const fs = require("fs");
 import * as g from "./generated";
-import { VarType, Type } from "./typeInference";
 import { parseFunctionDefNode } from "./helperFunctions";
 import { gotoPreorderSucc } from "./treeTraversal";
 import { generateCode } from "./generateCode";
-
+import { CustomFunction, VarType, Type } from "./customTypes";
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
 
@@ -13,19 +12,6 @@ parser.setLanguage(Matlab);
 
 // Identify function definitions
 // -----------------------------------------------------------------------------
-
-export type CustomFunction = {
-    name: string;
-    arg_types: Array<VarType>;
-    return_type:Type;
-    //return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
-    outs_transform: { (outs: Array<string>): Array<string>; }; 
-    ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
-    external: boolean;
-    file: string;
-    def_node: g.SyntaxNode;
-    var_types: Array<VarType>;
-};
     
 export function identifyCustomFunctions(tree, custom_functions, files, filename, file_traversal_order, debug) {
 

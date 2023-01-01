@@ -775,7 +775,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     var arg = args1[i];
                     args.push(transformNode(arg));
                     var _43 = (0, typeInference_1.inferType)(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_2 = _43[0], ndim_1 = _43[1], dim_1 = _43[2], ismatrix_3 = _43[3], ispointer_1 = _43[4], isstruct_1 = _43[5], c_5 = _43[6];
-                    if (ismatrix_3) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
+                    if (arg.type != "cell_subscript" /* g.SyntaxType.CellSubscript */ && ismatrix_3) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
                         _6 = (0, typeInference_1.inferTypeByName)(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug), type_2 = _6[0], ndim_1 = _6[1], dim_1 = _6[2], ismatrix_3 = _6[3], ispointer_1 = _6[4], isstruct_1 = _6[5], c_5 = _6[6];
                     }
                     custom_functions = c_5;
@@ -871,6 +871,9 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                     }
                                     if (push_after != null) {
                                         push_after = push_after.replace(re, tmp_var_2);
+                                    }
+                                    for (var j = i + 1; j < init_before_1.length; j++) {
+                                        init_before_1[j].val = "".concat(init_before_1[j].val).replace(re, tmp_var_2);
                                     }
                                     updateFunParams(0);
                                     _53 = (0, modifyCode_1.pushToMain)((0, helperFunctions_1.initVar)(tmp_var_2, init_before_1[i].val, init_before_1[i], node), fun_params), main_function = _53[0], function_definitions = _53[1];

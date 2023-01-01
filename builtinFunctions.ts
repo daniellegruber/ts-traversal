@@ -1920,22 +1920,72 @@ export const builtin_functions = [
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null
     },
-    /*{ // Matrix * reindexM(Matrix* restrict m, int size, ...)
-        fun_matlab: 'containers.Map', 
-        fun_c: (args, arg_types, outs) => 'reindexM', 
-        args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
-        n_req_args: 1,
+    { // Matrix * filterM(Matrix *b, Matrix *a, Matrix *x, Matrix **state);
+		fun_matlab: 'filter', 
+        fun_c: (args, arg_types, outs) => 'filterM',
+        args_transform: (args, arg_types, outs) => {
+            if (args.length == 3) {
+                args.push("&zero");
+            }
+            return args;
+        },
+        
+		outs_transform: (outs) => outs[0],
+        n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
-        return_type: {
-            ismatrix: true,
-            ispointer: true
+        return_type: (args, arg_types, outs) => {
+            let type = arg_types[2].type;
+            let ndim = arg_types[2].ndim;
+            let dim = arg_types[2].dim;
+            
+            return {
+                type: "complex", //type,
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            if (args.length == 3) {
+                let init_var: InitVar[] = [];
+				let state_size = Math.max(numel(arg_types[0].dim), numel(arg_types[1].dim));
+				init_var.push({
+                    name: "state_size",
+                    //val: `{(int) ${state_size - 1}}`,
+                    val: `{(int) fmax(getsizeM(${args[0]}), getsizeM(${args[1]})) - 1}`,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [state_size],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: "zero",
+                    val: "zerosM(1, state_size)",
+                    type: 'int',
+                    ndim: 2,
+                    dim: [1, state_size],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                return init_var;
+            } else {
+                return null;
+            }
         }
-    },*/
-    { // TO DO: void eigM(Matrix* restrict m, Matrix* restrict *evals, Matrix* restrict *evecs)
+    },
+    { // void eigM(Matrix* restrict m, Matrix* restrict *evals, Matrix* restrict *evecs)
         fun_matlab: 'eig', 
         fun_c: (args, arg_types, outs) => 'eigM', 
         args_transform: (args, arg_types, outs) => args,
@@ -3182,9 +3232,19 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     },
     { // TO DO: FIX THIS
         fun_matlab: 'sprintf', 
-        fun_c: (args, arg_types, outs) => 'printf', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[1].ismatrix) {
+                return 'printM';
+            } else {
+                return 'printf';
+            }
+        },  
         args_transform: (args, arg_types, outs) => {
-            return [args[0].replace(/'/g, '"'), args[1]];
+            if (arg_types[1].ismatrix) {
+                return [args[1]];
+            } else {
+                return [args[0].replace(/'/g, '"'), args[1]];
+            }
         },
 		outs_transform: (outs) => outs,
         n_req_args: 1,

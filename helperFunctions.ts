@@ -102,7 +102,11 @@ export function initVar(var_name, var_val, var_type, node) {
     } else if (var_type.ismatrix) {
         expression = `Matrix * ${var_name}`;
     } else if (var_type.isvector) {
-        expression = `${var_type.type} ${var_name}[${numel(var_type.dim)}]`;
+        if (var_type.dim.includes(NaN)) {
+            expression = `${var_type.type} ${var_name}[]`;
+        } else {
+            expression = `${var_type.type} ${var_name}[${numel(var_type.dim)}]`;
+        }
     } else if (var_type.ispointer) {
         expression = `${var_type.type} * ${var_name}`;
     } else {

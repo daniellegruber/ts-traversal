@@ -1,5 +1,21 @@
 import * as g from "./generated";
 
+export const binaryOpType = (left_type, right_type) => {
+    if (left_type == right_type) {
+        return left_type;
+    } else if (left_type == 'complex' || right_type == 'complex') {
+        return 'complex';
+    } else if (left_type == 'double' || right_type == 'double') {
+        return 'double';
+    } else if (left_type == 'bool') {
+        return right_type;
+    } else if (right_type == 'bool') {
+        return left_type;
+    } else {
+        return 'unknown';
+    }
+}
+
 export type Type = {
   type: string;
   ndim: number;

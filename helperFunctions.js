@@ -102,7 +102,12 @@ function initVar(var_name, var_val, var_type, node) {
         expression = "Matrix * ".concat(var_name);
     }
     else if (var_type.isvector) {
-        expression = "".concat(var_type.type, " ").concat(var_name, "[").concat(numel(var_type.dim), "]");
+        if (var_type.dim.includes(NaN)) {
+            expression = "".concat(var_type.type, " ").concat(var_name, "[]");
+        }
+        else {
+            expression = "".concat(var_type.type, " ").concat(var_name, "[").concat(numel(var_type.dim), "]");
+        }
     }
     else if (var_type.ispointer) {
         expression = "".concat(var_type.type, " * ").concat(var_name);

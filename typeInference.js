@@ -4,7 +4,9 @@ exports.inferTypeByName = exports.inferType = exports.typeInference = exports.fi
 var fs = require('fs');
 var treeTraversal_1 = require("./treeTraversal");
 var helperFunctions_1 = require("./helperFunctions");
+var customTypes_1 = require("./customTypes");
 var builtinFunctions_1 = require("./builtinFunctions");
+var helperFunctions_2 = require("./helperFunctions");
 var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
@@ -12,7 +14,6 @@ parser.setLanguage(Matlab);
 // Type inference
 // -----------------------------------------------------------------------------
 function findVarScope(node, block_idxs, current_code, debug) {
-    //console.log(node.text);
     if (debug == 1) {
         console.log("findVarScope");
     }
@@ -128,13 +129,13 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
         var c = cursor;
         switch (c.nodeType) {
             case "assignment" /* g.SyntaxType.Assignment */: {
-                var node_2 = c.currentNode;
+                var node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
-                var _a = inferType(node_2.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _a[0], ndim = _a[1], dim = _a[2], ismatrix = _a[3], ispointer = _a[4], isstruct = _a[5], cf = _a[6];
+                var _a = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _a[0], ndim = _a[1], dim = _a[2], ismatrix = _a[3], ispointer = _a[4], isstruct = _a[5], cf = _a[6];
                 custom_functions = cf;
-                var scope = findVarScope(node_2, block_idxs, "main", debug);
-                if (node_2.leftNode.type == "identifier" /* g.SyntaxType.Identifier */ || node_2.leftNode.type == "attribute" /* g.SyntaxType.Attribute */) {
-                    var name_1 = node_2.leftNode.text;
+                var scope = findVarScope(node, block_idxs, "main", debug);
+                if (node.leftNode.type == "identifier" /* g.SyntaxType.Identifier */ || node.leftNode.type == "attribute" /* g.SyntaxType.Attribute */) {
+                    var name_1 = node.leftNode.text;
                     var v1_1 = var_types.filter(function (e) { return e.name == name_1; });
                     if (v1_1.length > 0) {
                         count = count + 1;
@@ -142,8 +143,8 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         if (scope[2] == v1_1.scope[2]) { // same block level
                             var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v1_1); }); // replace if already in var_types
                             var re = new RegExp("\\b".concat(v1_1.name, "\\b"));
-                            if (re.test(node_2.rightNode.text)) {
-                                v1_1.scope = [v1_1.scope[0], node_2.parent.nextNamedSibling.startIndex - 1, v1_1.scope[2]];
+                            if (re.test(node.rightNode.text)) {
+                                v1_1.scope = [v1_1.scope[0], node.parent.nextNamedSibling.startIndex - 1, v1_1.scope[2]];
                                 var_types.push(v1_1);
                                 var v2 = {
                                     name: v1_1.name,
@@ -154,13 +155,13 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix,
                                     ispointer: ispointer,
                                     isstruct: isstruct,
-                                    scope: [node_2.parent.nextNamedSibling.startIndex, scope[1], scope[2]],
+                                    scope: [node.parent.nextNamedSibling.startIndex, scope[1], scope[2]],
                                     initialized: true
                                 };
                                 var_types.push(v2);
                             }
                             else {
-                                v1_1.scope = [v1_1.scope[0], node_2.startIndex - 1, v1_1.scope[2]];
+                                v1_1.scope = [v1_1.scope[0], node.startIndex - 1, v1_1.scope[2]];
                                 var_types.push(v1_1);
                                 var v2 = {
                                     name: v1_1.name,
@@ -171,7 +172,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix,
                                     ispointer: ispointer,
                                     isstruct: isstruct,
-                                    scope: [node_2.startIndex, scope[1], scope[2]],
+                                    scope: [node.startIndex, scope[1], scope[2]],
                                     initialized: true
                                 };
                                 var_types.push(v2);
@@ -180,7 +181,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     }
                     else {
                         v1_1 = {
-                            name: node_2.leftNode.text,
+                            name: node.leftNode.text,
                             type: type,
                             ndim: ndim,
                             dim: dim,
@@ -197,13 +198,57 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     //var_types.push(v1);
                     // If LHS is subscript, type is matrix
                 }
-                else if (node_2.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */ || node_2.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
+                else if (node.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */ || node.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
                     //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
-                    var name_2 = node_2.leftNode.valueNode.text;
-                    var v3_1 = var_types.find(function (x) { return (x.name == name_2) && (node_2.startIndex >= x.scope[0]) && (node_2.endIndex <= x.scope[1]); });
+                    var name_2 = node.leftNode.valueNode.text;
+                    //let v3 = var_types.find(x => (x.name == name) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
+                    var v3_1 = (0, helperFunctions_2.filterByScope)(var_types, name_2, node, 0);
                     if (v3_1 != null && v3_1 != undefined) {
                         var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v3_1); }); // replace if already in var_types
                         v3_1.type = type;
+                        var obj = var_types.find(function (x) { return x.name === "".concat(name_2, "_childtype"); });
+                        if (obj != null && obj != undefined) {
+                            var child_ndim = obj.ndim;
+                            var child_dim = obj.dim;
+                            var child_ismatrix = obj.ismatrix;
+                            if (dim.toString() != obj.dim.toString()) {
+                                child_ndim = "unknown";
+                                child_dim = "unknown";
+                            }
+                            if (ismatrix != obj.ismatrix) {
+                                child_ismatrix = "unknown";
+                            }
+                            var_types = var_types.filter(function (e) { return e.name !== "".concat(name_2, "_childtype"); }); // replace if al
+                            var_types.push({
+                                name: "".concat(name_2, "_childtype"),
+                                type: (0, customTypes_1.binaryOpType)(type, obj.type),
+                                ndim: child_ndim,
+                                dim: child_dim,
+                                ismatrix: child_ismatrix,
+                                isvector: false,
+                                ispointer: false,
+                                isstruct: false,
+                                initialized: false,
+                                scope: null
+                            });
+                        }
+                        else {
+                            var_types.push({
+                                name: "".concat(name_2, "_childtype"),
+                                type: type,
+                                ndim: ndim,
+                                dim: dim,
+                                ismatrix: ismatrix,
+                                isvector: false,
+                                ispointer: false,
+                                isstruct: false,
+                                initialized: false,
+                                scope: null
+                            });
+                        }
+                        //v3.ndim = ndim;
+                        //v3.dim = dim;
+                        //v3.ismatrix = ismatrix;
                     }
                     else {
                         v3_1 = {
@@ -528,32 +573,64 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                 }
             }
             var children_types_1 = [];
+            var children_ndim_1 = [];
+            var children_dim_1 = [];
+            var children_ismatrix_1 = [];
             for (var _i = 0, _f = node.namedChildren; _i < _f.length; _i++) {
                 var child = _f[_i];
-                var _g = inferType(child, var_types, custom_functions, classes, file, alias_tbl, debug), child_type_1 = _g[0], c_5 = _g[6];
+                var _g = inferType(child, var_types, custom_functions, classes, file, alias_tbl, debug), child_type_1 = _g[0], child_ndim_1 = _g[1], child_dim_1 = _g[2], child_ismatrix_1 = _g[3], c_5 = _g[6];
                 custom_functions = c_5;
                 children_types_1.push(child_type_1);
+                children_ndim_1.push(child_ndim_1);
+                children_dim_1.push(child_dim_1);
+                children_ismatrix_1.push(child_ismatrix_1);
             }
-            var type = 'unknown';
+            var type_3 = 'unknown';
+            var child_ndim = 1;
+            var child_dim_2 = [1];
+            var child_ismatrix_2 = false;
             if (children_types_1.every(function (val) { return val === children_types_1[0]; })) {
-                type = children_types_1[0];
+                type_3 = children_types_1[0];
             }
             else if (children_types_1.every(function (val) { return ['int', 'double', 'complex'].includes(val); })) {
                 if (children_types_1.includes('complex')) {
-                    type = 'complex';
+                    type_3 = 'complex';
                 }
                 else if (children_types_1.includes('double')) {
-                    type = 'double';
+                    type_3 = 'double';
                 }
                 else if (children_types_1.includes('int')) {
-                    type = 'int';
+                    type_3 = 'int';
                 }
             }
             else {
-                type = 'heterogeneous';
+                type_3 = 'heterogeneous';
+            }
+            if (children_ndim_1.every(function (x) { return x === children_ndim_1[0]; })) {
+                child_ndim = children_ndim_1[0];
+            }
+            if (children_dim_1.every(function (x) { return x.toString() === children_dim_1[0].toString(); })) {
+                child_dim_2 = children_dim_1[0];
+            }
+            if (children_ismatrix_1.every(function (x) { return x === children_ismatrix_1[0]; })) {
+                child_ismatrix_2 = children_ismatrix_1[0];
+            }
+            if (node.type == "cell" /* g.SyntaxType.Cell */ && node.parent.type == "assignment" /* g.SyntaxType.Assignment */) {
+                var_types.push({
+                    name: "".concat(node.parent.leftNode.text, "_childtype"),
+                    type: type_3,
+                    ndim: child_ndim,
+                    dim: child_dim_2,
+                    ismatrix: child_ismatrix_2,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false,
+                    initialized: false,
+                    scope: null
+                });
             }
             //return [type, 2, [nrows, ncols], true, true, false, custom_functions];
-            return [type, 2, [nrows, ncols], true, false, false, custom_functions];
+            return [type_3, 2, [nrows, ncols], true, false, false, custom_functions];
             break;
         }
         // Recursive calls to inferTypes
@@ -566,9 +643,9 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             break;
         }
         case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
-            var _j = inferType(node.firstChild, var_types, custom_functions, classes, file, alias_tbl, debug), type_3 = _j[0], ndim = _j[1], dim = _j[2], ismatrix_1 = _j[3], c_6 = _j[6];
+            var _j = inferType(node.firstChild, var_types, custom_functions, classes, file, alias_tbl, debug), type_4 = _j[0], ndim = _j[1], dim = _j[2], ismatrix_1 = _j[3], c_6 = _j[6];
             custom_functions = c_6;
-            return [type_3, 2, [dim[1], dim[0]], ismatrix_1, false, false, custom_functions];
+            return [type_4, 2, [dim[1], dim[0]], ismatrix_1, false, false, custom_functions];
             break;
         }
         case "unary_operator" /* g.SyntaxType.UnaryOperator */: {
@@ -627,40 +704,40 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             else {
                 var ismatrix = false;
             }
-            var type_4 = left_type;
+            var type_5 = left_type;
             if (left_type == right_type) {
-                type_4 = left_type;
+                type_5 = left_type;
             }
             else if (left_type == 'complex' || right_type == 'complex') {
-                type_4 = 'complex';
+                type_5 = 'complex';
             }
             else if (left_type == 'double' || right_type == 'double') {
-                type_4 = 'double';
+                type_5 = 'double';
             }
             else if (left_type == 'bool') {
-                type_4 = right_type;
+                type_5 = right_type;
             }
             else if (right_type == 'bool') {
-                type_4 = left_type;
+                type_5 = left_type;
             }
             else {
                 return ['unknown', 2, [1, 1], false, false, false, custom_functions];
             }
             if (node.operatorNode.type == "^") {
                 if (left_type == 'complex' || right_type != 'int') {
-                    type_4 = 'complex';
+                    type_5 = 'complex';
                 }
             }
             //return [type, ndim, dim, ismatrix, ismatrix, false, custom_functions];
-            return [type_4, ndim, dim, ismatrix, false, false, custom_functions];
+            return [type_5, ndim, dim, ismatrix, false, false, custom_functions];
             break;
         }
         // Attribute
         case "attribute" /* g.SyntaxType.Attribute */: {
             // First check if class method
-            var _o = inferType(node.objectNode, var_types, custom_functions, classes, file, alias_tbl, debug), type_5 = _o[0], c_7 = _o[6];
+            var _o = inferType(node.objectNode, var_types, custom_functions, classes, file, alias_tbl, debug), type_6 = _o[0], c_7 = _o[6];
             custom_functions = c_7;
-            var obj = classes.find(function (x) { return x.name === type_5; });
+            var obj = classes.find(function (x) { return x.name === type_6; });
             if (obj !== null && obj !== undefined) {
                 var obj2 = obj.methods.find(function (x) { return x.name === node.attributeNode.text; });
                 if (obj2 != null) {
@@ -714,33 +791,36 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
         case "cell_subscript" /* g.SyntaxType.CellSubscript */: {
             var dim = [];
             for (var i = 1; i < node.namedChildCount; i++) {
-                var _p = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _p[0], child_dim = _p[2], c = _p[6];
+                var _p = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _p[0], child_dim = _p[2], child_ismatrix = _p[3], c = _p[6];
                 custom_functions = c;
                 dim.push(child_dim[1]);
             }
             if (dim.length == 1 && dim[0] == 1) {
                 dim = [1, 1];
             }
-            if (dim.every(function (val) { return val === 1; })) {
-                return [child_type, dim.length, dim, false, false, false, custom_functions];
+            var ismatrix_3 = !dim.every(function (val) { return val === 1; });
+            var obj = var_types.find(function (x) { return x.name === "".concat(node.valueNode.text, "_childtype"); });
+            if (obj != null && obj != undefined) {
+                if (obj.dim != "unknown") {
+                    dim = obj.dim;
+                }
+                if (obj.ismatrix != "unknown") {
+                    ismatrix_3 = obj.ismatrix;
+                }
             }
-            else {
-                //return [child_type, dim.length, dim, true, true, false, custom_functions];
-                return [child_type, dim.length, dim, true, false, false, custom_functions];
-            }
+            return [child_type, dim.length, dim, ismatrix_3, false, false, custom_functions];
             break;
         }
         case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
-            //unicorn
             var _q = inferType(node.valueNode, var_types, custom_functions, classes, file, alias_tbl, debug), parent_type = _q[0], parent_ismatrix = _q[3], parent_isstruct = _q[5], c_8 = _q[6];
             custom_functions = c_8;
             // Is a subscript
             if (parent_ismatrix || parent_isstruct) {
                 var dim = [];
                 for (var i = 1; i < node.namedChildCount; i++) {
-                    var _r = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_dim_1 = _r[2], c_9 = _r[6];
+                    var _r = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_dim_3 = _r[2], c_9 = _r[6];
                     custom_functions = c_9;
-                    dim.push(child_dim_1[1]);
+                    dim.push(child_dim_3[1]);
                 }
                 if (dim.length == 1 && dim[0] == 1) {
                     dim = [1, 1];
@@ -950,14 +1030,14 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                         //} else {
                         args.push(right_node.namedChildren[i].text);
                         //}
-                        var _a = inferType(right_node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), type_6 = _a[0], ndim = _a[1], dim = _a[2], ismatrix_3 = _a[3], ispointer = _a[4], isstruct = _a[5], c_12 = _a[6];
+                        var _a = inferType(right_node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), type_7 = _a[0], ndim = _a[1], dim = _a[2], ismatrix_4 = _a[3], ispointer = _a[4], isstruct = _a[5], c_12 = _a[6];
                         custom_functions = c_12;
                         arg_types.push({
-                            type: type_6,
+                            type: type_7,
                             ndim: ndim,
                             dim: dim,
-                            ismatrix: ismatrix_3,
-                            isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix_3,
+                            ismatrix: ismatrix_4,
+                            isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix_4,
                             ispointer: ispointer,
                             isstruct: isstruct
                         });
@@ -1003,14 +1083,14 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                 }
                 case "unary_operator" /* g.SyntaxType.UnaryOperator */:
                 case "transpose_operator" /* g.SyntaxType.TransposeOperator */: {
-                    var _d = inferType(node.argumentNode, var_types, custom_functions, classes, file, alias_tbl, debug), type_7 = _d[0], ndim = _d[1], dim = _d[2], ismatrix_4 = _d[3], ispointer = _d[4], isstruct = _d[5], c_13 = _d[6];
+                    var _d = inferType(node.argumentNode, var_types, custom_functions, classes, file, alias_tbl, debug), type_8 = _d[0], ndim = _d[1], dim = _d[2], ismatrix_5 = _d[3], ispointer = _d[4], isstruct = _d[5], c_13 = _d[6];
                     custom_functions = c_13;
                     arg_types.push({
-                        type: type_7,
+                        type: type_8,
                         ndim: ndim,
                         dim: dim,
-                        ismatrix: ismatrix_4,
-                        isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix_4,
+                        ismatrix: ismatrix_5,
+                        isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix_5,
                         ispointer: ispointer,
                         isstruct: isstruct
                     });

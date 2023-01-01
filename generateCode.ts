@@ -889,7 +889,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     let arg = args1[i];
                     args.push(transformNode(arg));
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                    if (ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
+                    if (arg.type != g.SyntaxType.CellSubscript && ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
                     }
                     custom_functions = c;
@@ -990,6 +990,9 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     }
                                     if (push_after != null) {
                                         push_after = push_after.replace(re, tmp_var);
+                                    }
+                                    for (let j = i + 1; j < init_before.length; j++) {
+                                        init_before[j].val = `${init_before[j].val}`.replace(re, tmp_var);
                                     }
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(initVar(tmp_var, init_before[i].val, init_before[i], node), fun_params);

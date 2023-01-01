@@ -1850,21 +1850,70 @@ exports.builtin_functions = [
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; }
     },
-    /*{ // Matrix * reindexM(Matrix* restrict m, int size, ...)
-        fun_matlab: 'containers.Map',
-        fun_c: (args, arg_types, outs) => 'reindexM',
-        args_transform: (args, arg_types, outs) => args,
-                outs_transform: (outs) => outs,
-        n_req_args: 1,
+    {
+        fun_matlab: 'filter',
+        fun_c: function (args, arg_types, outs) { return 'filterM'; },
+        args_transform: function (args, arg_types, outs) {
+            if (args.length == 3) {
+                args.push("&zero");
+            }
+            return args;
+        },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
-        ptr_args: (arg_types, outs) => null,
-        
-        return_type: {
-            ismatrix: true,
-            ispointer: true
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var type = arg_types[2].type;
+            var ndim = arg_types[2].ndim;
+            var dim = arg_types[2].dim;
+            return {
+                type: "complex",
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            if (args.length == 3) {
+                var init_var = [];
+                var state_size = Math.max((0, helperFunctions_1.numel)(arg_types[0].dim), (0, helperFunctions_1.numel)(arg_types[1].dim));
+                init_var.push({
+                    name: "state_size",
+                    //val: `{(int) ${state_size - 1}}`,
+                    val: "{(int) fmax(getsizeM(".concat(args[0], "), getsizeM(").concat(args[1], ")) - 1}"),
+                    type: 'int',
+                    ndim: 1,
+                    dim: [state_size],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+                init_var.push({
+                    name: "zero",
+                    val: "zerosM(1, state_size)",
+                    type: 'int',
+                    ndim: 2,
+                    dim: [1, state_size],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                return init_var;
+            }
+            else {
+                return null;
+            }
         }
-    },*/
+    },
     {
         fun_matlab: 'eig',
         fun_c: function (args, arg_types, outs) { return 'eigM'; },
@@ -3096,9 +3145,21 @@ exports.builtin_functions = [
     },
     {
         fun_matlab: 'sprintf',
-        fun_c: function (args, arg_types, outs) { return 'printf'; },
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[1].ismatrix) {
+                return 'printM';
+            }
+            else {
+                return 'printf';
+            }
+        },
         args_transform: function (args, arg_types, outs) {
-            return [args[0].replace(/'/g, '"'), args[1]];
+            if (arg_types[1].ismatrix) {
+                return [args[1]];
+            }
+            else {
+                return [args[0].replace(/'/g, '"'), args[1]];
+            }
         },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,

@@ -1200,6 +1200,291 @@ exports.builtin_functions = [
         init_before: function (args, arg_types, outs) { return null; }
     },
     {
+        fun_matlab: 'sin',
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return 'sinM';
+            }
+            else {
+                return 'sin';
+            }
+        },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'sind',
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return 'sindM';
+            }
+            else {
+                return 'sin';
+            }
+        },
+        args_transform: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return args;
+            }
+            else {
+                return ["fmod((".concat(args[0], "),360) * M_PI / 180")];
+            }
+        },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'cos',
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return 'cosM';
+            }
+            else {
+                return 'cos';
+            }
+        },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'cosd',
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return 'cosdM';
+            }
+            else {
+                return 'cos';
+            }
+        },
+        args_transform: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return args;
+            }
+            else {
+                return ["fmod((".concat(args[0], "),360) * M_PI / 180")];
+            }
+        },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'tan',
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return 'tanM';
+            }
+            else {
+                return 'tan';
+            }
+        },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'tand',
+        fun_c: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return 'tandM';
+            }
+            else {
+                return 'tan';
+            }
+        },
+        args_transform: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return args;
+            }
+            else {
+                return ["fmod((".concat(args[0], "),360) * M_PI / 180")];
+            }
+        },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; }
+    },
+    {
         fun_matlab: 'xcorr',
         fun_c: function (args, arg_types, outs) { return 'xcorrM'; },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -2551,6 +2836,82 @@ exports.builtin_functions = [
                 dim: [ndim],
                 ismatrix: false,
                 isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        }
+    },
+    {
+        fun_matlab: 'reshape',
+        fun_c: function (args, arg_types, outs) { return 'reshapeM'; },
+        args_transform: function (args, arg_types, outs) {
+            var dim = "{".concat(args.slice(1).join(", "), "}");
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = "{".concat(args[1], ",").concat(args[1], "}");
+                ndim = 2;
+            }
+            //return [ndim, dim];
+            return ['ndim', 'dim'];
+        },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = [];
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = [Number(args[1]), Number(args[1])];
+                ndim = 2;
+            }
+            else {
+                for (var _i = 0, _a = args.slice(1); _i < _a.length; _i++) {
+                    var arg = _a[_i];
+                    dim.push(Number(arg));
+                }
+            }
+            return {
+                type: 'int',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = "{".concat(args.slice(1).join(", "), "}");
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = "{".concat(args[1], ",").concat(args[1], "}");
+                ndim = 2;
+            }
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: dim,
+                type: 'int',
+                ndim: 1,
+                dim: [ndim],
+                ismatrix: false,
+                isvector: true,
                 ispointer: false,
                 isstruct: false
             });

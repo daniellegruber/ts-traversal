@@ -15,7 +15,8 @@ if (!fs.existsSync(out_folder)) {
     fs.mkdirSync(out_folder);
 }
 if (!fs.existsSync("".concat(out_folder, "/").concat(name, ".c"))) {
-    fs.copyFile("".concat(OCTAVEC, "/tests/").concat(name, ".c"), "".concat(out_folder, "/octavec_main.c"), function (err) {
+    //fs.copyFile(`${OCTAVEC}/tests/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
+    fs.copyFile("".concat(OCTAVEC, "/tests_C_Octave/").concat(name, "/").concat(name, ".c"), "".concat(out_folder, "/octavec_main.c"), function (err) {
         if (err)
             throw err;
     });
@@ -26,7 +27,8 @@ if (!fs.existsSync("".concat(out_folder, "/").concat(name, ".c"))) {
     }, 8000);
 }
 if (!fs.existsSync("".concat(out_folder, "/").concat(mfile))) {
-    fs.copyFile("".concat(OCTAVEC, "/tests/").concat(mfile), "".concat(out_folder, "/").concat(mfile), function (err) {
+    //fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
+    fs.copyFile("".concat(OCTAVEC, "/tests_C_Octave/").concat(name, "/").concat(mfile), "".concat(out_folder, "/").concat(mfile), function (err) {
         if (err)
             throw err;
     });

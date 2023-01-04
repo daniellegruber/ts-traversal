@@ -1252,6 +1252,276 @@ export const builtin_functions = [
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null
     },
+    { // Matrix * sinM(Matrix *m);
+        fun_matlab: 'sin', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return 'sinM';
+            } else {
+                return 'sin';
+            }
+        },  
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    { // Matrix * sindM(Matrix *m);
+        fun_matlab: 'sind', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return 'sindM';
+            } else {
+                return 'sin';
+            }
+        },  
+        args_transform: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return args;
+            } else {
+                return [`fmod((${args[0]}),360) * M_PI / 180`];
+            }
+        },
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    { // Matrix * cosM(Matrix *m);
+        fun_matlab: 'cos', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return 'cosM';
+            } else {
+                return 'cos';
+            }
+        },  
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    { // Matrix * cosdM(Matrix *m);
+        fun_matlab: 'cosd', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return 'cosdM';
+            } else {
+                return 'cos';
+            }
+        },  
+        args_transform: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return args;
+            } else {
+                return [`fmod((${args[0]}),360) * M_PI / 180`];
+            }
+        },
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    { // Matrix * tanM(Matrix *m);
+        fun_matlab: 'tan', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return 'tanM';
+            } else {
+                return 'tan';
+            }
+        },  
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
+    { // Matrix * tandM(Matrix *m);
+        fun_matlab: 'tand', 
+        fun_c: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return 'tandM';
+            } else {
+                return 'tan';
+            }
+        },  
+        args_transform: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return args;
+            } else {
+                return [`fmod((${args[0]}),360) * M_PI / 180`];
+            }
+        },
+		outs_transform: (outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                return {
+                    type: "double",
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: "double",
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false 
+                };
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null
+    },
     { // TO DO: Matrix * xcorrM(Matrix *x, Matrix *y, int maxlag, char *scale)
         fun_matlab: 'xcorr', 
         fun_c: (args, arg_types, outs) => 'xcorrM', 
@@ -2638,6 +2908,83 @@ for (int i = 0; ${step}*i < 1; i ++) {
                 dim: [ndim],
                 ismatrix: false,
                 isvector: false,
+                ispointer: false,
+                isstruct: false
+            })
+            return init_var;
+        }
+    },
+    { // bool reshapeM (Matrix* m, int ndim, int dim[ndim]);
+        fun_matlab: 'reshape', 
+        fun_c: (args, arg_types, outs) => 'reshapeM', 
+        args_transform: (args, arg_types, outs) => {
+            var dim = `{${args.slice(1).join(", ")}}`;
+            var ndim = args.slice(1).length;
+            
+            if (args.length == 2) {
+                dim = `{${args[1]},${args[1]}}`;
+                ndim = 2;
+            }
+            //return [ndim, dim];
+            return ['ndim', 'dim'];
+        },
+		outs_transform: (outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            var dim = [];
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = [Number(args[1]), Number(args[1])];
+                ndim = 2;
+            } else {
+                for (let arg of args.slice(1)) {
+                    dim.push(Number(arg));
+                }
+            }
+            
+            return {
+                type: 'int',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            let dim = `{${args.slice(1).join(", ")}}`;
+            let ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = `{${args[1]},${args[1]}}`;
+                ndim = 2;
+            }
+            
+            let init_var: InitVar[] = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'dim',
+                val: dim,
+                type: 'int',
+                ndim: 1,
+                dim: [ndim],
+                ismatrix: false,
+                isvector: true,
                 ispointer: false,
                 isstruct: false
             })

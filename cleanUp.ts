@@ -17,7 +17,8 @@ fs.mkdirSync(out_folder);
 }
 
 if (!fs.existsSync(`${out_folder}/${name}.c`)){
-    fs.copyFile(`${OCTAVEC}/tests/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
+    //fs.copyFile(`${OCTAVEC}/tests/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
+    fs.copyFile(`${OCTAVEC}/tests_C_Octave/${name}/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
         if (err) throw err;
     });
     
@@ -33,7 +34,8 @@ if (!fs.existsSync(`${out_folder}/${name}.c`)){
 }
 
 if (!fs.existsSync(`${out_folder}/${mfile}`)){
-    fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
+    //fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
+    fs.copyFile(`${OCTAVEC}/tests_C_Octave/${name}/${mfile}`, `${out_folder}/${mfile}`, (err) => {
         if (err) throw err;
     });
     
@@ -54,8 +56,9 @@ if (!fs.existsSync(`${out_folder}/${mfile}`)){
         
         // Replace binary operators in complex numbers
         //code = code.replace(/(\*i)|(\*I)|/g, 'i');
+        code = code.replace(/\)\*I/g, ')*1i');
         code = code.replace(/\*I/g, 'i');
-        code = code.replace(/\*i/g, 'i');
+        //code = code.replace(/\*i/g, 'i');
         
         // Replace augmented assignment
         let idx = code.indexOf("++");

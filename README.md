@@ -23,7 +23,7 @@
 
 # ts-traversal
 
-**ts-traversal** generates C code from MATLAB code by generating a parse tree, traversing the tree, and performing "operations" on each node.
+**ts-traversal** generates C code from MATLAB code by generating a parse tree, traversing the tree, and performing "operations" on each node. Note that all of the following code is currently being tested on the Grace cluster, so terminal commands are provided with that environment in mind.
 
 ## Built with
 
@@ -90,6 +90,14 @@ $EEGLAB/functions/@mmo/binaryopp.m \
 $EEGLAB/functions \
 $TS_TRAVERSAL/eeglab_test 0
 ```
+## After first downloading the Halo folder
+After first downloading the Halo folder or updating it, run 
+
+```sh
+npx ts-node modifyHalo.ts
+```
+
+to modify matrix.c and matrix.h so that they work with the current environment (the Grace cluster).
 
 ## Updating tree-sitter-matlab module
 Whenever the tree-sitter-matlab grammar is updated, the corresponding module as well as the .d.ts files should be updated via the following commands:

@@ -542,6 +542,8 @@ generateCode.ts
 | cell_test | Yes  | One of my own tests. Tests a few cases of cell arrays with heterogeneous data types. |
 | basic_stats | No  | Segmentation error. |
 | elem_trig_matrix | Yes  | |
+| logic_ops_matrix | Yes  | |
+| filterM | Maybe  | |
 
 # Updates
 - Redefinition of a variable creates a new entry in var_types. If the scopes of two same-named variables overlap then the scope of the first ends where the scope of the second begins.

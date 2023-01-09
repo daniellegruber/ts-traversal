@@ -214,6 +214,7 @@ type CustomFunction = {
         int dim[2]= {3, 3};
         Matrix * A = zerosM(ndim, dim);
       - outs_transform: Transforms original outputs of MATLAB function, e.g.,
+        MATLAB:
         ```matlab
         [M, I] = max(x);
         ``` 
@@ -221,9 +222,17 @@ type CustomFunction = {
         ```c
         int I;
         Matrix * M = maxV(x, &I)
-      - n_req_args: number of required arguments
-      - n_opt_args: number; // # optional args
-      - opt_arg_defaults: 
+      - n_req_args: Number of required arguments for the C function.
+      - n_opt_args: If arguments for the MATLAB and C functions are the same, this is the number of arguments that are optional when passed to the MATLAB function.
+      - opt_arg_defaults: Default values for the optional arguments. If the number of arguments passed to the MATLAB function is less than the number of arguments required by the C function and this field is not `NULL`, then the default values for the optional arguments are appended to the given arguments. E.g.,
+       MATLAB:
+       ```matlab
+       y = lognpdf(x);
+       ```
+       C:
+       ```c
+       Matrix * y = lognpdfM(x, 0, 1);
+       ```
       - ptr_args: 
       - return_type: 
       - push_main_before: 

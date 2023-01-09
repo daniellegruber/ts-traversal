@@ -590,6 +590,7 @@ generateCode.ts
 | logic_ops_matrix | Yes  | |
 | filterM | Maybe  | |
 | stftM | No  | It was tricky for me to figure out direct translation between stft MATLAB function and stftV C function. |
+| xcorrM | Maybe  | |
 
 # Updates
 - Redefinition of a variable creates a new entry in var_types. If the scopes of two same-named variables overlap then the scope of the first ends where the scope of the second begins.

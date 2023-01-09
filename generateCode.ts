@@ -756,7 +756,7 @@ myfun(loop_iterators, node);`;
                             }
                             
                             let mq: MainQueue = {
-                                expression: `// Write matrix HELLO ${tmp_mat}
+                                expression: `// Write matrix ${tmp_mat}
 int ${tmp_size} = 1;
 for (int ${tmp_iter} = 0 ; ${tmp_iter} < ${tmp_ndim}; ${tmp_iter}++)
 {
@@ -1849,8 +1849,11 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
 
                 function_declarations.push(`void ${node.nameNode.text}(${param_list_joined});`);
                 //pushToMain(`\nvoid ${node.nameNode.text}(${param_list_joined}) {`);
+                block_level -= 1;
                 updateFunParams(0);
                 [main_function, function_definitions] = replaceMain(`\nvoid ${node.nameNode.text}(${param_list_joined}) {`, `${node.nameNode.text}_placeholder`, 1, fun_params);
+                block_level += 1;
+                
             } else {
                 if (param_list.length == 0) {
                     var param_list_joined = "void";
@@ -1874,8 +1877,10 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
 
                 function_declarations.push(`${return_type} ${node.nameNode.text}(${param_list_joined});`);
                 //pushToMain(`\n${return_type} ${node.nameNode.text}(${param_list_joined}) {`);
+                block_level -= 1;
                 updateFunParams(0);
                 [main_function, function_definitions] = replaceMain(`\n${return_type} ${node.nameNode.text}(${param_list_joined}) {`, `${node.nameNode.text}_placeholder`, 1, fun_params);
+                block_level += 1;
             }
             
             if (ptr_declaration != undefined) {
@@ -1885,8 +1890,10 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
 
             updateFunParams(0);
             [main_function, function_definitions] = pushToMain(return_statement, fun_params);
+            block_level -= 1;
             updateFunParams(0);
             [main_function, function_definitions] = pushToMain("}", fun_params);
+            block_level += 1;
         }
     }
     

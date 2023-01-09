@@ -3653,34 +3653,7 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) {
-            var dim = arg_types[0].dim;
-            var ndim = arg_types[0].ndim;
-            var init_var = [];
-            init_var.push({
-                name: 'ndim',
-                val: ndim,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            });
-            init_var.push({
-                name: 'dim',
-                val: "{".concat(dim, "}"),
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            });
-            return init_var;
-        },
+        init_before: function (args, arg_types, outs) { return null; },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
@@ -3710,34 +3683,7 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) {
-            var dim = arg_types[0].dim;
-            var ndim = arg_types[0].ndim;
-            var init_var = [];
-            init_var.push({
-                name: 'ndim',
-                val: ndim,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            });
-            init_var.push({
-                name: 'dim',
-                val: "{".concat(dim, "}"),
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            });
-            return init_var;
-        },
+        init_before: function (args, arg_types, outs) { return null; },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {

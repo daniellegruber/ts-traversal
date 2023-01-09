@@ -3728,35 +3728,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => {
-            let dim = arg_types[0].dim;
-            let ndim = arg_types[0].ndim;
-            
-            let init_var: InitVar[] = [];
-            init_var.push({
-                name: 'ndim',
-                val: ndim,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            })
-            init_var.push({
-                name: 'dim',
-                val: `{${dim}}`,
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            })
-            return init_var;
-        },
+        init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { // Matrix * ifftM(Matrix* restrict m)
@@ -3789,35 +3761,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => {
-            let dim = arg_types[0].dim;
-            let ndim = arg_types[0].ndim;
-            
-            let init_var: InitVar[] = [];
-            init_var.push({
-                name: 'ndim',
-                val: ndim,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            })
-            init_var.push({
-                name: 'dim',
-                val: `{${dim}}`,
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            })
-            return init_var;
-        },
+        init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { //TO DO: Matrix * stftV(Matrix* restrict m, int win_size, int inc, int num_coef, int win_type)

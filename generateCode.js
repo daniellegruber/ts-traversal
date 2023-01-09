@@ -654,7 +654,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 condition = "\nfunction myfun(loop_iterators, node) {\n    if ((loop_iterators.length == ".concat(loop_iterators.length - num_back, ") && node.previousNamedSibling !== null) {\n        if (node.previousNamedSibling.text.includes(\"").concat(lastSubscript[lastSubscript.length - 1], "\")) {\n            return true;\n        }\n    }\n    return false;\n}\nmyfun(loop_iterators, node);");
                             }
                             var mq = {
-                                expression: "// Write matrix HELLO ".concat(tmp_mat, "\nint ").concat(tmp_size, " = 1;\nfor (int ").concat(tmp_iter, " = 0 ; ").concat(tmp_iter, " < ").concat(tmp_ndim, "; ").concat(tmp_iter, "++)\n{\n\t").concat(tmp_size, " *= ").concat(tmp_dim, "[").concat(tmp_iter, "];\n}\nMatrix *").concat(tmp_mat, " = createM(").concat(tmp_ndim, ", ").concat(tmp_dim, ", ").concat(obj3.matrix_type, ");\nwriteM(").concat(tmp_mat, ", ").concat(tmp_size, ", ").concat(tmp_lhs, ");"),
+                                expression: "// Write matrix ".concat(tmp_mat, "\nint ").concat(tmp_size, " = 1;\nfor (int ").concat(tmp_iter, " = 0 ; ").concat(tmp_iter, " < ").concat(tmp_ndim, "; ").concat(tmp_iter, "++)\n{\n\t").concat(tmp_size, " *= ").concat(tmp_dim, "[").concat(tmp_iter, "];\n}\nMatrix *").concat(tmp_mat, " = createM(").concat(tmp_ndim, ", ").concat(tmp_dim, ", ").concat(obj3.matrix_type, ");\nwriteM(").concat(tmp_mat, ", ").concat(tmp_size, ", ").concat(tmp_lhs, ");"),
                                 condition: condition
                             };
                             main_queue.push(mq);
@@ -1653,8 +1653,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 }
                 function_declarations.push("void ".concat(node.nameNode.text, "(").concat(param_list_joined, ");"));
                 //pushToMain(`\nvoid ${node.nameNode.text}(${param_list_joined}) {`);
+                block_level -= 1;
                 updateFunParams(0);
                 _c = (0, modifyCode_1.replaceMain)("\nvoid ".concat(node.nameNode.text, "(").concat(param_list_joined, ") {"), "".concat(node.nameNode.text, "_placeholder"), 1, fun_params), main_function = _c[0], function_definitions = _c[1];
+                block_level += 1;
             }
             else {
                 if (param_list.length == 0) {
@@ -1681,8 +1683,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 }
                 function_declarations.push("".concat(return_type, " ").concat(node.nameNode.text, "(").concat(param_list_joined, ");"));
                 //pushToMain(`\n${return_type} ${node.nameNode.text}(${param_list_joined}) {`);
+                block_level -= 1;
                 updateFunParams(0);
                 _d = (0, modifyCode_1.replaceMain)("\n".concat(return_type, " ").concat(node.nameNode.text, "(").concat(param_list_joined, ") {"), "".concat(node.nameNode.text, "_placeholder"), 1, fun_params), main_function = _d[0], function_definitions = _d[1];
+                block_level += 1;
             }
             if (ptr_declaration != undefined) {
                 updateFunParams(0);
@@ -1690,8 +1694,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             }
             updateFunParams(0);
             _f = (0, modifyCode_1.pushToMain)(return_statement, fun_params), main_function = _f[0], function_definitions = _f[1];
+            block_level -= 1;
             updateFunParams(0);
             _g = (0, modifyCode_1.pushToMain)("}", fun_params), main_function = _g[0], function_definitions = _g[1];
+            block_level += 1;
         }
     }
     // Generate header files

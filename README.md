@@ -230,11 +230,29 @@ type CustomFunction = {
     - `builtin_functions`: Typed array of type `functionMapping` (see below) containing information about how to transform each built-in MATLAB function to one or more C functions.
       - fun_matlab: 
       - fun_c: If not `NULL`, then there is a corresponding C function for the given MATLAB function and argument types.
+      - args_transform: transforms arguments
+      - outs_transform: transforms outputs
+      - n_req_args: number of required arguments
+      - n_opt_args: number; // # optional args
+      - opt_arg_defaults: 
+      - ptr_args: 
+      - return_type: 
+      - push_main_before: 
+      - push_main_after: 
+      - init_before: initializes variables before call to function
+      - tmp_out_transform: transforms a tmp output, e.g.
+      ```matlab
+      disp(size(A, 1))
+      ```
+      ```typescript
+      int * tmp = getDimsM(A);
+      printf("\n%d\n", tmp[1]);
+      ```
 
 ```typescript
 type functionMapping = {
     fun_matlab: string;
-    fun_c: { (arg_types: Array<Type>, outs: Array<string>): string; };
+    fun_c: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): string; };
     args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
     outs_transform: { (outs: Array<string>): Array<string>; }; 
     n_req_args: number; // # required args
@@ -242,6 +260,10 @@ type functionMapping = {
     opt_arg_defaults: Array<string>;
     ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
     return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+    push_main_before: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; // push to main before function call 
+    push_main_after: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; // push to main after function call
+    init_before: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<InitVar>; }; // vars to initialize before function call 
+    tmp_out_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<InitVar>; }; // vars to initialize before function call 
 };
 ```
 ### treeTraversal.ts

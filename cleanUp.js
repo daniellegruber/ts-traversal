@@ -23,6 +23,7 @@ if (!fs.existsSync("".concat(out_folder, "/").concat(name, ".c"))) {
     setTimeout(function () {
         var code = fs.readFileSync("".concat(out_folder, "/octavec_main.c"), "utf8");
         code = code.replace('#include "../matrix.h"', '#include <matrix.h>');
+        code = code.replace('#include "../../matrix.h"', '#include <matrix.h>');
         (0, helperFunctions_1.writeToFile)(out_folder, "octavec_main.c", code);
     }, 8000);
 }
@@ -47,8 +48,9 @@ if (!fs.existsSync("".concat(out_folder, "/").concat(mfile))) {
         }
         // Replace binary operators in complex numbers
         //code = code.replace(/(\*i)|(\*I)|/g, 'i');
+        code = code.replace(/\)\*I/g, ')*1i');
         code = code.replace(/\*I/g, 'i');
-        code = code.replace(/\*i/g, 'i');
+        //code = code.replace(/\*i/g, 'i');
         // Replace augmented assignment
         var idx = code.indexOf("++");
         while (idx != -1) {

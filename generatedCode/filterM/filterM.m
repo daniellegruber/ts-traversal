@@ -59,21 +59,22 @@ matrices{13} = [1,2,3,4,5];
 
 
 for i=1:13
-	sprintf(stdout, 'b\n');
+	disp("\nb\n");
 	disp(matrices{i});
 
 	for j=1:13
-		sprintf(stdout, '\na\n');
+		disp("\na\n");
 		disp(matrices{j});
 
 		for k=1:13
-			sprintf(stdout, '\nx\n');
+			disp("\nx\n");
 			disp(matrices{k});
-			sprintf(stdout, '\n');
-			[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
+			disp("\n");
+			%[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
+			y = filter(matrices{i}, matrices{j}, matrices{k});
 			disp(y);
-			sprintf(stdout, '\n');
-			disp(sf);
+			disp("\n");
+			%disp(sf);
 		end
 
 	end

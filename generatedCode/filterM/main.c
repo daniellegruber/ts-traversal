@@ -251,7 +251,7 @@ free(input3);
 
 
 for (int iter14 =  1; iter14 <= 13; ++ iter14) {
-printf(stdout, 'b\n');
+printf("\n%s\n", "\nb\n");
 int d3_40 = 1;
 int d2_40 = 1;
 int d0_40 = iter14 % 12;
@@ -262,7 +262,7 @@ int d1_40 = (iter14 - d0_40)/12 + 1;
 printM(matrices[(d1_40-1) + (d0_40-1) * 1 + (d2_40-1) * 12 * 1 + (d3_40-1) * 12 * 1 * 1]);
 
 for (int iter15 =  1; iter15 <= 13; ++ iter15) {
-printf(stdout, '\na\n');
+printf("\n%s\n", "\na\n");
 int d3_41 = 1;
 int d2_41 = 1;
 int d0_41 = iter15 % 12;
@@ -273,7 +273,7 @@ int d1_41 = (iter15 - d0_41)/12 + 1;
 printM(matrices[(d1_41-1) + (d0_41-1) * 1 + (d2_41-1) * 12 * 1 + (d3_41-1) * 12 * 1 * 1]);
 
 for (int iter16 =  1; iter16 <= 13; ++ iter16) {
-printf(stdout, '\nx\n');
+printf("\n%s\n", "\nx\n");
 int d3_42 = 1;
 int d2_42 = 1;
 int d0_42 = iter16 % 12;
@@ -282,7 +282,8 @@ d0_42 = 12;
 }
 int d1_42 = (iter16 - d0_42)/12 + 1;
 printM(matrices[(d1_42-1) + (d0_42-1) * 1 + (d2_42-1) * 12 * 1 + (d3_42-1) * 12 * 1 * 1]);
-printf(stdout, '\n');
+printf("\n%s\n", "\n");
+//[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
 int d3_43 = 1;
 int d2_43 = 1;
 int d0_43 = iter14 % 12;
@@ -308,8 +309,8 @@ int state_size1[]= {(int) fmax(getsizeM(matrices[(d1_43-1) + (d0_43-1) * 1 + (d2
 Matrix * zero1= zerosM(1, state_size1);
 Matrix * y= filterM(matrices[(d1_43-1) + (d0_43-1) * 1 + (d2_43-1) * 12 * 1 + (d3_43-1) * 12 * 1 * 1], matrices[(d1_44-1) + (d0_44-1) * 1 + (d2_44-1) * 12 * 1 + (d3_44-1) * 12 * 1 * 1], matrices[(d1_45-1) + (d0_45-1) * 1 + (d2_45-1) * 12 * 1 + (d3_45-1) * 12 * 1 * 1], &zero1);
 printM(y);
-printf(stdout, '\n');
-printf("\n%d\n", sf);
+printf("\n%s\n", "\n");
+//disp(sf);
 
 }
 

@@ -99,7 +99,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '-',
@@ -156,7 +157,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         // Matrix * mtimesM(Matrix *m, Matrix *n)
@@ -261,7 +263,8 @@ exports.operatorMapping = [
             else {
                 return null;
             }
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '/',
@@ -319,7 +322,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '\\',
@@ -374,7 +378,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '^',
@@ -426,7 +431,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '.*',
@@ -465,7 +471,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: './',
@@ -504,7 +511,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '.\\',
@@ -543,7 +551,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         // Matrix * scalarpowerM(Matrix* restrict m, void* restrict exponent, int type)
@@ -640,7 +649,8 @@ exports.operatorMapping = [
                 }
             }
             return null;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '<',
@@ -679,7 +689,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '<=',
@@ -718,7 +729,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '>',
@@ -757,7 +769,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '>=',
@@ -796,7 +809,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '==',
@@ -835,7 +849,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '~=',
@@ -874,7 +889,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '&',
@@ -913,7 +929,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '|',
@@ -952,7 +969,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '&&',
@@ -982,7 +1000,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '||',
@@ -1012,7 +1031,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '+',
@@ -1039,7 +1059,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '-',
@@ -1066,7 +1087,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: '~',
@@ -1101,7 +1123,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: "'",
@@ -1136,7 +1159,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: ".'",
@@ -1171,7 +1195,8 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     }
 ];
 exports.builtin_functions = [
@@ -1197,7 +1222,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sin',
@@ -1241,7 +1267,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sind',
@@ -1292,7 +1319,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'cos',
@@ -1336,7 +1364,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'cosd',
@@ -1387,7 +1416,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'tan',
@@ -1431,7 +1461,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'tand',
@@ -1482,43 +1513,49 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'xcorr',
         fun_c: function (args, arg_types, outs) { return 'xcorrM'; },
-        args_transform: function (args, arg_types, outs) { return args; },
+        //args_transform: (args, arg_types, outs) => args,
+        args_transform: function (args, arg_types, outs) {
+            var x = args[0];
+            var y = null;
+            var maxlag = 0;
+            var scale = "none";
+            var scale_opts = ["none", "biased", "unbiased", "normalized", "coeff"];
+            var match = undefined;
+            var i = 0;
+            while (match == undefined && i < scale_opts.length) {
+                match = args.find(function (x) { return x.includes(scale_opts[i]); });
+                i++;
+            }
+            if (match != null && match != undefined) {
+                if (match == "normalized") {
+                    scale = "coeff";
+                }
+                else {
+                    scale = match.replace(/'/g, '"');
+                }
+            }
+            if (args.indexOf(match) == 3) {
+                y = args[1];
+                maxlag = args[2];
+            }
+            else if (args.indexOf(match) == 2) {
+                y = args[1];
+            }
+            return [x, y, maxlag, scale];
+        },
         outs_transform: function (outs) { return outs; },
         n_req_args: 4,
         n_opt_args: 3,
-        opt_arg_defaults: ['null', '0', 'none'],
+        //opt_arg_defaults: ['null', '0', 'none'],
+        opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            // Initialize output
-            /* if (maxlag == 0)
-            {
-                maxlag = (int) fmax(x_data_size, y_data_size) - 1;
-            }
-            int output_data_size = 2*maxlag + 1;
-        
-            int output_type = DOUBLE;
-            if (x->data->datatype == COMPLEX || y->data->datatype == COMPLEX)
-            {
-                output_type = COMPLEX;
-            }
-        
-            Matrix *output = NULL;
-        
-            if (x->ndim == 2)
-            {
-                int output_dims[] = {1, output_data_size};
-                output = createM(2, output_dims, output_type);
-            }
-            else
-            {
-                int output_dims[] = {output_data_size};
-                output = createM(1, output_dims, output_type);
-            } */
             var left_type = arg_types[0].type;
             var left_ndim = arg_types[0].ndim;
             var left_dim = arg_types[0].dim;
@@ -1537,7 +1574,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sort',
@@ -1580,7 +1618,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         // [h,p,ci,stats] = ttest(___)  
@@ -1671,7 +1710,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ztest',
@@ -1754,7 +1794,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'vartest',
@@ -1833,7 +1874,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'betapdf',
@@ -1863,7 +1905,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'exppdf',
@@ -1893,7 +1936,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'chi2pdf',
@@ -1923,7 +1967,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'gampdf',
@@ -1953,7 +1998,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'lognpdf',
@@ -1983,7 +2029,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'normpdf',
@@ -2013,7 +2060,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'unidpdf',
@@ -2043,7 +2091,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'normfit',
@@ -2088,7 +2137,8 @@ exports.builtin_functions = [
         return_type: function (arg_types) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'unifit',
@@ -2133,7 +2183,8 @@ exports.builtin_functions = [
         return_type: function (arg_types) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'filter',
@@ -2197,7 +2248,8 @@ exports.builtin_functions = [
             else {
                 return null;
             }
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'eig',
@@ -2285,7 +2337,8 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'abs',
@@ -2312,7 +2365,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'round',
@@ -2339,7 +2393,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'floor',
@@ -2366,7 +2421,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ceil',
@@ -2393,7 +2449,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'max',
@@ -2445,7 +2502,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'min',
@@ -2497,7 +2555,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'var',
@@ -2635,7 +2694,8 @@ exports.builtin_functions = [
                 }
                 return null;
             }
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'zeros',
@@ -2711,7 +2771,8 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ones',
@@ -2787,7 +2848,8 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'eye',
@@ -2840,7 +2902,8 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'reshape',
@@ -2916,7 +2979,8 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'det',
@@ -2947,7 +3011,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'cell',
@@ -2998,7 +3063,8 @@ exports.builtin_functions = [
             return "\nMatrix **".concat(outs[0], " = NULL;\n").concat(outs[0], " = malloc(").concat(numel, "*sizeof(*").concat(outs[0], "));\n\t        ");
         },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'strcmp',
@@ -3022,7 +3088,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'strcmpi',
@@ -3046,7 +3113,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'struct',
@@ -3060,7 +3128,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'numel',
@@ -3084,12 +3153,13 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'size',
         fun_c: function (args, arg_types, outs) { return 'getDimsM'; },
-        args_transform: function (args, arg_types, outs) { return args; },
+        args_transform: function (args, arg_types, outs) { return [args[0]]; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
@@ -3101,13 +3171,18 @@ exports.builtin_functions = [
                 ndim: arg_types[0].ndim,
                 dim: arg_types[0].dim,
                 ismatrix: false,
-                isvector: true,
-                ispointer: false //true
+                isvector: false,
+                ispointer: true
             };
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) {
+            if (args.length > 1) {
+                return "tmp_out[".concat(args[1] - 1, "]");
+            }
+        }
     },
     {
         fun_matlab: 'length',
@@ -3121,7 +3196,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sum',
@@ -3135,7 +3211,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'prod',
@@ -3149,7 +3226,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'error',
@@ -3163,7 +3241,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'permute',
@@ -3177,7 +3256,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'rand',
@@ -3211,7 +3291,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'randn',
@@ -3245,7 +3326,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'memmapfile',
@@ -3259,7 +3341,8 @@ exports.builtin_functions = [
         return_type: function (arg_types) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'median',
@@ -3283,7 +3366,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'mean',
@@ -3311,7 +3395,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'std',
@@ -3339,7 +3424,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'isa',
@@ -3353,7 +3439,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'fieldnames',
@@ -3367,7 +3454,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'struct',
@@ -3391,7 +3479,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'disp',
@@ -3430,7 +3519,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'mod',
@@ -3454,7 +3544,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'real',
@@ -3478,7 +3569,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'imag',
@@ -3502,7 +3594,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'sprintf',
@@ -3530,7 +3623,8 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'fft',
@@ -3586,7 +3680,8 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'ifft',
@@ -3642,7 +3737,102 @@ exports.builtin_functions = [
                 isstruct: false
             });
             return init_var;
-        }
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'stft',
+        fun_c: function (args, arg_types, outs) { return 'stftV'; },
+        args_transform: function (args, arg_types, outs) {
+            var win_type = 1;
+            var num_coef = 64;
+            var inc = 24;
+            var win_size = 80;
+            var match = args.find(function (x) { return x.includes('Window'); });
+            if (match != null && match != undefined) {
+                var tmp = args[args.indexOf(match) + 1];
+                win_size = tmp.match(/\d+/gm);
+                if (tmp === "hanning") {
+                    win_type = 1;
+                }
+                else if (tmp === "hamming") {
+                    win_type = 2;
+                }
+                else if (tmp === "rectangle") {
+                    win_type = 3;
+                }
+            }
+            var match2 = args.find(function (x) { return x.includes('OverlapLength'); });
+            if (match2 != null && match2 != undefined) {
+                var overlap = args[args.indexOf(match2) + 1];
+                inc = Number(win_size) - Number(overlap);
+            }
+            return [args[0], win_size, inc, num_coef, win_type];
+        },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = arg_types[0].dim;
+            var ndim = arg_types[0].ndim;
+            return {
+                type: 'float',
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = arg_types[0].dim;
+            var ndim = arg_types[0].ndim;
+            var init_var = [];
+            init_var.push({
+                name: 'ndim',
+                val: ndim,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'dim',
+                val: "{".concat(dim, "}"),
+                type: 'int',
+                ndim: ndim,
+                dim: [ndim],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'hamming',
+        fun_c: function (args, arg_types, outs) { return 'hamming'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return null; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
 ];
 //# sourceMappingURL=builtinFunctions.js.map

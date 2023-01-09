@@ -27,6 +27,8 @@ if (!fs.existsSync(`${out_folder}/${name}.c`)){
         let code = fs.readFileSync(`${out_folder}/octavec_main.c`, "utf8");
         
         code = code.replace('#include "../matrix.h"', '#include <matrix.h>');
+        code = code.replace('#include "../../matrix.h"', '#include <matrix.h>');
+        
         
         writeToFile(out_folder, "octavec_main.c", code);
         

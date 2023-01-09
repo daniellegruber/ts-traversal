@@ -75,12 +75,6 @@ export function sub2idx(dim0_node, dim0, dim1_node, dim1, dim2_node, dim2, dim3_
         console.log("sub2idx");
     }
     
-    //var dim0 = dim0_node.text;
-    //var dim1 = dim1_node.text;
-    //var dim0 = transformNode(dim0_node);
-    //var dim1 = transformNode(dim1_node);
-    //var dim2 = dim2_node;
-    //var dim3 = dim3_node;
     if (dim0_node.type == g.SyntaxType.Slice) {
         dim0 = slice2list(dim0_node, fun_params);
     } else if (dim0_node.type == g.SyntaxType.Matrix) {
@@ -203,48 +197,51 @@ export function rowMajorFlatIdx(count, dim, idx, fun_params) {
         if (obj == null || obj == undefined) {
         if (dimlen == 2) {
             let [mf, fd] = pushToMain( 
-`int ${tmp_d3} = 1;
-int ${tmp_d2} = 1;
-int ${tmp_d0} = ${idx} % ${dim[0]};
+//`int ${tmp_d3} = 1;
+//int ${tmp_d2} = 1;
+`int ${tmp_d0} = ${idx} % ${dim[0]};
 if (${tmp_d0} == 0) {
-${tmp_d0} = ${dim[0]};
+    ${tmp_d0} = ${dim[0]};
 }
 int ${tmp_d1} = (${idx} - ${tmp_d0})/${dim[0]} + 1;`, fun_params);
             fun_params.main_function = mf;
             fun_params.function_definitions = fd;
+    
         } else if (dimlen == 3) {
             let [mf, fd] = pushToMain(
-`int ${tmp_d3} = 1;
-int ${tmp_d2} = ceil((double) ${idx} / (${dim[0]} * ${dim[1]}));
+//`int ${tmp_d3} = 1;
+`int ${tmp_d2} = ceil((double) ${idx} / (${dim[0]} * ${dim[1]}));
 int ${tmp_var} = ${idx} % (${dim[0]} * ${dim[1]});
 if (${tmp_var} == 0) {
-${tmp_var} = ${dim[0]} * ${dim[1]};
+    ${tmp_var} = ${dim[0]} * ${dim[1]};
 }
 int ${tmp_d0} = ${tmp_var} % ${dim[0]};
 if (${tmp_d0} == 0) {
-${tmp_d0} = ${dim[0]};
+    ${tmp_d0} = ${dim[0]};
 }
 int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params); 
             fun_params.main_function = mf;
             fun_params.function_definitions = fd;
+            
         } else if (dimlen == 4) {
             let [mf, fd] = pushToMain(
 `int ${tmp_d3} = ceil((double) ${idx} / (${dim[0]} * ${dim[1]} * ${dim[2]}));
 int ${tmp_d2} = ((int) ceil((double) ${idx} / (${dim[0]} * ${dim[1]}))) % ${dim[2]};
 if (${tmp_d2} == 0) {
-${tmp_d2} = ${dim[2]};
+    ${tmp_d2} = ${dim[2]};
 }
 int ${tmp_var} = ${idx} % (${dim[0]} * ${dim[1]});
 if (${tmp_var} == 0) {
-${tmp_var} = ${dim[0]} * ${dim[1]};
+    ${tmp_var} = ${dim[0]} * ${dim[1]};
 }
 int ${tmp_d0} = ${tmp_var} % ${dim[0]};
 if (${tmp_d0} == 0) {
-${tmp_d0} = ${dim[0]};
+    ${tmp_d0} = ${dim[0]};
 }
 int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params); 
             fun_params.main_function = mf;
             fun_params.function_definitions = fd;
+            
         }
            
         fun_params.var_types.push({
@@ -261,6 +258,16 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params);
         });
         }
         
-        return [fun_params, [`(${tmp_d1}-1) + (${tmp_d0}-1) * ${dim[1]} + (${tmp_d2}-1) * ${dim[0]} * ${dim[1]} + (${tmp_d3}-1) * ${dim[0]} * ${dim[1]} * ${dim[2]}`]];
+        let expression = '';
+        if (dimlen == 2) {
+            expression = `(${tmp_d1}-1) + (${tmp_d0}-1) * ${dim[1]}`;
+        } else if (dimlen == 3) {
+            expression = `(${tmp_d1}-1) + (${tmp_d0}-1) * ${dim[1]} + (${tmp_d2}-1) * ${dim[0]} * ${dim[1]}`;
+        } else {
+            expression = `(${tmp_d1}-1) + (${tmp_d0}-1) * ${dim[1]} + (${tmp_d2}-1) * ${dim[0]} * ${dim[1]} + (${tmp_d3}-1) * ${dim[0]} * ${dim[1]} * ${dim[2]}`;
+        }
+        expression = expression.replace(' * 1', '');
+        return [fun_params, [expression]];
+        
     }
 }

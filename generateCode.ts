@@ -62,6 +62,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     
     let main_queue: MainQueue[] = [];
     
+    let block_level = 1;
     
     let fun_params = {
         filename: filename,
@@ -78,8 +79,11 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         main_function: [],
         function_definitions: [],
         function_declarations: [],
-        current_code: "main"
+        current_code: "main",
+        block_level: block_level
     }
+    
+    
     
     // Update function parameters
     // -----------------------------------------------------------------------------
@@ -100,7 +104,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 main_function: main_function,
                 function_definitions: function_definitions,
                 function_declarations: function_declarations,
-                current_code: current_code
+                current_code: current_code,
+                block_level: block_level
             }
         } else {
             custom_functions = fun_params.custom_functions
@@ -130,6 +135,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             
             switch (node.type) {
                 case g.SyntaxType.FunctionDefinition: {
+                    //block_level += 1;
                     current_code = node.nameNode.text;
                     let obj = custom_functions.find(x => x.name === current_code);
                     if (obj != null && obj != undefined) {
@@ -139,6 +145,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         }
                     }
                     printFunctionDefDeclare(node);
+                    //block_level -= 1;
                     break;
                 }
                 case g.SyntaxType.Comment:
@@ -154,7 +161,9 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 case g.SyntaxType.WhileStatement:
                 case g.SyntaxType.ForStatement: {
                     //pushToMain("\n" + transformNode(node));
+                    //block_level += 1;
                     transformNode(node);
+                    //block_level -= 1;
                     break;
                 }
             }
@@ -207,39 +216,42 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             case g.SyntaxType.IfStatement: {
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain("if (" + transformNode(node.conditionNode) + ") {", fun_params);
+                block_level += 1;
                 for (let i=1; i<node.namedChildCount; i++) {
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(transformNode(node.namedChildren[i]), fun_params);
                 }
+                block_level -= 1;
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain("\n}", fun_params);
+                
                 return null
                 break;
             } 
             
             case g.SyntaxType.WhileStatement: {
-                let expression = [];
-                expression.push("while (" + transformNode(node.conditionNode) + ")");
-                for (let i=2; i<node.childCount; i++) {
-                    if (node.children[i].isNamed) {
-                        expression.push(transformNode(node.children[i]));
-                    }
+                updateFunParams(0);
+                [main_function, function_definitions] = pushToMain("while (" + transformNode(node.conditionNode) + ") {", fun_params);
+                block_level += 1;
+                for (let i=1; i<node.namedChildCount; i++) {
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(transformNode(node.namedChildren[i]), fun_params);
                 }
-                return "\n" + expression.join("\n");
+                block_level -= 1;
+                updateFunParams(0);
+                [main_function, function_definitions] = pushToMain("\n}", fun_params);
+                
+                return null
                 break;
             }
                 
             case g.SyntaxType.ForStatement: {
-                let expression1 = [];
-                let expression2 = [];
+                let expression = [];
                 let tmp_iter = generateTmpVar("iter", tmp_tbl);
                 if (node.rightNode.type == g.SyntaxType.Slice) {
                     let obj = tmp_var_types.find(x => x.name === node.leftNode.text);
-                    
-                    //expression2.push(`for (int ${node.leftNode.text} = `);
-                    expression2.push(`for (int ${tmp_iter} = `);
-                    expression2.push(`${node.rightNode.children[0].text};`);
-                    //loop_iterators.push(node.leftNode.text);
+
+                    expression.push(`for (int ${tmp_iter} = ${node.rightNode.children[0].text};`);
                     loop_iterators.push(tmp_iter);
                     updateFunParams(0);
                     alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node, fun_params);
@@ -258,45 +270,46 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     });
                     
                     if (node.rightNode.childCount == 5) {
-                        expression2.push(`${tmp_iter} <= ${node.rightNode.children[4].text};`);
-                        expression2.push(`${tmp_iter} += ${node.rightNode.children[2].text}`);
+                        expression.push(`${tmp_iter} <= ${node.rightNode.children[4].text};`);
+                        expression.push(`${tmp_iter} += ${node.rightNode.children[2].text}`);
                     } else {
-                        expression2.push(`${tmp_iter} <= ${node.rightNode.children[2].text};`);
-                        expression2.push(`++ ${tmp_iter}`);
+                        expression.push(`${tmp_iter} <= ${node.rightNode.children[2].text};`);
+                        expression.push(`++ ${tmp_iter}`);
                     }
-                    expression1.push(expression2.join(" ") + ") {");
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(expression.join(" ") + ") {", fun_params);
                     
                     
                 } else if (node.rightNode.type == g.SyntaxType.Matrix) {
-                    var tmp_var1 = generateTmpVar("tmp", tmp_tbl); // the matrix
+                    var tmp_var1 = generateTmpVar("mat", tmp_tbl); // the matrix
                     var tmp_var2 = generateTmpVar("tmp", tmp_tbl); // the iterating variable
                     var [type, ndim, dim,,,, c] = inferType(node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
-                        expression1.push(initializeMatrix(node.rightNode, tmp_var1, ndim, dim, type));
+                        updateFunParams(0);
+                        [main_function, function_definitions] = pushToMain(initializeMatrix(node.rightNode, tmp_var1, ndim, dim, type), fun_params);
                     }
                     
-                    expression1.push(`\n${type} ${tmp_iter};`);
-                    expression1.push(`int ${tmp_var2};`);
-                    expression2.push(`for (${tmp_var2} = 1;`);
-                    expression2.push(`${tmp_var2} <= ${node.rightNode.namedChildCount};`);
-                    // expression2.push(`++${tmp_var2}`);
-                    expression2.push(`${tmp_var2}++`); 
-                    expression1.push(expression2.join(" ") + ") {");
-                    expression1.push(`indexM(${tmp_var1}, &${node.leftNode.text}, 1, ${tmp_var2});`);
                     // node.leftNode now equal to value of matrix tmp_var1 at index tmp_var2
+                    
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(`\n${type} ${tmp_iter};`, fun_params);
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(`for (int ${tmp_var2} = 1; ${tmp_var2} <= ${node.rightNode.namedChildCount}; ${tmp_var2}++ ) {`, fun_params);
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(`indexM(${tmp_var1}, &${node.leftNode.text}, 1, ${tmp_var2});`, fun_params);
                     
                     loop_iterators.push(tmp_var2);
                 }
                 
-                updateFunParams(0);
-                [main_function, function_definitions] = pushToMain("\n" + expression1.join("\n"), fun_params);
+                
+                block_level += 1;
                 for (let child of node.bodyNode.namedChildren) {
-                    //expression1.push(transformNode(child));
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(transformNode(child), fun_params);
                 }
+                block_level -= 1;
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain("\n}", fun_params)
                 
@@ -305,7 +318,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     idx = loop_iterators.indexOf(tmp_var2);
                 }
                 loop_iterators.splice(idx, 1);
-
+                
                 return null;
                 break;
             }
@@ -364,6 +377,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     numCellStruct += 1;
                     if (numCellStruct == 1) {
                         updateFunParams(0);
+                        fun_params.block_level = 0;
 [main_function, function_definitions] = insertMain(`// Structure for cell arrays
 struct cell {
     int type;
@@ -383,7 +397,6 @@ struct cell {
                             let child = node.rightNode.namedChildren[i];
                             let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             custom_functions = c;
-                            let numel = child_dim.reduce(function(a, b) {return a * b;});
                             if (child.type == g.SyntaxType.Matrix) {
                                 
                                 //expression1.push(`Matrix f${i}[${numel}];`);
@@ -689,8 +702,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                                 updateFunParams(0);
                                 [main_function, function_definitions] = pushToMain(`${type}* ${tmp_lhs} = ${ltype.charAt(0)}_to_${type.charAt(0)}(${transformNode(node.leftNode.valueNode)});`, fun_params);
                             } else {
+                                block_level -= num_back;
                                 updateFunParams(0);
                                 [main_function, function_definitions] = insertMain(`${type}* ${tmp_lhs} = ${ltype.charAt(0)}_to_${type.charAt(0)}(${transformNode(node.leftNode.valueNode)});`, 'for', num_back, 0, fun_params);
+                                block_level += num_back;
                             }
                             // If RHS is matrix
                             if (ismatrix) {
@@ -741,7 +756,7 @@ myfun(loop_iterators, node);`;
                             }
                             
                             let mq: MainQueue = {
-                                expression: `// Write matrix ${tmp_mat}
+                                expression: `// Write matrix HELLO ${tmp_mat}
 int ${tmp_size} = 1;
 for (int ${tmp_iter} = 0 ; ${tmp_iter} < ${tmp_ndim}; ${tmp_iter}++)
 {
@@ -771,7 +786,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 name: tmp_lhs,
                                 type: loop_iterators.join(""),
                                 ndim: 1,
-                                dim: [obj.dim.reduce(function(a, b) {return a * b;})],
+                                dim: [numel(obj.dim)],
                                 ismatrix: false,
                                 isvector: true,
                                 ispointer: false,
@@ -779,6 +794,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 initialized: true,
                                 scope: obj.scope
                             });
+                            
+                            main_queue.push({
+                                expression: `${transformNode(node.leftNode.valueNode)} = ${tmp_mat};`,
+                                condition: condition
+                            });
+                            
                         } else {
                             if (idx.length == 1) {
                                 updateFunParams(0);
@@ -819,6 +840,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             }
             
             case g.SyntaxType.CellSubscript: {
+                
                 // only use indexM if subscript is on rhs
                 let lhs_flag = false;
                 if (node.parent.type == g.SyntaxType.Assignment) {
@@ -826,6 +848,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         lhs_flag = true;
                     }
                 }
+                if (node.parent.parent.type == g.SyntaxType.Assignment) {
+                    if (node.parent.parent.leftNode.text.includes(node.text)) {
+                        lhs_flag = true;
+                    }
+                }
+                
                 
                 let tmp_d3 = generateTmpVar("d3_", tmp_tbl);
                 let tmp_d2 = generateTmpVar("d2_", tmp_tbl);
@@ -841,6 +869,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     //let obj = alias_tbl.find(x => x.name === node.text);
                     let obj = filterByScope(alias_tbl, node.text, node, 0);
                     let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+ 
                     if (obj == null || obj == undefined) {
                         /*if (index.length == 1) {
                             let isnum = /^\d+$/.test(index[0]);
@@ -955,7 +984,13 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let return_type = obj.return_type(args, arg_types, outs);
                         let fun_c = obj.fun_c(args, arg_types, outs);
                         let scope = findVarScope(node, block_idxs, current_code, debug);
+                        let tmp_out_transform = obj.tmp_out_transform(args, arg_types, outs);
                         args = obj.args_transform(args, arg_types, outs);
+                        
+                        if (fun_c == 'hamming') {
+                            return `${fun_c}(${args.join(", ")})`;
+                        }
+                        
                         if (init_before != null && init_before != undefined) {
                             for (let i = 0; i < init_before.length; i++) {
                                 if (init_before[i].name == "complex_one") {
@@ -1016,7 +1051,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         [main_function, function_definitions] = pushToMain(push_before, fun_params);
                         
                         let n_args = node.namedChildCount - 1;
-                        if (n_args < obj.n_req_args) {
+                        if (n_args < obj.n_req_args && obj.opt_arg_defaults != null) {
                             args = args.concat(obj.opt_arg_defaults.slice(0, obj.n_req_args - n_args));
                         }
                         
@@ -1096,13 +1131,13 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     var_val = `${fun_c}(${args.join(", ")})`;
                                 }
                                 
-                                if (push_after != null || node.parent.type == g.SyntaxType.CallOrSubscript) {
+                                if (push_after != null || node.parent.type == g.SyntaxType.CallOrSubscript || tmp_out_transform != null) {
                                     let tmp_var = generateTmpVar("tmp", tmp_tbl);
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(initVar(tmp_var, var_val, return_type, node), fun_params);
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(push_after, fun_params);
-                                    
+                                    //alias_tbl = pushAliasTbl(node.text, tmp_var, node, fun_params);
                                     tmp_var_types.push({
                                         name: tmp_var,
                                         type: return_type.type,
@@ -1115,6 +1150,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                         initialized: true,
                                         scope: findVarScope(node, block_idxs, current_code, debug)
                                     });
+                                    
+                                    if (tmp_out_transform != null) {
+                                        tmp_out_transform = tmp_out_transform.replace('tmp_out', tmp_var);
+                                        return tmp_out_transform;
+                                    }
+                                    
                                     return tmp_var;
                                 } else {
                                     return var_val;
@@ -1131,6 +1172,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let lhs_flag = false;
                         if (node.parent.type == g.SyntaxType.Assignment) {
                             if (node.parent.leftNode.text == node.text) {
+                                lhs_flag = true;
+                            }
+                        }
+                        if (node.parent.parent.type == g.SyntaxType.Assignment) {
+                            if (node.parent.parent.leftNode.text.includes(node.text)) {
                                 lhs_flag = true;
                             }
                         }
@@ -1376,11 +1422,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 }
         
                 let [type, ndim, dim, , , ,] = inferType(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                let numel = dim.reduce(function(a, b) {return a * b;});
                 
                 let expression = [];
                 let tmp_vec = generateTmpVar("vec", tmp_tbl);
-                expression.push(`${type} ${tmp_vec}[${numel}];`);
+                expression.push(`${type} ${tmp_vec}[${numel(dim)}];`);
                 expression.push(`
 for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
     ${tmp_vec}[i] = ${start} + ${step}*i;
@@ -1595,9 +1640,7 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
         }
         let tmp_input = generateTmpVar("input", tmp_tbl);
         expression.push(`${type} *${tmp_input} = NULL;`);
-        
-        let numel = dim.reduce(function(a, b) {return a * b;});
-    	expression.push(`${tmp_input} = malloc( ${numel}*sizeof(*${tmp_input}));`);
+    	expression.push(`${tmp_input} = malloc( ${numel(dim)}*sizeof(*${tmp_input}));`);
     	
     	var j = 0;
     	for (let i=0; i<node.childCount; i++) {
@@ -1613,7 +1656,7 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
             }
     	}
     	
-    	expression.push(`writeM( ${name}, ${numel}, ${tmp_input});`)
+    	expression.push(`writeM( ${name}, ${numel(dim)}, ${tmp_input});`)
     	expression.push(`free(${tmp_input});`)
     	return "\n" + expression.join("\n") + "\n";
     }
@@ -1955,7 +1998,7 @@ int ${filename}(void) {`);
     
     generated_code.push("\n" + main_function.join("\n"));
     if (!fileIsFunction(tree, fileIsFunction)){
-        generated_code.push("return 0;");
+        generated_code.push("   return 0;");
         generated_code.push("}\n");
     }
 

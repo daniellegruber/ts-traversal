@@ -68,12 +68,6 @@ function sub2idx(dim0_node, dim0, dim1_node, dim1, dim2_node, dim2, dim3_node, d
     if (fun_params.debug == 1) {
         console.log("sub2idx");
     }
-    //var dim0 = dim0_node.text;
-    //var dim1 = dim1_node.text;
-    //var dim0 = transformNode(dim0_node);
-    //var dim1 = transformNode(dim1_node);
-    //var dim2 = dim2_node;
-    //var dim3 = dim3_node;
     if (dim0_node.type == "slice" /* g.SyntaxType.Slice */) {
         dim0 = slice2list(dim0_node, fun_params);
     }
@@ -197,17 +191,22 @@ function rowMajorFlatIdx(count, dim, idx, fun_params) {
         var obj = fun_params.var_types.find(function (x) { return x.name == tmp_d0; });
         if (obj == null || obj == undefined) {
             if (dimlen == 2) {
-                var _a = (0, modifyCode_1.pushToMain)("int ".concat(tmp_d3, " = 1;\nint ").concat(tmp_d2, " = 1;\nint ").concat(tmp_d0, " = ").concat(idx, " % ").concat(dim[0], ";\nif (").concat(tmp_d0, " == 0) {\n").concat(tmp_d0, " = ").concat(dim[0], ";\n}\nint ").concat(tmp_d1, " = (").concat(idx, " - ").concat(tmp_d0, ")/").concat(dim[0], " + 1;"), fun_params), mf = _a[0], fd = _a[1];
+                var _a = (0, modifyCode_1.pushToMain)(
+                //`int ${tmp_d3} = 1;
+                //int ${tmp_d2} = 1;
+                "int ".concat(tmp_d0, " = ").concat(idx, " % ").concat(dim[0], ";\nif (").concat(tmp_d0, " == 0) {\n    ").concat(tmp_d0, " = ").concat(dim[0], ";\n}\nint ").concat(tmp_d1, " = (").concat(idx, " - ").concat(tmp_d0, ")/").concat(dim[0], " + 1;"), fun_params), mf = _a[0], fd = _a[1];
                 fun_params.main_function = mf;
                 fun_params.function_definitions = fd;
             }
             else if (dimlen == 3) {
-                var _b = (0, modifyCode_1.pushToMain)("int ".concat(tmp_d3, " = 1;\nint ").concat(tmp_d2, " = ceil((double) ").concat(idx, " / (").concat(dim[0], " * ").concat(dim[1], "));\nint ").concat(tmp_var, " = ").concat(idx, " % (").concat(dim[0], " * ").concat(dim[1], ");\nif (").concat(tmp_var, " == 0) {\n").concat(tmp_var, " = ").concat(dim[0], " * ").concat(dim[1], ";\n}\nint ").concat(tmp_d0, " = ").concat(tmp_var, " % ").concat(dim[0], ";\nif (").concat(tmp_d0, " == 0) {\n").concat(tmp_d0, " = ").concat(dim[0], ";\n}\nint ").concat(tmp_d1, " = (").concat(tmp_var, " - ").concat(tmp_d0, ")/").concat(dim[0], " + 1;"), fun_params), mf = _b[0], fd = _b[1];
+                var _b = (0, modifyCode_1.pushToMain)(
+                //`int ${tmp_d3} = 1;
+                "int ".concat(tmp_d2, " = ceil((double) ").concat(idx, " / (").concat(dim[0], " * ").concat(dim[1], "));\nint ").concat(tmp_var, " = ").concat(idx, " % (").concat(dim[0], " * ").concat(dim[1], ");\nif (").concat(tmp_var, " == 0) {\n    ").concat(tmp_var, " = ").concat(dim[0], " * ").concat(dim[1], ";\n}\nint ").concat(tmp_d0, " = ").concat(tmp_var, " % ").concat(dim[0], ";\nif (").concat(tmp_d0, " == 0) {\n    ").concat(tmp_d0, " = ").concat(dim[0], ";\n}\nint ").concat(tmp_d1, " = (").concat(tmp_var, " - ").concat(tmp_d0, ")/").concat(dim[0], " + 1;"), fun_params), mf = _b[0], fd = _b[1];
                 fun_params.main_function = mf;
                 fun_params.function_definitions = fd;
             }
             else if (dimlen == 4) {
-                var _c = (0, modifyCode_1.pushToMain)("int ".concat(tmp_d3, " = ceil((double) ").concat(idx, " / (").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2], "));\nint ").concat(tmp_d2, " = ((int) ceil((double) ").concat(idx, " / (").concat(dim[0], " * ").concat(dim[1], "))) % ").concat(dim[2], ";\nif (").concat(tmp_d2, " == 0) {\n").concat(tmp_d2, " = ").concat(dim[2], ";\n}\nint ").concat(tmp_var, " = ").concat(idx, " % (").concat(dim[0], " * ").concat(dim[1], ");\nif (").concat(tmp_var, " == 0) {\n").concat(tmp_var, " = ").concat(dim[0], " * ").concat(dim[1], ";\n}\nint ").concat(tmp_d0, " = ").concat(tmp_var, " % ").concat(dim[0], ";\nif (").concat(tmp_d0, " == 0) {\n").concat(tmp_d0, " = ").concat(dim[0], ";\n}\nint ").concat(tmp_d1, " = (").concat(tmp_var, " - ").concat(tmp_d0, ")/").concat(dim[0], " + 1;"), fun_params), mf = _c[0], fd = _c[1];
+                var _c = (0, modifyCode_1.pushToMain)("int ".concat(tmp_d3, " = ceil((double) ").concat(idx, " / (").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2], "));\nint ").concat(tmp_d2, " = ((int) ceil((double) ").concat(idx, " / (").concat(dim[0], " * ").concat(dim[1], "))) % ").concat(dim[2], ";\nif (").concat(tmp_d2, " == 0) {\n    ").concat(tmp_d2, " = ").concat(dim[2], ";\n}\nint ").concat(tmp_var, " = ").concat(idx, " % (").concat(dim[0], " * ").concat(dim[1], ");\nif (").concat(tmp_var, " == 0) {\n    ").concat(tmp_var, " = ").concat(dim[0], " * ").concat(dim[1], ";\n}\nint ").concat(tmp_d0, " = ").concat(tmp_var, " % ").concat(dim[0], ";\nif (").concat(tmp_d0, " == 0) {\n    ").concat(tmp_d0, " = ").concat(dim[0], ";\n}\nint ").concat(tmp_d1, " = (").concat(tmp_var, " - ").concat(tmp_d0, ")/").concat(dim[0], " + 1;"), fun_params), mf = _c[0], fd = _c[1];
                 fun_params.main_function = mf;
                 fun_params.function_definitions = fd;
             }
@@ -224,7 +223,18 @@ function rowMajorFlatIdx(count, dim, idx, fun_params) {
                 scope: null
             });
         }
-        return [fun_params, ["(".concat(tmp_d1, "-1) + (").concat(tmp_d0, "-1) * ").concat(dim[1], " + (").concat(tmp_d2, "-1) * ").concat(dim[0], " * ").concat(dim[1], " + (").concat(tmp_d3, "-1) * ").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2])]];
+        var expression = '';
+        if (dimlen == 2) {
+            expression = "(".concat(tmp_d1, "-1) + (").concat(tmp_d0, "-1) * ").concat(dim[1]);
+        }
+        else if (dimlen == 3) {
+            expression = "(".concat(tmp_d1, "-1) + (").concat(tmp_d0, "-1) * ").concat(dim[1], " + (").concat(tmp_d2, "-1) * ").concat(dim[0], " * ").concat(dim[1]);
+        }
+        else {
+            expression = "(".concat(tmp_d1, "-1) + (").concat(tmp_d0, "-1) * ").concat(dim[1], " + (").concat(tmp_d2, "-1) * ").concat(dim[0], " * ").concat(dim[1], " + (").concat(tmp_d3, "-1) * ").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2]);
+        }
+        expression = expression.replace(' * 1', '');
+        return [fun_params, [expression]];
     }
 }
 exports.rowMajorFlatIdx = rowMajorFlatIdx;

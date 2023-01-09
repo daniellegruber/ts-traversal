@@ -214,14 +214,15 @@ type CustomFunction = {
         int dim[2]= {3, 3};
         Matrix * A = zerosM(ndim, dim);
       - outs_transform: Transforms original outputs of MATLAB function, e.g.,
-        MATLAB:
-        ```matlab
-        [M, I] = max(x);
-        ``` 
-        C:
-        ```c
-        int I;
-        Matrix * M = maxV(x, &I)
+       MATLAB:
+       ```matlab
+       [M, I] = max(x);
+       ``` 
+       C:
+       ```c
+       int I;
+       Matrix * M = maxV(x, &I)
+       ```
       - n_req_args: Number of required arguments for the C function.
       - n_opt_args: If arguments for the MATLAB and C functions are the same, this is the number of arguments that are optional when passed to the MATLAB function.
       - opt_arg_defaults: Default values for the optional arguments. If the number of arguments passed to the MATLAB function is less than the number of arguments required by the C function and this field is not `NULL`, then the default values for the optional arguments are appended to the given arguments. E.g.,
@@ -233,8 +234,18 @@ type CustomFunction = {
        ```c
        Matrix * y = lognpdfM(x, 0, 1);
        ```
-      - ptr_args: 
-      - return_type: 
+      - ptr_args: If a MATLAB function has more than one output, often these outputs are passed by reference to the C function, i.e., as pointer arguments. This field specifies how to convert outputs to pointer arguments, if applicable. E.g.,
+       MATLAB:
+       ```matlab
+       [mu,sigma] = normfit(A);
+       ``` 
+       C:
+       ```c
+       double mu;
+       double sigma;
+       normfitM(A, &mu, &sigma)
+       ```
+      - return_type: If the C function returns a value, then this field specifies the type of the return value. Otherwise, it is `NULL`.
       - push_main_before: 
       - push_main_after: 
       - init_before: initializes variables before call to function

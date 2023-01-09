@@ -200,11 +200,20 @@ type CustomFunction = {
   - Overview
     - Transforms built-in (not user-defined) MATLAB functions into C functions
   - Exports
-    - `builtin_functions`: Typed array of type `functionMapping` (see below) containing information about how to transform each built-in MATLAB function to one or more C functions.
+    - `builtin_functions`: Typed array of type `functionMapping` (see below) containing information about how to transform each built-in MATLAB function to one or more C functions. For MATLAB code of the form `outs = fun_matlab(args)` or simply `fun_matlab(args)`,
       - fun_matlab: MATLAB function
       - fun_c: If not `NULL`, the corresponding C function for the given MATLAB function and argument types.
-      - args_transform: Transforms original arguments to MATLAB function.
-      - outs_transform: transforms outputs
+      - args_transform: Transforms original arguments to MATLAB function, e.g.,
+        MATLAB:
+        ```matlab
+        A = zeros(3)
+        ``` 
+        C:
+        ```c
+        int ndim= 2;
+        int dim[2]= {3, 3};
+        Matrix * A = zerosM(ndim, dim);
+      - outs_transform: Transforms original outputs of MATLAB function, e.g.,
       - n_req_args: number of required arguments
       - n_opt_args: number; // # optional args
       - opt_arg_defaults: 
@@ -214,13 +223,14 @@ type CustomFunction = {
       - push_main_after: 
       - init_before: initializes variables before call to function
       - tmp_out_transform: transforms a tmp output, e.g.
-      ```matlab
-      disp(size(A, 1))
-      ``` 
-      ->
-      ```typescript
-      int * tmp = getDimsM(A);
-      printf("\n%d\n", tmp[1]);
+       MATLAB:
+       ```matlab
+       disp(size(A, 1))
+       ``` 
+       C:
+       ```c
+       int * tmp = getDimsM(A);
+       printf("\n%d\n", tmp[1]);
       ```
 
 ```typescript

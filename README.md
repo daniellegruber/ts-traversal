@@ -206,7 +206,7 @@ type CustomFunction = {
       - args_transform: Transforms original arguments to MATLAB function, e.g.,
         MATLAB:
         ```matlab
-        A = zeros(3)
+        A = zeros(3);
         ``` 
         C:
         ```c
@@ -214,6 +214,13 @@ type CustomFunction = {
         int dim[2]= {3, 3};
         Matrix * A = zerosM(ndim, dim);
       - outs_transform: Transforms original outputs of MATLAB function, e.g.,
+        ```matlab
+        [M, I] = max(x);
+        ``` 
+        C:
+        ```c
+        int I;
+        Matrix * M = maxV(x, &I)
       - n_req_args: number of required arguments
       - n_opt_args: number; // # optional args
       - opt_arg_defaults: 

@@ -165,34 +165,7 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     - returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
   - `inferType`: main type inference procedure
     - returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
-- Exports
-  - Type
-
-    ``` typescript
-    type Type = {
-      type: string;
-      ndim: number;
-      dim: Array<number>;
-      ismatrix: boolean;
-      ispointer: boolean;
-      isstruct: boolean;
-    };
-    ```
-    
-  - VarType
   
-    ``` typescript
-    type VarType = {
-      name: string;
-      type: string;
-      ndim: number;
-      dim: Array<number>;
-      ismatrix: boolean;
-      ispointer: boolean;
-      isstruct: boolean;
-      initialized: boolean;
-    };
-    ```
   
 ### identifyCustomFunctions.ts
 - Overview
@@ -228,9 +201,9 @@ type CustomFunction = {
     - Transforms built-in (not user-defined) MATLAB functions into C functions
   - Exports
     - `builtin_functions`: Typed array of type `functionMapping` (see below) containing information about how to transform each built-in MATLAB function to one or more C functions.
-      - fun_matlab: 
-      - fun_c: If not `NULL`, then there is a corresponding C function for the given MATLAB function and argument types.
-      - args_transform: transforms arguments
+      - fun_matlab: MATLAB function
+      - fun_c: If not `NULL`, the corresponding C function for the given MATLAB function and argument types.
+      - args_transform: Transforms original arguments to MATLAB function.
       - outs_transform: transforms outputs
       - n_req_args: number of required arguments
       - n_opt_args: number; // # optional args
@@ -243,7 +216,8 @@ type CustomFunction = {
       - tmp_out_transform: transforms a tmp output, e.g.
       ```matlab
       disp(size(A, 1))
-      ```
+      ``` 
+      ->
       ```typescript
       int * tmp = getDimsM(A);
       printf("\n%d\n", tmp[1]);
@@ -284,11 +258,43 @@ type functionMapping = {
     - `insertMain`
     - `replaceMain`
 
-### getSubscript.ts
+### convertSubscript.ts
 - Overview 
  - Contains all helper functions for generating code for a subscript. All functions used within generateCode.ts.
 - Functions
  - function
+
+### customTypes.ts
+- Overview 
+ - Contains all custom object types.
+- Custom object types
+ - Type
+
+    ``` typescript
+    type Type = {
+      type: string;
+      ndim: number;
+      dim: Array<number>;
+      ismatrix: boolean;
+      ispointer: boolean;
+      isstruct: boolean;
+    };
+    ```
+    
+  - VarType
+  
+    ``` typescript
+    type VarType = {
+      name: string;
+      type: string;
+      ndim: number;
+      dim: Array<number>;
+      ismatrix: boolean;
+      ispointer: boolean;
+      isstruct: boolean;
+      initialized: boolean;
+    };
+    ```
 
 # Example 1
 

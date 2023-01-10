@@ -159,9 +159,9 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
    - Returns: `[var_types, custom_functions]`
  - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
    1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
-    - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
+     - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
    2. Next, the program traverses all of the assignment statements in the function `inferTypesFromAssignment`:
-    - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split." E.g., in the following code, `findVarScope` would identify both instances of `x` as belonging to the block `[0, 13, 0]`. However, the scope is split between the two so that the first `x` has scope `[0, 6, 0]` and the second has scope `[7, 13, 0]`. 
+     - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split." E.g., in the following code, `findVarScope` would identify both instances of `x` as belonging to the block `[0, 13, 0]`. However, the scope is split between the two so that the first `x` has scope `[0, 6, 0]` and the second has scope `[7, 13, 0]`. 
     ```matlab
     x = 1;
     x = 5;

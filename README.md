@@ -153,11 +153,11 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     
 ### typeInference.ts
 #### Overview
-  - Infers types of variabes used in program
+ - Infers types of variabes used in program
 #### Functions
-  - `typeInference`: entry-point function
-    - Returns: `[var_types, custom_functions]`
-  - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
+ - `typeInference`: entry-point function
+   - Returns: `[var_types, custom_functions]`
+ - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
    1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
     - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
    2. Next, the program traverses all of the assignment statements in the function `inferTypesFromAssignment`:
@@ -167,12 +167,12 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     x = 5;
     ```
    - Returns: `[var_types, custom_functions]`
-  - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions` and updates the function's entry in `custom_functions` or `builtin_functions` with information regarding input/output types
-    - When inferring the type of the function's return variable via `inferType`, `arg_types` (the types of the arguments of the function call) is passed as the `var_types` parameter, thus instantiating parameters with known types
-    - Additionally, since `custom_functions` or `builtin_functions` is updated, this allows function calls to provide information about input/output types for other instances of the function (both in function calls and in the function definition, if it exists)
-    - Returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
-  - `inferType`: main type inference procedure
-    - Returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
+ - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions` and updates the function's entry in `custom_functions` or `builtin_functions` with information regarding input/output types
+   - When inferring the type of the function's return variable via `inferType`, `arg_types` (the types of the arguments of the function call) is passed as the `var_types` parameter, thus instantiating parameters with known types
+   - Additionally, since `custom_functions` or `builtin_functions` is updated, this allows function calls to provide information about input/output types for other instances of the function (both in function calls and in the function definition, if it exists)
+   - Returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
+ - `inferType`: main type inference procedure
+   - Returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
   
   
 ### identifyCustomFunctions.ts

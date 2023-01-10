@@ -487,7 +487,7 @@ b. The program encounters the assignment statement `B = ...` in line 3.
   - Since the operator is `*`, the new dimensions are constructed as `[ left_dim[0], right_dim[1] ] = [2, 2]`
   - Thus, the following entry is added to `var_types`:
 
-	```typesecript
+	```typescript
 	{
 	name: 'B',
 	type: 'double',
@@ -582,6 +582,143 @@ d. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line
 	]
 	```
   - The `CustomFunction` field `outs_transform` returns `NULL` since all of the outputs are treated as inputs to the function. For this reason `return_type` is `NULL` as well.
+  - The final value of `var_types` is as follows:
+  	```typescript
+	[
+		{
+		name: 'A',
+		type: 'double',
+		ndim: 2,
+		dim: [ 2, 3 ],
+		ismatrix: true,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'B',
+		type: 'double',
+		ndim: 2,
+		dim: [ 2, 2 ],
+		ismatrix: true,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'C',
+		type: 'double',
+		ndim: 2,
+		dim: [ 2, 2 ],
+		ismatrix: true,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'ndim1',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'dim1',
+		type: 'int',
+		ndim: 2,
+		dim: [ 2 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'tmp1',
+		type: 'double',
+		ndim: 2,
+		dim: [ 3, 2 ],
+		ismatrix: true,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'tmp2',
+		type: 'double',
+		ndim: 2,
+		dim: [ 2, 3 ],
+		ismatrix: true,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'scalar1',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'tmp3',
+		type: 'double',
+		ndim: 1,
+		dim: [ 1, 3 ],
+		ismatrix: true,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'F1',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		},
+		{
+		name: 'G1',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: true,
+		scope: [ 0, 76, 0 ]
+		}
+	]
+	```
 
 ## 3. Generate code
 generateCode.ts
@@ -608,12 +745,14 @@ generateCode.ts
   - The C function corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `mtimesM` because both operands are matrices. 
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp2.
   -  A call to `initVar` returns `Matrix * tmp2 = mtimesM(A, tmp1)` and this is pushed to the main body of the code.
+  -  Since `tmp2` is an "alias" for `B`, the following entry is pushed to `alias_tbl`: `{ name: 'B', tmp_var: 'tmp2', scope: [ 0, 76, 0 ] }`
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the binary operation can replace it with the temporary variable.
 3. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `C = ...` in line 4.
   - The program proceeds the same as in (2) until `init_before = obj.init_before(args, arg_types, outs)` is evaluated. In this case, `init_before` is not `NULL`; it contains the variable `scalar` to initialize before the function call.
   - `fun_c = obj.fun_c(arg_types, outs)` is evaluated and returns `scaleM` because only one operand is a matrix. 
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the third temporary variable created in the program it will have a value of tmp3.
   - A call to `initVar` returns `Matrix * tmp3= scaleM(tmp2, &scalar1, 1)` and this is pushed to the main body of the code.
+  - Since `tmp3` is an "alias" for `C`, the following entry is pushed to `alias_tbl`: `{ name: 'C', tmp_var: 'tmp3', scope: [ 0, 76, 0 ] }`
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
 4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
@@ -627,6 +766,15 @@ generateCode.ts
   - Since the function returns an output and this output is a matrix, each of the elements of the output matrix are transformed into pointer variables. Their declarations are stored in the array `ptr_declarations` and their types and values are pushed onto `param_list` so that they are treated as inputs to the function.
   - The transformed output (`"void"`) and parameters are pushed to `function_declarations`.
   - The transformed output (`"void"`) and parameters, the transformed body of the function, and `ptr_declaration` are pushed to `function_definitions`.
+  - The final value of `alias_tbl` is as follows:
+	```typescript
+	[
+	  { name: 'B', tmp_var: 'tmp2', scope: [ 0, 76, 0 ] },
+	  { name: 'C', tmp_var: 'tmp3', scope: [ 0, 76, 0 ] },
+	  { name: 'F', tmp_var: 'F1', scope: [ 0, 76, 0 ] },
+	  { name: 'G', tmp_var: 'G1', scope: [ 0, 76, 0 ] }
+	]
+	```
 
 # OctaveC Tests
 

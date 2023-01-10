@@ -146,26 +146,27 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     
 ### typeInference.ts
 #### Overview
- - Infers types of variabes used in program
+- Infers types of variabes used in program
 #### Functions
- - `typeInference`: entry-point function
-   - Returns: `[var_types, custom_functions]`
- - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
-   1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
-    - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
-   2. Next, the program traverses all of the assignment statements in the function `inferTypesFromAssignment`:
-    - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split." E.g., in the following code, `findVarScope` would identify both instances of `x` as belonging to the block `[0, 13, 0]`. However, the scope is split between the two so that the first `x` has scope `[0, 6, 0]` and the second has scope `[7, 13, 0]`. 
-    ```matlab
-    x = 1;
-    x = 5;
-    ```
-   - Returns: `[var_types, custom_functions]`
- - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions` and updates the function's entry in `custom_functions` or `builtin_functions` with information regarding input/output types
-   - When inferring the type of the function's return variable via `inferType`, `arg_types` (the types of the arguments of the function call) is passed as the `var_types` parameter, thus instantiating parameters with known types
-   - Additionally, since `custom_functions` or `builtin_functions` is updated, this allows function calls to provide information about input/output types for other instances of the function (both in function calls and in the function definition, if it exists)
-   - Returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
- - `inferType`: main type inference procedure
-   - Returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
+- `typeInference`: Entry-point function.
+  - Returns: `[var_types, custom_functions]`
+- `inferTypeFromAssignment`: Iterates through assignment statements and updates variables on the LHS in `var_types`.
+  1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
+   - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
+  2. Next, the program traverses all of the assignment statements and updates variables on the LHS in `var_types`.
+   - To determine the type of each variable, `inferType` is called.
+   - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split." E.g., in the following code, `findVarScope` would identify both instances of `x` as belonging to the block `[0, 13, 0]`. However, the scope is split between the two so that the first `x` has scope `[0, 6, 0]` and the second has scope `[7, 13, 0]`. 
+   ```matlab
+   x = 1;
+   x = 5;
+   ```
+  - Returns: `[var_types, custom_functions]`
+- `getFunctionReturnType`: Gets return type of function by retrieving type from `custom_functions` or `builtin_functions` and updates the function's entry in `custom_functions` or `builtin_functions` with information regarding input/output types.
+  - When inferring the type of the function's return variable via `inferType`, `arg_types` (the types of the arguments of the function call) is passed as the `var_types` parameter, thus instantiating parameters with known types.
+  - Additionally, since `custom_functions` or `builtin_functions` is updated, this allows function calls to provide information about input/output types for other instances of the function (both in function calls and in the function definition, if it exists).
+  - Returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
+- `inferType`: Main type inference procedure.
+  - Returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
   
   
 ### identifyCustomFunctions.ts
@@ -190,9 +191,9 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 - Transforms built-in (not user-defined) MATLAB functions into C functions
 #### Exports
 - `builtin_functions`: Typed array of type `functionMapping` (see below) containing information about how to transform each built-in MATLAB function to one or more C functions. For MATLAB code of the form `outs = fun_matlab(args)` or simply `fun_matlab(args)`,
-  - fun_matlab: MATLAB function
-  - fun_c: If not `NULL`, the corresponding C function for the given MATLAB function and argument types.
-  - args_transform: Transforms original arguments to MATLAB function, e.g.,
+  - `fun_matlab`: MATLAB function
+  - `fun_c`: If not `NULL`, the corresponding C function for the given MATLAB function and argument types.
+  - `args_transform`: Transforms original arguments to MATLAB function, e.g.,
      MATLAB:
      ```matlab
      A = zeros(3);
@@ -203,7 +204,7 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
      int dim[2]= {3, 3};
      Matrix * A = zerosM(ndim, dim);
      ```
-  - outs_transform: Transforms original outputs of MATLAB function, e.g.,
+  - `outs_transform`: Transforms original outputs of MATLAB function, e.g.,
      MATLAB:
      ```matlab
      [M, I] = max(x);
@@ -213,9 +214,9 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
      int I;
      Matrix * M = maxV(x, &I)
      ```
-  - n_req_args: Number of required arguments for the C function.
-  - n_opt_args: If arguments for the MATLAB and C functions are the same, this is the number of arguments that are optional when passed to the MATLAB function.
-  - opt_arg_defaults: Default values for the optional arguments. If the number of arguments passed to the MATLAB function is less than the number of arguments required by the C function and this field is not `NULL`, then the default values for the optional arguments are appended to the given arguments. E.g.,
+  - `n_req_args`: Number of required arguments for the C function.
+  - `n_opt_args`: If arguments for the MATLAB and C functions are the same, this is the number of arguments that are optional when passed to the MATLAB function.
+  - `opt_arg_defaults`: Default values for the optional arguments. If the number of arguments passed to the MATLAB function is less than the number of arguments required by the C function and this field is not `NULL`, then the default values for the optional arguments are appended to the given arguments. E.g.,
      MATLAB:
      ```matlab
      y = lognpdf(x);
@@ -224,7 +225,7 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
      ```c
      Matrix * y = lognpdfM(x, 0, 1);
      ```
-  - ptr_args: If a MATLAB function has more than one output, often these outputs are passed by reference to the C function, i.e., as pointer arguments. This field specifies how to convert outputs to pointer arguments, if applicable. E.g.,
+  - `ptr_args`: If a MATLAB function has more than one output, often these outputs are passed by reference to the C function, i.e., as pointer arguments. This field specifies how to convert outputs to pointer arguments, if applicable. E.g.,
      MATLAB:
      ```matlab
      [mu,sigma] = normfit(A);
@@ -235,11 +236,11 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
      double sigma;
      normfitM(A, &mu, &sigma)
       ```
-  - return_type: If the C function returns a value, then this field specifies the type of the return value. Otherwise, it is `NULL`.
-  - push_main_before: Specifies an expression to push to the main code before the call to the function.
-  - push_main_after: Specifies an expression to push to the main code after the call to the function.
-  - init_before: Specifies variables to initialize before the call to the function.
-  - tmp_out_transform: Forces the function call output to be stored in a temporary variable and specifies how to transform the temporary variable. E.g.
+  - `return_type`: If the C function returns a value, then this field specifies the type of the return value. Otherwise, it is `NULL`.
+  - `push_main_before`: Specifies an expression to push to the main code before the call to the function.
+  - `push_main_after`: Specifies an expression to push to the main code after the call to the function.
+  - `init_before`: Specifies variables to initialize before the call to the function.
+  - `tmp_out_transform`: Forces the function call output to be stored in a temporary variable and specifies how to transform the temporary variable. E.g.
      MATLAB:
      ```matlab
      disp(size(A, 1))
@@ -250,23 +251,6 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
      printf("\n%d\n", tmp[0]);
     ```
 
-  ```typescript
-  type functionMapping = {
-      fun_matlab: string;
-      fun_c: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): string; };
-      args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
-      outs_transform: { (outs: Array<string>): Array<string>; }; 
-      n_req_args: number; // # required args
-      n_opt_args: number; // # optional args
-      opt_arg_defaults: Array<string>;
-      ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
-      return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
-      push_main_before: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; // push to main before function call 
-      push_main_after: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; // push to main after function call
-      init_before: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<InitVar>; }; // vars to initialize before function call 
-      tmp_out_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<InitVar>; }; // vars to initialize before function call 
-  };
-  ```
 ### treeTraversal.ts
 ##### Overview 
   - Contains algorithms for traversing tree
@@ -349,6 +333,25 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
       scope: number[];
     };
     ```
+    
+  - FunctionMapping
+    ```typescript
+    type functionMapping = {
+        fun_matlab: string;
+        fun_c: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): string; };
+        args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
+        outs_transform: { (outs: Array<string>): Array<string>; }; 
+        n_req_args: number; // # required args
+        n_opt_args: number; // # optional args
+        opt_arg_defaults: Array<string>;
+        ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
+        return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+        push_main_before: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; // push to main before function call 
+        push_main_after: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; // push to main after function call
+        init_before: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<InitVar>; }; // vars to initialize before function call 
+        tmp_out_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<InitVar>; }; // vars to initialize before function call 
+    };
+    ```
 
 # Example 1
 
@@ -375,43 +378,49 @@ Generated code for main.c:
 #include <stdbool.h>
 #include <complex.h>
 #include <string.h>
+#include <matrix.h>
 #include <main.h>
+
 // Function declarations
 void myfun1(int f, int g, int* p_F, int* p_G);
-// Entry-point function
-int main(void)
-{
-int ndim = 2;
-int dim = {2,3};
-Matrix * A = createM(ndim, dim, 1);
-double float *input = NULL;
-input = malloc( 6*sizeof(*input));
-input[0] = 1;
-input[1] = 2.1;
-input[2] = 1;
-input[3] = 3;
-input[4] = 4;
-input[5] = 1;
-writeM( A, 6, input);
-free(input);
 
-Matrix * tmp1 = ctransposeM(A)
-Matrix * A_transposed = tmp1;
-Matrix * tmp2 = mtimesM(A, A_transposed)
-Matrix * B = tmp2;
-Matrix * tmp3 = scaleM(3, B, 1)
-int F;
-int G;
-myfun1(1, 2, &F, &G);
-return 0;
+// Entry-point function
+int main(void) {
+
+	int ndim1 = 2;
+	int dim1[2] = {2,3};
+	Matrix * A = createM(ndim1, dim1, 1);
+	double *input1 = NULL;
+	input1 = malloc( 6*sizeof(*input1));
+	input1[0] = 1;
+	input1[1] = 2.1;
+	input1[2] = 1;
+	input1[3] = 3;
+	input1[4] = 4;
+	input1[5] = 1;
+	writeM( A, 6, input1);
+	free(input1);
+	
+	Matrix * tmp1= ctransposeM(A);
+	Matrix * A_transposed= tmp1;
+	Matrix * tmp2= mtimesM(A, tmp1);
+	Matrix * B= tmp2;
+	int scalar1 = 3;
+	Matrix * tmp3= scaleM(tmp2, &scalar1, 1);
+	Matrix * B_scaled= tmp3;
+	int F1;
+	int G1;
+	myfun1(1, 2, &F1, &G1);
+	return 0;
 }
+
+
 // Subprograms
-void myfun1(int f, int g, int* p_F, int* p_G)
-{
-F = f + g
-G = f - g
-*p_F = F;
-*p_G = G;
+void myfun1(int f, int g, int* p_F, int* p_G) {
+	F = f + g;
+	G = f - g;
+	*p_F = F;
+	*p_G = G;
 }
 ```
 
@@ -448,8 +457,7 @@ identifyCustomFunctions.ts identifies myfun1 as a custom function and thus retur
 
 ## 2. Type inference
 typeInference.ts
-1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
- - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
+1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. 
 2. Next, the program traverses all of the assignment statements in the function `inferTypesFromAssignment`:
  - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split."
 a. The program encounters the assignment statement `A = ...` in lines 1-2.
@@ -458,13 +466,15 @@ a. The program encounters the assignment statement `A = ...` in lines 1-2.
     ```typescript
     {
       name: 'A',
-      type: 'float',
+      type: 'double',
       ndim: 2,
       dim: [ 2, 3 ],
       ismatrix: true,
-      ispointer: true,
+      isvector: false,
+      ispointer: false,
       isstruct: false,
-      initialized: false
+      initialized: false,
+      scope: [ 0, 176, 0 ]
     }
     ```
 

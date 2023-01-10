@@ -596,23 +596,24 @@ generateCode.ts
   - `parseNode(node)` returns `[args, outs, is_subscript]` and each entry in `args` is transformed with a call to `transformNode`.
   	- Since the left operand is of type `g.SyntaxType.Identifier` and it has no alias, it remains the same.
 	- Since the right operand is of type `g.SyntaxType.TransposeOperator`, the node is passed is to the function `printMatrixFunctions`.
-  	- `parseFunctionCallNode(node)` returns `[args, arg_types, outs, is_subscript]`. (Despite the name, it works with operator nodes as well because they're treated as builtin functions too.)
+  	- `parseNode(node)` returns `[args, outs, is_subscript]`.
 	- The entry for the transpose operator is searched for in `operatorMapping` and the match is assigned to `obj`.
 	- The type of the result of the operation is found using the `return_type` field of `obj`: `return_type = obj.return_type(args, arg_types, outs)`.
 	- The C function (or lack thereof) corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `ctransposeM` because the argument node is a matrix. 
 	- Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the first temporary variable created in the program it will have a value of tmp1.
-	- The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp1 = ctransposeM(A)`, is pushed to the main body of the code.
+	- A call to `initVar` returns `Matrix * tmp1 = ctransposeM(A)` and this is pushed to the main body of the code.
 	- `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
   - The entry for the binary operator is searched for in `operatorMapping` and the match is assigned to `obj`.
   - The type of the result of the operation is found using the `return_type` field of `obj`: `return_type = obj.return_type(args, arg_types, outs)`.
   - The C function corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `mtimesM` because both operands are matrices. 
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp2.
-  - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp2 = mtimesM(A, tmp1)`, is pushed to the main body of the code.
+  -  A call to `initVar` returns `Matrix * tmp2 = mtimesM(A, tmp1)` and this is pushed to the main body of the code.
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the binary operation can replace it with the temporary variable.
 3. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `C = ...` in line 4.
-  - The program proceeds the same as in (3) until `fun_c = obj.fun_c(arg_types, outs)` is evaluated. In this case, `obj.fun_c(arg_types, outs)` returns `scaleM` because only one operand is a matrix. 
-  - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp3.
-  - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp3 = scaleM(B, 3)`, is pushed to the main body of the code.
+  - The program proceeds the same as in (2) until `init_before = obj.init_before(args, arg_types, outs)` is evaluated. In this case, `init_before` is not `NULL`; it contains the variable `scalar` to initialize before the function call.
+  - `fun_c = obj.fun_c(arg_types, outs)` is evaluated and returns `scaleM` because only one operand is a matrix. 
+  - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the third temporary variable created in the program it will have a value of tmp3.
+  - A call to `initVar` returns `Matrix * tmp3= scaleM(tmp2, &scalar1, 1)` and this is pushed to the main body of the code.
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
 4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.

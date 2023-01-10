@@ -156,37 +156,32 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Infers types of variabes used in program
 - Functions
   - `typeInference`: entry-point function
-    - returns: `[var_types, custom_functions]`
+    - Returns: `[var_types, custom_functions]`
   - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`
-    - returns: `[var_types, custom_functions]`
+   1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
+    - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
+   2. Next, the program traverses all of the assignment statements in the function `inferTypesFromAssignment`:
+    - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split." E.g., in the following code,
+    ```matlab
+    x = 1;
+    x = 5;
+    ```
+   - Returns: `[var_types, custom_functions]`
   - `getFunctionReturnType`: gets return type of function by retrieving type from `custom_functions` or `builtin_functions` and updates the function's entry in `custom_functions` or `builtin_functions` with information regarding input/output types
     - When inferring the type of the function's return variable via `inferType`, `arg_types` (the types of the arguments of the function call) is passed as the `var_types` parameter, thus instantiating parameters with known types
     - Additionally, since `custom_functions` or `builtin_functions` is updated, this allows function calls to provide information about input/output types for other instances of the function (both in function calls and in the function definition, if it exists)
-    - returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
+    - Returns: `[return_type, fun_dictionary]`, where `fun_dictionary` is an updated copy of either `custom_functions` or `builtin_functions`
   - `inferType`: main type inference procedure
-    - returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
+    - Returns: `[type, ndim, dim, ismatrix, ispointer, isstruct, custom_functions]`
   
   
 ### identifyCustomFunctions.ts
 - Overview
   - Identifies user-defined functions to create a dictionary of custom functions
-- Exports
+- Outputs
   - `custom_functions`: Typed array of custom functions of type `customFunction` (see below)
   - `file_traversal_order`: Order in which to traverse files for type inference and code generation, necessary since most deeply nested functions should have their types inferred first
 
-```typescript
-type CustomFunction = {
-    name: string;
-    arg_types: Array<VarType>;
-    return_type:Type;
-    //return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
-    outs_transform: { (outs: Array<string>): Array<string>; }; 
-    ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
-    external: boolean;
-    file: string;
-    def_node: g.SyntaxNode;
-};
-```
 ### helperFunctions.ts
   - Overview
     - Helper functions
@@ -299,7 +294,10 @@ type functionMapping = {
 - Overview 
  - Contains all helper functions for generating code for a subscript. All functions used within generateCode.ts.
 - Functions
- - function
+ - `slice2list`
+ - `matrix2list`
+ - `sub2idx`: Main function for transforming subscripts.
+ - `rowMajorFlatIdx`: Converts a given subscript into a row-major subscript.
 
 ### customTypes.ts
 - Overview 
@@ -330,6 +328,20 @@ type functionMapping = {
       ispointer: boolean;
       isstruct: boolean;
       initialized: boolean;
+    };
+    ```
+   - CustomFunction
+    ```typescript
+    type CustomFunction = {
+        name: string;
+        arg_types: Array<VarType>;
+        return_type:Type;
+        //return_type: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Type; };
+        outs_transform: { (outs: Array<string>): Array<string>; }; 
+        ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
+        external: boolean;
+        file: string;
+        def_node: g.SyntaxNode;
     };
     ```
 
@@ -431,8 +443,11 @@ identifyCustomFunctions.ts identifies myfun1 as a custom function and thus retur
 
 ## 2. Type inference
 typeInference.ts
-The program begins by traversing all of the assignment statements in the function `inferTypesFromAssignment`:
-1. The program encounters the assignment statement `A = ...` in lines 1-2.
+1. The program begins by traversing the tree and keeping track of block starts, ends, and their level of nesting in the array `block_idxs`. This is required for determining variable scopes in the next part.
+ - Each entry in `block_idxs` has the format `[node.startIndex, node.endIndex, block_level]`, with `block_level = -1` for function definitions to distinguish them from the main body.
+2. Next, the program traverses all of the assignment statements in the function `inferTypesFromAssignment`:
+ - To determine the scope of each variable, `findVarScope` is called. However, if a variable is redefined within the same scope as its previous instance, and thus an entry for it already exists in `var_types`, the scope for the two instances is "split."
+a. The program encounters the assignment statement `A = ...` in lines 1-2.
   - `inferType` is called on the RHS node. Since the RHS is of type `g.SyntaxType.Matrix`, no recursion is needed and the defining features of the matrix node are returned: `type, ndim, dim, ismatrix,ispointer, isstruct`.
   - `var_types` is updated with a new entry, the variable being the LHS of the assignment statement and all of its features being those received from the call to `inferType` on the RHS node:
     ```typescript
@@ -448,7 +463,7 @@ The program begins by traversing all of the assignment statements in the functio
     }
     ```
 
-2. The program encounters the assignment statement `A_transposed = ...` in line 3.
+b. The program encounters the assignment statement `A_transposed = ...` in line 3.
   - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, `inferType` is called on the the argument node.
   - Since the argument node is of type `g.SyntaxType.Identifier`, the name of the node (`A`) is looked up in `var_types`. `var_types` was just updated with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `type, ndim, dim, ismatrix, ispointer, isstruct`.
   - Since this is a transpose operation, `dim[0]` and `dim[1]` are swapped to arrive at the new dimensions. All the other variables are preserved.
@@ -479,7 +494,7 @@ The program begins by traversing all of the assignment statements in the functio
       }
       ```
 
-3. The program encounters the assignment statement `B = ...` in line 3.
+c. The program encounters the assignment statement `B = ...` in line 3.
   - Since the RHS is of type `g.SyntaxType.BinaryOperator`, `inferType` is called on each of the two operand nodes.
   - Since both the left and right operand nodes are of type `g.SyntaxType.Identifier`, `inferType` looks up their names in `var_types` and to get the definining features of each: `left_type, left_ndim, left_dim, left_ismatrix, ...` and `right_type, right_ndim, right_dim, right_ismatrix, ...` 
   - `left_ismatrix` and `right_ismatrix` are compared to yield `ismatrix = true`
@@ -521,10 +536,10 @@ The program begins by traversing all of the assignment statements in the functio
       }
     }
     ```
-4. The program encounters the assignment statement `B_scaled = ...` in line 5.
+d. The program encounters the assignment statement `B_scaled = ...` in line 5.
   - The program procedes through the same steps as in (3) until calculation of the new dimensions. Since the left operand is a scalar new dimensions are set to the dimensions of the right operand, i.e., `right_dim = [2, 2]`.
   - `var_types` is thus updated to the following:
-5. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
+e. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj2`.
   - `getFunctionReturnType` is called to determine the type of the return variable of the function as well as update the function's entry in `custom_functions` using the arguments passed to the function call node.
   - Since the return variable is a matrix, the `CustomFunction` field `ptr_args` is updated to return an array of type `VarType` containing the names and types of pointer variables corresponding to each of the elements of the returned matrix. The type of each pointer is found by calling `inferType.` For the given function call node, `ptr_args(arg_types, outs)` yields:

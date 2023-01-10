@@ -152,9 +152,9 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
     Since `zeros` is a "builtin function," it generates a temporary variable. `alias_tbl` allows the program to know that a is associated with this temporary variable.
     
 ### typeInference.ts
-- Overview
+#### Overview
   - Infers types of variabes used in program
-- Functions
+#### Functions
   - `typeInference`: entry-point function
     - Returns: `[var_types, custom_functions]`
   - `inferTypeFromAssignment`: iterates through assignment statements and updates variables in LHS in `var_types`

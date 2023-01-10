@@ -2154,7 +2154,7 @@ export const builtin_functions = [
         fun_matlab: 'normfit', 
         fun_c: (args, arg_types, outs) => 'normfitM', 
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+		outs_transform: (outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,

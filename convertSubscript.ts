@@ -48,11 +48,7 @@ export function slice2list(node, fun_params) {
     for (let i = start; i <= stop; i += step) {
         list.push(i);
     }
-    console.log("WAZZUP");
-    console.log(node.parent.namedChildCount);
-    console.log(node.text);
-    console.log(children_vals);
-    console.log(list);
+
     return list;
 }
 
@@ -201,7 +197,7 @@ export function rowMajorFlatIdx(count, dim, idx, fun_params) {
 //int ${tmp_d2} = 1;
 `int ${tmp_d0} = ${idx} % ${dim[0]};
 if (${tmp_d0} == 0) {
-    ${tmp_d0} = ${dim[0]};
+\t${tmp_d0} = ${dim[0]};
 }
 int ${tmp_d1} = (${idx} - ${tmp_d0})/${dim[0]} + 1;`, fun_params);
             fun_params.main_function = mf;
@@ -213,11 +209,11 @@ int ${tmp_d1} = (${idx} - ${tmp_d0})/${dim[0]} + 1;`, fun_params);
 `int ${tmp_d2} = ceil((double) ${idx} / (${dim[0]} * ${dim[1]}));
 int ${tmp_var} = ${idx} % (${dim[0]} * ${dim[1]});
 if (${tmp_var} == 0) {
-    ${tmp_var} = ${dim[0]} * ${dim[1]};
+\t${tmp_var} = ${dim[0]} * ${dim[1]};
 }
 int ${tmp_d0} = ${tmp_var} % ${dim[0]};
 if (${tmp_d0} == 0) {
-    ${tmp_d0} = ${dim[0]};
+\t${tmp_d0} = ${dim[0]};
 }
 int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params); 
             fun_params.main_function = mf;
@@ -228,15 +224,15 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params);
 `int ${tmp_d3} = ceil((double) ${idx} / (${dim[0]} * ${dim[1]} * ${dim[2]}));
 int ${tmp_d2} = ((int) ceil((double) ${idx} / (${dim[0]} * ${dim[1]}))) % ${dim[2]};
 if (${tmp_d2} == 0) {
-    ${tmp_d2} = ${dim[2]};
+\t${tmp_d2} = ${dim[2]};
 }
 int ${tmp_var} = ${idx} % (${dim[0]} * ${dim[1]});
 if (${tmp_var} == 0) {
-    ${tmp_var} = ${dim[0]} * ${dim[1]};
+\t${tmp_var} = ${dim[0]} * ${dim[1]};
 }
 int ${tmp_d0} = ${tmp_var} % ${dim[0]};
 if (${tmp_d0} == 0) {
-    ${tmp_d0} = ${dim[0]};
+\t${tmp_d0} = ${dim[0]};
 }
 int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params); 
             fun_params.main_function = mf;

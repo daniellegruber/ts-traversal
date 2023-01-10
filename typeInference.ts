@@ -39,8 +39,8 @@ export function findVarScope(node, block_idxs, current_code, debug) {
     if (current_code == "main") {
         let fundef_blocks = block_idxs.filter(function(e) { return e[2] == -1 });
         if (fundef_blocks.length != 0) {
-            if (node.startIndex > entire_scope[0] && node.endIndex < fundef_blocks[0][0]) {
-                return [entire_scope[0], fundef_blocks[0][0], -1];
+            if (node.startIndex >= entire_scope[0] && node.endIndex < fundef_blocks[0][0]) {
+                return [entire_scope[0], fundef_blocks[0][0], 0];
             }
         } 
         return [entire_scope[0], entire_scope[1], 0];
@@ -141,7 +141,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 let scope = findVarScope(node, block_idxs, "main", debug);
                 if (node.leftNode.type == g.SyntaxType.Identifier || node.leftNode.type == g.SyntaxType.Attribute) {
                     let name = node.leftNode.text;
-                    let v1 = var_types.filter(function(e) { return e.name == name});
+                    let v1 = filterByScope(var_types, name, node, 1);
                     if (v1.length > 0) {
                         count = count + 1;
                         v1 = v1[v1.length - 1];
@@ -202,13 +202,10 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         var_types.push(v1);
                     }
                         
-                    //var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
-                    //var_types.push(v1);
                 // If LHS is subscript, type is matrix
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript ) {
                 //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
                     let name = node.leftNode.valueNode.text;
-                    //let v3 = var_types.find(x => (x.name == name) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
                     let v3 = filterByScope(var_types, name, node, 0);
                     if (v3 != null && v3 != undefined) {
                         var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v3)}); // replace if already in var_types
@@ -256,18 +253,15 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                 scope: null
                             });
                         }
-                        //v3.ndim = ndim;
-                        //v3.dim = dim;
-                        //v3.ismatrix = ismatrix;
                     } else {
                             v3 = { 
                             name: name, 
                             type: type, 
-                            ndim: 2,//ndim,//2, 
-                            dim: [1,1],//dim,//[1,1], 
+                            ndim: 2,
+                            dim: [1,1],
                             ismatrix: true,
                             isvector: false,
-                            ispointer: false, //true,
+                            ispointer: false,
                             isstruct: false,
                             initialized: false,
                             scope: scope
@@ -275,25 +269,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     }
                     
                     var_types.push(v3);
-                } /*else if (node.leftNode.type == g.SyntaxType.CellSubscript) {
-                    let name = node.leftNode.valueNode.text;
-                    let v1 = var_types.find(x => x.name === name);
-                    if (v1 == null) {
-                            v1 = { 
-                            name: name, 
-                            type: "heterogeneous", 
-                            ndim: 2, 
-                            dim: [1,1], 
-                            ismatrix: false,
-                            ispointer: false,
-                            isstruct: true,
-                            initialized: false,
-                            scope: findVarScope(node, block_idxs, debug)
-                        };
-                    }
-                    var_types = var_types.filter(function(e) { return e.name != name }); // replace if already in var_types
-                    var_types.push(v1);
-                }*/
+                }
 
                 break;
             }
@@ -370,13 +346,9 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
             fun_dictionary = c; // may need to change for classes
         }
         custom_functions = c;
-        //fun_dictionary = fun_dictionary.filter(function(e) { return e.name !== fun_name });
+
         let return_node = obj.def_node.return_variableNode;
-        /*if (return_node == undefined) {
-            if (obj.def_node.namedChildren[0].type == g.SyntaxType.ReturnValue) {
-                return_node = obj.def_node.namedChildren[0];
-            }
-        }*/
+        
         if (return_node != undefined) {
             return_node = return_node.firstChild;
             // If multiple return values, use pointers
@@ -401,12 +373,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                             if (outs.length > i) {
                                 return_name = outs[i];
                             }
-                            // if 1x1 matrix "flatten" to regular int, double, or complex
-                            /*if (return_ismatrix && return_dim.every(x => x === 1)) { 
-                                return_ismatrix = false;
-                                return_ndim = 1;
-                                return_dim = [1];
-                            }*/
+                            
                             ptr_args.push({
             			        name: return_name,
             			        type: return_type,

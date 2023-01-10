@@ -33,6 +33,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
     var alias_tbl = [];
     var main_queue = [];
     var block_level = 1;
+    var MAXCHAR = 20;
     var fun_params = {
         filename: filename,
         file: file,
@@ -99,7 +100,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             tmp_var_types = var_types;
             switch (node.type) {
                 case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
-                    //block_level += 1;
                     current_code = node.nameNode.text;
                     var obj = custom_functions.find(function (x) { return x.name === current_code; });
                     if (obj != null && obj != undefined) {
@@ -109,7 +109,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         }
                     }
                     printFunctionDefDeclare(node);
-                    //block_level -= 1;
                     break;
                 }
                 case "comment" /* g.SyntaxType.Comment */:
@@ -124,10 +123,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 case "if_statement" /* g.SyntaxType.IfStatement */:
                 case "while_statement" /* g.SyntaxType.WhileStatement */:
                 case "for_statement" /* g.SyntaxType.ForStatement */: {
-                    //pushToMain("\n" + transformNode(node));
-                    //block_level += 1;
                     transformNode(node);
-                    //block_level -= 1;
                     break;
                 }
             }
@@ -323,7 +319,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         if (numCellStruct == 1) {
                             updateFunParams(0);
                             fun_params.block_level = 0;
-                            _q = (0, modifyCode_1.insertMain)("// Structure for cell arrays\nstruct cell {\n    int type;\n    union {\n        int ival;\n        double dval;\n        complex double cval;\n        char chval[20];\n    } data;\n};", "int ".concat(filename, "(void) {"), 1, 0, fun_params), main_function = _q[0], function_definitions = _q[1];
+                            _q = (0, modifyCode_1.insertMain)("// Structure for cell arrays\nstruct cell {\n\tint type;\n\tunion {\n\t\tint ival;\n\t\tdouble dval;\n\t\tcomplex double cval;\n\t\tchar chval[".concat(MAXCHAR, "];\n\t} data;\n};"), "int ".concat(filename, "(void) {"), 1, 0, fun_params), main_function = _q[0], function_definitions = _q[1];
                         }
                         var expression = [];
                         expression.push("struct cell ".concat(outs[0], "[").concat(node.rightNode.namedChildCount, "];"));
@@ -354,7 +350,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         _r = (0, modifyCode_1.pushToMain)(expression.join("\n") + "\n", fun_params), main_function = _r[0], function_definitions = _r[1];
                         var tmp_iter = (0, helperFunctions_1.generateTmpVar)("iter", tmp_tbl);
                         updateFunParams(0);
-                        _s = (0, modifyCode_1.pushToMain)("\nfor (int ".concat(tmp_iter, " = 0; ").concat(tmp_iter, " < ").concat(node.rightNode.namedChildCount, "; ").concat(tmp_iter, "++) {\n    switch(").concat(outs[0], "[").concat(tmp_iter, "].type) {\n        case 0:\n        printf(\"%d\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.ival);\n        break;\n        \n        case 1:\n        printf(\"%f\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.dval);\n        break;\n        \n        case 2:\n        printf(\"%f\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.cval);\n        break;\n        \n        case 3:\n        printf(\"%s\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.chval);\n        break;\n    }\n}\n"), fun_params), main_function = _s[0], function_definitions = _s[1];
+                        _s = (0, modifyCode_1.pushToMain)("\nfor (int ".concat(tmp_iter, " = 0; ").concat(tmp_iter, " < ").concat(node.rightNode.namedChildCount, "; ").concat(tmp_iter, "++) {\n\tswitch(").concat(outs[0], "[").concat(tmp_iter, "].type) {\n\t\tcase 0:\n\t\tprintf(\"%d\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.ival);\n\t\tbreak;\n        \n\t\tcase 1:\n\t\tprintf(\"%f\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.dval);\n\t\tbreak;\n        \n\t\tcase 2:\n\t\tprintf(\"%f\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.cval);\n\t\tbreak;\n        \n\t\tcase 3:\n\t\tprintf(\"%s\\n\", ").concat(outs[0], "[").concat(tmp_iter, "].data.chval);\n\t\tbreak;\n\t}\n}\n"), fun_params), main_function = _s[0], function_definitions = _s[1];
                     }
                     else {
                         var obj = customTypes_1.type_to_matrix_type.find(function (x) { return x.type === type; });
@@ -722,7 +718,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     var child = _47[_46];
                     expression.push(transformNode(child));
                 }
-                //return "{\n" + expression.join("\n") + "\n}";
                 return expression.join("\n");
                 break;
             }
@@ -747,32 +742,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 var obj3 = tmp_tbl.find(function (x) { return x.name == "d0_"; });
                 var index = getSubscriptIdx(node, obj3.count);
                 if (!lhs_flag) { // subscript is on rhs
-                    //let obj = alias_tbl.find(x => x.name === node.text);
                     var obj = (0, helperFunctions_1.filterByScope)(alias_tbl, node.text, node, 0);
                     var _48 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_1 = _48[0];
                     if (obj == null || obj == undefined) {
-                        /*if (index.length == 1) {
-                            let isnum = /^\d+$/.test(index[0]);
-                            if (isnum) {
-                                index[0] = `${Number(index[0]) + 1}`;
-                            } else {
-                                index[0] = index[0].replace(/-1/, '');
-                            }
-                            //index = index[0].concat("+1");
-                        }*/
                         return "".concat(transformNode(node.valueNode), "[").concat(index[0], "]");
-                        // FORGOT REASON FOR ADDING ONE
-                        /*} else if (node.startIndex < obj.scope[0] || node.startIndex > obj.scope[1]){
-                            if (index.length == 1) {
-                                let isnum = /^\d+$/.test(index[0]);
-                                if (isnum) {
-                                    index[0] = `${Number(index[0]) + 1}`;
-                                } else {
-                                    index[0] = index[0].replace(/-1/, '');
-                                }
-                                //index = index[0].concat("+1");
-                            }
-                            return `${transformNode(node.valueNode)}[${index[0]}]`;*/
                     }
                     else {
                         tmp_var_1 = obj.tmp_var;
@@ -1261,7 +1234,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 var expression = [];
                 var tmp_vec = (0, helperFunctions_1.generateTmpVar)("vec", tmp_tbl);
                 expression.push("".concat(type_4, " ").concat(tmp_vec, "[").concat((0, helperFunctions_1.numel)(dim_3), "];"));
-                expression.push("\nfor (int i = ".concat(start, "; ").concat(start, " + ").concat(step, "*i < ").concat(stop, "; i++) {\n    ").concat(tmp_vec, "[i] = ").concat(start, " + ").concat(step, "*i;\n}\n                "));
+                expression.push("\nfor (int i = ".concat(start, "; ").concat(start, " + ").concat(step, "*i < ").concat(stop, "; i++) {\n\t").concat(tmp_vec, "[i] = ").concat(start, " + ").concat(step, "*i;\n}\n                "));
                 updateFunParams(0);
                 _32 = (0, modifyCode_1.pushToMain)(expression.join("\n"), fun_params), main_function = _32[0], function_definitions = _32[1];
                 return tmp_vec;
@@ -1781,7 +1754,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
     }
     generated_code.push("\n" + main_function.join("\n"));
     if (!(0, treeTraversal_1.fileIsFunction)(tree, treeTraversal_1.fileIsFunction)) {
-        generated_code.push("   return 0;");
+        generated_code.push("\treturn 0;");
         generated_code.push("}\n");
     }
     if (function_definitions.length != 0) {

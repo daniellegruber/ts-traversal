@@ -2,6 +2,7 @@ export function pushToMain(expression, fun_params) {
     if (fun_params.debug == 1) {
         console.log("pushToMain");
     }
+    
     if (expression != null) {
         // Indent expression
         let indent = '\t'.repeat(fun_params.block_level);

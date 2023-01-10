@@ -63,6 +63,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     let main_queue: MainQueue[] = [];
     
     let block_level = 1;
+    const MAXCHAR = 20;
     
     let fun_params = {
         filename: filename,
@@ -135,7 +136,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             
             switch (node.type) {
                 case g.SyntaxType.FunctionDefinition: {
-                    //block_level += 1;
                     current_code = node.nameNode.text;
                     let obj = custom_functions.find(x => x.name === current_code);
                     if (obj != null && obj != undefined) {
@@ -145,7 +145,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         }
                     }
                     printFunctionDefDeclare(node);
-                    //block_level -= 1;
                     break;
                 }
                 case g.SyntaxType.Comment:
@@ -160,10 +159,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 case g.SyntaxType.IfStatement:
                 case g.SyntaxType.WhileStatement:
                 case g.SyntaxType.ForStatement: {
-                    //pushToMain("\n" + transformNode(node));
-                    //block_level += 1;
                     transformNode(node);
-                    //block_level -= 1;
                     break;
                 }
             }
@@ -378,15 +374,16 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     if (numCellStruct == 1) {
                         updateFunParams(0);
                         fun_params.block_level = 0;
-[main_function, function_definitions] = insertMain(`// Structure for cell arrays
+[main_function, function_definitions] = insertMain(
+`// Structure for cell arrays
 struct cell {
-    int type;
-    union {
-        int ival;
-        double dval;
-        complex double cval;
-        char chval[20];
-    } data;
+\tint type;
+\tunion {
+\t\tint ival;
+\t\tdouble dval;
+\t\tcomplex double cval;
+\t\tchar chval[${MAXCHAR}];
+\t} data;
 };`, `int ${filename}(void) {`, 1, 0, fun_params);
                         }
                         let expression = [];
@@ -419,23 +416,23 @@ struct cell {
                         updateFunParams(0);
 [main_function, function_definitions] = pushToMain(`
 for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp_iter}++) {
-    switch(${outs[0]}[${tmp_iter}].type) {
-        case 0:
-        printf("%d\\n", ${outs[0]}[${tmp_iter}].data.ival);
-        break;
+\tswitch(${outs[0]}[${tmp_iter}].type) {
+\t\tcase 0:
+\t\tprintf("%d\\n", ${outs[0]}[${tmp_iter}].data.ival);
+\t\tbreak;
         
-        case 1:
-        printf("%f\\n", ${outs[0]}[${tmp_iter}].data.dval);
-        break;
+\t\tcase 1:
+\t\tprintf("%f\\n", ${outs[0]}[${tmp_iter}].data.dval);
+\t\tbreak;
         
-        case 2:
-        printf("%f\\n", ${outs[0]}[${tmp_iter}].data.cval);
-        break;
+\t\tcase 2:
+\t\tprintf("%f\\n", ${outs[0]}[${tmp_iter}].data.cval);
+\t\tbreak;
         
-        case 3:
-        printf("%s\\n", ${outs[0]}[${tmp_iter}].data.chval);
-        break;
-    }
+\t\tcase 3:
+\t\tprintf("%s\\n", ${outs[0]}[${tmp_iter}].data.chval);
+\t\tbreak;
+\t}
 }
 `, fun_params);
                     } else {
@@ -614,7 +611,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
 [main_function, function_definitions] = pushToMain(`int ${tmp_size} = 1;
 for (int ${tmp_iter} = 0 ; ${tmp_iter} < ${tmp_ndim}; ${tmp_iter}++)
 {
-	${tmp_size} *= ${tmp_dim}[${tmp_iter}];
+\t${tmp_size} *= ${tmp_dim}[${tmp_iter}];
 }
 Matrix *${tmp_mat} = createM(${tmp_ndim}, ${tmp_dim}, ${obj3.matrix_type});
 writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
@@ -760,7 +757,7 @@ myfun(loop_iterators, node);`;
 int ${tmp_size} = 1;
 for (int ${tmp_iter} = 0 ; ${tmp_iter} < ${tmp_ndim}; ${tmp_iter}++)
 {
-	${tmp_size} *= ${tmp_dim}[${tmp_iter}];
+\t${tmp_size} *= ${tmp_dim}[${tmp_iter}];
 }
 Matrix *${tmp_mat} = createM(${tmp_ndim}, ${tmp_dim}, ${obj3.matrix_type});
 writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
@@ -834,7 +831,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 for (let child of node.namedChildren) {
                     expression.push(transformNode(child));
                 }
-                //return "{\n" + expression.join("\n") + "\n}";
                 return expression.join("\n");
                 break;
             }
@@ -863,47 +859,20 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
                 let obj3 = tmp_tbl.find(x => x.name == "d0_");
                 let index = getSubscriptIdx(node, obj3.count);
-
                         
                 if (!lhs_flag) { // subscript is on rhs
-                    //let obj = alias_tbl.find(x => x.name === node.text);
                     let obj = filterByScope(alias_tbl, node.text, node, 0);
                     let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
  
                     if (obj == null || obj == undefined) {
-                        /*if (index.length == 1) {
-                            let isnum = /^\d+$/.test(index[0]);
-                            if (isnum) {
-                                index[0] = `${Number(index[0]) + 1}`;
-                            } else {
-                                index[0] = index[0].replace(/-1/, '');
-                            }
-                            //index = index[0].concat("+1");
-                        }*/
-        
                         return `${transformNode(node.valueNode)}[${index[0]}]`;
-                    
-                    // FORGOT REASON FOR ADDING ONE
-                    /*} else if (node.startIndex < obj.scope[0] || node.startIndex > obj.scope[1]){
-                        if (index.length == 1) {
-                            let isnum = /^\d+$/.test(index[0]);
-                            if (isnum) {
-                                index[0] = `${Number(index[0]) + 1}`;
-                            } else {
-                                index[0] = index[0].replace(/-1/, '');
-                            }
-                            //index = index[0].concat("+1");
-                        }
-                        return `${transformNode(node.valueNode)}[${index[0]}]`;*/
                     } else {
                         tmp_var = obj.tmp_var;
                         return tmp_var;
                     }
                     
                 }
-                
                 return `${node.valueNode.text}[${index[0]}]`;
-                
                 break;
             }
                 
@@ -1428,7 +1397,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 expression.push(`${type} ${tmp_vec}[${numel(dim)}];`);
                 expression.push(`
 for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
-    ${tmp_vec}[i] = ${start} + ${step}*i;
+\t${tmp_vec}[i] = ${start} + ${step}*i;
 }
                 `)
                 updateFunParams(0);
@@ -2005,7 +1974,7 @@ int ${filename}(void) {`);
     
     generated_code.push("\n" + main_function.join("\n"));
     if (!fileIsFunction(tree, fileIsFunction)){
-        generated_code.push("   return 0;");
+        generated_code.push("\treturn 0;");
         generated_code.push("}\n");
     }
 

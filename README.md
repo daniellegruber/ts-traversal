@@ -131,18 +131,16 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 #### Functions
  - `main`: entry-point function
  - `transformNode`: based on inferred node type (from typeInference) and node content, transforms node into C equivalent
-#### Structures
- - `alias_tbl`: Array of type `Alias` (see below). Keeps track of information about the relationship between variables and the temporary variables generated to perform operations on them.
-    
-   For example, say you have the following code:
+   - "Aliases" are created for certain variables that the program evaluates via temporary variables. `alias_tbl`, an array of type `Alias` (see below), keeps track of information about the relationship between variables and the temporary variables generated to perform operations on them. For example, say you have the code below. Since `zeros` is a "builtin function," it generates a temporary variable. `alias_tbl` allows the program to know that `A` is associated with this temporary variable.
+   MATLAB:
    ```matlab
-   a = zeros(2,2);
+   A = zeros(2,2);
    for i = 1:4
-    a(i) = i^2
+    A(i) = i^2
    end
    ```
-    
-   Since `zeros` is a "builtin function," it generates a temporary variable. `alias_tbl` allows the program to know that a is associated with this temporary variable.
+   C:
+   alias_tbl:
     
 ### typeInference.ts
 #### Overview
@@ -360,9 +358,8 @@ Source code:
 ```matlab
 A = [1, 2.1, 1;
     3, 4, 1];
-A_transposed = A';
-B = A * A_transposed;
-B _scaled = 3 * B;
+B = A * A';
+C = 3 * B;
 [F, G] = myfun1(1, 2);
 function [F, G] = myfun1(f, g)
     F = f + g;
@@ -387,6 +384,7 @@ void myfun1(int f, int g, int* p_F, int* p_G);
 // Entry-point function
 int main(void) {
 
+	
 	int ndim1 = 2;
 	int dim1[2] = {2,3};
 	Matrix * A = createM(ndim1, dim1, 1);
@@ -402,12 +400,11 @@ int main(void) {
 	free(input1);
 	
 	Matrix * tmp1= ctransposeM(A);
-	Matrix * A_transposed= tmp1;
 	Matrix * tmp2= mtimesM(A, tmp1);
 	Matrix * B= tmp2;
 	int scalar1 = 3;
 	Matrix * tmp3= scaleM(tmp2, &scalar1, 1);
-	Matrix * B_scaled= tmp3;
+	Matrix * C= tmp3;
 	int F1;
 	int G1;
 	myfun1(1, 2, &F1, &G1);
@@ -416,9 +413,10 @@ int main(void) {
 
 
 // Subprograms
+
 void myfun1(int f, int g, int* p_F, int* p_G) {
-	F = f + g;
-	G = f - g;
+	int F= f + g;
+	int G= f - g;
 	*p_F = F;
 	*p_G = G;
 }
@@ -437,21 +435,24 @@ int main(void);
 identifyCustomFunctions.ts identifies myfun1 as a custom function and thus returns the following "placeholder dictionary." Some of the fields will be updated during the type inference program, in particular in the body of function `getFunctionReturnType.`
 
 ```typescript
-{
+[
+  {
     name: 'myfun1',
-    arg_types: [ [Object], [Object] ],
+    arg_types: [ [Object], [Object], [Object], [Object] ],
     return_type: null,
     outs_transform: [Function: outs_transform],
-    ptr_args: [Function: ptr_args],
     external: true,
-    file: 'simple_test.m',
+    file: '/home/dlg59/project/ts-traversal/generatedCode/simple_test/simple_test.m',
     def_node: FunctionDefinitionNode {
       type: function_definition,
-      startPosition: {row: 6, column: 0},
-      endPosition: {row: 9, column: 3},
+      startPosition: {row: 5, column: 0},
+      endPosition: {row: 8, column: 3},
       childCount: 7,
-    }
+    },
+    ptr_args: [Function: ptr_args],
+    var_types: [ [Object], [Object], [Object], [Object] ]
   }
+]
 ```
 
 

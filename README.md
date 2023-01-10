@@ -474,91 +474,114 @@ a. The program encounters the assignment statement `A = ...` in lines 1-2.
       ispointer: false,
       isstruct: false,
       initialized: false,
-      scope: [ 0, 176, 0 ]
+      scope: [ 0, 76, 0 ]
     }
     ```
 
-b. The program encounters the assignment statement `A_transposed = ...` in line 3.
-  - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, `inferType` is called on the the argument node.
-  - Since the argument node is of type `g.SyntaxType.Identifier`, the name of the node (`A`) is looked up in `var_types`. `var_types` was just updated with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `type, ndim, dim, ismatrix, ispointer, isstruct`.
-  - Since this is a transpose operation, `dim[0]` and `dim[1]` are swapped to arrive at the new dimensions. All the other variables are preserved.
-  - `var_types` is thus updated to the following:
-
-    ```typescript
-      {
-        {
-          name: 'A',
-          type: 'float',
-          ndim: 2,
-          dim: [ 2, 3 ],
-          ismatrix: true,
-          ispointer: true,
-          isstruct: false,
-          initialized: false
-        },
-        {
-          name: 'A_transposed',
-          type: 'float',
-          ndim: 2,
-          dim: [ 3, 2 ],
-          ismatrix: true,
-          ispointer: true,
-          isstruct: false,
-          initialized: false
-        }
-      }
-      ```
-
-c. The program encounters the assignment statement `B = ...` in line 3.
+b. The program encounters the assignment statement `B = ...` in line 3.
   - Since the RHS is of type `g.SyntaxType.BinaryOperator`, `inferType` is called on each of the two operand nodes.
-  - Since both the left and right operand nodes are of type `g.SyntaxType.Identifier`, `inferType` looks up their names in `var_types` and to get the definining features of each: `left_type, left_ndim, left_dim, left_ismatrix, ...` and `right_type, right_ndim, right_dim, right_ismatrix, ...` 
+  - Since the left operand node is of type `g.SyntaxType.Identifier`, the name of the node (`A`) is looked up in `var_types`. `var_types` was just updated with an entry for `A` so this will return a match. Therefore `inferType` will return all the defining features of `A`: `left_type, left_ndim, left_dim, left_ismatrix, ...`.
+  - Since the right operand node is of type `g.SyntaxType.TransposeOperator`, `inferType` is called on the the argument node, which yields the same as above. Since this is a transpose operation, `dim[0]` and `dim[1]` are swapped to arrive at the new dimensions. All the other fields are preserved and `inferType` returns `right_type, right_ndim, right_dim, right_ismatrix, ...`
   - `left_ismatrix` and `right_ismatrix` are compared to yield `ismatrix = true`
   - `left_type` and `right_type` are compared to yield `type = float`
   - Since the operator is `*`, the new dimensions are constructed as `[ left_dim[0], right_dim[1] ] = [2, 2]`
-  - `var_types` is thus updated to the following:
+  - Thus, the following entry is added to `var_types`:
 
-    ```typesecript
-    {
-        {
-          name: 'A',
-          type: 'float',
-          ndim: 2,
-          dim: [ 2, 3 ],
-          ismatrix: true,
-          ispointer: true,
-          isstruct: false,
-          initialized: false
-        },
-        {
-          name: 'A_transposed',
-          type: 'float',
-          ndim: 2,
-          dim: [ 3, 2 ],
-          ismatrix: true,
-          ispointer: true,
-          isstruct: false,
-          initialized: false
-        },
-      {
-        name: 'B',
-        type: 'float',
-        ndim: 2,
-        dim: [ 2, 2 ],
-        ismatrix: true,
-        ispointer: true,
-        isstruct: false,
-        initialized: true
-      }
-    }
-    ```
-d. The program encounters the assignment statement `B_scaled = ...` in line 5.
-  - The program procedes through the same steps as in (3) until calculation of the new dimensions. Since the left operand is a scalar new dimensions are set to the dimensions of the right operand, i.e., `right_dim = [2, 2]`.
-  - `var_types` is thus updated to the following:
-e. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 6.
+	```typesecript
+	{
+	name: 'B',
+	type: 'double',
+	ndim: 2,
+	dim: [ 2, 2 ],
+	ismatrix: true,
+	isvector: false,
+	ispointer: false,
+	isstruct: false,
+	initialized: true,
+	scope: [ 0, 76, 0 ]
+	}
+	```
+c. The program encounters the assignment statement `C = ...` in line 4.
+  - The program procedes through the same steps as in (b) until calculation of the new dimensions. Since the left operand is a scalar new dimensions are set to the dimensions of the right operand, i.e., `right_dim = [2, 2]`.
+d. The program encounters the assignment statement `[F,G] = myfun1(f,g)` in line 5.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj2`.
   - `getFunctionReturnType` is called to determine the type of the return variable of the function as well as update the function's entry in `custom_functions` using the arguments passed to the function call node.
   - Since the return variable is a matrix, the `CustomFunction` field `ptr_args` is updated to return an array of type `VarType` containing the names and types of pointer variables corresponding to each of the elements of the returned matrix. The type of each pointer is found by calling `inferType.` For the given function call node, `ptr_args(arg_types, outs)` yields:
-  - Additionally, `outs_transform` returns `NULL` since all of the outputs are treated as inputs to the function. For this reason `return_type` is `NULL` as well.
+	```typescript
+	[
+		{
+		name: 'F',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: true,
+		isstruct: false
+		},
+		{
+		name: 'G',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: true,
+		isstruct: false
+		}
+	]
+
+	```
+  - Additionally, the `CustomFunction` field `var_types` is updated with the function's local variables:
+	```typescript
+	[
+		{
+		name: 'f',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		ispointer: false,
+		original_out: false,
+		scope: [ 76, 140, 0 ]
+		},
+		{
+		name: 'g',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		ispointer: false,
+		original_out: false,
+		scope: [ 76, 140, 0 ]
+		},
+		{
+		name: 'F',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: false,
+		scope: [ 76, 140, 0 ]
+		},
+		{
+		name: 'G',
+		type: 'int',
+		ndim: 1,
+		dim: [ 1 ],
+		ismatrix: false,
+		isvector: false,
+		ispointer: false,
+		isstruct: false,
+		initialized: false,
+		scope: [ 76, 140, 0 ]
+		}
+	]
+	```
+  - The `CustomFunction` field `outs_transform` returns `NULL` since all of the outputs are treated as inputs to the function. For this reason `return_type` is `NULL` as well.
 
 ## 3. Generate code
 generateCode.ts
@@ -566,40 +589,38 @@ generateCode.ts
 1. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `A = ...` in lines 1-2.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
   - Since the RHS node is of type `g.SyntaxType.Matrix`, the `initializeMatrix` function is called.
-2. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `A_transposed = ...` in line 3.
-  - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
-  - Since the RHS node is not of type `g.SyntaxType.Matrix`, `g.SyntaxType.Cell`, or `g.SyntaxType.CallOrSubscript`, `transformNode` is called on the RHS node.
-  - Since the RHS node is of type `g.SyntaxType.TransposeOperator`, the node is passed is to the function `printMatrixFunctions`.
-  - `parseFunctionCallNode(node)` returns `[args, arg_types, outs, is_subscript]`. (Despite the name, it works with operator nodes as well because they're treated as builtin functions too.)
-  - The entry for the transpose operator is searched for in `operatorMapping` and the match is assigned to `obj`.
-  - The type of the result of the operation is found using the `return_type` field of `obj`: `return_type = obj.return_type(args, arg_types, outs)`.
-  - The C function (or lack thereof) corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `ctransposeM` because the argument node is a matrix. 
-  - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the first temporary variable created in the program it will have a value of tmp1.
-  - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp1 = ctransposeM(A)`, is pushed to the main body of the code.
-  - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
-3. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `B = ...` in line 4.
+2. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `B = ...` in line 3.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
   - Since the RHS node is not of type `g.SyntaxType.Matrix`, `g.SyntaxType.Cell`, or `g.SyntaxType.CallOrSubscript`, `transformNode` is called on the RHS node.
   - Since the RHS node is of type `g.SyntaxType.BinaryOperator`, the node is passed is to the function `printMatrixFunctions`.
-  - `parseFunctionCallNode(node)` returns `[args, arg_types, outs, is_subscript]`.
+  - `parseNode(node)` returns `[args, outs, is_subscript]` and each entry in `args` is transformed with a call to `transformNode`.
+  	- Since the left operand is of type `g.SyntaxType.Identifier` and it has no alias, it remains the same.
+	- Since the right operand is of type `g.SyntaxType.TransposeOperator`, the node is passed is to the function `printMatrixFunctions`.
+  	- `parseFunctionCallNode(node)` returns `[args, arg_types, outs, is_subscript]`. (Despite the name, it works with operator nodes as well because they're treated as builtin functions too.)
+	- The entry for the transpose operator is searched for in `operatorMapping` and the match is assigned to `obj`.
+	- The type of the result of the operation is found using the `return_type` field of `obj`: `return_type = obj.return_type(args, arg_types, outs)`.
+	- The C function (or lack thereof) corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `ctransposeM` because the argument node is a matrix. 
+	- Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the first temporary variable created in the program it will have a value of tmp1.
+	- The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp1 = ctransposeM(A)`, is pushed to the main body of the code.
+	- `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
   - The entry for the binary operator is searched for in `operatorMapping` and the match is assigned to `obj`.
   - The type of the result of the operation is found using the `return_type` field of `obj`: `return_type = obj.return_type(args, arg_types, outs)`.
-  - The C function (or lack thereof) corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `mtimesM` because both operands are matrices. 
+  - The C function corresponding to the MATLAB operator is found using the `fun_c` field of `obj`: `fun_c = obj.fun_c(arg_types, outs)`. In this case, `obj.fun_c(arg_types, outs)` returns `mtimesM` because both operands are matrices. 
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp2.
-  - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp2 = mtimesM(A, A_transposed)`, is pushed to the main body of the code.
-  - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
-4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `B_scaled = ...` in line 5.
+  - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp2 = mtimesM(A, tmp1)`, is pushed to the main body of the code.
+  - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the binary operation can replace it with the temporary variable.
+3. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `C = ...` in line 4.
   - The program proceeds the same as in (3) until `fun_c = obj.fun_c(arg_types, outs)` is evaluated. In this case, `obj.fun_c(arg_types, outs)` returns `scaleM` because only one operand is a matrix. 
   - Since the result of the operation is a matrix (`return_type.ismatrix = TRUE`), a temporary variable `tmp_var` is created using `generatedTmpVar` to store the result. Since it is the second temporary variable created in the program it will have a value of tmp3.
   - The generated expression `${init_type} ${tmp_var} = ${fun_c}(${args.join(", ")})`, which evaluates as `Matrix * tmp3 = scaleM(B, 3)`, is pushed to the main body of the code.
   - `tmp_var` is returned by `printMatrixFunctions` and then by `transformNode` so that the larger expression containing the tranpose operation can replace it with the temporary variable.
-5. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
+4. The program encounters the expression statement (of type `g.SyntaxType.Expression`) `[F,G] = myfun1(f,g)` in line 5.
   - `transformNode` is called on the first child node, which is of type `g.SyntaxType.Assignment`.
   - Since the RHS node is of type `g.SyntaxType.CallOrSubscript`, the program discerns whether it is a function call or subscript by checking for its name in `classes`, `builtin_functions`, and `custom_functions`. A match is found in `custom_functions`, and the corresponding entry is stored in `obj1`.
   - The LHS for the generated expression is evaluated using the `outs_transform` field of `obj1`: `lhs = obj1.outs_transform(outs);`. This evaluates as `NULL` since the `outs_transform` function returns `NULL` for any custom function with multiple return variables (the multiple outputs are converted to pointer inputs).
   - THE RHS for the generated expression is evaluated by calling `transformNode` on the RHS node: `rhs:string = transformNode(node.rightNode);`.
   - Since `lhs == NULL`, only `rhs` is pushed to the main body of the code.
-6. The program encounters the function definition (of type `g.SyntaxType.FunctionDefinition`) `function [F,G] = myfun1(f,g) ...` in lines 6-8.
+5. The program encounters the function definition (of type `g.SyntaxType.FunctionDefinition`) `function [F,G] = myfun1(f,g) ...` in lines 6-8.
   - The node is passed to `printFunctionDefDeclare`.
   - The parameter of the function are parsed and their types and values and stored in the array `param_list`.
   - Since the function returns an output and this output is a matrix, each of the elements of the output matrix are transformed into pointer variables. Their declarations are stored in the array `ptr_declarations` and their types and values are pushed onto `param_list` so that they are treated as inputs to the function.

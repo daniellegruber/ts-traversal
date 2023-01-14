@@ -12,12 +12,19 @@ dirs := $(shell ls -d */)
 all: $(dirs)
 	@for dir in $(dirs) ; do \
 		fulldir="$(shell pwd)/$$dir"; \
-		echo $$fulldir; \
+		dir=$${dir//\//}; \
+		echo $$dir; \
 		cd $$fulldir; \
-		eval $(CC) -c -o main.o main.c $(CFLAGS) $(LIB) $(INC); \
+		mfiles=$$(ls *.m); \
+		srcs=$$(echo "$$mfiles" | sed "s/$$dir/main/" | sed "s/.m//"); \
+		objects=$$(echo "$$mfiles" | sed "s/$$dir/main/" | sed "s/.m/.o/"); \
+		for src in $$srcs; do \
+			echo $$src; \
+			eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
+		done; \
 		eval $(CC) -c -o octavec_main.o octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -c -o matrix.o $$OCTAVEC/matrix.c $(CFLAGS) $(LIB) $(INC); \
-		eval $(CC) -o test main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
+		eval $(CC) -o test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -o check octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
 	done
 

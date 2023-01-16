@@ -10,7 +10,8 @@ if (args.length != 2) {
 }
 var mfile = args[0];
 var name = path.parse(mfile).name;
-var out_folder = args[1] + "/generatedCode/" + name;
+//let out_folder = args[1] + "/generatedCode/" + name;
+var out_folder = args[1] + "/generatedCode_test/" + name;
 if (!fs.existsSync(out_folder)) {
     fs.mkdirSync(out_folder);
 }

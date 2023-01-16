@@ -819,7 +819,18 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 }
                 else {
                     // Is a builtin function call
-                    var obj_2 = builtin_funs.find(function (x) { return x.fun_matlab === node.valueNode.text; });
+                    //let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
+                    var obj_2 = builtin_funs.find(function (x) {
+                        var found = -1;
+                        if (x.fun_matlab instanceof RegExp) {
+                            found = node.valueNode.text.search(x.fun_matlab);
+                        }
+                        else {
+                            var re = new RegExp("\\b".concat(x.fun_matlab, "\\b"), 'g');
+                            found = node.valueNode.text.search(re);
+                        }
+                        return found !== -1;
+                    });
                     if (obj_2 != null && obj_2 != undefined) {
                         var init_before_1 = obj_2.init_before(args, arg_types, outs);
                         var push_before = obj_2.push_main_before(args, arg_types, outs);
@@ -829,9 +840,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         var scope = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                         var tmp_out_transform = obj_2.tmp_out_transform(args, arg_types, outs);
                         args = obj_2.args_transform(args, arg_types, outs);
-                        if (fun_c == 'hamming') {
-                            return "".concat(fun_c, "(").concat(args.join(", "), ")");
-                        }
+                        /*if (fun_c == 'hamming') {
+                            return `${fun_c}(${args.join(", ")})`;
+                        }*/
+                        fun_c = fun_c.replace('fun_matlab', node.valueNode.text);
                         if (init_before_1 != null && init_before_1 != undefined) {
                             var _loop_2 = function (i) {
                                 var _59, _60;

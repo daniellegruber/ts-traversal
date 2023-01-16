@@ -11,7 +11,8 @@ if (args.length != 2) {
 
 let mfile = args[0];
 let name = path.parse(mfile).name;
-let out_folder = args[1] + "/generatedCode/" + name;
+//let out_folder = args[1] + "/generatedCode/" + name;
+let out_folder = args[1] + "/generatedCode_test/" + name;
 if (!fs.existsSync(out_folder)){
 fs.mkdirSync(out_folder);
 }
@@ -80,8 +81,9 @@ if (!fs.existsSync(`${out_folder}/${mfile}`)){
         code = code.replace(/fdisp/g, 'sprintf');
         //code = code.replace(/printf/g, 'disp');
         
-        // Replace endfor and endfunction
+        // Replace endfor, endif and endfunction
         code = code.replace(/endfor/g, 'end');
+        code = code.replace(/endif/g, 'end');
         code = code.replace(/endfunction/g, 'end');
         
         writeToFile(out_folder, mfile, code);

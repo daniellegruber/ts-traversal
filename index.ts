@@ -40,7 +40,8 @@ let classes = getClasses(search_folder, debug);
 
 // Output code to given directory
 //let out_folder = args[2] + "/generatedCode";
-let out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
+//let out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
+let out_folder = args[2] + "/generatedCode_test/" + path.parse(args[0]).name;
 if (!fs.existsSync(out_folder)){
 fs.mkdirSync(out_folder);
 }

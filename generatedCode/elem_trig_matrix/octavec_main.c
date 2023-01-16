@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <float.h>
 #include <tgmath.h>
-#include <matrix.h>
+#include "../../matrix.h"
 
 // Trig functions of an integer matrix
 int int_test()

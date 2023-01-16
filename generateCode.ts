@@ -945,7 +945,19 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     
                 } else {
                     // Is a builtin function call
-                    let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
+                    //let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
+                    let obj = builtin_funs.find(x => {
+                        let found = -1;
+                        if (x.fun_matlab instanceof RegExp) {
+                            found = node.valueNode.text.search(x.fun_matlab);
+                        } else {
+                            let re = new RegExp(`\\b${x.fun_matlab}\\b`, 'g');
+                            found = node.valueNode.text.search(re);
+                        }
+                        return found !== -1;
+                    });
+                    
+                    
                     if (obj != null && obj != undefined) {
                         let init_before = obj.init_before(args, arg_types, outs);
                         let push_before = obj.push_main_before(args, arg_types, outs);
@@ -956,9 +968,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let tmp_out_transform = obj.tmp_out_transform(args, arg_types, outs);
                         args = obj.args_transform(args, arg_types, outs);
                         
-                        if (fun_c == 'hamming') {
-                            return `${fun_c}(${args.join(", ")})`;
-                        }
+                        fun_c = fun_c.replace('fun_matlab', node.valueNode.text);
                         
                         if (init_before != null && init_before != undefined) {
                             for (let i = 0; i < init_before.length; i++) {

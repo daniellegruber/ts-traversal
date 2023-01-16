@@ -3015,6 +3015,31 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
+        fun_matlab: 'inv',
+        fun_c: function (args, arg_types, outs) { return 'invertM'; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: "double",
+                ndim: arg_types[0].ndim,
+                dim: arg_types[0].dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
+    },
+    {
         fun_matlab: 'cell',
         fun_c: function (args, arg_types, outs) { return null; },
         args_transform: function (args, arg_types, outs) { return null; },
@@ -3263,8 +3288,12 @@ exports.builtin_functions = [
         fun_matlab: 'rand',
         fun_c: function (args, arg_types, outs) { return 'randM'; },
         args_transform: function (args) {
-            var dim = "{" + args.join(", ") + "}";
+            var dim = "{".concat(args.join(", "), "}");
             var ndim = args.length;
+            if (args.length == 1) {
+                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                ndim = 2;
+            }
             return [ndim, dim];
         },
         outs_transform: function (outs) { return outs; },
@@ -3273,16 +3302,67 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var left_type = arg_types[0].type;
-            var left_ndim = arg_types[0].ndim;
-            var left_dim = arg_types[0].dim;
-            var right_type = arg_types[1].type;
-            var right_ndim = arg_types[1].ndim;
-            var right_dim = arg_types[1].dim;
+            var dim = [];
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            }
+            else {
+                for (var _i = 0, args_5 = args; _i < args_5.length; _i++) {
+                    var arg = args_5[_i];
+                    dim.push(Number(arg));
+                }
+            }
             return {
-                type: binaryOpType(left_type, right_type),
-                ndim: left_ndim,
-                dim: left_dim,
+                type: "double",
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'randi',
+        fun_c: function (args, arg_types, outs) { return 'randiM'; },
+        args_transform: function (args, arg_types, outs) {
+            var dim = "{".concat(args.slice(1).join(", "), "}");
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = "{".concat(args[1], ",").concat(args[1], "}");
+                ndim = 2;
+            }
+            return [ndim, dim, 0, args[0]];
+        },
+        outs_transform: function (outs) { return outs; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            var dim = [];
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = [Number(args[1]), Number(args[1])];
+                ndim = 2;
+            }
+            else {
+                for (var _i = 0, _a = args.slice(1); _i < _a.length; _i++) {
+                    var arg = _a[_i];
+                    dim.push(Number(arg));
+                }
+            }
+            return {
+                type: "int",
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,
@@ -3298,8 +3378,12 @@ exports.builtin_functions = [
         fun_matlab: 'randn',
         fun_c: function (args, arg_types, outs) { return 'randnM'; },
         args_transform: function (args, arg_types, outs) {
-            var dim = "{" + args.join(", ") + "}";
+            var dim = "{".concat(args.join(", "), "}");
             var ndim = args.length;
+            if (args.length == 1) {
+                dim = "{".concat(args[0], ",").concat(args[0], "}");
+                ndim = 2;
+            }
             return [ndim, dim];
         },
         outs_transform: function (outs) { return outs; },
@@ -3308,16 +3392,22 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var left_type = arg_types[0].type;
-            var left_ndim = arg_types[0].ndim;
-            var left_dim = arg_types[0].dim;
-            var right_type = arg_types[1].type;
-            var right_ndim = arg_types[1].ndim;
-            var right_dim = arg_types[1].dim;
+            var dim = [];
+            var ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            }
+            else {
+                for (var _i = 0, args_6 = args; _i < args_6.length; _i++) {
+                    var arg = args_6[_i];
+                    dim.push(Number(arg));
+                }
+            }
             return {
-                type: binaryOpType(left_type, right_type),
-                ndim: left_ndim,
-                dim: left_dim,
+                type: "double",
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,
@@ -3612,7 +3702,9 @@ exports.builtin_functions = [
                 return [args[1]];
             }
             else {
-                return [args[0].replace(/'/g, '"'), args[1]];
+                args[0] = args[0].replace(/'/g, '"');
+                args[0] = args[0].replace(/stdout/g, '\\n%s\\n');
+                return [args[0], args[1]];
             }
         },
         outs_transform: function (outs) { return outs; },
@@ -3766,19 +3858,46 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'hamming',
-        fun_c: function (args, arg_types, outs) { return 'hamming'; },
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return null; },
+        fun_matlab: /hamming|hanning/,
+        fun_c: function (args, arg_types, outs) {
+            var match = args.find(function (x) { return x.includes("periodic"); });
+            if (match !== null && match !== undefined) {
+                return 'periodicfun_matlab';
+            }
+            else {
+                return 'fun_matlab';
+            }
+        },
+        args_transform: function (args, arg_types, outs) { return [args[0]]; },
+        outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'double',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: true,
+                isstruct: false
+            };
+            /*return {
+                type: 'double',
+                ndim: 1,
+                dim: [Number(args[0])],
+                ismatrix: false,
+                isvector: true,
+                ispointer: false,
+                isstruct: false
+            };*/
+        },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
+    }
 ];
 //# sourceMappingURL=builtinFunctions.js.map

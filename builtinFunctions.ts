@@ -3056,7 +3056,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
         },
         tmp_out_transform: (args, arg_types, outs) => null
     },
-    { 
+    { // void determinantM(Matrix* restrict m, void* restrict output)
         fun_matlab: 'det', 
         fun_c: (args, arg_types, outs) => 'detM', 
         args_transform: (args, arg_types, outs) => args,
@@ -3084,6 +3084,31 @@ for (int i = 0; ${step}*i < 1; i ++) {
 			];
 		},
         return_type: (args, arg_types, outs) => null,
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null
+    },
+    {  // Matrix * invertM(Matrix* restrict m)
+        fun_matlab: 'inv', 
+        fun_c: (args, arg_types, outs) => 'invertM', 
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: "double",
+                ndim: arg_types[0].ndim,
+                dim: arg_types[0].dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false,
+            };
+        },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null,
@@ -3339,8 +3364,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_matlab: 'rand', 
         fun_c: (args, arg_types, outs) => 'randM', 
         args_transform: args => {
-            let dim = "{" + args.join(", ") + "}";
+            let dim = `{${args.join(", ")}}`;
             let ndim = args.length;
+            if (args.length == 1) {
+                dim = `{${args[0]},${args[0]}}`;
+                ndim = 2;
+            }
             return [ndim, dim];
         },
 		outs_transform: (outs) => outs,
@@ -3349,20 +3378,66 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
+            let dim = [];
+            let ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            } else {
+                for (let arg of args) {
+                    dim.push(Number(arg));
+                }
+            }
             return {
-                type: binaryOpType(left_type, right_type), 
-                ndim: left_ndim,
-                dim: left_dim,
+                type: "double",
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
-                ispointer: false,//true,
+                ispointer: false,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null
+    },
+    { // Matrix * randiM(int ndim, int dim[ndim], int type, int imax)
+        fun_matlab: 'randi', // X = randi(imax,sz1,...,szN)
+        fun_c: (args, arg_types, outs) => 'randiM', 
+        args_transform: (args, arg_types, outs) => {
+            let dim = `{${args.slice(1).join(", ")}}`;
+            let ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = `{${args[1]},${args[1]}}`;
+                ndim = 2;
+            }
+            return [ndim, dim, 0, args[0]];
+        },
+		outs_transform: (outs) => outs,
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            let dim = [];
+            let ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = [Number(args[1]), Number(args[1])];
+                ndim = 2;
+            } else {
+                for (let arg of args.slice(1)) {
+                    dim.push(Number(arg));
+                }
+            }
+            return {
+                type: "int",
+                ndim: ndim,
+                dim: dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
                 isstruct: false 
             };
         },
@@ -3375,8 +3450,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_matlab: 'randn', 
         fun_c: (args, arg_types, outs) => 'randnM', 
         args_transform: (args, arg_types, outs) => {
-            let dim = "{" + args.join(", ") + "}";
+            let dim = `{${args.join(", ")}}`;
             let ndim = args.length;
+            if (args.length == 1) {
+                dim = `{${args[0]},${args[0]}}`;
+                ndim = 2;
+            }
             return [ndim, dim];
         },
 		outs_transform: (outs) => outs,
@@ -3385,20 +3464,23 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
+            let dim = [];
+            let ndim = args.length;
+            if (args.length == 1) {
+                dim = [Number(args[0]), Number(args[0])];
+                ndim = 2;
+            } else {
+                for (let arg of args) {
+                    dim.push(Number(arg));
+                }
+            }
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
-                ndim: left_ndim,
-                dim: left_dim,
+                type: "double",
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
-                ispointer: false,//true,
+                ispointer: false,
                 isstruct: false 
             };
         },
@@ -3684,7 +3766,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             if (arg_types[1].ismatrix) {
                 return [args[1]];
             } else {
-                return [args[0].replace(/'/g, '"'), args[1]];
+                args[0] = args[0].replace(/'/g, '"');
+                args[0] = args[0].replace(/stdout/g, '\\n%s\\n');
+                return [args[0], args[1]];
             }
         },
 		outs_transform: (outs) => outs,
@@ -3850,19 +3934,46 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         tmp_out_transform: (args, arg_types, outs) => null
     },
-    { 
-        fun_matlab: 'hamming', 
-        fun_c: (args, arg_types, outs) => 'hamming', 
-        args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => null,
+    { // double * hamming(int n)
+        fun_matlab: /hamming|hanning/,
+        fun_c: (args, arg_types, outs) => {
+            let match = args.find(x => x.includes("periodic"));
+            if (match !== null && match !== undefined) {
+                return 'periodicfun_matlab';
+            } else {
+                return 'fun_matlab';
+            }
+        }, 
+        args_transform: (args, arg_types, outs) => [args[0]], 
+		outs_transform: (outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        return_type: (args, arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'double',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: true,
+                isstruct: false 
+            };
+            
+            /*return {
+                type: 'double',
+                ndim: 1,
+                dim: [Number(args[0])],
+                ismatrix: false,
+                isvector: true,
+                ispointer: false,
+                isstruct: false 
+            };*/
+        },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null
-    },
+    }
 ];

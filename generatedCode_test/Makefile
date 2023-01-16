@@ -27,4 +27,37 @@ all: $(dirs)
 		eval $(CC) -o test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -o check octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
 	done
-
+	
+copyall:
+	mfiles=$$(find $$OCTAVEC/tests_C_Octave -type f -name "*.m"); \
+	cd $$TS_TRAVERSAL; \
+	for mfile in $$mfiles; do \
+		filename=$$(basename -- "$$mfile"); \
+		filename="$${filename%.*}"; \
+		if [ ! -d "$(shell pwd)/$$filename" ]; then \
+			echo $$filename; \
+			eval npx ts-node cleanUp.ts $$filename.m $$TS_TRAVERSAL; \
+		fi \
+	done; \
+	
+genall:
+	mfiles=$$(find $$OCTAVEC/tests_C_Octave -type f -name "*.m"); \
+	cd $$TS_TRAVERSAL; \
+	for mfile in $$mfiles; do \
+		filename=$$(basename -- "$$mfile"); \
+		filename="$${filename%.*}"; \
+		if [ ! -f "$(shell pwd)/$$filename/main.c" ]; then \
+			echo $$filename; \
+			eval npx ts-node index.ts generatedCode_test/$$filename/$$filename.m $$TEST $$TS_TRAVERSAL 0 0; \
+		fi \
+	done; \
+	
+runmatlab:
+	mfiles=$$(find $(shell pwd) -type f -name "*.m"); \
+	cd $$TS_TRAVERSAL; \
+	for mfile in $$mfiles; do \
+		filename=$$(basename -- "$$mfile"); \
+		echo $$filename; \
+		matlab -nojvm -nodisplay -nosplash < $$mfile; \
+	done; \
+	

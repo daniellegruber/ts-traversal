@@ -30,7 +30,7 @@ fourier_vec_script(a);
 fourier_script(a);
 
 %row_vectors_c
-a = [3.25,-2,0,1-I];
+a = [3.25,-2,0,1-1i];
 disp(a);
 fourier_vec_script(a);
 fourier_script(a);
@@ -48,7 +48,7 @@ fourier_vec_script(a);
 fourier_script(a);
 
 %column_vectors_c
-a = [3.25;-2;0;1-I];
+a = [3.25;-2;0;1-1i];
 disp(a);
 fourier_vec_script(a);
 fourier_script(a);
@@ -64,7 +64,7 @@ disp(a);
 fourier_script(a);
 
 %matrices_23_c
-a=[3.25,-2,0;1,5-I,10];
+a=[3.25,-2,0;1,5-1i,10];
 disp(a);
 fourier_script(a);
 
@@ -79,7 +79,7 @@ disp(a);
 fourier_script(a);
 
 %matrices_32_c
-a=[3.25,-2;0,1;5-I,10];
+a=[3.25,-2;0,1;5-1i,10];
 disp(a);
 fourier_script(a);
 

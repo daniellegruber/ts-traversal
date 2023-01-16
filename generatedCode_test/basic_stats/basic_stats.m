@@ -81,7 +81,7 @@ function int_stats(a)
 	disp(median(a));
 	disp(min(a));
 	disp(max(a));
-	disp(quantile(a));
+	disp(quantile(a, 4));
 	disp(quantile(a, fun_qs));
 end
 
@@ -98,7 +98,7 @@ function double_stats(a)
 	disp(median(a));
 	disp(min(a));
 	disp(max(a));
-	disp(quantile(a));
+	disp(quantile(a, 4));
 	disp(quantile(a, fun_qs));
 end
 
@@ -115,7 +115,7 @@ function complex_stats(a)
 	disp(median(a));
 	disp(min(a));
 	disp(max(a));
-	disp(quantile(a));
+	disp(quantile(a, 4));
 	disp(quantile(a, fun_qs));
 end
 

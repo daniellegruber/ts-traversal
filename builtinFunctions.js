@@ -2583,7 +2583,8 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; }
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'quantile',
@@ -3690,6 +3691,9 @@ exports.builtin_functions = [
     {
         fun_matlab: 'sprintf',
         fun_c: function (args, arg_types, outs) {
+            if (args.length == 1) {
+                return 'printf';
+            }
             if (arg_types[1].ismatrix) {
                 return 'printM';
             }
@@ -3698,6 +3702,9 @@ exports.builtin_functions = [
             }
         },
         args_transform: function (args, arg_types, outs) {
+            if (args.length == 1) {
+                return ['\\n%s\\n', args[0]];
+            }
             if (arg_types[1].ismatrix) {
                 return [args[1]];
             }

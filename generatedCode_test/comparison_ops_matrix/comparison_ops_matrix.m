@@ -113,7 +113,7 @@
 % b = b.';
 % disp(b);
 
-% disp(a != b);
+% disp(a ~= b);
 
 
 % %pairwise_max
@@ -213,7 +213,7 @@ for i=1:12
 		disp(matrices{i} <= matrices{j});
 		disp(matrices{i} > matrices{j});
 		disp(matrices{i} >= matrices{j});
-		disp(matrices{i} != matrices{j});
+		disp(matrices{i} ~= matrices{j});
 		disp(matrices{i} == matrices{j});
 
 		if (i == 4 || i == 7 || i == 10 || j == 4 || j == 7 || j == 10)
@@ -225,6 +225,6 @@ for i=1:12
 		else
 			disp(max(matrices{i} , matrices{j}));
 			disp(min(matrices{i} , matrices{j}));
-		endif
+		end
 	end
 end

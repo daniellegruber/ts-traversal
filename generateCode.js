@@ -840,10 +840,9 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         var scope = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                         var tmp_out_transform = obj_2.tmp_out_transform(args, arg_types, outs);
                         args = obj_2.args_transform(args, arg_types, outs);
-                        /*if (fun_c == 'hamming') {
-                            return `${fun_c}(${args.join(", ")})`;
-                        }*/
-                        fun_c = fun_c.replace('fun_matlab', node.valueNode.text);
+                        if (fun_c !== null) {
+                            fun_c = fun_c.replace('fun_matlab', node.valueNode.text);
+                        }
                         if (init_before_1 != null && init_before_1 != undefined) {
                             var _loop_2 = function (i) {
                                 var _59, _60;

@@ -2629,7 +2629,6 @@ export const builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             //let type = arg_types[0].type;
             //let ndim = arg_types[0].ndim;
@@ -2647,7 +2646,8 @@ export const builtin_functions = [
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null
     },
     { // Matrix * quantileM_vec(Matrix* restrict m, int N, double* restrict quantiles)
         fun_matlab: 'quantile', 
@@ -2670,7 +2670,6 @@ export const builtin_functions = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let arg0_type = arg_types[0].type;
             let arg0_ndim = arg_types[0].ndim;
@@ -3756,6 +3755,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS
         fun_matlab: 'sprintf', 
         fun_c: (args, arg_types, outs) => {
+            if (args.length == 1) {
+                return 'printf';
+            }
             if (arg_types[1].ismatrix) {
                 return 'printM';
             } else {
@@ -3763,6 +3765,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
         },  
         args_transform: (args, arg_types, outs) => {
+            if (args.length == 1) {
+                return ['\\n%s\\n', args[0]];
+            }
             if (arg_types[1].ismatrix) {
                 return [args[1]];
             } else {

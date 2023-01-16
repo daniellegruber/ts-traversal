@@ -146,7 +146,7 @@ disp(c);
 %ci_test
 a = zeros(3);
 for i=1:9
-	a(i) = i+I;
+	a(i) = i+1i;
 end
 a=a.';
 disp(a);

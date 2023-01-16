@@ -475,6 +475,7 @@ function inferTypeByName(name, node, var_types, custom_functions, alias_tbl, deb
 }
 
 function inferType(node, var_types, custom_functions, classes, file, alias_tbl, debug) {
+    //console.log("INFERTYPE");
     //console.log(node.text);
     //console.log(node);
     if (debug == 1) {

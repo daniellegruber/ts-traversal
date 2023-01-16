@@ -47,7 +47,7 @@ fs.mkdirSync(out_folder);
 }
 
 // Makefile
-if (!fs.existsSync(`${out_folder}/Makefile`)){
+/*if (!fs.existsSync(`${out_folder}/Makefile`)){
     fs.copyFile('Makefile_template', `${out_folder}/Makefile`, (err) => {
         if (err) throw err;
     });
@@ -68,7 +68,7 @@ if (!fs.existsSync(`${out_folder}/Makefile`)){
         
     }, 8000);
 
-}
+}*/
 
 if (show_output==1) {
     console.log("Source code:\n" + sourceCode);

@@ -37,26 +37,28 @@ if (!fs.existsSync(out_folder)) {
     fs.mkdirSync(out_folder);
 }
 // Makefile
-if (!fs.existsSync("".concat(out_folder, "/Makefile"))) {
-    fs.copyFile('Makefile_template', "".concat(out_folder, "/Makefile"), function (err) {
-        if (err)
-            throw err;
+/*if (!fs.existsSync(`${out_folder}/Makefile`)){
+    fs.copyFile('Makefile_template', `${out_folder}/Makefile`, (err) => {
+        if (err) throw err;
     });
+    
     setTimeout(function () {
-        var src_files = (0, helperFunctions_1.getFilesInPath)(out_folder);
-        for (var i = 0; i < src_files.length; i++) {
+        
+        let src_files = getFilesInPath(out_folder);
+        for (let i = 0; i < src_files.length; i ++) {
             if (src_files[i] == args[0]) {
                 src_files[i] = "main.o";
-            }
-            else {
-                src_files[i] = "".concat(path.parse(src_files[i]).name, ".o");
+            } else {
+                src_files[i] = `${path.parse(src_files[i]).name}.o`;
             }
         }
-        var makefile_code = fs.readFileSync("".concat(out_folder, "/Makefile"), "utf8");
-        makefile_code = makefile_code.replace(/OBJ = main.o/g, "OBJ = ".concat(src_files.join(" ")));
-        (0, helperFunctions_1.writeToFile)(out_folder, "Makefile", makefile_code);
+        let makefile_code = fs.readFileSync(`${out_folder}/Makefile`, "utf8");
+        makefile_code = makefile_code.replace(/OBJ = main.o/g, `OBJ = ${src_files.join(" ")}`);
+        writeToFile(out_folder, "Makefile", makefile_code);
+        
     }, 8000);
-}
+
+}*/
 if (show_output == 1) {
     console.log("Source code:\n" + sourceCode);
     console.log("---------------------\n");

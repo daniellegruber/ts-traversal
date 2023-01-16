@@ -45,13 +45,11 @@ int main(void) {
 	printM(b);
 	printM(tmp1);
 	//ldivide_test2
-	int ndim3= 2;
-	int dim3= {2, 2};
 	Matrix * a= identityM(2);
 	
-	int ndim4 = 2;
-	int dim4[2] = {2,2};
-	b = createM(ndim4, dim4, 1);
+	int ndim3 = 2;
+	int dim3[2] = {2,2};
+	b = createM(ndim3, dim3, 1);
 	double *input3 = NULL;
 	input3 = malloc( 4*sizeof(*input3));
 	input3[0] = 2.1 + 0.5 * i;
@@ -68,9 +66,9 @@ int main(void) {
 	printM(tmp2);
 	//ldivide_test3
 	
-	int ndim5 = 2;
-	int dim5[2] = {2,2};
-	a = createM(ndim5, dim5, 1);
+	int ndim4 = 2;
+	int dim4[2] = {2,2};
+	a = createM(ndim4, dim4, 1);
 	double *input4 = NULL;
 	input4 = malloc( 4*sizeof(*input4));
 	input4[0] = 2.1 + 0.5 * i;
@@ -81,9 +79,9 @@ int main(void) {
 	free(input4);
 	
 	
-	int ndim6 = 2;
-	int dim6[2] = {2,2};
-	b = createM(ndim6, dim6, 1);
+	int ndim5 = 2;
+	int dim5[2] = {2,2};
+	b = createM(ndim5, dim5, 1);
 	double *input5 = NULL;
 	input5 = malloc( 4*sizeof(*input5));
 	input5[0] = 2.1 + 0.5 * i;
@@ -100,9 +98,9 @@ int main(void) {
 	printM(tmp3);
 	//rdivide_test1
 	
-	int ndim7 = 2;
-	int dim7[2] = {2,2};
-	a = createM(ndim7, dim7, 0);
+	int ndim6 = 2;
+	int dim6[2] = {2,2};
+	a = createM(ndim6, dim6, 0);
 	int *input6 = NULL;
 	input6 = malloc( 4*sizeof(*input6));
 	input6[0] = 1;
@@ -113,9 +111,9 @@ int main(void) {
 	free(input6);
 	
 	
-	int ndim8 = 2;
-	int dim8[2] = {2,2};
-	b = createM(ndim8, dim8, 1);
+	int ndim7 = 2;
+	int dim7[2] = {2,2};
+	b = createM(ndim7, dim7, 1);
 	double *input7 = NULL;
 	input7 = malloc( 4*sizeof(*input7));
 	input7[0] = 2.1 + 0.5 * i;
@@ -131,13 +129,11 @@ int main(void) {
 	printM(b);
 	printM(tmp4);
 	//rdivide_test2
-	int ndim9= 2;
-	int dim9= {2, 2};
 	Matrix * a= identityM(2);
 	
-	int ndim10 = 2;
-	int dim10[2] = {2,2};
-	b = createM(ndim10, dim10, 1);
+	int ndim8 = 2;
+	int dim8[2] = {2,2};
+	b = createM(ndim8, dim8, 1);
 	double *input8 = NULL;
 	input8 = malloc( 4*sizeof(*input8));
 	input8[0] = 2.1 + 0.5 * i;
@@ -154,9 +150,9 @@ int main(void) {
 	printM(tmp5);
 	//rdivide_test3
 	
-	int ndim11 = 2;
-	int dim11[2] = {2,2};
-	a = createM(ndim11, dim11, 1);
+	int ndim9 = 2;
+	int dim9[2] = {2,2};
+	a = createM(ndim9, dim9, 1);
 	double *input9 = NULL;
 	input9 = malloc( 4*sizeof(*input9));
 	input9[0] = 2.1 + 0.5 * i;
@@ -167,9 +163,9 @@ int main(void) {
 	free(input9);
 	
 	
-	int ndim12 = 2;
-	int dim12[2] = {2,2};
-	b = createM(ndim12, dim12, 1);
+	int ndim10 = 2;
+	int dim10[2] = {2,2};
+	b = createM(ndim10, dim10, 1);
 	double *input10 = NULL;
 	input10 = malloc( 4*sizeof(*input10));
 	input10[0] = 2.1 + 0.5 * i;
@@ -185,13 +181,13 @@ int main(void) {
 	printM(b);
 	printM(tmp6);
 	//divide_by_zero
-	int ndim13= 2;
-	int dim13[2]= {2,2};
-	a = zerosM(ndim13, dim13);
+	int ndim11= 2;
+	int dim11[2]= {2,2};
+	a = zerosM(ndim11, dim11);
 	
-	int ndim14 = 2;
-	int dim14[2] = {2,2};
-	b = createM(ndim14, dim14, 1);
+	int ndim12 = 2;
+	int dim12[2] = {2,2};
+	b = createM(ndim12, dim12, 1);
 	double *input11 = NULL;
 	input11 = malloc( 4*sizeof(*input11));
 	input11[0] = 2.1 + 0.5 * i;

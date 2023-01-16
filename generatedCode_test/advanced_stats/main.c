@@ -18,9 +18,7 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	pkg;
-	load;
-	statistics;
+	//pkg load statistics;
 	//row_vectors_i
 	
 	int ndim2 = 2;

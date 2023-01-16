@@ -32,11 +32,21 @@ int main(void) {
 	
 	printM(a);
 	Matrix * tmp1= transposeM(a);
-	int vec1[2] = {9, 1};
-	int ndim2= 2;
-	int dim2[2]= {vec1,vec1};
-	Matrix * b= reshapeM(ndim2, dim2);
-	printM(b);
-	printM(b);
+	
+	int ndim2 = 2;
+	int dim2[2] = {1,2};
+	Matrix * mat1 = createM(ndim2, dim2, 0);
+	int *input2 = NULL;
+	input2 = malloc( 2*sizeof(*input2));
+	input2[0] = 9;
+	input2[1] = 1;
+	writeM( mat1, 2, input2);
+	free(input2);
+	
+	Matrix * b1= tmp1;
+	int * dim3= i_to_i(mat1);
+	int ndim3= 2;
+	reshapeM(b1, ndim3, dim3);
+	printM(b1);
 	return 0;
 }

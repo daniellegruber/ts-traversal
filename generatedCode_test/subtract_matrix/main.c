@@ -14,7 +14,7 @@ int main(void) {
 	//source octaveIncludes.m;
 	int ndim1= 2;
 	int dim1[2]= {3,3};
-	double scalar1 = 0.5;
+	double scalar1= 0.5;
 	Matrix * tmp1= scaleM(onesM(ndim1, dim1), &scalar1, 1);
 	Matrix * a= tmp1;
 	double tmp2;
@@ -31,7 +31,7 @@ int main(void) {
 	printM(a);
 	int ndim2= 2;
 	int dim2[2]= {3,3};
-	double scalar2 = 0.5;
+	double scalar2= 0.5;
 	Matrix * tmp6= scaleM(onesM(ndim2, dim2), &scalar2, 1);
 	Matrix * b= tmp6;
 	double tmp7= -0.5 + I;
@@ -55,17 +55,11 @@ int main(void) {
 	Matrix * tmp11= minusM(a, b);
 	Matrix * c= tmp11;
 	printM(tmp11);
-	int ndim3= 2;
-	int dim3= {3, 3};
 	Matrix * tmp12= minusM(identityM(3), a);
 	Matrix * d= tmp12;
 	printM(tmp12);
-	int ndim4= 2;
-	int dim4= {3, 3};
-	int scalar3 = INT_MIN;
+	int scalar3= INT_MIN;
 	Matrix * tmp13= scaleM(identityM(3), &scalar3, 0);
-	int ndim5= 2;
-	int dim5= {3, 3};
 	Matrix * tmp14= minusM(tmp13, identityM(3));
 	Matrix * e= tmp14;
 	printM(tmp14);

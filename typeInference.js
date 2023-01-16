@@ -308,6 +308,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
         var tree2 = parser.parse(obj.def_node.bodyNode.text);
         for (var i = 0; i < arg_types.length; i++) {
             arg_types[i].scope = [0, obj.def_node.endIndex - obj.def_node.startIndex, -1]; // "transpose" since passing adjusted tree
+            arg_types[i].initialized = true;
         }
         var block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
         var _a = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file, alias_tbl, debug, block_idxs), var_types2_1 = _a[0], c = _a[1];
@@ -758,7 +759,13 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             for (var i = 1; i < node.namedChildCount; i++) {
                 var _p = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _p[0], child_dim = _p[2], child_ismatrix = _p[3], c = _p[6];
                 custom_functions = c;
-                dim.push(child_dim[1]);
+                //dim.push(child_dim[1]);
+                if (child_dim.length > 1) {
+                    dim.push(child_dim[1]);
+                }
+                else {
+                    dim.push(child_dim[0]);
+                }
             }
             if (dim.length == 1 && dim[0] == 1) {
                 dim = [1, 1];
@@ -785,7 +792,12 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                 for (var i = 1; i < node.namedChildCount; i++) {
                     var _r = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_dim_3 = _r[2], c_9 = _r[6];
                     custom_functions = c_9;
-                    dim.push(child_dim_3[1]);
+                    if (child_dim_3.length > 1) {
+                        dim.push(child_dim_3[1]);
+                    }
+                    else {
+                        dim.push(child_dim_3[0]);
+                    }
                 }
                 if (dim.length == 1 && dim[0] == 1) {
                     dim = [1, 1];

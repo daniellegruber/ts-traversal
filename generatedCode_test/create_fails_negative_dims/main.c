@@ -12,6 +12,6 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	printf(stdout, "Success\n");
+	printf("\n%s\n", "Success\n");
 	return 0;
 }

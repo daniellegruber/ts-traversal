@@ -2924,7 +2924,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
     { // Matrix * identityM(int size)
         fun_matlab: 'eye', 
         fun_c: (args, arg_types, outs) => 'identityM', 
-        args_transform: (args, arg_types, outs) => args,
+        args_transform: (args, arg_types, outs) => [args[0]],
 		outs_transform: (outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -2946,111 +2946,126 @@ for (int i = 0; ${step}*i < 1; i ++) {
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => {
-            let dim = `{${args[0]}, ${args[0]}}`;
-            let ndim = 2;
-            
-            let init_var: InitVar[] = [];
-            init_var.push({
-                name: 'ndim',
-                val: `${ndim}`,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            })
-            init_var.push({
-                name: 'dim',
-                val: dim,
-                type: 'int',
-                ndim: ndim,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            })
-            return init_var;
-        },
+        init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { // bool reshapeM (Matrix* m, int ndim, int dim[ndim]);
         fun_matlab: 'reshape', 
         fun_c: (args, arg_types, outs) => 'reshapeM', 
         args_transform: (args, arg_types, outs) => {
-            var dim = `{${args.slice(1).join(", ")}}`;
-            var ndim = args.slice(1).length;
-            
-            if (args.length == 2) {
-                dim = `{${args[1]},${args[1]}}`;
-                ndim = 2;
-            }
-            //return [ndim, dim];
-            return ['ndim', 'dim'];
+            //return [args[0], 'ndim', 'dim'];
+            return [outs[0], 'ndim', 'dim'];
         },
-		outs_transform: (outs) => outs[0],
+		outs_transform: (outs) => null,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            var dim = [];
-            var ndim = args.slice(1).length;
-            if (args.length == 2) {
-                dim = [Number(args[1]), Number(args[1])];
-                ndim = 2;
+            if (arg_types[1].ismatrix) {
+                return {
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
             } else {
-                for (let arg of args.slice(1)) {
-                    dim.push(Number(arg));
+                let dim = [];
+                let ndim = args.slice(1).length;
+                if (args.length == 2) {
+                    dim = [Number(args[1]), Number(args[1])];
+                    ndim = 2;
+                } else {
+                    for (let arg of args.slice(1)) {
+                        dim.push(Number(arg));
+                    }
                 }
+                
+                return {
+                    type: 'int',
+                    ndim: ndim,
+                    dim: dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
             }
-            
-            return {
-                type: 'int',
-                ndim: ndim,
-                dim: dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false, //true,
-                isstruct: false 
-            };
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => {
-            let dim = `{${args.slice(1).join(", ")}}`;
-            let ndim = args.slice(1).length;
-            if (args.length == 2) {
-                dim = `{${args[1]},${args[1]}}`;
-                ndim = 2;
-            }
-            
             let init_var: InitVar[] = [];
             init_var.push({
-                name: 'ndim',
-                val: ndim,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
+                name: outs[0],
+                val: args[0],
+                type: arg_types[0].type,
+                ndim: arg_types[0].ndim,
+                dim: arg_types[0].dim,
+                ismatrix: true,
                 isvector: false,
                 ispointer: false,
                 isstruct: false
             })
-            init_var.push({
-                name: 'dim',
-                val: dim,
-                type: 'int',
-                ndim: 1,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: true,
-                ispointer: false,
-                isstruct: false
-            })
+            if (arg_types[1].ismatrix) {
+                let type = arg_types[1].type;
+                init_var.push({
+                    name: 'dim',
+                    val: `${type.charAt(0)}_to_${type.charAt(0)}(${args[1]})`,
+                    type: type,
+                    ndim: 1,
+                    dim: [numel(arg_types[1].dim)],
+                    ismatrix: false,
+                    isvector: false, //true,
+                    ispointer: true,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'ndim',
+                    val: arg_types[1].ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+            } else {
+                let dim = `{${args.slice(1).join(", ")}}`;
+                let ndim = args.slice(1).length;
+                if (args.length == 2) {
+                    dim = `{${args[1]},${args[1]}}`;
+                    ndim = 2;
+                }
+            
+                init_var.push({
+                    name: 'ndim',
+                    val: ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+            }
+                
             return init_var;
         },
         tmp_out_transform: (args, arg_types, outs) => null
@@ -3766,13 +3781,13 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },  
         args_transform: (args, arg_types, outs) => {
             if (args.length == 1) {
-                return ['\\n%s\\n', args[0]];
+                return ['"\\n%s\\n"', args[0]];
             }
             if (arg_types[1].ismatrix) {
                 return [args[1]];
             } else {
                 args[0] = args[0].replace(/'/g, '"');
-                args[0] = args[0].replace(/stdout/g, '\\n%s\\n');
+                args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
                 return [args[0], args[1]];
             }
         },

@@ -631,7 +631,7 @@ int main(void) {
 	printM(a);
 	int ndim23= 2;
 	int dim23[2]= {3,3};
-	int scalar1 = 2;
+	int scalar1= 2;
 	Matrix * tmp56= scaleM(onesM(ndim23, dim23), &scalar1, 0);
 	b = tmp56;
 	printM(a);

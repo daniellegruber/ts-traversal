@@ -28,7 +28,7 @@ int main(void) {
 	matrices[2] = onesM(ndim3, dim3);
 	int ndim4= 2;
 	int dim4[2]= {20, 1};
-	complex scalar1 = (4.5 - 0.5*I);
+	complex scalar1= (4.5 - 0.5*I);
 	Matrix * tmp1= scaleM(onesM(ndim4, dim4), &scalar1, 2);
 	matrices[3] = tmp1;
 	int ndim5= 2;
@@ -214,7 +214,7 @@ int main(void) {
 	free(input2);
 	
 	for (int iter13 = 1; iter13 <= 12; ++ iter13) {
-		printf(\n%s\n, 'i\n');
+		printf("\n%s\n", 'i\n');
 		int d0_43 = iter13 % 11;
 		if (d0_43 == 0) {
 			d0_43 = 11;
@@ -222,14 +222,14 @@ int main(void) {
 		int d1_43 = (iter13 - d0_43)/11 + 1;
 		printM(matrices[(d1_43-1) + (d0_43-1)]);
 		for (int iter14 = 1; iter14 <= 12; ++ iter14) {
-			printf(\n%s\n, 'j\n');
+			printf("\n%s\n", 'j\n');
 			int d0_44 = iter14 % 11;
 			if (d0_44 == 0) {
 				d0_44 = 11;
 			}
 			int d1_44 = (iter14 - d0_44)/11 + 1;
 			printM(matrices[(d1_44-1) + (d0_44-1)]);
-			printf(\n%s\n, '\n\n');
+			printf("\n%s\n", '\n\n');
 			int d0_45 = iter13 % 11;
 			if (d0_45 == 0) {
 				d0_45 = 11;

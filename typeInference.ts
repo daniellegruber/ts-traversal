@@ -321,6 +321,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
         
         for (let i = 0; i < arg_types.length; i++) {
             arg_types[i].scope = [0, obj.def_node.endIndex - obj.def_node.startIndex, -1]; // "transpose" since passing adjusted tree
+            arg_types[i].initialized = true;
         }
         
         let block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
@@ -533,7 +534,6 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
         }
         case g.SyntaxType.Cell:
         case g.SyntaxType.Matrix: {
-            
             let row = 0;
             let col = 0;
             let nrows = 0;
@@ -547,7 +547,7 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                 else if (node.children[i].isNamed) {
                     
                     if (row == 0) {
-                        const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug);
+                        let [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
                         if (ndim > 1) {
                             ncols += dim[1];
@@ -556,10 +556,11 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                         }
                     }
                     if (col == 0) {
-                        const [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug);
+                        let [type, ndim, dim,,,, c] = inferType(node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
                         nrows += dim[0];
                     }
+                    
                     col += 1;
                 }
             }
@@ -787,7 +788,12 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                 var [child_type,,child_dim,child_ismatrix,,, c] = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug);
                 
                 custom_functions = c;
-                dim.push(child_dim[1]);
+                //dim.push(child_dim[1]);
+                if (child_dim.length > 1) {
+                    dim.push(child_dim[1]);
+                } else {
+                    dim.push(child_dim[0]);
+                }
             }
             
             if (dim.length==1 && dim[0] == 1) {
@@ -816,12 +822,15 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             custom_functions = c;
             // Is a subscript
             if (parent_ismatrix || parent_isstruct) {
-                
                 let dim = [];
                 for (let i=1; i<node.namedChildCount; i++) {
                     let [,,child_dim,,,, c] = inferType(node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
-                    dim.push(child_dim[1]);
+                    if (child_dim.length > 1) {
+                        dim.push(child_dim[1]);
+                    } else {
+                        dim.push(child_dim[0]);
+                    }
                 }
                 
                 if (dim.length==1 && dim[0] == 1) {

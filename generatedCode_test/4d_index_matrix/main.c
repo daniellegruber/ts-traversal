@@ -62,7 +62,7 @@ int main(void) {
 		}
 	
 	}
-	printf(\n%s\n, "\n");
+	printf("\n%s\n", "\n");
 	// Normal indexing in C and normal indexing in Octave are the same
 	for (int iter10 = 1; iter10 <= 5; ++ iter10) {
 		for (int iter11 = 1; iter11 <= 4; ++ iter11) {
@@ -79,7 +79,7 @@ int main(void) {
 		}
 	
 	}
-	printf(\n%s\n, "\n");
+	printf("\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int iter14 = 1; iter14 <= 120; ++ iter14) {
 		int d3_4 = ceil((double) iter14 / (2 * 3 * 4));
@@ -101,7 +101,7 @@ int main(void) {
 		printf("\n%f\n", tmp4);
 	
 	}
-	printf(\n%s\n, "\n");
+	printf("\n%s\n", "\n");
 	// Method 2 to create 4D matrix
 	// Creates the matrix column-major to match Octave's implementation
 	int ndim2= 4;
@@ -154,7 +154,7 @@ int main(void) {
 		}
 	
 	}
-	printf(\n%s\n, "\n");
+	printf("\n%s\n", "\n");
 	// Normal indexing in C and normal indexing in Octave are the same
 	for (int iter21 = 1; iter21 <= 5; ++ iter21) {
 		for (int iter22 = 1; iter22 <= 4; ++ iter22) {
@@ -171,7 +171,7 @@ int main(void) {
 		}
 	
 	}
-	printf(\n%s\n, "\n");
+	printf("\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int iter25 = 1; iter25 <= 120; ++ iter25) {
 		int d3_8 = ceil((double) iter25 / (2 * 3 * 4));
@@ -193,6 +193,6 @@ int main(void) {
 		printf("\n%f\n", tmp8);
 	
 	}
-	printf(\n%s\n, "\n");
+	printf("\n%s\n", "\n");
 	return 0;
 }

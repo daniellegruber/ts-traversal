@@ -2,7 +2,7 @@
 %format short
 
 %source octaveIncludes.m;
-pkg load statistics;
+%pkg load statistics;
 
 function two_t_test(a, b)
 	[h, pval, ci, stats] = ttest(a, b);

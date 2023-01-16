@@ -11,5 +11,3 @@ disp(a);
 
 b = reshape(a.', [9,1]);
 disp(b);
-
-disp(b);

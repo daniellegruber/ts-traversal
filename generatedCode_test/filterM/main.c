@@ -39,7 +39,7 @@ int main(void) {
 	matrices[2] = onesM(ndim3, dim3);
 	int ndim4= 2;
 	int dim4[2]= {20, 1};
-	complex scalar1 = (4.5 - 0.5*I);
+	complex scalar1= (4.5 - 0.5*I);
 	Matrix * tmp2= scaleM(onesM(ndim4, dim4), &scalar1, 2);
 	matrices[3] = tmp2;
 	int ndim5= 2;
@@ -239,7 +239,7 @@ int main(void) {
 	free(input3);
 	
 	for (int iter14 = 1; iter14 <= 13; ++ iter14) {
-		printf(stdout, 'b\n');
+		printf("\n%s\n", 'b\n');
 		int d0_47 = iter14 % 12;
 		if (d0_47 == 0) {
 			d0_47 = 12;
@@ -247,7 +247,7 @@ int main(void) {
 		int d1_47 = (iter14 - d0_47)/12 + 1;
 		printM(matrices[(d1_47-1) + (d0_47-1)]);
 		for (int iter15 = 1; iter15 <= 13; ++ iter15) {
-			printf(stdout, '\na\n');
+			printf("\n%s\n", '\na\n');
 			int d0_48 = iter15 % 12;
 			if (d0_48 == 0) {
 				d0_48 = 12;
@@ -255,14 +255,14 @@ int main(void) {
 			int d1_48 = (iter15 - d0_48)/12 + 1;
 			printM(matrices[(d1_48-1) + (d0_48-1)]);
 			for (int iter16 = 1; iter16 <= 13; ++ iter16) {
-				printf(stdout, '\nx\n');
+				printf("\n%s\n", '\nx\n');
 				int d0_49 = iter16 % 12;
 				if (d0_49 == 0) {
 					d0_49 = 12;
 				}
 				int d1_49 = (iter16 - d0_49)/12 + 1;
 				printM(matrices[(d1_49-1) + (d0_49-1)]);
-				printf(stdout, '\n');
+				printf("\n%s\n", '\n');
 				int d0_50 = iter14 % 12;
 				if (d0_50 == 0) {
 					d0_50 = 12;
@@ -282,7 +282,7 @@ int main(void) {
 				Matrix * zero1= zerosM(1, state_size1);
 				Matrix * y= filterM(matrices[(d1_50-1) + (d0_50-1)], matrices[(d1_51-1) + (d0_51-1)], matrices[(d1_52-1) + (d0_52-1)], &zero1);
 				printM(y);
-				printf(stdout, '\n');
+				printf("\n%s\n", '\n');
 				printf("\n%d\n", sf);
 			
 			}

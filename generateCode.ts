@@ -518,11 +518,12 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                     var_type.type = type;
                                 }
                                 tmp_var_types.push(var_type);
-                                let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
+                                // if rhs is a tmp var, i.e. lhs = tmp, then push to alias tbl
+                                /*let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
                                 if (obj != null && obj != undefined) {
                                     updateFunParams(0);
                                     alias_tbl = pushAliasTbl(lhs, rhs, node, fun_params);
-                                }
+                                }*/
                                     
                             } else {
                                 let scope = findVarScope(node, block_idxs, current_code, debug);
@@ -1106,7 +1107,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 return null;
                                 
                             } else {
-                                
                                 let var_val = fun_c;
                                 if (args != null) {
                                     var_val = `${fun_c}(${args.join(", ")})`;
@@ -1420,11 +1420,11 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
             case g.SyntaxType.Matrix: {
                 let [type, ndim, dim, , , ,] = inferType(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 
-                if (ndim == 2 && dim.some(x => x === 1)) { // vector
+                /*if (ndim == 2 && dim.some(x => x === 1)) { // vector
                     let tmp_vec = generateTmpVar("vec", tmp_tbl);
                     let expression = [];
                     for (let child of node.namedChildren) {
-                        expression.push(child.text);
+                        expression.push(transformNode(child));
                     }
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(`${type} ${tmp_vec}[${numel(dim)}] = {${expression.join(", ")}};`, fun_params);
@@ -1444,7 +1444,7 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
                     
                     return tmp_vec;
                     
-                } else { // matrix
+                } else { // matrix */
                     let tmp_mat = generateTmpVar("mat", tmp_tbl);
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(initializeMatrix(node, tmp_mat, ndim, dim, type), fun_params);
@@ -1463,7 +1463,7 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
                     });
             
                     return tmp_mat;
-                }
+                //}
                 
             }
         }
@@ -1593,7 +1593,7 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
             ndim: dim.length,
             dim: [dim.length],
             ismatrix: false,
-            isvector: false,
+            isvector: true,
             ispointer: false,
             isstruct: false,
             initialized: true,
@@ -1690,18 +1690,8 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
                     let re = new RegExp(`\\b${init_before[i].name}\\b`);
                     init_before[j].val = init_before[j].val.replace(re, tmp_var);
                 }
-                if (init_before[i].ismatrix) {
-                    updateFunParams(0);
-                    [main_function, function_definitions] = pushToMain(`Matrix * ${tmp_var} = ${init_before[i].val};`, fun_params)
-                } else {
-                    if (init_before[i].ndim > 1) {
-                        updateFunParams(0);
-                        [main_function, function_definitions] = pushToMain(`${init_before[i].type} ${tmp_var}[${init_before[i].ndim}] = ${init_before[i].val};`, fun_params)  
-                    } else {
-                        updateFunParams(0);
-                        [main_function, function_definitions] = pushToMain(`${init_before[i].type} ${tmp_var} = ${init_before[i].val};`, fun_params)
-                    }
-                }
+                updateFunParams(0);
+                [main_function, function_definitions] = pushToMain(initVar(tmp_var, init_before[i].val, init_before[i], node), fun_params);
                 tmp_var_types.push({
                     name: tmp_var,
                     type: init_before[i].type,

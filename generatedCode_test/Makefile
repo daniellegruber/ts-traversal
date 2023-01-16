@@ -25,8 +25,12 @@ all: $(dirs)
 		eval $(CC) -c -o octavec_main.o octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -c -o matrix.o $$OCTAVEC/matrix.c $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -o test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
-		eval $(CC) -o check octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
-	done
+		if [ -f "octavec_main.c" ]; then \
+			eval $(CC) -o check octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
+		else \
+			echo "Custom test"; \
+		fi \
+	done; \
 	
 copyall:
 	mfiles=$$(find $$OCTAVEC/tests_C_Octave -type f -name "*.m"); \
@@ -52,6 +56,16 @@ genall:
 		fi \
 	done; \
 	
+regenall:
+	mfiles=$$(find $(shell pwd) -type f -name "*.m"); \
+	cd $$TS_TRAVERSAL; \
+	for mfile in $$mfiles; do \
+		filename=$$(basename -- "$$mfile"); \
+		filename="$${filename%.*}"; \
+		echo $$filename; \
+		eval npx ts-node index.ts generatedCode_test/$$filename/$$filename.m $$TEST $$TS_TRAVERSAL 0 0; \
+	done; \
+	
 runmatlab:
 	mfiles=$$(find $(shell pwd) -type f -name "*.m"); \
 	cd $$TS_TRAVERSAL; \
@@ -60,4 +74,23 @@ runmatlab:
 		echo $$filename; \
 		matlab -nojvm -nodisplay -nosplash < $$mfile; \
 	done; \
+	
+makeone:
+	fulldir="$(shell pwd)/$(ARGS)"; \
+	cd $$fulldir; \
+	mfiles=$$(ls *.m); \
+	srcs=$$(echo "$$mfiles" | sed "s/$(ARGS)/main/" | sed "s/.m//"); \
+	objects=$$(echo "$$mfiles" | sed "s/$(ARGS)/main/" | sed "s/.m/.o/"); \
+	for src in $$srcs; do \
+		echo $$src; \
+		eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
+	done; \
+	eval $(CC) -c -o octavec_main.o octavec_main.c $(CFLAGS) $(LIB) $(INC); \
+	eval $(CC) -c -o matrix.o $$OCTAVEC/matrix.c $(CFLAGS) $(LIB) $(INC); \
+	eval $(CC) -o test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
+	if [ -f "octavec_main.c" ]; then \
+		eval $(CC) -o check octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
+	else \
+		echo "Custom test"; \
+	fi \
 	

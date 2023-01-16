@@ -144,17 +144,13 @@ int main(void) {
 	int ndim2= 2;
 	int dim2[2]= {3,3};
 	matrices[1] = onesM(ndim2, dim2);
-	int ndim3= 2;
-	int dim3= {3, 3};
 	matrices[2] = identityM(3);
-	int ndim4= 2;
-	int dim4= {3, 3};
-	complex scalar1 = (4.2 - 0.03*I);
+	complex scalar1= (4.2 - 0.03*I);
 	Matrix * tmp1= scaleM(identityM(3), &scalar1, 2);
 	matrices[3] = tmp1;
-	int ndim5= 2;
-	int dim5[2]= {3,3};
-	matrices[4] = zerosM(ndim5, dim5);
+	int ndim3= 2;
+	int dim3[2]= {3,3};
+	matrices[4] = zerosM(ndim3, dim3);
 	int* lhs_data1 = i_to_i(matrices[4]);
 	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
 		int d0_6 = iter1 % 1;
@@ -168,18 +164,18 @@ int main(void) {
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter2 = 0 ; iter2 < ndim5; iter2++)
+	for (int iter2 = 0 ; iter2 < ndim3; iter2++)
 	{
-		size1 *= dim5[iter2];
+		size1 *= dim3[iter2];
 	}
-	Matrix *mat1 = createM(ndim5, dim5, 0);
+	Matrix *mat1 = createM(ndim3, dim3, 0);
 	writeM(mat1, size1, lhs_data1);
 	matrices[4] = mat1;
 	Matrix * tmp3= transposeM(matrices[4]);
 	matrices[4] = tmp3;
-	int ndim6= 2;
-	int dim6[2]= {3,3};
-	matrices[5] = zerosM(ndim6, dim6);
+	int ndim4= 2;
+	int dim4[2]= {3,3};
+	matrices[5] = zerosM(ndim4, dim4);
 	double* lhs_data2 = i_to_d(matrices[5]);
 	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
 		int d0_12 = iter3 % 1;
@@ -193,18 +189,18 @@ int main(void) {
 	}
 	// Write matrix mat2
 	int size2 = 1;
-	for (int iter4 = 0 ; iter4 < ndim6; iter4++)
+	for (int iter4 = 0 ; iter4 < ndim4; iter4++)
 	{
-		size2 *= dim6[iter4];
+		size2 *= dim4[iter4];
 	}
-	Matrix *mat2 = createM(ndim6, dim6, 1);
+	Matrix *mat2 = createM(ndim4, dim4, 1);
 	writeM(mat2, size2, lhs_data2);
 	matrices[5] = mat2;
 	Matrix * tmp5= transposeM(matrices[5]);
 	matrices[5] = tmp5;
-	int ndim7= 2;
-	int dim7[2]= {3,3};
-	matrices[6] = zerosM(ndim7, dim7);
+	int ndim5= 2;
+	int dim5[2]= {3,3};
+	matrices[6] = zerosM(ndim5, dim5);
 	complex* lhs_data3 = i_to_c(matrices[6]);
 	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
 		int d0_18 = iter5 % 1;
@@ -218,18 +214,18 @@ int main(void) {
 	}
 	// Write matrix mat3
 	int size3 = 1;
-	for (int iter6 = 0 ; iter6 < ndim7; iter6++)
+	for (int iter6 = 0 ; iter6 < ndim5; iter6++)
 	{
-		size3 *= dim7[iter6];
+		size3 *= dim5[iter6];
 	}
-	Matrix *mat3 = createM(ndim7, dim7, 2);
+	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
 	matrices[6] = mat3;
 	Matrix * tmp7= transposeM(matrices[6]);
 	matrices[6] = tmp7;
-	int ndim8= 2;
-	int dim8[2]= {3,3};
-	matrices[7] = zerosM(ndim8, dim8);
+	int ndim6= 2;
+	int dim6[2]= {3,3};
+	matrices[7] = zerosM(ndim6, dim6);
 	int* lhs_data4 = i_to_i(matrices[7]);
 	for (int iter7 = 1; iter7 <= 9; ++ iter7) {
 		int d0_24 = iter7 % 1;
@@ -243,18 +239,18 @@ int main(void) {
 	}
 	// Write matrix mat4
 	int size4 = 1;
-	for (int iter8 = 0 ; iter8 < ndim8; iter8++)
+	for (int iter8 = 0 ; iter8 < ndim6; iter8++)
 	{
-		size4 *= dim8[iter8];
+		size4 *= dim6[iter8];
 	}
-	Matrix *mat4 = createM(ndim8, dim8, 0);
+	Matrix *mat4 = createM(ndim6, dim6, 0);
 	writeM(mat4, size4, lhs_data4);
 	matrices[7] = mat4;
 	Matrix * tmp9= transposeM(matrices[7]);
 	matrices[7] = tmp9;
-	int ndim9= 2;
-	int dim9[2]= {3,3};
-	matrices[8] = zerosM(ndim9, dim9);
+	int ndim7= 2;
+	int dim7[2]= {3,3};
+	matrices[8] = zerosM(ndim7, dim7);
 	double* lhs_data5 = i_to_d(matrices[8]);
 	for (int iter9 = 1; iter9 <= 9; ++ iter9) {
 		int d0_30 = iter9 % 1;
@@ -268,18 +264,18 @@ int main(void) {
 	}
 	// Write matrix mat5
 	int size5 = 1;
-	for (int iter10 = 0 ; iter10 < ndim9; iter10++)
+	for (int iter10 = 0 ; iter10 < ndim7; iter10++)
 	{
-		size5 *= dim9[iter10];
+		size5 *= dim7[iter10];
 	}
-	Matrix *mat5 = createM(ndim9, dim9, 1);
+	Matrix *mat5 = createM(ndim7, dim7, 1);
 	writeM(mat5, size5, lhs_data5);
 	matrices[8] = mat5;
 	Matrix * tmp11= transposeM(matrices[8]);
 	matrices[8] = tmp11;
-	int ndim10= 2;
-	int dim10[2]= {3,3};
-	matrices[9] = zerosM(ndim10, dim10);
+	int ndim8= 2;
+	int dim8[2]= {3,3};
+	matrices[9] = zerosM(ndim8, dim8);
 	complex* lhs_data6 = i_to_c(matrices[9]);
 	for (int iter11 = 1; iter11 <= 9; ++ iter11) {
 		int d0_36 = iter11 % 1;
@@ -293,19 +289,19 @@ int main(void) {
 	}
 	// Write matrix mat6
 	int size6 = 1;
-	for (int iter12 = 0 ; iter12 < ndim10; iter12++)
+	for (int iter12 = 0 ; iter12 < ndim8; iter12++)
 	{
-		size6 *= dim10[iter12];
+		size6 *= dim8[iter12];
 	}
-	Matrix *mat6 = createM(ndim10, dim10, 2);
+	Matrix *mat6 = createM(ndim8, dim8, 2);
 	writeM(mat6, size6, lhs_data6);
 	matrices[9] = mat6;
 	Matrix * tmp13= transposeM(matrices[9]);
 	matrices[9] = tmp13;
 	
-	int ndim11 = 2;
-	int dim11[2] = {3,3};
-	matrices[10] = createM(ndim11, dim11, 0);
+	int ndim9 = 2;
+	int dim9[2] = {3,3};
+	matrices[10] = createM(ndim9, dim9, 0);
 	int *input1 = NULL;
 	input1 = malloc( 9*sizeof(*input1));
 	input1[0] = 3;
@@ -321,9 +317,9 @@ int main(void) {
 	free(input1);
 	
 	
-	int ndim12 = 2;
-	int dim12[2] = {3,3};
-	matrices[1] = createM(ndim12, dim12, 1);
+	int ndim10 = 2;
+	int dim10[2] = {3,3};
+	matrices[1] = createM(ndim10, dim10, 1);
 	double *input2 = NULL;
 	input2 = malloc( 9*sizeof(*input2));
 	input2[0] = 11.25;

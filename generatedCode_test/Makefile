@@ -94,3 +94,31 @@ makeone:
 		echo "Custom test"; \
 	fi \
 	
+compareone:
+	fulldir="$(shell pwd)/$(ARGS)"; \
+	cd $$fulldir; \
+	(./test 2>/dev/null | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
+		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
+		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
+		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > f1; \
+	(matlab -nodisplay -nosplash < $(ARGS).m 2>/dev/null | \
+		tail -n+10 | sed -z 's/>>//gi' | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
+		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
+		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
+		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') | \
+		sed -z 's/\n\s/\n/gi' | sed -z 's/  \n//gi' > f2; \
+	diff -wi f1 f2 && \
+		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
+		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\

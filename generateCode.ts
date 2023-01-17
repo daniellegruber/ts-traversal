@@ -51,8 +51,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <${filename}.h>`];
-          
+#include "./${filename}.h"`];
+    //#include <${filename}.h>
     var cursor_adjust = false;
     var current_code = "main";
     
@@ -968,7 +968,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let scope = findVarScope(node, block_idxs, current_code, debug);
                         let tmp_out_transform = obj.tmp_out_transform(args, arg_types, outs);
                         args = obj.args_transform(args, arg_types, outs);
-                        
+                    
                         if (fun_c !== null) {
                             fun_c = fun_c.replace('fun_matlab', node.valueNode.text);
                         }

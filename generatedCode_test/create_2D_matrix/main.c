@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -22,7 +22,7 @@ int main(void) {
 	input1[1] = 10;
 	input1[2] = 10*I;
 	input1[3] = 10.102;
-	input1[4] = 10.102 + 0.5 * i;
+	input1[4] = 10.102 + 0.5*I;
 	input1[5] = -12*I;
 	writeM( a, 6, input1);
 	free(input1);

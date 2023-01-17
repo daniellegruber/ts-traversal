@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -42,7 +42,7 @@ int main(void) {
 		}
 		int d1_1 = (iter1 - d0_1)/3 + 1;
 		complex tmp2;
-		indexM(tmp1, &tmp2, 1, (d1_1) + (d0_1-1) * 3);
+		indexM(a_trans, &tmp2, 1, (d1_1) + (d0_1-1) * 3);
 		if (cimag(tmp2) < 0) {
 			int d0_2 = iter1 % 3;
 			if (d0_2 == 0) {

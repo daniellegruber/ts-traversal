@@ -3226,6 +3226,7 @@ exports.builtin_functions = [
             if (args.length > 1) {
                 return "tmp_out[".concat(args[1] - 1, "]");
             }
+            return null;
         }
     },
     {

@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -30,7 +30,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp1= mpowerM(b, exponent);
 	Matrix * c= tmp1;
-	printM(tmp1);
+	printM(c);
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
 		Matrix * tmp2= mpowerM(b, exponent);
 		c = tmp2;

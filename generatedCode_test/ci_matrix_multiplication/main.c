@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -30,13 +30,13 @@ int main(void) {
 	
 	int ndim2 = 2;
 	int dim2[2] = {3,2};
-	Matrix * mat1 = createM(ndim2, dim2, 1);
-	double *input2 = NULL;
+	Matrix * mat1 = createM(ndim2, dim2, 2);
+	complex *input2 = NULL;
 	input2 = malloc( 6*sizeof(*input2));
-	input2[0] = 2.1 + 0.5 * i;
+	input2[0] = 2.1 + 0.5*I;
 	input2[1] = 0;
 	input2[2] = 0;
-	input2[3] = 2.1 + 0.5 * i;
+	input2[3] = 2.1 + 0.5*I;
 	input2[4] = 0;
 	input2[5] = 0;
 	writeM( mat1, 6, input2);
@@ -44,10 +44,10 @@ int main(void) {
 	
 	Matrix * tmp1= transposeM(mat1);
 	Matrix * b= tmp1;
-	Matrix * tmp2= mtimesM(tmp1, a);
+	Matrix * tmp2= mtimesM(b, a);
 	Matrix * c= tmp2;
 	printM(a);
-	printM(tmp1);
-	printM(tmp2);
+	printM(b);
+	printM(c);
 	return 0;
 }

@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -41,7 +41,7 @@ int main(void) {
 	printM(tmp2);
 	Matrix * tmp3= transposeM(mat1);
 	Matrix * b= tmp3;
-	Matrix * tmp4= transposeM(tmp3);
+	Matrix * tmp4= transposeM(b);
 	printM(tmp4);
 	// double_test
 	int ndim2= 2;
@@ -72,7 +72,7 @@ int main(void) {
 	printM(tmp6);
 	Matrix * tmp7= transposeM(mat2);
 	b = tmp7;
-	Matrix * tmp8= transposeM(tmp7);
+	Matrix * tmp8= transposeM(b);
 	printM(tmp8);
 	// complex_test
 	int ndim3= 2;
@@ -103,7 +103,7 @@ int main(void) {
 	printM(tmp10);
 	Matrix * tmp11= transposeM(mat3);
 	b = tmp11;
-	Matrix * tmp12= transposeM(tmp11);
+	Matrix * tmp12= transposeM(b);
 	printM(tmp12);
 	// complex_conjugate_test
 	int ndim4= 2;
@@ -134,7 +134,7 @@ int main(void) {
 	printM(tmp14);
 	Matrix * tmp15= ctransposeM(mat4);
 	b = tmp15;
-	Matrix * tmp16= ctransposeM(tmp15);
+	Matrix * tmp16= ctransposeM(b);
 	printM(tmp16);
 	return 0;
 }

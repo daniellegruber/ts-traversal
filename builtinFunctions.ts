@@ -3297,6 +3297,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             if (args.length > 1) {
                 return `tmp_out[${args[1] - 1}]`;
             }
+            return null;
         }
     },
     {

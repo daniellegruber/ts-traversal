@@ -65,7 +65,7 @@ for index=1:12
 		disp(matrices{j});
 		sprintf(stdout, '\n\n');
 		disp(xcorr(matrices{index}, matrices{j}, 'none'));
-		if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
+		if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
 			disp(xcorr(matrices{index}, matrices{j}, 'unbiased'));
 			disp(xcorr(matrices{index}, matrices{j}, 'biased'));
 			disp(xcorr(matrices{index}, matrices{j}, 'coeff'));
@@ -73,7 +73,7 @@ for index=1:12
 
 		for k=9:21
 			disp(xcorr(matrices{index}, matrices{j}, k, 'none'));
-			if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
+			if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
 				disp(xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
 				disp(xcorr(matrices{index}, matrices{j}, k, 'biased'));
 				disp(xcorr(matrices{index}, matrices{j}, k, 'coeff'));

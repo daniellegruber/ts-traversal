@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -43,7 +43,7 @@ int main(void) {
 	Matrix * c= tmp1;
 	printM(a);
 	printM(b);
-	printM(tmp1);
+	printM(c);
 	//ldivide_test2
 	Matrix * a= identityM(2);
 	
@@ -63,7 +63,7 @@ int main(void) {
 	c = tmp2;
 	printM(a);
 	printM(b);
-	printM(tmp2);
+	printM(c);
 	//ldivide_test3
 	
 	int ndim4 = 2;
@@ -95,7 +95,7 @@ int main(void) {
 	c = tmp3;
 	printM(a);
 	printM(b);
-	printM(tmp3);
+	printM(c);
 	//rdivide_test1
 	
 	int ndim6 = 2;
@@ -127,7 +127,7 @@ int main(void) {
 	c = tmp4;
 	printM(a);
 	printM(b);
-	printM(tmp4);
+	printM(c);
 	//rdivide_test2
 	Matrix * a= identityM(2);
 	
@@ -147,7 +147,7 @@ int main(void) {
 	c = tmp5;
 	printM(a);
 	printM(b);
-	printM(tmp5);
+	printM(c);
 	//rdivide_test3
 	
 	int ndim9 = 2;
@@ -179,7 +179,7 @@ int main(void) {
 	c = tmp6;
 	printM(a);
 	printM(b);
-	printM(tmp6);
+	printM(c);
 	//divide_by_zero
 	int ndim11= 2;
 	int dim11[2]= {2,2};

@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -44,10 +44,10 @@ int main(void) {
 	
 	Matrix * tmp1= transposeM(mat1);
 	Matrix * b= tmp1;
-	Matrix * tmp2= mtimesM(tmp1, a);
+	Matrix * tmp2= mtimesM(b, a);
 	Matrix * c= tmp2;
 	printM(a);
-	printM(tmp1);
-	printM(tmp2);
+	printM(b);
+	printM(c);
 	return 0;
 }

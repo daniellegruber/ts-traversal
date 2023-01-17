@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Function declarations
 void normfit(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);
@@ -407,15 +407,15 @@ int main(void) {
 // Subprograms
 
 void normfit(Matrix * a, Matrix ** p_mu, Matrix ** p_sd) {
-	Matrix * mu= meanM(a);
-	Matrix * sd= stdM(a);
+	mu = meanM(a);
+	sd = stdM(a);
 	*p_mu = mu;
 	*p_sd = sd;
 }
 
 void unifit(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat) {
-	Matrix * ahat= minM(a);
-	Matrix * bhat= maxM(a);
+	ahat = minM(a);
+	bhat = maxM(a);
 	*p_ahat = ahat;
 	*p_bhat = bhat;
 }
@@ -513,7 +513,7 @@ void int_stats(Matrix * a) {
 	
 	int ndim1 = 2;
 	int dim1[2] = {1,10};
-	Matrix * fun_qs = createM(ndim1, dim1, 1);
+	fun_qs = createM(ndim1, dim1, 1);
 	double *input1 = NULL;
 	input1 = malloc( 10*sizeof(*input1));
 	input1[0] = 0;
@@ -566,7 +566,7 @@ void double_stats(Matrix * a) {
 	
 	int ndim2 = 2;
 	int dim2[2] = {1,10};
-	Matrix * fun_qs = createM(ndim2, dim2, 1);
+	fun_qs = createM(ndim2, dim2, 1);
 	double *input2 = NULL;
 	input2 = malloc( 10*sizeof(*input2));
 	input2[0] = 0;
@@ -619,7 +619,7 @@ void complex_stats(Matrix * a) {
 	
 	int ndim3 = 2;
 	int dim3[2] = {1,10};
-	Matrix * fun_qs = createM(ndim3, dim3, 1);
+	fun_qs = createM(ndim3, dim3, 1);
 	double *input3 = NULL;
 	input3 = malloc( 10*sizeof(*input3));
 	input3[0] = 0;

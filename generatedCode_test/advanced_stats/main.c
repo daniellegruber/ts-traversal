@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Function declarations
 void two_t_test(Matrix * a, Matrix * b);
@@ -356,7 +356,7 @@ void double_stats(Matrix * a) {
 	
 	int ndim1 = 2;
 	int dim1[2] = {1,10};
-	Matrix * fun_qs = createM(ndim1, dim1, 1);
+	fun_qs = createM(ndim1, dim1, 1);
 	double *input1 = NULL;
 	input1 = malloc( 10*sizeof(*input1));
 	input1[0] = 0;

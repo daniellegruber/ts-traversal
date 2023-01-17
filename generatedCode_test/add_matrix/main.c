@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -19,15 +19,15 @@ int main(void) {
 	Matrix * tmp1= scaleM(onesM(ndim1, dim1), &scalar1, 1);
 	Matrix * a= tmp1;
 	double tmp2;
-	indexM(tmp1, &tmp2, 1, 1);
+	indexM(a, &tmp2, 1, 1);
 	tmp2 + 1*I;
 	double tmp3;
-	indexM(tmp1, &tmp3, 1, 5);
+	indexM(a, &tmp3, 1, 5);
 	tmp3 + 1*I;
 	double tmp4;
-	indexM(tmp1, &tmp4, 1, 9);
+	indexM(a, &tmp4, 1, 9);
 	tmp4 + 1*I;
-	Matrix * tmp5= transposeM(tmp1);
+	Matrix * tmp5= transposeM(a);
 	a = tmp5;
 	printM(a);
 	int ndim2= 2;
@@ -36,7 +36,7 @@ int main(void) {
 	Matrix * tmp6= scaleM(onesM(ndim2, dim2), &scalar2, 1);
 	Matrix * b= tmp6;
 	complex tmp7= 0.5 - 1*I;
-	complex* lhs_data1 = d_to_c(tmp6);
+	complex* lhs_data1 = c_to_c(b);
 	lhs_data1[0] = tmp7;
 	complex tmp8= 0.5 - 1*I;
 	lhs_data1[4] = tmp8;
@@ -55,15 +55,15 @@ int main(void) {
 	printM(b);
 	Matrix * tmp11= plusM(a, b);
 	Matrix * c= tmp11;
-	printM(tmp11);
-	Matrix * tmp12= plusM(tmp11, tmp11);
+	printM(c);
+	Matrix * tmp12= plusM(c, c);
 	Matrix * d= tmp12;
-	printM(tmp12);
+	printM(d);
 	// overflowTest
 	int scalar3= INT_MAX;
 	Matrix * tmp13= scaleM(identityM(3), &scalar3, 0);
 	Matrix * tmp14= plusM(tmp13, identityM(3));
 	d = tmp14;
-	printM(tmp14);
+	printM(d);
 	return 0;
 }

@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -42,7 +42,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp3= powerM(a, b);
 	Matrix * c= tmp3;
-	printM(tmp3);
+	printM(c);
 	//id_test
 	int ndim2= 2;
 	int dim2[2]= {3,3};
@@ -97,7 +97,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp8= powerM(a, b);
 	c = tmp8;
-	printM(tmp8);
+	printM(c);
 	//neg_id_test
 	int ndim4= 2;
 	int dim4[2]= {3,3};
@@ -153,7 +153,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp13= powerM(a, b);
 	c = tmp13;
-	printM(tmp13);
+	printM(c);
 	//ic_test
 	int ndim6= 2;
 	int dim6[2]= {3,3};
@@ -209,7 +209,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp18= powerM(a, b);
 	c = tmp18;
-	printM(tmp18);
+	printM(c);
 	//di_test
 	int ndim8= 2;
 	int dim8[2]= {3,3};
@@ -265,7 +265,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp23= powerM(a, b);
 	c = tmp23;
-	printM(tmp23);
+	printM(c);
 	//dd_test
 	int ndim10= 2;
 	int dim10[2]= {3,3};
@@ -321,7 +321,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp28= powerM(a, b);
 	c = tmp28;
-	printM(tmp28);
+	printM(c);
 	//neg_dd_test
 	int ndim12= 2;
 	int dim12[2]= {3,3};
@@ -377,7 +377,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp33= powerM(a, b);
 	c = tmp33;
-	printM(tmp33);
+	printM(c);
 	//dc_test
 	int ndim14= 2;
 	int dim14[2]= {3,3};
@@ -433,7 +433,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp38= powerM(a, b);
 	c = tmp38;
-	printM(tmp38);
+	printM(c);
 	//ci_test
 	int ndim16= 2;
 	int dim16[2]= {3,3};
@@ -489,7 +489,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp43= powerM(a, b);
 	c = tmp43;
-	printM(tmp43);
+	printM(c);
 	//cd_test
 	int ndim18= 2;
 	int dim18[2]= {3,3};
@@ -545,7 +545,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp48= powerM(a, b);
 	c = tmp48;
-	printM(tmp48);
+	printM(c);
 	//cc_test
 	int ndim20= 2;
 	int dim20[2]= {3,3};
@@ -601,7 +601,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp53= powerM(a, b);
 	c = tmp53;
-	printM(tmp53);
+	printM(c);
 	//overflow_test
 	int ndim22= 2;
 	int dim22[2]= {3,3};
@@ -635,8 +635,8 @@ int main(void) {
 	Matrix * tmp56= scaleM(onesM(ndim23, dim23), &scalar1, 0);
 	b = tmp56;
 	printM(a);
-	Matrix * tmp57= powerM(a, tmp56);
+	Matrix * tmp57= powerM(a, b);
 	c = tmp57;
-	printM(tmp57);
+	printM(c);
 	return 0;
 }

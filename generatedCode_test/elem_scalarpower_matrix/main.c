@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -71,7 +71,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp10= scalarpowerM(a, &exponent, 0);
 	Matrix * c= tmp10;
-	printM(tmp10);
+	printM(c);
 	//id_test
 	exponent = 1.2;
 	int ndim3= 2;
@@ -129,7 +129,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp16= scalarpowerM(a, &exponent, 1);
 	c = tmp16;
-	printM(tmp16);
+	printM(c);
 	//neg_id_test
 	exponent = 1.2;
 	int ndim5= 2;
@@ -191,7 +191,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp26= scalarpowerM(a, &exponent, 1);
 	c = tmp26;
-	printM(tmp26);
+	printM(c);
 	//ic_test
 	exponent = 4 + 0.3*I;
 	int ndim7= 2;
@@ -249,7 +249,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp32= scalarpowerM(a, &exponent, 2);
 	c = tmp32;
-	printM(tmp32);
+	printM(c);
 	//di_test
 	exponent = 5;
 	int ndim9= 2;
@@ -311,7 +311,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp42= scalarpowerM(a, &exponent, 0);
 	c = tmp42;
-	printM(tmp42);
+	printM(c);
 	//dd_test
 	exponent = 1.4;
 	int ndim11= 2;
@@ -369,7 +369,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp48= scalarpowerM(a, &exponent, 1);
 	c = tmp48;
-	printM(tmp48);
+	printM(c);
 	//neg_dd_test
 	exponent = 1.4;
 	int ndim13= 2;
@@ -431,7 +431,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp58= scalarpowerM(a, &exponent, 1);
 	c = tmp58;
-	printM(tmp58);
+	printM(c);
 	//dc_test
 	exponent = -0.5*I;
 	int ndim15= 2;
@@ -489,7 +489,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp64= scalarpowerM(a, &exponent, 2);
 	c = tmp64;
-	printM(tmp64);
+	printM(c);
 	//ci_test
 	exponent = 3;
 	int ndim17= 2;
@@ -547,7 +547,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp70= scalarpowerM(a, &exponent, 0);
 	c = tmp70;
-	printM(tmp70);
+	printM(c);
 	//cd_test
 	exponent = -0.9;
 	int ndim19= 2;
@@ -605,7 +605,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp76= scalarpowerM(a, &exponent, 1);
 	c = tmp76;
-	printM(tmp76);
+	printM(c);
 	//cc_test
 	exponent = 2 - 2*I;
 	int ndim21= 2;
@@ -663,7 +663,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp82= scalarpowerM(a, &exponent, 2);
 	c = tmp82;
-	printM(tmp82);
+	printM(c);
 	//overflow_test
 	exponent = 2;
 	int ndim23= 2;
@@ -721,7 +721,7 @@ int main(void) {
 	printM(b);
 	Matrix * tmp88= scalarpowerM(a, &exponent, 0);
 	c = tmp88;
-	printM(tmp88);
+	printM(c);
 	//underflow_test
 	exponent = 2;
 	int ndim25= 2;
@@ -779,6 +779,6 @@ int main(void) {
 	printM(b);
 	Matrix * tmp94= scalarpowerM(a, &exponent, 0);
 	c = tmp94;
-	printM(tmp94);
+	printM(c);
 	return 0;
 }

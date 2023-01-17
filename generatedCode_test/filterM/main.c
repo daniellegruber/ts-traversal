@@ -4,7 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
 int main(void) {
@@ -278,10 +278,11 @@ int main(void) {
 					d0_52 = 12;
 				}
 				int d1_52 = (iter16 - d0_52)/12 + 1;
-				int state_size1[]= {(int) fmax(getsizeM(matrices[(d1_50-1) + (d0_50-1)]), getsizeM(matrices[(d1_51-1) + (d0_51-1)])) - 1};
+				int state_size1[1]= {(int) fmax(getsizeM(matrices[(d1_50-1) + (d0_50-1)]), getsizeM(matrices[(d1_51-1) + (d0_51-1)])) - 1};
 				Matrix * zero1= zerosM(1, state_size1);
 				Matrix * y= filterM(matrices[(d1_50-1) + (d0_50-1)], matrices[(d1_51-1) + (d0_51-1)], matrices[(d1_52-1) + (d0_52-1)], &zero1);
-				printM(y);
+				complex * tmp9 = c_to_c(y);
+				printf("\n%d\n", tmp9[0]);
 				printf("\n%s\n", '\n');
 				printf("\n%d\n", sf);
 			

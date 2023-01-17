@@ -26,7 +26,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
     var generated_code = [];
     var main_function = [];
     var header = [];
-    var link = ["//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>\n#include <matrix.h>\n#include <".concat(filename, ".h>")];
+    var link = ["//Link\n#include <stdio.h>\n#include <stdbool.h>\n#include <complex.h>\n#include <string.h>\n#include <matrix.h>\n#include \"./".concat(filename, ".h\"")];
+    //#include <${filename}.h>
     var cursor_adjust = false;
     var current_code = "main";
     var tmp_tbl = [];

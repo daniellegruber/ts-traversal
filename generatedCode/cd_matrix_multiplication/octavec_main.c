@@ -17,7 +17,7 @@ int main()
 	bool flag = true;
 
 	int ndim = 2;
-	int dim[2] = {2,2};
+	int dim[2] = {3,2};
 	int size = 1;
 	for (int i = 0 ; i < ndim ; i++)
 	{
@@ -34,8 +34,8 @@ int main()
 
 	
 	double *input = NULL;
-	input = malloc(4*sizeof(*input));
-	for (int i = 0 ; i < 4 ; i++)
+	input = malloc(size*sizeof(*input));
+	for (int i = 0 ; i < size ; i++)
 	{
 		input[i] = (i+1)*(i+1)+0.5;
 	}
@@ -53,18 +53,22 @@ int main()
 	}
 
 	double complex *input2 = NULL;
-	input2 = malloc(4*sizeof(*input2));
+	input2 = malloc(size*sizeof(*input2));
 	input2[0] = 2.1+0.5*I;
 	input2[1] = 0;
 	input2[2] = 0;
 	input2[3] = 2.1+0.5*I;
+	input2[4] = 0;
+	input2[5] = 0;
 
 	writeM(tmp2, size, input2);
 	free(input2);
-	printM(tmp2);
+
+    Matrix *tmp2_transpose = transposeM(tmp2);
+	printM(tmp2_transpose);
 
 	// Multiply the two matrices
-	Matrix *product = mtimesM(tmp2, tmp);
+	Matrix *product = mtimesM(tmp2_transpose, tmp);
 	printM(product);
 
 	
@@ -75,6 +79,12 @@ int main()
 	}
 
 	if (!destroyM(tmp2))
+	{
+		fprintf(stderr, "Failed to destroy matrix\n");
+		flag = false;
+	}
+
+	if (!destroyM(tmp2_transpose))
 	{
 		fprintf(stderr, "Failed to destroy matrix\n");
 		flag = false;

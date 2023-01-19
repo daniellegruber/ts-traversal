@@ -16,7 +16,7 @@ disp(inv(a));
 disp(inv(inv(a)));
 
 %complex_test
-a = [1.5+I,2.5+2i;3.5+3i,4.5+4i];
+a = [1.5+1i,2.5+2i;3.5+3i,4.5+4i];
 disp(a);
 disp(inv(a));
 disp(inv(inv(a)));

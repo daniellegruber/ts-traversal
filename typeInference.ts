@@ -7,7 +7,7 @@ import {
 import { numel } from "./helperFunctions";
 import { binaryOpType, CustomFunction, VarType, Type, Alias } from "./customTypes";
 import { builtin_functions } from "./builtinFunctions";
-import { filterByScope } from "./helperFunctions";
+import { filterByScope, findBuiltin } from "./helperFunctions";
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
 
@@ -21,6 +21,7 @@ export function findVarScope(node, block_idxs, current_code, debug) {
     if (debug == 1) {
         console.log("findVarScope");
     }
+    
     
     let entire_scope = block_idxs.find(x => x[2] == 0);
     let good_blocks = [];
@@ -201,7 +202,6 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         };
                         var_types.push(v1);
                     }
-                        
                 // If LHS is subscript, type is matrix
                 } else if (node.leftNode.type == g.SyntaxType.CallOrSubscript || node.leftNode.type == g.SyntaxType.CellSubscript ) {
                 //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
@@ -270,7 +270,6 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     
                     var_types.push(v3);
                 }
-
                 break;
             }
             case g.SyntaxType.ForStatement: {
@@ -292,7 +291,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         scope: findVarScope(node, block_idxs, "main", debug)
                     };
                         
-                    var_types = var_types.filter(function(e) { return e.name != v1.name }); // replace if already in var_types
+                    var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v1)}); // replace if already in var_types
                     var_types.push(v1);
                 }
                 break;
@@ -323,6 +322,9 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
             arg_types[i].scope = [0, obj.def_node.endIndex - obj.def_node.startIndex, -1]; // "transpose" since passing adjusted tree
             arg_types[i].initialized = true;
         }
+        
+        // for some reason calling inferTypeFromAssignment modifies the value of arg_types
+        const tmp_arg_types = JSON.parse(JSON.stringify(arg_types));
         
         let block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
         let [var_types2, c] = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file, alias_tbl, debug, block_idxs);
@@ -357,7 +359,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                 let all_types = [];
                 const v1: CustomFunction = { 
                     name: obj.name,
-                    arg_types: arg_types,
+                    arg_types: tmp_arg_types,
                     return_type: null,
                     outs_transform: (outs) => null,
                     external: obj.external,
@@ -374,7 +376,6 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                             if (outs.length > i) {
                                 return_name = outs[i];
                             }
-                            
                             ptr_args.push({
             			        name: return_name,
             			        type: return_type,
@@ -402,7 +403,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                 custom_functions = c;
                 const v1: CustomFunction = { 
                     name: obj.name, 
-                    arg_types: arg_types,
+                    arg_types: tmp_arg_types,
                     outs_transform: (outs) => outs,
                     return_type: {
                         type: type,
@@ -429,7 +430,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
         } else {
             const v1: CustomFunction = { 
                 name: obj.name,
-                arg_types: arg_types,
+                arg_types: tmp_arg_types,
                 outs_transform: (outs) => outs,
                 return_type: null,
                 //ptr_param: null, 
@@ -479,6 +480,7 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
     //console.log("INFERTYPE");
     //console.log(node.text);
     //console.log(node);
+    
     if (debug == 1) {
         console.log("inferType");
     }
@@ -859,7 +861,8 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                         let [args, arg_types, outs] = parseFunctionCallNode(node);
                         let obj1 = classes.find(x => x.name === arg_types[0].type);
                         let obj2 = custom_functions.find(x => x.name === node.valueNode.text);
-                        let obj3 = builtin_functions.find(x => x.fun_matlab === node.valueNode.text);
+                        //let obj3 = builtin_functions.find(x => x.fun_matlab === node.valueNode.text);
+                        let obj3 = findBuiltin(builtin_functions, node.valueNode.text);
                         if (obj1 != null && obj1 != undefined) {
                             let obj = obj1.methods.find(x => x.name === node.valueNode.text);
                             if (obj != null && obj != undefined) {
@@ -909,6 +912,7 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                                     }
                                 }
                                 let return_type = null;
+                                
                                 [return_type, custom_functions] = getFunctionReturnType(node.valueNode.text, obj2.arg_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0);
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];

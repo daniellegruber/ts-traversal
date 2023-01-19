@@ -8,12 +8,52 @@ import { VarType, CustomFunction, Class } from "./customTypes";
 import { identifyCustomFunctions } from "./identifyCustomFunctions";
 import { typeInference, inferType, findVarScope } from "./typeInference";
 import { gotoPreorderSucc } from "./treeTraversal";
+import { pushToMain, insertMain, replaceMain } from "./modifyCode";
 import * as g from "./generated";
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
 
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
+
+export function findBuiltin(builtin_funs, name) {
+    return builtin_funs.find(x => {
+        let found = -1;
+        if (x.fun_matlab instanceof RegExp) {
+            found = name.search(x.fun_matlab);
+        } else {
+            let re = new RegExp(`\\b${x.fun_matlab}\\b`, 'g');
+            found = name.search(re);
+        }
+        return found !== -1;
+    });
+}
+export function extractSingularMat(mat, var_type, node, fun_params) {
+    let obj = fun_params.alias_tbl.find(x => x.name === mat && x.tmp_var.includes("[0]") &&
+        node.startIndex > x.scope[0] && node.endIndex < x.scope[1]);
+    if (obj == null || obj == undefined) {
+        let tmp_var = generateTmpVar("tmp", fun_params.tmp_tbl);
+        fun_params.var_types.push({
+            name: tmp_var,
+            type: var_type.type,
+            ndim: 1,
+            dim: [1],
+            ismatrix: false,
+            isvector: false,
+            ispointer: true,
+            isstruct: false,
+            initialized: true,
+            scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+        });
+        fun_params.alias_tbl = pushAliasTbl(mat, `${tmp_var}[0]`, node, fun_params);
+        let [main_function, function_definitions] = pushToMain(`${var_type.type} * ${tmp_var} = ${var_type.type.charAt(0)}_to_${var_type.type.charAt(0)}(${mat});`, fun_params);
+        fun_params.main_function = main_function;
+        fun_params.function_definitions = function_definitions;
+        return [`${tmp_var}[0]`, fun_params];
+    } else {
+        return [obj.tmp_var, fun_params];
+    }
+}
 
 export function generateTmpVar(name, tmp_tbl) {
     let obj = tmp_tbl.find(x => x.name === name);
@@ -33,9 +73,9 @@ export function generateTmpVar(name, tmp_tbl) {
 
 export function filterByScope(obj, name, node, find_or_filter) {
     if (find_or_filter == 0) {
-        return obj.find(x => x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+        return obj.find(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     } else if (find_or_filter == 1) {
-        return obj.filter(x => x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+        return obj.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     }
 }
 
@@ -96,6 +136,10 @@ export function numel(x) {
 
 export function initVar(var_name, var_val, var_type, node) {
     let expression = '';
+    
+    if (var_type.isvector && var_val == null) {
+        return `${var_type.type} *${var_name} = NULL;\n${var_name} = malloc(${numel(var_type.dim)}*sizeof(*${var_name}));`;
+    }
     
     if (var_type.ismatrix && var_type.ispointer) {
         expression = `Matrix ** ${var_name}`;

@@ -17,7 +17,7 @@ int main()
 	bool flag = true;
 
 	int ndim = 2;
-	int dim[2] = {2,2};
+	int dim[2] = {3,2};
 	int size = 1;
 	for (int i = 0 ; i < ndim ; i++)
 	{
@@ -67,12 +67,12 @@ int main()
 
 	writeM(tmp2, size, input2);
 	free(input2);
-	printM(tmp2);
-
+    Matrix *tmp2_transpose = transposeM(tmp2);
+	printM(tmp2_transpose);
 
 
 	// Multiply the two matrices
-	Matrix *product = mtimesM(tmp2, tmp);
+	Matrix *product = mtimesM(tmp2_transpose, tmp);
 	printM(product);
 
 	
@@ -83,6 +83,12 @@ int main()
 	}
 
 	if (!destroyM(tmp2))
+	{
+		fprintf(stderr, "Failed to destroy matrix\n");
+		flag = false;
+	}
+
+    if (!destroyM(tmp2_transpose))
 	{
 		fprintf(stderr, "Failed to destroy matrix\n");
 		flag = false;

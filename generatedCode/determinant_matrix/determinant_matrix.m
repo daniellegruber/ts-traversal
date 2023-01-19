@@ -32,9 +32,9 @@ for i=0:4
 	for j=0:4
 		counter = counter + 1;
 		if (mod((counter-1),2) == 0)
-			a(j + 5*i + 1) = mod((counter + i),7);
+			a(counter) = mod((counter + i),7);
 		else
-			a(j + 5*i + 1) = -1*mod((counter + j),7);
+			a(counter) = -1*mod((counter + j),7);
 		end
 	end
 end

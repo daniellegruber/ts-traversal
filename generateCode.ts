@@ -13,7 +13,9 @@ import {
     filterByScope, 
     findLastSubscript,
     transformNodeByName,
-    initVar
+    initVar,
+    extractSingularMat,
+    findBuiltin
 } from "./helperFunctions";
 import { inferType, inferTypeByName, findVarScope } from "./typeInference";
 import { sub2idx, rowMajorFlatIdx, slice2list, matrix2list } from "./convertSubscript";
@@ -81,7 +83,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         function_definitions: [],
         function_declarations: [],
         current_code: "main",
-        block_level: block_level
+        block_level: block_level,
+        tmp_tbl: tmp_tbl
     }
     
     
@@ -106,7 +109,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 function_definitions: function_definitions,
                 function_declarations: function_declarations,
                 current_code: current_code,
-                block_level: block_level
+                block_level: block_level,
+                tmp_tbl: tmp_tbl
             }
         } else {
             custom_functions = fun_params.custom_functions
@@ -116,6 +120,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             main_function = fun_params.main_function;
             function_definitions = fun_params.function_definitions;
             function_declarations = fun_params.function_declarations;
+            tmp_tbl = fun_params.tmp_tbl;
         }
     }
     
@@ -177,9 +182,31 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         }
     }
     
+    function transformNode(node) {
+        let transformed_node = transformNodeInternal(node);
+        let expression = transformed_node;
+        
+        let flag = true;
+        if (node.parent.type == g.SyntaxType.Assignment) {
+            if (node.parent.leftNode.text == node.text || node.parent.rightNode.text == node.text) {
+                flag = false;
+            }
+        }
+        
+        // if 1x1 matrix "flatten" to regular int, double, or complex
+        let var_type = filterByScope(tmp_var_types, transformed_node, node, 0);
+        if (var_type != null && var_type != undefined && flag) {
+            if (var_type.ismatrix && var_type.dim.every(x => x === 1)) {
+                updateFunParams(0);
+                [expression, fun_params] = extractSingularMat(transformed_node, var_type, node, fun_params);
+                updateFunParams(1);
+            }
+        }
+        return expression;
+    }
     // Transform node
     // -----------------------------------------------------------------------------
-    function transformNode(node) {
+    function transformNodeInternal(node) {
         if (debug == 1) {
             console.log("transformNode");
         }
@@ -246,8 +273,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 let tmp_iter = generateTmpVar("iter", tmp_tbl);
                 if (node.rightNode.type == g.SyntaxType.Slice) {
                     let obj = tmp_var_types.find(x => x.name === node.leftNode.text);
-
-                    expression.push(`for (int ${tmp_iter} = ${node.rightNode.children[0].text};`);
+                    
+                    expression.push(`for (int ${tmp_iter} = ${transformNode(node.rightNode.children[0])};`);
                     loop_iterators.push(tmp_iter);
                     updateFunParams(0);
                     alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node, fun_params);
@@ -266,15 +293,14 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     });
                     
                     if (node.rightNode.childCount == 5) {
-                        expression.push(`${tmp_iter} <= ${node.rightNode.children[4].text};`);
-                        expression.push(`${tmp_iter} += ${node.rightNode.children[2].text}`);
+                        expression.push(`${tmp_iter} <= ${transformNode(node.rightNode.children[4])};`);
+                        expression.push(`${tmp_iter} += ${transformNode(node.rightNode.children[2])}`);
                     } else {
-                        expression.push(`${tmp_iter} <= ${node.rightNode.children[2].text};`);
+                        expression.push(`${tmp_iter} <= ${transformNode(node.rightNode.children[2])};`);
                         expression.push(`++ ${tmp_iter}`);
                     }
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(expression.join(" ") + ") {", fun_params);
-                    
                     
                 } else if (node.rightNode.type == g.SyntaxType.Matrix) {
                     var tmp_var1 = generateTmpVar("mat", tmp_tbl); // the matrix
@@ -454,7 +480,8 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         var rhs:string = obj.name;
                     } else {
                         let obj1 = custom_functions.find(x => x.name === node.rightNode.valueNode.text);
-                        let obj2 = builtin_funs.find(x => x.fun_matlab === node.rightNode.valueNode.text);
+                        //let obj2 = builtin_funs.find(x => x.fun_matlab === node.rightNode.valueNode.text);
+                        let obj2 = findBuiltin(builtin_funs, node.rightNode.valueNode.text);
                         if (obj1 != null && obj1 != undefined) {
                             lhs = obj1.outs_transform(outs);
                         } else if (obj2 != null && obj2 != undefined) {
@@ -947,7 +974,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 } else {
                     // Is a builtin function call
                     //let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
-                    let obj = builtin_funs.find(x => {
+                    /*let obj = builtin_funs.find(x => {
                         let found = -1;
                         if (x.fun_matlab instanceof RegExp) {
                             found = node.valueNode.text.search(x.fun_matlab);
@@ -956,10 +983,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                             found = node.valueNode.text.search(re);
                         }
                         return found !== -1;
-                    });
-                    
+                    });*/
+                    let obj = findBuiltin(builtin_funs, node.valueNode.text);
                     
                     if (obj != null && obj != undefined) {
+                        let req_arg_types = obj.req_arg_types;
                         let init_before = obj.init_before(args, arg_types, outs);
                         let push_before = obj.push_main_before(args, arg_types, outs);
                         let push_after = obj.push_main_after(args, arg_types, outs);
@@ -968,7 +996,21 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let scope = findVarScope(node, block_idxs, current_code, debug);
                         let tmp_out_transform = obj.tmp_out_transform(args, arg_types, outs);
                         args = obj.args_transform(args, arg_types, outs);
-                    
+                        
+                        if (req_arg_types != null) {
+                            for (let i = 0; i < req_arg_types.length; i ++) {
+                                if (!req_arg_types[i].ismatrix && arg_types[i].ismatrix) {
+                                    if (arg_types[i].dim.every(x => x === 1)) {
+                                        let expression = "";
+                                        updateFunParams(0);
+                                        [expression, fun_params] = extractSingularMat(args[i], arg_types[i], node, fun_params);
+                                        updateFunParams(1);
+                                        args[i] = expression;
+                                    }
+                                }
+                            }
+                        }
+                        
                         if (fun_c !== null) {
                             fun_c = fun_c.replace('fun_matlab', node.valueNode.text);
                         }
@@ -1057,7 +1099,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     ndim: ptr_args[i].ndim,
                                     dim: ptr_args[i].dim,
                                     ismatrix: ptr_args[i].ismatrix,
-                                    isvector: numel(ptr_args[i].dim) > 1 && !ptr_args[i].ismatrix,
+                                    isvector: ptr_args[i].isvector,
                                     ispointer: false, //ptr_args[i].ispointer,
                                     isstruct: ptr_args[i].isstruct,
                                     initialized: true,
@@ -1112,7 +1154,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     var_val = `${fun_c}(${args.join(", ")})`;
                                 }
                                 
-                                if (push_after != null || node.parent.type == g.SyntaxType.CallOrSubscript || tmp_out_transform != null) {
+                                //if (push_after != null || node.parent.type == g.SyntaxType.CallOrSubscript || tmp_out_transform != null) {
                                     let tmp_var = generateTmpVar("tmp", tmp_tbl);
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(initVar(tmp_var, var_val, return_type, node), fun_params);
@@ -1125,7 +1167,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                         ndim: return_type.ndim,
                                         dim: return_type.dim,
                                         ismatrix: return_type.ismatrix,
-                                        isvector: numel(return_type.dim) > 1 && !return_type.ismatrix,
+                                        isvector: return_type.isvector,
                                         ispointer: return_type.ispointer,
                                         isstruct: false,
                                         initialized: true,
@@ -1138,9 +1180,9 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     }
                                     
                                     return tmp_var;
-                                } else {
+                                /*} else {
                                     return var_val;
-                                }
+                                }*/
                             }
                         }
                         
@@ -1275,70 +1317,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 let obj = filterByScope(alias_tbl, node.text, node, 0);
                             
                 if (obj != null && obj != undefined) {
-                    let obj2 = filterByScope(tmp_var_types, obj.tmp_var, node, 0);
-                    if (obj2 != null && obj2 != undefined) {
-                        // if 1x1 matrix "flatten" to regular int, double, or complex
-                        if (obj2.ismatrix && obj2.dim.every(x => x === 1) && node.parent.type == g.SyntaxType.CallOrSubscript) {
-                            let obj3 = alias_tbl.find(x => x.name === obj.tmp_var && x.tmp_var.includes("[0]") &&
-                                node.startIndex > x.scope[0] && node.endIndex < x.scope[1]);
-                            if (obj3 == null || obj3 == undefined) {
-                                let tmp_var = generateTmpVar("tmp", tmp_tbl);
-                                tmp_var_types.push({
-                                    name: tmp_var,
-                                    type: obj2.type,
-                                    ndim: 1,
-                                    dim: [1],
-                                    ismatrix: false,
-                                    isvector: false,
-                                    ispointer: true,
-                                    isstruct: false,
-                                    initialized: true,
-                                    scope: findVarScope(node, block_idxs, current_code, debug)
-                                });
-                                updateFunParams(0);
-                                alias_tbl = pushAliasTbl(obj.tmp_var, `${tmp_var}[0]`, node, fun_params);
-                                updateFunParams(0);
-                                [main_function, function_definitions] = pushToMain(`${obj2.type} * ${tmp_var} = ${obj2.type.charAt(0)}_to_${obj2.type.charAt(0)}(${obj.tmp_var});`, fun_params);
-                                return `${tmp_var}[0]`;
-                            } else {
-                                return obj3.tmp_var;
-                            }
-                        }
-                    }
-                    
                     return obj.tmp_var;
                 } 
-                
-                let obj4 = filterByScope(tmp_var_types, node.text, node, 0);
-                if (obj4 != null && obj4 != undefined) {
-                    // if 1x1 matrix "flatten" to regular int, double, or complex
-                    if (obj4.ismatrix && obj4.dim.every(x => x === 1) && node.parent.type == g.SyntaxType.CallOrSubscript) {
-                        let obj5 = alias_tbl.find(x => x.name === node.text && x.tmp_var.includes("[0]") &&
-                            node.startIndex > x.scope[0] && node.endIndex < x.scope[1]);
-                        if (obj5 == null || obj5 == undefined) {
-                            let tmp_var = generateTmpVar("tmp", tmp_tbl);
-                            tmp_var_types.push({
-                                name: tmp_var,
-                                type: obj4.type,
-                                ndim: 1,
-                                dim: [1],
-                                ismatrix: false,
-                                isvector: false,
-                                ispointer: true,
-                                isstruct: false,
-                                initialized: true,
-                                scope: findVarScope(node, block_idxs, current_code, debug)
-                            });
-                            updateFunParams(0);
-                            alias_tbl = pushAliasTbl(node.text, `${tmp_var}[0]`, node, fun_params);
-                            updateFunParams(0);
-                            [main_function, function_definitions] = pushToMain(`${obj4.type} * ${tmp_var} = ${obj4.type.charAt(0)}_to_${obj4.type.charAt(0)}(${node.text});`, fun_params);
-                            return `${tmp_var}[0]`;
-                        } else {
-                            return obj5.tmp_var;
-                        }
-                    }
-                }
                 
                 return node.text;
                 
@@ -1363,9 +1343,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             }
             
             case g.SyntaxType.Slice: {
-                //let expression = slice2list(node);
-                //return `{${expression.join(", ")}}`;
-                
                 let children_vals = []
                 
                 for (let i=0; i<node.namedChildCount; i++) {
@@ -1388,14 +1365,14 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         children_vals.push(dim[current_dim]);
                         
                     } else {
-                        children_vals.push(Number(child.text));
+                        children_vals.push(transformNode(child));
                         
                     }
                 }
                 
                 let start = children_vals[0];
-                var stop = children_vals[1];
-                var step = 1;
+                let stop = children_vals[1];
+                let step = 1;
                     
                 if (children_vals.length == 3) {
                     stop = children_vals[2];

@@ -4,35 +4,34 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include <main.h>
+#include "./main.h"
 
 // Entry-point function
-int main(void)
-{
+int main(void) {
 
-//more off
-//format short
-//source octaveIncludes.m;
-
-int ndim = 2;
-int dim[2] = {3,3};
-Matrix * a = createM(ndim, dim, 2);
-double complex *input = NULL;
-input = malloc( 9*sizeof(*input));
-input[0] = 0;
-input[1] = 10;
-input[2] = 10i;
-input[3] = 10.102;
-input[4] = 10.102+0.5i;
-input[5] = -12i;
-input[6] = -0.0002-0.1i;
-input[7] = -100.01i;
-input[8] = 81;
-writeM( a, 9, input);
-free(input);
-
-Matrix * b = ceilM(a);
-printM(a);
-printM(b);
-return 0;
+	//more off
+	//format short
+	//source octaveIncludes.m;
+	
+	int ndim1 = 2;
+	int dim1[2] = {3,3};
+	Matrix * a = createM(ndim1, dim1, 2);
+	complex *input1 = NULL;
+	input1 = malloc( 9*sizeof(*input1));
+	input1[0] = 0;
+	input1[1] = 10;
+	input1[2] = 10*I;
+	input1[3] = 10.102;
+	input1[4] = 10.102 + 0.5*I;
+	input1[5] = -12*I;
+	input1[6] = -0.0002 - 0.1*I;
+	input1[7] = -100.01*I;
+	input1[8] = 81;
+	writeM( a, 9, input1);
+	free(input1);
+	
+	Matrix * b= ceilM(a);
+	printM(a);
+	printM(b);
+	return 0;
 }

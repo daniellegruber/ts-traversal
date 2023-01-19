@@ -11,5 +11,3 @@ b = abs(a);
 
 disp(a);
 disp(b);
-%complexDisp(a);
-%doubleDisp(b);

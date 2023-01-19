@@ -3,6 +3,20 @@
 
 %source octaveIncludes.m;
 
+function fourier_script(a)
+	disp(fft(a));
+	disp(ifft(a));
+end
+
+function fourier_vec_script(a)
+
+	for i=1:20
+		disp(fft(a,i));
+		disp(ifft(a,i));
+	end
+
+end
+
 %row_vectors_i
 a = [3,-5,0,1];
 disp(a);
@@ -71,8 +85,8 @@ fourier_script(a);
 
 %matrices_97_i
 a=zeros(7,9);
-for k=1:63
-	a(k) = (-1)^k*k^2;
+for i=1:63
+	a(i) = (-1)^i*i^2;
 end
 a=a.';
 disp(a);
@@ -80,8 +94,8 @@ fourier_script(a);
 
 %matrices_97_d
 a=zeros(7,9);
-for k=1:63
-	a(k) = ((-1)^k)*k^2/17; % (-1)^k*k^2/17;
+for i=1:63
+	a(i) = (-1)^i*i^2/17;
 end
 a=a.';
 disp(a);
@@ -89,23 +103,9 @@ fourier_script(a);
 
 %matrices_97_c
 a=zeros(7,9);
-for k=1:63
-	a(k) = ((-1)^k)*k-k/17i; % (-1)^k*k-k/17i;
+for i=1:63
+	a(i) = (-1)^i*i-i/17i;
 end
 a=a.';
 disp(a);
 fourier_script(a);
-
-function fourier_script(a)
-	disp(fft(a));
-	disp(ifft(a));
-end
-
-function fourier_vec_script(a)
-
-	for i=1:20
-		disp(fft(a,i));
-		disp(ifft(a,i));
-	end
-
-end

@@ -31,34 +31,17 @@ var search_folder = args[1];
 var classes = (0, helperFunctions_1.getClasses)(search_folder, debug);
 // Output code to given directory
 //let out_folder = args[2] + "/generatedCode";
-//let out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
-var out_folder = args[2] + "/generatedCode_test/" + path.parse(args[0]).name;
+var out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
 if (!fs.existsSync(out_folder)) {
     fs.mkdirSync(out_folder);
 }
 // Makefile
-/*if (!fs.existsSync(`${out_folder}/Makefile`)){
-    fs.copyFile('Makefile_template', `${out_folder}/Makefile`, (err) => {
-        if (err) throw err;
+if (!fs.existsSync("".concat(args[2], "/generatedCode/Makefile"))) {
+    fs.copyFile('Makefile_template', "".concat(args[2], "/generatedCode/Makefile"), function (err) {
+        if (err)
+            throw err;
     });
-    
-    setTimeout(function () {
-        
-        let src_files = getFilesInPath(out_folder);
-        for (let i = 0; i < src_files.length; i ++) {
-            if (src_files[i] == args[0]) {
-                src_files[i] = "main.o";
-            } else {
-                src_files[i] = `${path.parse(src_files[i]).name}.o`;
-            }
-        }
-        let makefile_code = fs.readFileSync(`${out_folder}/Makefile`, "utf8");
-        makefile_code = makefile_code.replace(/OBJ = main.o/g, `OBJ = ${src_files.join(" ")}`);
-        writeToFile(out_folder, "Makefile", makefile_code);
-        
-    }, 8000);
-
-}*/
+}
 if (show_output == 1) {
     console.log("Source code:\n" + sourceCode);
     console.log("---------------------\n");

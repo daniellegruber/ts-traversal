@@ -280,7 +280,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         initialized: false,
                         scope: findVarScope(node, block_idxs, "main", debug)
                     };
-                    var_types = var_types.filter(function (e) { return e.name != v1_2.name; }); // replace if already in var_types
+                    var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v1_2); }); // replace if already in var_types
                     var_types.push(v1_2);
                 }
                 break;
@@ -310,6 +310,8 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
             arg_types[i].scope = [0, obj.def_node.endIndex - obj.def_node.startIndex, -1]; // "transpose" since passing adjusted tree
             arg_types[i].initialized = true;
         }
+        // for some reason calling inferTypeFromAssignment modifies the value of arg_types
+        var tmp_arg_types = JSON.parse(JSON.stringify(arg_types));
         var block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
         var _a = inferTypeFromAssignment(tree2, arg_types, custom_functions, classes, file, alias_tbl, debug, block_idxs), var_types2_1 = _a[0], c = _a[1];
         for (var i = 0; i < var_types2_1.length; i++) {
@@ -341,7 +343,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                 var all_types_1 = [];
                 var v1 = {
                     name: obj.name,
-                    arg_types: arg_types,
+                    arg_types: tmp_arg_types,
                     return_type: null,
                     outs_transform: function (outs) { return null; },
                     external: obj.external,
@@ -385,7 +387,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                 custom_functions = c_2;
                 var v1 = {
                     name: obj.name,
-                    arg_types: arg_types,
+                    arg_types: tmp_arg_types,
                     outs_transform: function (outs) { return outs; },
                     return_type: {
                         type: type,
@@ -412,7 +414,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
         else {
             var v1 = {
                 name: obj.name,
-                arg_types: arg_types,
+                arg_types: tmp_arg_types,
                 outs_transform: function (outs) { return outs; },
                 return_type: null,
                 //ptr_param: null, 
@@ -455,10 +457,10 @@ function inferTypeByName(name, node, var_types, custom_functions, alias_tbl, deb
 }
 exports.inferTypeByName = inferTypeByName;
 function inferType(node, var_types, custom_functions, classes, file, alias_tbl, debug) {
-    var _a, _b, _c;
     //console.log("INFERTYPE");
     //console.log(node.text);
     //console.log(node);
+    var _a, _b, _c;
     if (debug == 1) {
         console.log("inferType");
     }
@@ -825,7 +827,8 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                         var _s = parseFunctionCallNode(node), args = _s[0], arg_types_1 = _s[1], outs = _s[2];
                         var obj1_1 = classes.find(function (x) { return x.name === arg_types_1[0].type; });
                         var obj2 = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
-                        var obj3 = builtinFunctions_1.builtin_functions.find(function (x) { return x.fun_matlab === node.valueNode.text; });
+                        //let obj3 = builtin_functions.find(x => x.fun_matlab === node.valueNode.text);
+                        var obj3 = (0, helperFunctions_2.findBuiltin)(builtinFunctions_1.builtin_functions, node.valueNode.text);
                         if (obj1_1 != null && obj1_1 != undefined) {
                             var obj_2 = obj1_1.methods.find(function (x) { return x.name === node.valueNode.text; });
                             if (obj_2 != null && obj_2 != undefined) {

@@ -17,7 +17,6 @@ for l=1:5
 		for i=1:2
 			for j=1:3
 				a(i,j,k,l) = counter + 0.5;
-				%a(i,j,k,l) = counter;
 				counter = counter + 1;
 			end
 		end
@@ -35,7 +34,7 @@ for l=1:5
 		end
 	end
 end
-disp("\n");
+sprintf("\n");
 
 % Normal indexing in C and normal indexing in Octave are the same
 for l=1:5
@@ -47,13 +46,13 @@ for l=1:5
 		end
 	end
 end
-disp("\n");
+sprintf("\n");
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:120
 	disp(a(i));
 end
-disp("\n");
+sprintf("\n");
 
 
 
@@ -63,7 +62,6 @@ a = zeros(2,3,4,5);
 counter = 0;
 for i=1:120
 	a(i) = counter+0.5;
-	%a(i) = counter;
 	counter = counter + 1;
 end
 disp(a);
@@ -79,7 +77,7 @@ for l=1:5
 		end
 	end
 end
-disp("\n");
+sprintf("\n");
 
 % Normal indexing in C and normal indexing in Octave are the same
 for l=1:5
@@ -91,11 +89,11 @@ for l=1:5
 		end
 	end
 end
-disp("\n");
+sprintf("\n");
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:120
 	disp(a(i));
 end
-disp("\n");
+sprintf("\n");
 

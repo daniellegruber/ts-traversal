@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.parseFunctionDefNode = exports.getClasses = exports.getClassFolders = exports.getNonClassFilesInPath = exports.getFilesInPath = exports.writeToFile = exports.initVar = exports.numel = exports.transformNodeByName = exports.findLastSubscript = exports.pushAliasTbl = exports.filterByScope = exports.generateTmpVar = void 0;
+exports.parseFunctionDefNode = exports.getClasses = exports.getClassFolders = exports.getNonClassFilesInPath = exports.getFilesInPath = exports.writeToFile = exports.initVar = exports.numel = exports.transformNodeByName = exports.findLastSubscript = exports.pushAliasTbl = exports.filterByScope = exports.generateTmpVar = exports.extractSingularMat = exports.findBuiltin = void 0;
 //const fs = require("graceful-fs");
 var fs = require('fs');
 var gracefulFs = require('graceful-fs');
@@ -10,10 +10,53 @@ var glob = require("glob");
 var identifyCustomFunctions_1 = require("./identifyCustomFunctions");
 var typeInference_1 = require("./typeInference");
 var treeTraversal_1 = require("./treeTraversal");
+var modifyCode_1 = require("./modifyCode");
 var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+function findBuiltin(builtin_funs, name) {
+    return builtin_funs.find(function (x) {
+        var found = -1;
+        if (x.fun_matlab instanceof RegExp) {
+            found = name.search(x.fun_matlab);
+        }
+        else {
+            var re = new RegExp("\\b".concat(x.fun_matlab, "\\b"), 'g');
+            found = name.search(re);
+        }
+        return found !== -1;
+    });
+}
+exports.findBuiltin = findBuiltin;
+function extractSingularMat(mat, var_type, node, fun_params) {
+    var obj = fun_params.alias_tbl.find(function (x) { return x.name === mat && x.tmp_var.includes("[0]") &&
+        node.startIndex > x.scope[0] && node.endIndex < x.scope[1]; });
+    if (obj == null || obj == undefined) {
+        var tmp_var = generateTmpVar("tmp", fun_params.tmp_tbl);
+        fun_params.var_types.push({
+            name: tmp_var,
+            type: var_type.type,
+            ndim: 1,
+            dim: [1],
+            ismatrix: false,
+            isvector: false,
+            ispointer: true,
+            isstruct: false,
+            initialized: true,
+            scope: (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+        });
+        fun_params.alias_tbl = pushAliasTbl(mat, "".concat(tmp_var, "[0]"), node, fun_params);
+        var _a = (0, modifyCode_1.pushToMain)("".concat(var_type.type, " * ").concat(tmp_var, " = ").concat(var_type.type.charAt(0), "_to_").concat(var_type.type.charAt(0), "(").concat(mat, ");"), fun_params), main_function = _a[0], function_definitions = _a[1];
+        fun_params.main_function = main_function;
+        fun_params.function_definitions = function_definitions;
+        return ["".concat(tmp_var, "[0]"), fun_params];
+    }
+    else {
+        return [obj.tmp_var, fun_params];
+    }
+}
+exports.extractSingularMat = extractSingularMat;
 function generateTmpVar(name, tmp_tbl) {
     var obj = tmp_tbl.find(function (x) { return x.name === name; });
     if (obj != null && obj != undefined) {
@@ -32,10 +75,10 @@ function generateTmpVar(name, tmp_tbl) {
 exports.generateTmpVar = generateTmpVar;
 function filterByScope(obj, name, node, find_or_filter) {
     if (find_or_filter == 0) {
-        return obj.find(function (x) { return x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+        return obj.find(function (x) { return x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
     }
     else if (find_or_filter == 1) {
-        return obj.filter(function (x) { return x.name === name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+        return obj.filter(function (x) { return x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
     }
 }
 exports.filterByScope = filterByScope;
@@ -95,6 +138,9 @@ function numel(x) {
 exports.numel = numel;
 function initVar(var_name, var_val, var_type, node) {
     var expression = '';
+    if (var_type.isvector && var_val == null) {
+        return "".concat(var_type.type, " *").concat(var_name, " = NULL;\n").concat(var_name, " = malloc(").concat(numel(var_type.dim), "*sizeof(*").concat(var_name, "));");
+    }
     if (var_type.ismatrix && var_type.ispointer) {
         expression = "Matrix ** ".concat(var_name);
     }

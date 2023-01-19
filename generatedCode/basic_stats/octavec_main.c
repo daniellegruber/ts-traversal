@@ -539,14 +539,14 @@ int main()
 	bool flag = true;
 
 	if(!row_vectors_i()){flag = false;}
-	/*if(!row_vectors_d()){flag = false;}
+	if(!row_vectors_d()){flag = false;}
 	if(!row_vectors_c()){flag = false;}
 
 	if(!column_vectors_i()){flag = false;}
 	if(!column_vectors_d()){flag = false;}
-	if(!column_vectors_c()){flag = false;}*/
+	if(!column_vectors_c()){flag = false;}
 
-	/*if(!matrices_23_i()){flag = false;}
+	if(!matrices_23_i()){flag = false;}
 	if(!matrices_23_d()){flag = false;}
 	if(!matrices_23_c()){flag = false;}
 
@@ -558,7 +558,7 @@ int main()
 	if(!matrices_97_d()){flag = false;}
 	if(!matrices_97_c()){flag = false;}
 
-	if(!basic_quantile_test()){flag = false;}*/
+	if(!basic_quantile_test()){flag = false;}
 
 	return(flag);
 }

@@ -16,9 +16,10 @@ for i=1:9
 end
 matrices{5} = matrices{5}.';
 
+
 matrices{6} = zeros(3);
 for i=1:9
-	matrices{6}(i) = i*i+0.5;;
+	matrices{6}(i) = i*i+0.5;
 end
 matrices{6} = matrices{6}.';
 
@@ -64,14 +65,14 @@ matrices{14} = [1,1,0;   0,1,0;   0,0,0];
 matrices{15} = [3,4,3;   -1,0,-1;   1,2,3]; % Returns slightly different eigenvectors compared to the C output
 
 for index=1:14
-	disp('Original\n');
+	sprintf(stdout, 'Original\n');
 	disp(matrices{index});
 
 	[V, lambda] = eig(matrices{index});
 
-	disp('Eigenvalues:\n');
+	sprintf(stdout, 'Eigenvalues:\n');
 	disp(lambda);
 
-	disp('Eigenvectors:\n');
+	sprintf(stdout, 'Eigenvectors:\n');
 	disp(V);
 end

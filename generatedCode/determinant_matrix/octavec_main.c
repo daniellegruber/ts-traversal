@@ -24,14 +24,14 @@ int test1()
 		return(false);
 	}
 
-	//printM(id);
+	printM(id);
 
 	// Create a holder for the determinant value
 	int det_id = 0;
 
 	// Calculate the determinant
 	detM(id, &det_id);
-	//printf("%d\n", det_id);
+	printf("%d\n", det_id);
 
 		if (det_id != 1)
 	{
@@ -72,14 +72,14 @@ int test2()
 		26 + 1*I, 3 - 8*I,
 		20*I, 1 + 25*I};
 	writeM(tmp, size, input);
-	//printM(tmp);
+	printM(tmp);
 	
 	// Create a holder for the determinant
 	double complex num = 0;
 
 	// Calculate the determinant
 	detM(tmp, &num);
-	//printf("%.5f + %.5fi\n", creal(num), cimag(num));
+	printf("%.5f + %.5fi\n", creal(num), cimag(num));
 
 	if (num != -159+591*I)
 	{
@@ -133,7 +133,8 @@ int test3()
 	printf("%.5f\n", num);
 
 
-	if (num != -216)
+	// if (num != -216) // Comparing doubles like this is bad.
+	if (!(fabs(num - (-216)) < 10000*DBL_EPSILON)) // Do this instead
 	{
 		fprintf(stdout, "Incorrect determinant: %f\n", num);
 		flag = false;
@@ -184,11 +185,11 @@ int testn()
 	}
 	writeM(tmp, 25, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 	double num = 0;
 	detM(tmp, &num);
-	//printf("%.5f\n", num);
+	printf("%.5f\n", num);
 
 	if ((int) round(num) != 3101)
 	{
@@ -229,7 +230,7 @@ int non_square()
 	input[5] = 1;
 	writeM(tmp, 6, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 	
 
 	double complex num = 0;

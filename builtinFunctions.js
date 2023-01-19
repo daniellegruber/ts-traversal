@@ -74,6 +74,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -119,6 +120,7 @@ exports.operatorMapping = [
                 }
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -176,6 +178,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
@@ -281,6 +284,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
@@ -340,6 +344,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
@@ -400,6 +405,7 @@ exports.operatorMapping = [
                 }
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -446,6 +452,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -486,6 +493,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -526,6 +534,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -575,6 +584,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
@@ -664,6 +674,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -704,6 +715,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -744,6 +756,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -784,6 +797,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -824,6 +838,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -864,6 +879,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -904,6 +920,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -944,6 +961,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -975,6 +993,7 @@ exports.operatorMapping = [
     {
         fun_matlab: '&&',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1006,6 +1025,7 @@ exports.operatorMapping = [
     {
         fun_matlab: '||',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1037,6 +1057,7 @@ exports.operatorMapping = [
     {
         fun_matlab: '+',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -1065,6 +1086,7 @@ exports.operatorMapping = [
     {
         fun_matlab: '-',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -1101,6 +1123,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -1137,6 +1160,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1173,6 +1197,7 @@ exports.operatorMapping = [
                 return null;
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1203,6 +1228,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'isequal',
         fun_c: function (args, arg_types, outs) { return 'isEqualM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1226,15 +1252,16 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'sin',
+        fun_matlab: /sin|cos|tan/,
         fun_c: function (args, arg_types, outs) {
             if (arg_types[0].ismatrix) {
-                return 'sinM';
+                return 'fun_matlabM';
             }
             else {
-                return 'sin';
+                return 'fun_matlab';
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -1271,209 +1298,16 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'sind',
+        fun_matlab: /sind|cosd|tand/,
         fun_c: function (args, arg_types, outs) {
             if (arg_types[0].ismatrix) {
-                return 'sindM';
+                return 'fun_matlabM';
             }
             else {
-                return 'sin';
+                return 'fun_matlab';
             }
         },
-        args_transform: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return args;
-            }
-            else {
-                return ["fmod((".concat(args[0], "),360) * M_PI / 180")];
-            }
-        },
-        outs_transform: function (outs) { return outs; },
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return {
-                    type: "double",
-                    ndim: arg_types[0].ndim,
-                    dim: arg_types[0].dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-            else {
-                return {
-                    type: "double",
-                    ndim: 1,
-                    dim: [1],
-                    ismatrix: false,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-        },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'cos',
-        fun_c: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return 'cosM';
-            }
-            else {
-                return 'cos';
-            }
-        },
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return {
-                    type: "double",
-                    ndim: arg_types[0].ndim,
-                    dim: arg_types[0].dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-            else {
-                return {
-                    type: "double",
-                    ndim: 1,
-                    dim: [1],
-                    ismatrix: false,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-        },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'cosd',
-        fun_c: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return 'cosdM';
-            }
-            else {
-                return 'cos';
-            }
-        },
-        args_transform: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return args;
-            }
-            else {
-                return ["fmod((".concat(args[0], "),360) * M_PI / 180")];
-            }
-        },
-        outs_transform: function (outs) { return outs; },
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return {
-                    type: "double",
-                    ndim: arg_types[0].ndim,
-                    dim: arg_types[0].dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-            else {
-                return {
-                    type: "double",
-                    ndim: 1,
-                    dim: [1],
-                    ismatrix: false,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-        },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'tan',
-        fun_c: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return 'tanM';
-            }
-            else {
-                return 'tan';
-            }
-        },
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return {
-                    type: "double",
-                    ndim: arg_types[0].ndim,
-                    dim: arg_types[0].dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-            else {
-                return {
-                    type: "double",
-                    ndim: 1,
-                    dim: [1],
-                    ismatrix: false,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-        },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'tand',
-        fun_c: function (args, arg_types, outs) {
-            if (arg_types[0].ismatrix) {
-                return 'tandM';
-            }
-            else {
-                return 'tan';
-            }
-        },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             if (arg_types[0].ismatrix) {
                 return args;
@@ -1519,7 +1353,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'xcorr',
         fun_c: function (args, arg_types, outs) { return 'xcorrM'; },
-        //args_transform: (args, arg_types, outs) => args,
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var x = args[0];
             var y = null;
@@ -1580,6 +1414,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'sort',
         fun_c: function (args, arg_types, outs) { return 'sortM'; },
+        req_arg_types: null,
         args_transform: function (args) {
             var args_transformed = [];
             for (var i = 0; i < args.length; i++) {
@@ -1632,6 +1467,7 @@ exports.builtin_functions = [
             }
             return 'ttestM';
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return null; },
         n_req_args: 2,
@@ -1675,7 +1511,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 2],
                     ismatrix: false,
-                    isvector: false,
+                    isvector: true,
                     ispointer: true
                 },
                 {
@@ -1716,6 +1552,29 @@ exports.builtin_functions = [
     {
         fun_matlab: 'ztest',
         fun_c: function (args, arg_types, outs) { return 'ztestM'; },
+        req_arg_types: [
+            {
+                type: null,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: "double",
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: "double",
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            }
+        ],
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return null; },
         n_req_args: 3,
@@ -1765,7 +1624,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 2],
                     ismatrix: false,
-                    isvector: false,
+                    isvector: true,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1800,6 +1659,22 @@ exports.builtin_functions = [
     {
         fun_matlab: 'vartest',
         fun_c: function (args, arg_types, outs) { return 'vartestM'; },
+        req_arg_types: [
+            {
+                type: null,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: "double",
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            }
+        ],
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1845,7 +1720,7 @@ exports.builtin_functions = [
                     ndim: 2,
                     dim: [1, 2],
                     ismatrix: false,
-                    isvector: false,
+                    isvector: true,
                     ispointer: true,
                     isstruct: false
                 },
@@ -1880,6 +1755,29 @@ exports.builtin_functions = [
     {
         fun_matlab: 'betapdf',
         fun_c: function (args, arg_types, outs) { return 'betapdfM'; },
+        req_arg_types: [
+            {
+                type: null,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: "double",
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: "double",
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            }
+        ],
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 3,
@@ -1911,6 +1809,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'exppdf',
         fun_c: function (args, arg_types, outs) { return 'exppdfM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1942,6 +1841,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'chi2pdf',
         fun_c: function (args, arg_types, outs) { return 'chi2pdfM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -1973,6 +1873,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'gampdf',
         fun_c: function (args, arg_types, outs) { return 'gampdfM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 3,
@@ -2004,6 +1905,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'lognpdf',
         fun_c: function (args, arg_types, outs) { return 'lognpdfM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 3,
@@ -2035,6 +1937,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'normpdf',
         fun_c: function (args, arg_types, outs) { return 'normpdfM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 3,
@@ -2066,6 +1969,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'unidpdf',
         fun_c: function (args, arg_types, outs) { return 'unidpdfM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -2097,6 +2001,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'normfit',
         fun_c: function (args, arg_types, outs) { return 'normfitM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -2143,6 +2048,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'unifit',
         fun_c: function (args, arg_types, outs) { return 'unifitM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -2189,6 +2095,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'filter',
         fun_c: function (args, arg_types, outs) { return 'filterM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             if (args.length == 3) {
                 args.push("&zero");
@@ -2254,6 +2161,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'eig',
         fun_c: function (args, arg_types, outs) { return 'eigM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return null; },
         n_req_args: 1,
@@ -2343,6 +2251,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'abs',
         fun_c: function (args, arg_types, outs) { return 'absM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -2371,6 +2280,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'round',
         fun_c: function (args, arg_types, outs) { return 'roundM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -2399,6 +2309,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'floor',
         fun_c: function (args, arg_types, outs) { return 'floorM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -2427,6 +2338,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'ceil',
         fun_c: function (args, arg_types, outs) { return 'ceilM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -2462,6 +2374,7 @@ exports.builtin_functions = [
                 return 'maxM';
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) {
             return outs[0];
@@ -2515,6 +2428,7 @@ exports.builtin_functions = [
                 return 'minM';
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) {
             return outs[0];
@@ -2561,20 +2475,39 @@ exports.builtin_functions = [
     {
         fun_matlab: 'var',
         fun_c: function (args, arg_types, outs) { return 'varM'; },
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        args_transform: function (args, arg_types, outs) {
+            if (args.length == 3) {
+                if (args[2] == "2") {
+                    return ["mat"];
+                }
+            }
+            return [args[0]];
+        },
+        req_arg_types: null,
+        outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            //let type = arg_types[0].type;
-            //let ndim = arg_types[0].ndim;
-            //let dim = arg_types[0].dim;
+            var type = "double";
+            if (arg_types[0].type == "complex") {
+                type = "complex";
+            }
+            var dim = [1, 1];
+            var ndim = 2;
+            if (!dim.some(function (x) { return x === 1; })) {
+                dim = [1, arg_types[0].dim[1]];
+                if (args.length == 3) {
+                    if (args[2] == "2") {
+                        dim = [1, arg_types[0].dim[0]];
+                    }
+                }
+            }
             return {
-                type: "double",
-                ndim: 2,
-                dim: [1, 1],
+                type: type,
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,
@@ -2583,12 +2516,32 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            if (args.length == 3) {
+                if (args[2] == "2") {
+                    var init_var = [];
+                    init_var.push({
+                        name: 'mat',
+                        val: "transposeM(".concat(args[0], ")"),
+                        type: arg_types[0].type,
+                        ndim: arg_types[0].ndim,
+                        dim: arg_types[0].dim.reverse(),
+                        ismatrix: true,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                    return init_var;
+                }
+            }
+            return null;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'quantile',
         fun_c: function (args, arg_types, outs) { return 'quantileM_vec'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var quantile_specifier = Number(args[1]);
             var quantiles = "vec";
@@ -2699,16 +2652,13 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'zeros',
-        fun_c: function (args, arg_types, outs) { return 'zerosM'; },
+        fun_matlab: /zeros|ones/,
+        fun_c: function (args, arg_types, outs) { return 'fun_matlabM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
+            if (arg_types[0].ispointer) {
+                return ['ndim', args[0]];
             }
-            //return [ndim, dim];
             return ['ndim', 'dim'];
         },
         outs_transform: function (outs) { return outs[0]; },
@@ -2719,14 +2669,20 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) {
             var dim = [];
             var ndim = args.length;
-            if (args.length == 1) {
-                dim = [Number(args[0]), Number(args[0])];
-                ndim = 2;
+            if (arg_types[0].ispointer) {
+                dim = arg_types[0].dim;
+                ndim = arg_types[0].ndim;
             }
             else {
-                for (var _i = 0, args_1 = args; _i < args_1.length; _i++) {
-                    var arg = args_1[_i];
-                    dim.push(Number(arg));
+                if (args.length == 1) {
+                    dim = [Number(args[0]), Number(args[0])];
+                    ndim = 2;
+                }
+                else {
+                    for (var _i = 0, args_1 = args; _i < args_1.length; _i++) {
+                        var arg = args_1[_i];
+                        dim.push(Number(arg));
+                    }
                 }
             }
             return {
@@ -2744,110 +2700,48 @@ exports.builtin_functions = [
         init_before: function (args, arg_types, outs) {
             var dim = "{".concat(args.join(", "), "}");
             var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
-            }
             var init_var = [];
-            init_var.push({
-                name: 'ndim',
-                val: ndim,
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            });
-            init_var.push({
-                name: 'dim',
-                val: dim,
-                type: 'int',
-                ndim: 1,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: true,
-                ispointer: false,
-                isstruct: false
-            });
-            return init_var;
-        },
-        tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'ones',
-        fun_c: function (args, arg_types, outs) { return 'onesM'; },
-        args_transform: function (args, arg_types, outs) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
-            }
-            //return [ndim, dim];
-            return ['ndim', 'dim'];
-        },
-        outs_transform: function (outs) { return outs; },
-        n_req_args: null,
-        n_opt_args: null,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            var dim = [];
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = [Number(args[0]), Number(args[0])];
-                ndim = 2;
+            if (arg_types[0].ispointer) {
+                init_var.push({
+                    name: 'ndim',
+                    val: arg_types[0].ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
             }
             else {
-                for (var _i = 0, args_2 = args; _i < args_2.length; _i++) {
-                    var arg = args_2[_i];
-                    dim.push(Number(arg));
+                if (args.length == 1) {
+                    dim = "{".concat(args[0], ",").concat(args[0], "}");
+                    ndim = 2;
                 }
+                init_var.push({
+                    name: 'ndim',
+                    val: ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
             }
-            return {
-                type: 'int',
-                ndim: ndim,
-                dim: dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            };
-        },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
-            }
-            var init_var = [];
-            init_var.push({
-                name: 'ndim',
-                val: "".concat(ndim),
-                type: 'int',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            });
-            init_var.push({
-                name: 'dim',
-                val: dim,
-                type: 'int',
-                ndim: 1,
-                dim: [ndim],
-                ismatrix: false,
-                isvector: true,
-                ispointer: false,
-                isstruct: false
-            });
             return init_var;
         },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
@@ -2855,6 +2749,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'eye',
         fun_c: function (args, arg_types, outs) { return 'identityM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
         outs_transform: function (outs) { return outs; },
         n_req_args: null,
@@ -2882,6 +2777,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'reshape',
         fun_c: function (args, arg_types, outs) { return 'reshapeM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             //return [args[0], 'ndim', 'dim'];
             return [outs[0], 'ndim', 'dim'];
@@ -3004,6 +2900,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'det',
         fun_c: function (args, arg_types, outs) { return 'detM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: null,
@@ -3036,6 +2933,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'inv',
         fun_c: function (args, arg_types, outs) { return 'invertM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,
@@ -3061,6 +2959,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'cell',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return null; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,
@@ -3075,8 +2974,8 @@ exports.builtin_functions = [
                 ndim = 2;
             }
             else {
-                for (var _i = 0, args_3 = args; _i < args_3.length; _i++) {
-                    var arg = args_3[_i];
+                for (var _i = 0, args_2 = args; _i < args_2.length; _i++) {
+                    var arg = args_2[_i];
                     dim.push(Number(arg));
                 }
             }
@@ -3098,8 +2997,8 @@ exports.builtin_functions = [
                 ndim = 2;
             }
             else {
-                for (var _i = 0, args_4 = args; _i < args_4.length; _i++) {
-                    var arg = args_4[_i];
+                for (var _i = 0, args_3 = args; _i < args_3.length; _i++) {
+                    var arg = args_3[_i];
                     dim.push(Number(arg));
                 }
             }
@@ -3113,6 +3012,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'strcmp',
         fun_c: function (args, arg_types, outs) { return 'strcmp'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -3138,6 +3038,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'strcmpi',
         fun_c: function (args, arg_types, outs) { return 'strcmpi'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 2,
@@ -3163,6 +3064,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'struct',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: null,
@@ -3178,6 +3080,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'numel',
         fun_c: function (args, arg_types, outs) { return 'getsizeM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3203,6 +3106,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'size',
         fun_c: function (args, arg_types, outs) { return 'getDimsM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3232,6 +3136,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'length',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: null,
@@ -3247,6 +3152,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'sum',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3262,6 +3168,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'prod',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3277,6 +3184,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'error',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3292,6 +3200,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'permute',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3307,6 +3216,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'rand',
         fun_c: function (args, arg_types, outs) { return 'randM'; },
+        req_arg_types: null,
         args_transform: function (args) {
             var dim = "{".concat(args.join(", "), "}");
             var ndim = args.length;
@@ -3329,8 +3239,8 @@ exports.builtin_functions = [
                 ndim = 2;
             }
             else {
-                for (var _i = 0, args_5 = args; _i < args_5.length; _i++) {
-                    var arg = args_5[_i];
+                for (var _i = 0, args_4 = args; _i < args_4.length; _i++) {
+                    var arg = args_4[_i];
                     dim.push(Number(arg));
                 }
             }
@@ -3352,6 +3262,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'randi',
         fun_c: function (args, arg_types, outs) { return 'randiM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var dim = "{".concat(args.slice(1).join(", "), "}");
             var ndim = args.slice(1).length;
@@ -3397,6 +3308,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'randn',
         fun_c: function (args, arg_types, outs) { return 'randnM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             var dim = "{".concat(args.join(", "), "}");
             var ndim = args.length;
@@ -3419,8 +3331,8 @@ exports.builtin_functions = [
                 ndim = 2;
             }
             else {
-                for (var _i = 0, args_6 = args; _i < args_6.length; _i++) {
-                    var arg = args_6[_i];
+                for (var _i = 0, args_5 = args; _i < args_5.length; _i++) {
+                    var arg = args_5[_i];
                     dim.push(Number(arg));
                 }
             }
@@ -3442,6 +3354,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'memmapfile',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3457,6 +3370,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'median',
         fun_c: function (args, arg_types, outs) { return 'medianM'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
@@ -3482,7 +3396,15 @@ exports.builtin_functions = [
     {
         fun_matlab: 'mean',
         fun_c: function (args, arg_types, outs) { return 'meanM'; },
-        args_transform: function (args, arg_types, outs) { return args; },
+        req_arg_types: null,
+        args_transform: function (args, arg_types, outs) {
+            if (args.length == 2) {
+                if (args[1] == "2") {
+                    return ["mat"];
+                }
+            }
+            return [args[0]];
+        },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
@@ -3493,10 +3415,20 @@ exports.builtin_functions = [
             if (arg_types[0].type == "complex") {
                 type = "complex";
             }
+            var dim = [1, 1];
+            var ndim = 2;
+            if (!dim.some(function (x) { return x === 1; })) {
+                dim = [1, arg_types[0].dim[1]];
+                if (args.length == 2) {
+                    if (args[1] == "2") {
+                        dim = [1, arg_types[0].dim[0]];
+                    }
+                }
+            }
             return {
                 type: type,
-                ndim: 2,
-                dim: [1, 1],
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,
@@ -3505,13 +3437,40 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            if (args.length == 2) {
+                if (args[1] == "2") {
+                    var init_var = [];
+                    init_var.push({
+                        name: 'mat',
+                        val: "transposeM(".concat(args[0], ")"),
+                        type: arg_types[0].type,
+                        ndim: arg_types[0].ndim,
+                        dim: arg_types[0].dim.reverse(),
+                        ismatrix: true,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                    return init_var;
+                }
+            }
+            return null;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'std',
         fun_c: function (args, arg_types, outs) { return 'stdM'; },
-        args_transform: function (args, arg_types, outs) { return args; },
+        req_arg_types: null,
+        args_transform: function (args, arg_types, outs) {
+            if (args.length == 3) {
+                if (args[2] == "2") {
+                    return ["mat"];
+                }
+            }
+            return [args[0]];
+        },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
@@ -3522,10 +3481,20 @@ exports.builtin_functions = [
             if (arg_types[0].type == "complex") {
                 type = "complex";
             }
+            var dim = [1, 1];
+            var ndim = 2;
+            if (!dim.some(function (x) { return x === 1; })) {
+                dim = [1, arg_types[0].dim[1]];
+                if (args.length == 3) {
+                    if (args[2] == "2") {
+                        dim = [1, arg_types[0].dim[0]];
+                    }
+                }
+            }
             return {
                 type: type,
-                ndim: 2,
-                dim: [1, 1],
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,
@@ -3534,12 +3503,32 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            if (args.length == 3) {
+                if (args[2] == "2") {
+                    var init_var = [];
+                    init_var.push({
+                        name: 'mat',
+                        val: "transposeM(".concat(args[0], ")"),
+                        type: arg_types[0].type,
+                        ndim: arg_types[0].ndim,
+                        dim: arg_types[0].dim.reverse(),
+                        ismatrix: true,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                    return init_var;
+                }
+            }
+            return null;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
         fun_matlab: 'isa',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3555,6 +3544,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'fieldnames',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3570,6 +3560,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'struct',
         fun_c: function (args, arg_types, outs) { return null; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs; },
         n_req_args: 1,
@@ -3602,6 +3593,7 @@ exports.builtin_functions = [
                 return 'printf';
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             if (arg_types[0].ismatrix) {
                 return args;
@@ -3635,6 +3627,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'mod',
         fun_c: function (args, arg_types, outs) { return "".concat(args[0], " % ").concat(args[1]); },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return null; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
@@ -3658,33 +3651,11 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'real',
-        fun_c: function (args, arg_types, outs) { return 'creal'; },
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs[0]; },
-        n_req_args: 1,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            return {
-                type: 'double',
-                ndim: 1,
-                dim: [1],
-                ismatrix: false,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            };
+        fun_matlab: /real|imag/,
+        fun_c: function (args, arg_types, outs) {
+            return 'cfun_matlab';
         },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'imag',
-        fun_c: function (args, arg_types, outs) { return 'cimag'; },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: 1,
@@ -3894,6 +3865,7 @@ exports.builtin_functions = [
                 return 'fun_matlab';
             }
         },
+        req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
         outs_transform: function (outs) { return outs[0]; },
         n_req_args: null,

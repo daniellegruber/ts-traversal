@@ -37,7 +37,7 @@ int ii_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	int *input2 = NULL;
@@ -56,11 +56,11 @@ int ii_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, INTEGER);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -115,7 +115,7 @@ int id_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double *input2 = NULL;
@@ -134,11 +134,11 @@ int id_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, DOUBLE);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -193,7 +193,7 @@ int neg_id_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -212,11 +212,11 @@ int neg_id_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, DOUBLE);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -271,7 +271,7 @@ int ic_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -290,11 +290,11 @@ int ic_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, COMPLEX);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -349,7 +349,7 @@ int di_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double *input2 = NULL;
@@ -427,7 +427,7 @@ int dd_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double *input2 = NULL;
@@ -446,11 +446,11 @@ int dd_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, DOUBLE);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -505,7 +505,7 @@ int neg_dd_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -524,11 +524,11 @@ int neg_dd_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, DOUBLE);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -583,7 +583,7 @@ int dc_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -602,11 +602,11 @@ int dc_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, COMPLEX);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -661,7 +661,7 @@ int ci_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -680,11 +680,11 @@ int ci_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, INTEGER);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -739,7 +739,7 @@ int cd_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -758,11 +758,11 @@ int cd_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, DOUBLE);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -817,7 +817,7 @@ int cc_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double complex *input2 = NULL;
@@ -836,11 +836,11 @@ int cc_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, COMPLEX);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -895,7 +895,7 @@ int overflow_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double *input2 = NULL;
@@ -914,11 +914,11 @@ int overflow_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, INTEGER);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{
@@ -973,7 +973,7 @@ int underflow_test()
 	}
 	writeM(tmp, 9, input);
 	free(input);
-	//printM(tmp);
+	printM(tmp);
 
 
 	double *input2 = NULL;
@@ -992,11 +992,11 @@ int underflow_test()
 	}
 	writeM(tmp2, 9, input2);
 	free(input2);
-	//printM(tmp2);
+	printM(tmp2);
 
 
 	Matrix *tmp3 = scalarpowerM(tmp, &exponent, INTEGER);
-	//printM(tmp3);
+	printM(tmp3);
 
 	if (!isEqualM(tmp2, tmp3))
 	{

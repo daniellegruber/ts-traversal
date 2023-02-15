@@ -53,7 +53,57 @@ export TEST="$YOUR_DIR/Halo-Algorithm/OctaveC/tests"
 ``` 
 
 ## Usage
+First change into generatedCode directory since Makefile is stored there.
 
+```sh
+cd generatedCode
+```
+
+### Copy and clean
+Copy mfiles from tests_C_Octave folder into generatedCode and "clean"
+```sh
+make copyall
+```
+
+Alternatively, to copy only one mfile, use
+```sh
+make copyone ARGS=mfile
+```
+
+### Generate c code
+Generate main.c for all mfiles in generatedCode folder that haven't already been generated
+```sh
+make genall
+```
+
+Alternatively, to generate code for only one mfile, use
+```sh
+make genone ARGS=mfile
+```
+
+### Compile c code
+Compile all C programs in generatedCode folder
+```sh
+make compileall
+```
+
+Alternatively, to compile only one C program, use
+```sh
+make compileone ARGS=testname
+```
+
+### Compare C and MATLAB
+Compare outputs of generated C program and original mfile for all tests
+```sh
+make compareall
+```
+
+Alternatively, to compare outputs of the generated C program and original mfile for one test, use
+```sh
+make compareone ARGS=testname
+```
+
+### General usage for generating C code for mfile
 ```sh
 npx tsc -sourcemap index.ts
 npx ts-node index.ts MATLAB_FILE SEARCH_FOLDER OUT_FOLDER SHOW_OUTPUT DEBUG
@@ -66,7 +116,7 @@ where
 - `SHOW_OUTPUT`: 1 to show generated code in console, 0 to suppress
 - `DEBUG`: 1 for debug mode in console, 0 for normal mode
 
-The first line is for debugging purposes and only needs to be used when a file is changed.
+The first line is for debugging purposes and only needs to be used when a file is changed. The second line generates C code for the specified mfile and outputs it in a subfolder of the same name in generatedCode. 
 
 ## Example
 

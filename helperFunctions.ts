@@ -101,7 +101,9 @@ export function findLastSubscript(node, fun_params) {
     // for a valueNode with text "m" finds all nodes of form m(...) = ...
     // helps with figuring out when to insert writeM(m) code since we want to do that
     // after all values have been assigned to the matrix m
-    let matches = [];
+    //let matches = [];
+    let subscript_text = null;
+    let subscript_idx = null;
     let re = new RegExp(`${node.text}\\(([\\s\\w+\\-\\*]*)\\)(=| =)`);
     let scope = findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     let obj = filterByScope(fun_params.var_types, node.text, node, 0);
@@ -115,11 +117,14 @@ export function findLastSubscript(node, fun_params) {
         let m = c.currentNode.text.match(re);
         if (c.currentNode.type == g.SyntaxType.Assignment) {
             if ((m != null) && (c.currentNode.startIndex >= scope[0]) && (c.currentNode.endIndex <= scope[1])) {
-                matches.push(m[0]);
+                //matches.push(m[0]);
+                subscript_text = m[0];
+                subscript_idx = c.currentNode.endIndex;
             } 
         }
     } while(gotoPreorderSucc(cursor, fun_params.debug));
-    return matches;
+    //return matches;
+    return [subscript_text, subscript_idx];
 }
 
 export function transformNodeByName(var_name, node, alias_tbl) {

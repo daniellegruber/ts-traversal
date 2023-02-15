@@ -703,7 +703,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
                             scope = scope[scope.length - 1];
                         }
-                         
+                        //papaya
                         let obj6 = tmp_tbl.find(x => x.name == "lhs_data");
                         let new_flag = true;
                         let tmp_lhs = "lhs_data";
@@ -716,6 +716,14 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                                 }
                             }
                         }
+                        let obj7 = filterByScope(alias_tbl, node.leftNode.valueNode.text, node, 0);
+                        if (obj7 != null && obj7 != undefined) {
+                            if (obj7.tmp_var.includes("lhs_data")) {
+                                new_flag = false;
+                                tmp_lhs = obj7.tmp_var;
+                            }
+                        }
+                        
                         if (new_flag) {
                             let tmp_data = generateTmpVar("data", tmp_tbl);
                             tmp_lhs = generateTmpVar("lhs_data", tmp_tbl);
@@ -766,12 +774,18 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             updateFunParams(0);
                             let lastSubscript = findLastSubscript(node.leftNode.valueNode, fun_params);
                             let condition = `(loop_iterators.length == ${loop_iterators.length - num_back});`;
-                            if (lastSubscript.length > 0) {
-                                //condition = `(loop_iterators.length == ${loop_iterators.length - num_back}) && node.previousNamedSibling.text.includes("${lastSubscript[lastSubscript.length - 1]}");`;
+                            let lhs_scope = findVarScope(node, block_idxs, current_code, debug);
+                            if (lastSubscript[0] != null) {
+                                lhs_scope[1] = lastSubscript[1];
+                                alias_tbl.push({
+                                    name: node.leftNode.valueNode.text,
+                                    tmp_var: tmp_lhs,
+                                    scope: lhs_scope
+                                });
                                 condition = `
 function myfun(loop_iterators, node) {
     if ((loop_iterators.length == ${loop_iterators.length - num_back}) && node.previousNamedSibling !== null) {
-        if (node.previousNamedSibling.text.includes("${lastSubscript[lastSubscript.length - 1]}")) {
+        if (node.previousNamedSibling.text.includes("${lastSubscript[0]}")) {
             return true;
         }
     }
@@ -793,8 +807,15 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                             };
                             main_queue.push(mq);
                             updateFunParams(0);
-                            alias_tbl = pushAliasTbl(node.leftNode.valueNode.text, tmp_mat, node, fun_params);
+                            //alias_tbl = pushAliasTbl(node.leftNode.valueNode.text, tmp_mat, node, fun_params);
                             let obj = filterByScope(tmp_var_types, node.leftNode.valueNode.text, node, 0);
+                            scope = obj.scope;
+                            scope[0] = lhs_scope[1] + 1;
+                            alias_tbl.push({
+                                name: node.leftNode.valueNode.text,
+                                tmp_var: tmp_mat,
+                                scope: scope
+                            });
                             tmp_var_types.push({
                                 name: tmp_mat,
                                 type: type,
@@ -805,7 +826,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 ispointer: false,
                                 isstruct: false,
                                 initialized: true,
-                                scope: obj.scope
+                                scope: scope
                             });
                             tmp_var_types.push({
                                 name: tmp_lhs,
@@ -817,7 +838,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 ispointer: false,
                                 isstruct: false,
                                 initialized: true,
-                                scope: obj.scope
+                                scope: lhs_scope
                             });
                             
                             main_queue.push({
@@ -906,6 +927,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
             case g.SyntaxType.CallOrSubscript: {
                 // Is a custom function call
+                
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
                 let [args1, outs, is_subscript] = parseNode(node, false);
                 let arg_types = [];
@@ -915,9 +937,9 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     let arg = args1[i];
                     args.push(transformNode(arg));
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                    if (arg.type != g.SyntaxType.CellSubscript && ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
+                    /*if (arg.type != g.SyntaxType.CellSubscript && ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
-                    }
+                    }*/
                     custom_functions = c;
                     arg_types.push({
                         type: type, 
@@ -1315,7 +1337,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 }
                 
                 let obj = filterByScope(alias_tbl, node.text, node, 0);
-                            
+                
                 if (obj != null && obj != undefined) {
                     return obj.tmp_var;
                 } 
@@ -1882,6 +1904,11 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
         }
                         
         let obj = filterByScope(tmp_var_types, node.valueNode.text, node, 0);
+        if (obj == null || obj == undefined) {
+            let obj1 = filterByScope(alias_tbl, node.valueNode.text, node, 0);
+            obj = filterByScope(tmp_var_types, obj1.tmp_var, node, 0);
+        }
+
         let dim = obj.dim;
         if (dim[3] == 1) {
             dim.pop();
@@ -1965,6 +1992,5 @@ int ${filename}(void) {`);
     generateHeader();
     
     writeToFile(out_folder, filename + ".c", generated_code.join("\n"));
-    
     return [generated_code.join("\n"), header.join("\n"), var_types, custom_functions];
 }

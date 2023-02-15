@@ -28,7 +28,8 @@ int main(void) {
 	
 	printM(a);
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		Matrix * b= fftM(a);
+		Matrix * tmp1= fftM(a);
+		Matrix * b= tmp1;
 	
 	}
 	return 0;

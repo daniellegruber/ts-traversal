@@ -104,7 +104,9 @@ function findLastSubscript(node, fun_params) {
     // for a valueNode with text "m" finds all nodes of form m(...) = ...
     // helps with figuring out when to insert writeM(m) code since we want to do that
     // after all values have been assigned to the matrix m
-    var matches = [];
+    //let matches = [];
+    var subscript_text = null;
+    var subscript_idx = null;
     var re = new RegExp("".concat(node.text, "\\(([\\s\\w+\\-\\*]*)\\)(=| =)"));
     var scope = (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     var obj = filterByScope(fun_params.var_types, node.text, node, 0);
@@ -117,11 +119,14 @@ function findLastSubscript(node, fun_params) {
         var m = c.currentNode.text.match(re);
         if (c.currentNode.type == "assignment" /* g.SyntaxType.Assignment */) {
             if ((m != null) && (c.currentNode.startIndex >= scope[0]) && (c.currentNode.endIndex <= scope[1])) {
-                matches.push(m[0]);
+                //matches.push(m[0]);
+                subscript_text = m[0];
+                subscript_idx = c.currentNode.endIndex;
             }
         }
     } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, fun_params.debug));
-    return matches;
+    //return matches;
+    return [subscript_text, subscript_idx];
 }
 exports.findLastSubscript = findLastSubscript;
 function transformNodeByName(var_name, node, alias_tbl) {

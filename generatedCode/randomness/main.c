@@ -13,20 +13,32 @@ int main(void) {
 	//format short
 	//source octaveIncludes.m;
 	// rand_test
-	randM(2, {"seed", 1});
-	Matrix * a= randM(2, {3, 4});
-	Matrix * s1= randM(2, {"seed","seed"});
-	randM(2, {"seed", 1});
-	Matrix * b= randM(2, {3, 4});
-	Matrix * s2= randM(2, {"seed","seed"});
+	Matrix * tmp1= randM(2, {"seed", 1});
+	tmp1;
+	Matrix * tmp2= randM(2, {3, 4});
+	Matrix * a= tmp2;
+	Matrix * tmp3= randM(2, {"seed","seed"});
+	Matrix * s1= tmp3;
+	Matrix * tmp4= randM(2, {"seed", 1});
+	tmp4;
+	Matrix * tmp5= randM(2, {3, 4});
+	Matrix * b= tmp5;
+	Matrix * tmp6= randM(2, {"seed","seed"});
+	Matrix * s2= tmp6;
 	//randi_test
-	randM(2, {"seed", "reset"});
-	Matrix * a= randiM(2, {3, 4}, 0, 10);
+	Matrix * tmp7= randM(2, {"seed", "reset"});
+	tmp7;
+	Matrix * tmp8= randiM(2, {3, 4}, 0, 10);
+	a = tmp8;
 	printf("\n%d\n", a <= 10);
 	//randn_test
-	randM(2, {"seed", "reset"});
-	Matrix * a= randnM(2, {1000,1000});
-	Matrix * mu= meanM(a);
-	Matrix * sigma= varM(a);
+	Matrix * tmp9= randM(2, {"seed", "reset"});
+	tmp9;
+	Matrix * tmp10= randnM(2, {1000,1000});
+	a = tmp10;
+	Matrix * tmp11= meanM(a);
+	Matrix * mu= tmp11;
+	Matrix * tmp12= varM(a);
+	Matrix * sigma= tmp12;
 	return 0;
 }

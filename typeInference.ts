@@ -487,7 +487,8 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
     // var unknown_type = ['unknown', null, null, null, null, null, custom_functions];
     // var unknown_type = ['unknown', 2, [1, 1], false, false, false, custom_functions];
     
-    let obj1 = alias_tbl.find(x => x.name === node.text);
+    //let obj1 = alias_tbl.find(x => x.name === node.text);
+    let obj1 = filterByScope(alias_tbl, node.text, node, 0);
     if (obj1 != null && obj1 != undefined) {
         let obj2 = var_types.find(x => x.name === obj1.tmp_var);
         if (obj2 != null && obj2 != undefined) {
@@ -760,7 +761,8 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             
             // If not class method, treat like an identifier (field of a struct)
             } else {
-                let obj = var_types.find(x => x.name === node.text);
+                //let obj = var_types.find(x => x.name === node.text);
+                let obj = filterByScope(var_types, node.text, node, 0);
                 if (obj != null) {
                     return [obj.type, obj.ndim, obj.dim, obj.ismatrix, obj.ispointer, obj.isstruct, custom_functions];
                 } else {
@@ -774,7 +776,8 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
             if (node.text == "INT_MAX" || node.text == "INT_MIN") {
                 return ['int', 1, [1], false, false, false, custom_functions];
             }
-            let obj = var_types.find(x => (x.name == node.text) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
+            let obj = filterByScope(var_types, node.text, node, 0);
+            //let obj = var_types.find(x => (x.name == node.text) && (node.startIndex >= x.scope[0]) && (node.endIndex <= x.scope[1]));
             //let obj = var_types.filter(function(e) { return e.name == node.text });
             if (obj != null) {
                 return [obj.type, obj.ndim, obj.dim, obj.ismatrix, obj.ispointer, obj.isstruct, custom_functions];

@@ -30,7 +30,8 @@ int main(void) {
 	writeM( a, 9, input1);
 	free(input1);
 	
-	Matrix * b= ceilM(a);
+	Matrix * tmp1= ceilM(a);
+	Matrix * b= tmp1;
 	printM(a);
 	printM(b);
 	return 0;

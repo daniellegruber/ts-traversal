@@ -16,18 +16,19 @@ int main(void) {
 	int exponent= 3;
 	int ndim1= 2;
 	int dim1[2]= {3,3};
-	Matrix * a= zerosM(ndim1, dim1);
+	Matrix * tmp1= zerosM(ndim1, dim1);
+	Matrix * a= tmp1;
 	int* lhs_data1 = i_to_i(a);
 	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
-		int tmp1= pow((-1), (iter1 + 1));
+		int tmp2= pow((-1), (iter1 + 1));
 		int d0_1 = iter1 % 3;
 		if (d0_1 == 0) {
 			d0_1 = 3;
 		}
 		int d1_1 = (iter1 - d0_1)/3 + 1;
-		int tmp3= pow((-1), (iter1 + 1));
-		int tmp2= (tmp3) * (iter1 - 1);
-		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp2;
+		int tmp4= pow((-1), (iter1 + 1));
+		int tmp3= (tmp4) * (iter1 - 1);
+		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp3;
 	
 	}
 	// Write matrix mat1
@@ -38,36 +39,37 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 0);
 	writeM(mat1, size1, lhs_data1);
-	Matrix * tmp4= transposeM(mat1);
-	a = tmp4;
+	Matrix * tmp5= transposeM(mat1);
+	a = tmp5;
 	printM(a);
-	Matrix * tmp5= sinM(a);
-	printM(tmp5);
-	Matrix * tmp6= sindM(a);
+	Matrix * tmp6= sinM(a);
 	printM(tmp6);
-	Matrix * tmp7= cosM(a);
+	Matrix * tmp7= sindM(a);
 	printM(tmp7);
-	Matrix * tmp8= cosdM(a);
+	Matrix * tmp8= cosM(a);
 	printM(tmp8);
-	Matrix * tmp9= tanM(a);
+	Matrix * tmp9= cosdM(a);
 	printM(tmp9);
-	Matrix * tmp10= tandM(a);
+	Matrix * tmp10= tanM(a);
 	printM(tmp10);
+	Matrix * tmp11= tandM(a);
+	printM(tmp11);
 	//double_test
 	int ndim2= 2;
 	int dim2[2]= {3,3};
-	a = zerosM(ndim2, dim2);
+	Matrix * tmp12= zerosM(ndim2, dim2);
+	a = tmp12;
 	double* lhs_data2 = i_to_d(a);
 	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
-		int tmp11= pow((-1), (iter3 + 1));
+		int tmp13= pow((-1), (iter3 + 1));
 		int d0_2 = iter3 % 3;
 		if (d0_2 == 0) {
 			d0_2 = 3;
 		}
 		int d1_2 = (iter3 - d0_2)/3 + 1;
-		int tmp13= pow((-1), (iter3 + 1));
-		double tmp12= (tmp13) * (iter3 + 0.4);
-		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp12;
+		int tmp15= pow((-1), (iter3 + 1));
+		double tmp14= (tmp15) * (iter3 + 0.4);
+		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp14;
 	
 	}
 	mat1 = mat1;
@@ -79,26 +81,27 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim2, dim2, 1);
 	writeM(mat2, size2, lhs_data2);
-	Matrix * tmp14= transposeM(mat2);
-	a = tmp14;
+	Matrix * tmp16= transposeM(mat2);
+	a = tmp16;
 	printM(a);
-	Matrix * tmp15= sinM(a);
-	printM(tmp15);
-	Matrix * tmp16= sindM(a);
-	printM(tmp16);
-	Matrix * tmp17= cosM(a);
+	Matrix * tmp17= sinM(a);
 	printM(tmp17);
-	Matrix * tmp18= cosdM(a);
+	Matrix * tmp18= sindM(a);
 	printM(tmp18);
-	Matrix * tmp19= tanM(a);
+	Matrix * tmp19= cosM(a);
 	printM(tmp19);
-	Matrix * tmp20= tandM(a);
+	Matrix * tmp20= cosdM(a);
 	printM(tmp20);
+	Matrix * tmp21= tanM(a);
+	printM(tmp21);
+	Matrix * tmp22= tandM(a);
+	printM(tmp22);
 	//complex_test
 	exponent = 1.2;
 	int ndim3= 2;
 	int dim3[2]= {3,3};
-	a = zerosM(ndim3, dim3);
+	Matrix * tmp23= zerosM(ndim3, dim3);
+	a = tmp23;
 	complex* lhs_data3 = i_to_c(a);
 	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
 		int d0_3 = iter5 % 3;
@@ -106,8 +109,8 @@ int main(void) {
 			d0_3 = 3;
 		}
 		int d1_3 = (iter5 - d0_3)/3 + 1;
-		complex tmp21= iter5 + 0.5*I;
-		lhs_data3[(d1_3-1) + (d0_3-1) * 3] = tmp21;
+		complex tmp24= iter5 + 0.5*I;
+		lhs_data3[(d1_3-1) + (d0_3-1) * 3] = tmp24;
 	
 	}
 	mat2 = mat2;
@@ -119,20 +122,20 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim3, dim3, 2);
 	writeM(mat3, size3, lhs_data3);
-	Matrix * tmp22= transposeM(mat3);
-	a = tmp22;
+	Matrix * tmp25= transposeM(mat3);
+	a = tmp25;
 	printM(a);
-	Matrix * tmp23= sinM(a);
-	printM(tmp23);
-	Matrix * tmp24= sindM(a);
-	printM(tmp24);
-	Matrix * tmp25= cosM(a);
-	printM(tmp25);
-	Matrix * tmp26= cosdM(a);
+	Matrix * tmp26= sinM(a);
 	printM(tmp26);
-	Matrix * tmp27= tanM(a);
+	Matrix * tmp27= sindM(a);
 	printM(tmp27);
-	Matrix * tmp28= tandM(a);
+	Matrix * tmp28= cosM(a);
 	printM(tmp28);
+	Matrix * tmp29= cosdM(a);
+	printM(tmp29);
+	Matrix * tmp30= tanM(a);
+	printM(tmp30);
+	Matrix * tmp31= tandM(a);
+	printM(tmp31);
 	return 0;
 }

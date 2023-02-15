@@ -16,14 +16,17 @@ int main(void) {
 	int size= 100;
 	int ndim1= 2;
 	int dim1[2]= {100,100};
-	Matrix * a= onesM(ndim1, dim1);
+	Matrix * tmp1= onesM(ndim1, dim1);
+	Matrix * a= tmp1;
 	complex* lhs_data1 = c_to_c(a);
 	for (int iter1 = 1; iter1 <= size; ++ iter1) {
 		for (int iter2 = 1; iter2 <= size; ++ iter2) {
-			complex tmp1= cpow(((iter1 - 1) * size + iter2), 2.1);
-			complex tmp3= cpow(((iter1 - 1) * size + iter2), 2.1);
-			complex tmp2= tmp3 + 0.5 + ((iter1 - 1) * size + iter2) % 7;
-			lhs_data1[(iter2-1) + (iter1-1)*100 + (1-1)*100*100 + (1-1)*100*100*1] = tmp2;
+			complex tmp2= cpow(((iter1 - 1) * size + iter2), 2.1);
+			int tmp3= ((iter1 - 1) * size + iter2) % 7;
+			complex tmp5= cpow(((iter1 - 1) * size + iter2), 2.1);
+			int tmp6= ((iter1 - 1) * size + iter2) % 7;
+			complex tmp4= tmp5 + 0.5 + tmp6;
+			lhs_data1[(iter2-1) + (iter1-1)*100 + (1-1)*100*100 + (1-1)*100*100*1] = tmp4;
 		
 		}
 	
@@ -36,6 +39,7 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 2);
 	writeM(mat1, size1, lhs_data1);
+	mat1 = mat1;
 	for (int iter4 = 1; iter4 <= iterations; ++ iter4) {
 		complex complex_one= 1;
 		Matrix * V1= NULL;

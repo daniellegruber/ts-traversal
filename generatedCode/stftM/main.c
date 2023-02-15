@@ -60,9 +60,10 @@ void fourier_vec_script(int a) {
 					printf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", iter1);
 					int ndim1= 1;
 					int dim1= {1};
-					Matrix * y= stftV(a, 80, 24, 64, 1);
-					float * tmp1 = f_to_f(y);
-					printf("\n%d\n", tmp1[0]);
+					Matrix * tmp1= stftV(a, 80, 24, 64, 1);
+					Matrix * y= tmp1;
+					double * tmp2 = d_to_d(y);
+					printf("\n%d\n", tmp2[0]);
 				
 				}
 			

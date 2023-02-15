@@ -46,7 +46,8 @@ int main(void) {
 	Matrix * b1= tmp1;
 	int * dim3= i_to_i(mat1);
 	int ndim3= 2;
-	reshapeM(b1, ndim3, dim3);
+	Matrix * tmp2= reshapeM(b1, ndim3, dim3);
+	tmp2;
 	printM(b1);
 	return 0;
 }

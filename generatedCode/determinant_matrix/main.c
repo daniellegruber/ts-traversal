@@ -49,13 +49,14 @@ int main(void) {
 	//test3
 	int ndim3= 2;
 	int dim3[2]= {3,3};
-	a = zerosM(ndim3, dim3);
+	Matrix * tmp2= zerosM(ndim3, dim3);
+	a = tmp2;
 	int counter= 1;
 	int* lhs_data1 = i_to_i(a);
 	for (int iter1 = 1; iter1 <= 3; ++ iter1) {
 		for (int iter2 = 1; iter2 <= 3; ++ iter2) {
-			int tmp2= counter * counter;
-			lhs_data1[(iter2-1) + (iter1-1)*3 + (1-1)*3*3 + (1-1)*3*3*1] = tmp2;
+			int tmp3= counter * counter;
+			lhs_data1[(iter2-1) + (iter1-1)*3 + (1-1)*3*3 + (1-1)*3*3*1] = tmp3;
 			counter = counter + 1;
 		
 		}
@@ -77,29 +78,42 @@ int main(void) {
 	//testn
 	int ndim4= 2;
 	int dim4[2]= {5,5};
-	a = zerosM(ndim4, dim4);
+	Matrix * tmp4= zerosM(ndim4, dim4);
+	a = tmp4;
 	counter = 0;
 	for (int iter4 = 0; iter4 <= 4; ++ iter4) {
-			int* lhs_data2 = i_to_i(a);
 		for (int iter5 = 0; iter5 <= 4; ++ iter5) {
 			counter = counter + 1;
-			if (((counter - 1) % 2 == 0)) {
+			int tmp5= (counter - 1) % 2;
+			if ((tmp5 == 0)) {
 				int d0_2 = counter % 5;
 				if (d0_2 == 0) {
 					d0_2 = 5;
 				}
 				int d1_2 = (counter - d0_2)/5 + 1;
-				int tmp3= (counter + iter4) % 7;
-				lhs_data2[(d1_2-1) + (d0_2-1) * 5] = tmp3;
+				int tmp7= (counter + iter4) % 7;
+				int tmp6= tmp7;
+				int* lhs_data2 = i_to_i(a);
+				lhs_data2[(d1_2-1) + (d0_2-1) * 5] = tmp6;
 				
+				// Write matrix mat2
+				int size2 = 1;
+				for (int iter6 = 0 ; iter6 < ndim4; iter6++)
+				{
+					size2 *= dim4[iter6];
+				}
+				Matrix *mat2 = createM(ndim4, dim4, 0);
+				writeM(mat2, size2, lhs_data2);
 				} else {
+				int tmp8= (counter + iter5) % 7;
 				int d0_3 = counter % 5;
 				if (d0_3 == 0) {
 					d0_3 = 5;
 				}
 				int d1_3 = (counter - d0_3)/5 + 1;
-				int tmp4= -1 * (counter + iter5) % 7;
-				lhs_data2[(d1_3-1) + (d0_3-1) * 5] = tmp4;
+				int tmp10= (counter + iter5) % 7;
+				int tmp9= -1 * tmp10;
+				lhs_data2[(d1_3-1) + (d0_3-1) * 5] = tmp9;
 				
 			
 			}
@@ -107,8 +121,8 @@ int main(void) {
 		}
 	
 	}
-	Matrix * tmp5= transposeM(mat2);
-	a = tmp5;
+	Matrix * tmp11= transposeM(mat2);
+	a = tmp11;
 	printM(a);
 	double d4;
 	detM(a, &d4);
@@ -116,20 +130,21 @@ int main(void) {
 	//non_square
 	int ndim5= 2;
 	int dim5[2]= {3, 2};
-	a = zerosM(ndim5, dim5);
-	complex tmp6= 26 + 1*I;
+	Matrix * tmp12= zerosM(ndim5, dim5);
+	a = tmp12;
+	complex tmp13= 26 + 1*I;
 	complex* lhs_data3 = i_to_c(a);
-	lhs_data3[0] = tmp6;
-	complex tmp7= 3 - 8*I;
-	lhs_data3[2] = tmp7;
-	complex tmp8= 20*I;
-	lhs_data3[4] = tmp8;
-	complex tmp9= 1 + 25*I;
-	lhs_data3[1] = tmp9;
-	int tmp10= 0;
-	lhs_data3[3] = tmp10;
-	int tmp11= 1;
-	lhs_data3[5] = tmp11;
+	lhs_data3[0] = tmp13;
+	complex tmp14= 3 - 8*I;
+	lhs_data3[2] = tmp14;
+	complex tmp15= 20*I;
+	lhs_data3[4] = tmp15;
+	complex tmp16= 1 + 25*I;
+	lhs_data3[1] = tmp16;
+	int tmp17= 0;
+	lhs_data3[3] = tmp17;
+	int tmp18= 1;
+	lhs_data3[5] = tmp18;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter7 = 0 ; iter7 < ndim5; iter7++)
@@ -138,8 +153,8 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
-	Matrix * tmp12= transposeM(mat3);
-	a = tmp12;
+	Matrix * tmp19= transposeM(mat3);
+	a = tmp19;
 	printM(a);
 	return 0;
 }

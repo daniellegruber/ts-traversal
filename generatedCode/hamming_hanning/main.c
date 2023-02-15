@@ -15,13 +15,13 @@ int main(void) {
 	int iterations= 100;
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
 		double * tmp1= hamming(iter1);
-		printf("\n%d\n", tmp1);
+		printf("\n%f\n", tmp1);
 		double * tmp2= periodichamming(iter1);
-		printf("\n%d\n", tmp2);
+		printf("\n%f\n", tmp2);
 		double * tmp3= hanning(iter1);
-		printf("\n%d\n", tmp3);
+		printf("\n%f\n", tmp3);
 		double * tmp4= periodichanning(iter1);
-		printf("\n%d\n", tmp4);
+		printf("\n%f\n", tmp4);
 	
 	}
 	return 0;

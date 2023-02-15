@@ -3761,6 +3761,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 return [args[1]];
             } else {
                 args[0] = args[0].replace(/'/g, '"');
+                args[1] = args[1].replace(/'/g, '"');
                 args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
                 return [args[0], args[1]];
             }
@@ -3795,7 +3796,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             
             return {
-                type: 'float',
+                type: 'double',
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
@@ -3828,7 +3829,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             
             return {
-                type: 'float',
+                type: 'double',
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
@@ -3886,7 +3887,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             let ndim = arg_types[0].ndim;
             
             return {
-                type: 'float',
+                type: 'double',
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,

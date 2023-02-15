@@ -3700,6 +3700,7 @@ exports.builtin_functions = [
             }
             else {
                 args[0] = args[0].replace(/'/g, '"');
+                args[1] = args[1].replace(/'/g, '"');
                 args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
                 return [args[0], args[1]];
             }
@@ -3731,7 +3732,7 @@ exports.builtin_functions = [
                 console.log("WARNING: fftM dimensions adjusted");
             }
             return {
-                type: 'float',
+                type: 'double',
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
@@ -3761,7 +3762,7 @@ exports.builtin_functions = [
                 console.log("WARNING: ifftM dimensions adjusted");
             }
             return {
-                type: 'float',
+                type: 'double',
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,
@@ -3813,7 +3814,7 @@ exports.builtin_functions = [
             var dim = arg_types[0].dim;
             var ndim = arg_types[0].ndim;
             return {
-                type: 'float',
+                type: 'double',
                 ndim: ndim,
                 dim: dim,
                 ismatrix: true,

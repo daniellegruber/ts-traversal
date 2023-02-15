@@ -12,18 +12,18 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	unknown exponent= 30 + 4 * i;
+	complex exponent= 30 + 4*I;
 	int iterations= 100000;
 	
 	int ndim1 = 2;
 	int dim1[2] = {2,2};
-	Matrix * b = createM(ndim1, dim1, 1);
-	double *input1 = NULL;
+	Matrix * b = createM(ndim1, dim1, 2);
+	complex *input1 = NULL;
 	input1 = malloc( 4*sizeof(*input1));
-	input1[0] = 2.1 + 0.5 * i;
+	input1[0] = 2.1 + 0.5*I;
 	input1[1] = 1;
 	input1[2] = 1;
-	input1[3] = 2.1 + 0.5 * i;
+	input1[3] = 2.1 + 0.5*I;
 	writeM( b, 4, input1);
 	free(input1);
 	

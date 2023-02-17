@@ -219,7 +219,6 @@ int main(void) {
 		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp15;
 	
 	}
-	mat1 = mat1;
 	// Write matrix mat2
 	int size2 = 1;
 	for (int iter4 = 0 ; iter4 < ndim12; iter4++)
@@ -262,7 +261,7 @@ void two_t_test(Matrix * a, Matrix * b) {
 	double df1;
 	double sd1;
 	ttestM_xy(a, b, &h1, &pval1, &ci1, &tstat1, &df1, &sd1);
-	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h1);
+	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h1, pval1, stats.tstat, stats.df, stats.sd);
 }
 
 void int_vec_stats(Matrix * a) {
@@ -325,13 +324,13 @@ void double_vec_stats(Matrix * a) {
 	Matrix * tmp31= maxV(a, &index3);
 	Matrix * greatest= tmp31;
 	double * tmp32 = d_to_d(tmp31);
-	printf("\n%d\n", tmp32[0]);
+	printf("\n%f\n", tmp32[0]);
 	printf("max index: %d\n", index3);
 	int index4;
 	Matrix * tmp33= minV(a, &index4);
 	Matrix * least= tmp33;
 	double * tmp34 = d_to_d(tmp33);
-	printf("\n%d\n", tmp34[0]);
+	printf("\n%f\n", tmp34[0]);
 	printf("min index: %d\n", index4);
 	for (int iter7 = tmp34[0]; iter7 <= tmp32[0]; iter7 += 0.5) {
 		printf("mu: %.3f\n", iter7);

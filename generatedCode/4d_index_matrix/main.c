@@ -45,7 +45,6 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 1);
 	writeM(mat1, size1, lhs_data1);
-	mat1 = mat1;
 	printM(mat1);
 	// Flat indexing in C must be must be matched in Octave by flipping the row & column iteration
 	for (int iter6 = 1; iter6 <= 5; ++ iter6) {

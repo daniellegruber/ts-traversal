@@ -32,7 +32,7 @@ int main(void) {
 		int d1_1 = (iter1 - d0_1)/1000 + 1;
 		int tmp5= pow(iter1, 2);
 		double tmp4= tmp5 + 0.5;
-		lhs_data1[(d1_1-1) + (d0_1-1)000] = tmp4;
+		lhs_data1[(d1_1-1) + (d0_1-1) * 1000] = tmp4;
 		int tmp6= pow(iter1, 2);
 		int d0_2 = iter1 % 1000;
 		if (d0_2 == 0) {
@@ -41,7 +41,7 @@ int main(void) {
 		int d1_2 = (iter1 - d0_2)/1000 + 1;
 		int tmp8= pow(iter1, 2);
 		complex tmp7= (tmp8 + 0.5) * 1*I;
-		lhs_data1[(d1_2-1) + (d0_2-1)000] = tmp7;
+		lhs_data1[(d1_2-1) + (d0_2-1) * 1000] = tmp7;
 	
 	}
 	// Write matrix mat1

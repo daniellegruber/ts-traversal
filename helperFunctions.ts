@@ -45,6 +45,18 @@ export function extractSingularMat(mat, var_type, node, fun_params) {
             initialized: true,
             scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
         });
+        fun_params.var_types.push({
+            name: `${tmp_var}[0]`,
+            type: var_type.type,
+            ndim: 1,
+            dim: [1],
+            ismatrix: false,
+            isvector: false,
+            ispointer: false,
+            isstruct: false,
+            initialized: true,
+            scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+        });
         fun_params.alias_tbl = pushAliasTbl(mat, `${tmp_var}[0]`, node, fun_params);
         let [main_function, function_definitions] = pushToMain(`${var_type.type} * ${tmp_var} = ${var_type.type.charAt(0)}_to_${var_type.type.charAt(0)}(${mat});`, fun_params);
         fun_params.main_function = main_function;
@@ -282,7 +294,33 @@ export function parseFunctionDefNode(node) {
             if (node.return_variableNode == undefined && node.namedChildren[0].type == g.SyntaxType.ReturnValue) {
                 node.return_variableNode = node.namedChildren[0];
             }
-                        
+            /*let types = [];
+            for (let child of node.namedChildren) {
+                types.push(child.type);
+            }
+            console.log(node.nextNamedSibling.text);
+            if (types.includes(g.SyntaxType.Parameters)) {
+                let param_idx = types.indexOf(g.SyntaxType.Parameters);
+                var parametersNode = node.namedChildren[param_idx];
+                var nameNode = node.namedChildren[param_idx - 1];
+                var bodyNode = node.namedChildren[param_idx + 1];
+                var return_variableNode = undefined;
+                let return_idx = types.indexOf(g.SyntaxType.ReturnValue);
+                if (return_idx != null && return_idx != undefined) {
+                    return_variableNode = node.namedChildren[return_idx];
+                }
+                //return [return_variableNode, nameNode, parametersNode, bodyNode];
+                return {
+                    type: g.SyntaxType.FunctionDefinition,
+                    return_variableNode: return_variableNode,
+                    nameNode: nameNode,
+                    parametersNode: parametersNode,
+                    bodyNode: bodyNode
+                };
+            } else {
+                return null;
+            }*/ 
+            
             return node;
             break;
         }

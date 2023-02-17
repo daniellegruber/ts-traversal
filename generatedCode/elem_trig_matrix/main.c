@@ -59,7 +59,7 @@ int main(void) {
 	int dim2[2]= {3,3};
 	Matrix * tmp12= zerosM(ndim2, dim2);
 	a = tmp12;
-	double* lhs_data2 = i_to_d(a);
+	double* lhs_data2 = d_to_d(a);
 	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
 		int tmp13= pow((-1), (iter3 + 1));
 		int d0_2 = iter3 % 3;
@@ -72,7 +72,6 @@ int main(void) {
 		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp14;
 	
 	}
-	mat1 = mat1;
 	// Write matrix mat2
 	int size2 = 1;
 	for (int iter4 = 0 ; iter4 < ndim2; iter4++)
@@ -102,7 +101,7 @@ int main(void) {
 	int dim3[2]= {3,3};
 	Matrix * tmp23= zerosM(ndim3, dim3);
 	a = tmp23;
-	complex* lhs_data3 = i_to_c(a);
+	complex* lhs_data3 = c_to_c(a);
 	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
 		int d0_3 = iter5 % 3;
 		if (d0_3 == 0) {
@@ -113,7 +112,6 @@ int main(void) {
 		lhs_data3[(d1_3-1) + (d0_3-1) * 3] = tmp24;
 	
 	}
-	mat2 = mat2;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter6 = 0 ; iter6 < ndim3; iter6++)

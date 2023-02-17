@@ -483,9 +483,9 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         //let obj2 = builtin_funs.find(x => x.fun_matlab === node.rightNode.valueNode.text);
                         let obj2 = findBuiltin(builtin_funs, node.rightNode.valueNode.text);
                         if (obj1 != null && obj1 != undefined) {
-                            lhs = obj1.outs_transform(outs);
+                            lhs = obj1.outs_transform(args, arg_types, outs);
                         } else if (obj2 != null && obj2 != undefined) {
-                            lhs = obj2.outs_transform(outs);
+                            lhs = obj2.outs_transform(args, arg_types, outs);
                         }
                     }
                     var rhs:string = transformNode(node.rightNode);
@@ -494,7 +494,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     for (let i = 0; i < outs.length; i ++) {
                         outs[i] = transformNode(outs[i]);
                     }
-
+                    
                     var rhs:string = transformNode(node.rightNode);
                     init_flag = true;
                     lhs = outs[0];
@@ -703,7 +703,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
                             scope = scope[scope.length - 1];
                         }
-                        //papaya
+                        
                         let obj6 = tmp_tbl.find(x => x.name == "lhs_data");
                         let new_flag = true;
                         let tmp_lhs = "lhs_data";
@@ -841,10 +841,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 scope: lhs_scope
                             });
                             
-                            main_queue.push({
+                            /*main_queue.push({
                                 expression: `${transformNode(node.leftNode.valueNode)} = ${tmp_mat};`,
                                 condition: condition
-                            });
+                            });*/
                             
                         } else {
                             if (idx.length == 1) {
@@ -927,7 +927,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
             case g.SyntaxType.CallOrSubscript: {
                 // Is a custom function call
-                
+                //papaya
                 let obj = custom_functions.find(x => x.name === node.valueNode.text);
                 let [args1, outs, is_subscript] = parseNode(node, false);
                 let arg_types = [];
@@ -937,6 +937,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     let arg = args1[i];
                     args.push(transformNode(arg));
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    
+                    if (/tmp.*\[0\]/.test(args[i])) {
+                        [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
+                    }
                     /*if (arg.type != g.SyntaxType.CellSubscript && ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
                     }*/
@@ -995,17 +999,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     
                 } else {
                     // Is a builtin function call
-                    //let obj = builtin_funs.find(x => x.fun_matlab === node.valueNode.text);
-                    /*let obj = builtin_funs.find(x => {
-                        let found = -1;
-                        if (x.fun_matlab instanceof RegExp) {
-                            found = node.valueNode.text.search(x.fun_matlab);
-                        } else {
-                            let re = new RegExp(`\\b${x.fun_matlab}\\b`, 'g');
-                            found = node.valueNode.text.search(re);
-                        }
-                        return found !== -1;
-                    });*/
                     let obj = findBuiltin(builtin_funs, node.valueNode.text);
                     
                     if (obj != null && obj != undefined) {
@@ -1161,7 +1154,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 
                                 if (args == null) {
                                     updateFunParams(0);
-                                    [main_function, function_definitions] = pushToMain(fun_c, fun_params);
+                                    [main_function, function_definitions] = pushToMain(`${fun_c}();`, fun_params);
                                 } else {
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(`${fun_c}(${args.join(", ")});`, fun_params);
@@ -1171,7 +1164,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 return null;
                                 
                             } else {
-                                let var_val = fun_c;
+                                let var_val = `${fun_c}()`;
                                 if (args != null) {
                                     var_val = `${fun_c}(${args.join(", ")})`;
                                 }
@@ -1405,12 +1398,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
                 let expression = [];
                 let tmp_vec = generateTmpVar("vec", tmp_tbl);
+                let tmp_iter = generateTmpVar("iter", tmp_tbl);
                 expression.push(`${type} ${tmp_vec}[${numel(dim)}];`);
                 expression.push(`
-for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
-\t${tmp_vec}[i] = ${start} + ${step}*i;
-}
-                `)
+for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}++) {
+\t${tmp_vec}[${tmp_iter}] = ${start} + ${step}*${tmp_iter};
+}`)
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain(expression.join("\n"), fun_params);
                 return tmp_vec;
@@ -1618,21 +1611,30 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
                 expression.push(`Matrix * ${name} = createM(${tmp_ndim}, ${tmp_dim}, ${obj.matrix_type});`)
             }
         }
+        //papaya
         let tmp_input = generateTmpVar("input", tmp_tbl);
         expression.push(`${type} *${tmp_input} = NULL;`);
     	expression.push(`${tmp_input} = malloc( ${numel(dim)}*sizeof(*${tmp_input}));`);
-    	
-    	var j = 0;
+    	let j = 0;
     	for (let i=0; i<node.childCount; i++) {
             if (node.children[i].isNamed) {
                 //let transform_child = node.children[i].text;
                 let transform_child = transformNode(node.children[i]);
-                if (obj.matrix_type == 3)
+                let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(node.children[i], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                if (obj.matrix_type == 3) {
                     expression.push(`${tmp_input}[${j}][] = ${transform_child.replace(/'/g, '"')};`);
-                else {
+                    j++;
+                } else if (numel(child_dim) != 1 && !child_ismatrix) {
+                    let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                    expression.push(`for (int ${tmp_iter} = 0; ${tmp_iter} < ${numel(child_dim)}; ${tmp_iter}++) {`);
+                    expression.push(`   ${tmp_input}[${j} + ${tmp_iter}] = ${transform_child}[${tmp_iter}];`)
+                    expression.push(`}`)
+                    j+=numel(child_dim);
+                } else {
                     expression.push(`${tmp_input}[${j}] = ${transform_child};`);
+                    j++;
                 }
-                j++;
+                
             }
     	}
     	
@@ -1742,7 +1744,7 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
                 scope: findVarScope(node, block_idxs, current_code, debug)
             });
             
-            let var_val = fun_c;
+            let var_val = `${fun_c}()`;
             if (args != null) {
                 var_val = `${fun_c}(${args.join(", ")})`;
             }
@@ -1809,8 +1811,9 @@ for (int i = ${start}; ${start} + ${step}*i < ${stop}; i++) {
                         param_list.push(`${ptr_args[i].type}* p_${return_var.text}`);
                     }
                 }
-                var ptr_declaration_joined = ptr_declaration.join("\n");
                 
+                var ptr_declaration_joined = ptr_declaration.join("\n");
+                //grapes
                 if (param_list.length == 0) {
                     var param_list_joined = "void";
                 } else {

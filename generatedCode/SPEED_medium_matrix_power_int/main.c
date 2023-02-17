@@ -29,7 +29,7 @@ int main(void) {
 		int d1_1 = (iter1 - d0_1)/100 + 1;
 		int tmp4= pow(iter1, 2);
 		double tmp3= tmp4 + 0.5;
-		lhs_data1[(d1_1-1) + (d0_1-1)00] = tmp3;
+		lhs_data1[(d1_1-1) + (d0_1-1) * 100] = tmp3;
 	
 	}
 	// Write matrix mat1
@@ -41,7 +41,7 @@ int main(void) {
 	Matrix *mat1 = createM(ndim1, dim1, 1);
 	writeM(mat1, size1, lhs_data1);
 	for (int iter3 = 1; iter3 <= iterations; ++ iter3) {
-		Matrix * tmp5= mpowerM(mat1, exponent);
+		Matrix * tmp5= mpowerM(mat1, &exponent, 1);
 		Matrix * c= tmp5;
 		//disp(c);
 	

@@ -70,7 +70,6 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim3, dim3, 0);
 	writeM(mat1, size1, lhs_data1);
-	mat1 = mat1;
 	printM(mat1);
 	double d3;
 	detM(mat1, &d3);
@@ -106,14 +105,9 @@ int main(void) {
 				writeM(mat2, size2, lhs_data2);
 				} else {
 				int tmp8= (counter + iter5) % 7;
-				int d0_3 = counter % 5;
-				if (d0_3 == 0) {
-					d0_3 = 5;
-				}
-				int d1_3 = (counter - d0_3)/5 + 1;
 				int tmp10= (counter + iter5) % 7;
 				int tmp9= -1 * tmp10;
-				lhs_data2[(d1_3-1) + (d0_3-1) * 5] = tmp9;
+				lhs_data2[(d1_3-1) + (d0_3-1) ] = tmp9;
 				
 			
 			}
@@ -136,13 +130,13 @@ int main(void) {
 	complex* lhs_data3 = i_to_c(a);
 	lhs_data3[0] = tmp13;
 	complex tmp14= 3 - 8*I;
-	lhs_data3[2] = tmp14;
+	lhs_data3[1] = tmp14;
 	complex tmp15= 20*I;
-	lhs_data3[4] = tmp15;
+	lhs_data3[2] = tmp15;
 	complex tmp16= 1 + 25*I;
-	lhs_data3[1] = tmp16;
+	lhs_data3[3] = tmp16;
 	int tmp17= 0;
-	lhs_data3[3] = tmp17;
+	lhs_data3[4] = tmp17;
 	int tmp18= 1;
 	lhs_data3[5] = tmp18;
 	// Write matrix mat3

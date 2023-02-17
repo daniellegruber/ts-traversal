@@ -39,7 +39,6 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 2);
 	writeM(mat1, size1, lhs_data1);
-	mat1 = mat1;
 	for (int iter4 = 1; iter4 <= iterations; ++ iter4) {
 		Matrix * tmp7= transposeM(mat1);
 		Matrix * b= tmp7;

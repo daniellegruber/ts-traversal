@@ -36,7 +36,6 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 0);
 	writeM(mat1, size1, lhs_data1);
-	mat1 = mat1;
 	printM(mat1);
 	Matrix * tmp3= transposeM(mat1);
 	printM(tmp3);
@@ -50,7 +49,7 @@ int main(void) {
 	Matrix * tmp6= zerosM(ndim2, dim2);
 	a = tmp6;
 	counter = 1;
-	double* lhs_data2 = i_to_d(a);
+	double* lhs_data2 = d_to_d(a);
 	for (int iter4 = 1; iter4 <= 3; ++ iter4) {
 		for (int iter5 = 1; iter5 <= 6; ++ iter5) {
 			double tmp7= counter * counter + 0.5;
@@ -68,7 +67,6 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim2, dim2, 1);
 	writeM(mat2, size2, lhs_data2);
-	mat2 = mat2;
 	printM(mat2);
 	Matrix * tmp8= transposeM(mat2);
 	printM(tmp8);
@@ -82,7 +80,7 @@ int main(void) {
 	Matrix * tmp11= zerosM(ndim3, dim3);
 	a = tmp11;
 	counter = 1;
-	complex* lhs_data3 = i_to_c(a);
+	complex* lhs_data3 = c_to_c(a);
 	for (int iter7 = 1; iter7 <= 3; ++ iter7) {
 		for (int iter8 = 1; iter8 <= 6; ++ iter8) {
 			complex tmp12= counter * counter + 0.5 - 0.5*I;
@@ -100,7 +98,6 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim3, dim3, 2);
 	writeM(mat3, size3, lhs_data3);
-	mat3 = mat3;
 	printM(mat3);
 	Matrix * tmp13= transposeM(mat3);
 	printM(tmp13);
@@ -114,7 +111,7 @@ int main(void) {
 	Matrix * tmp16= zerosM(ndim4, dim4);
 	a = tmp16;
 	counter = 1;
-	complex* lhs_data4 = i_to_c(a);
+	complex* lhs_data4 = c_to_c(a);
 	for (int iter10 = 1; iter10 <= 3; ++ iter10) {
 		for (int iter11 = 1; iter11 <= 6; ++ iter11) {
 			complex tmp17= counter * counter + 0.5 - 0.5*I;
@@ -132,7 +129,6 @@ int main(void) {
 	}
 	Matrix *mat4 = createM(ndim4, dim4, 2);
 	writeM(mat4, size4, lhs_data4);
-	mat4 = mat4;
 	printM(mat4);
 	Matrix * tmp18= ctransposeM(mat4);
 	printM(tmp18);

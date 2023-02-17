@@ -46,6 +46,18 @@ function extractSingularMat(mat, var_type, node, fun_params) {
             initialized: true,
             scope: (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
         });
+        fun_params.var_types.push({
+            name: "".concat(tmp_var, "[0]"),
+            type: var_type.type,
+            ndim: 1,
+            dim: [1],
+            ismatrix: false,
+            isvector: false,
+            ispointer: false,
+            isstruct: false,
+            initialized: true,
+            scope: (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+        });
         fun_params.alias_tbl = pushAliasTbl(mat, "".concat(tmp_var, "[0]"), node, fun_params);
         var _a = (0, modifyCode_1.pushToMain)("".concat(var_type.type, " * ").concat(tmp_var, " = ").concat(var_type.type.charAt(0), "_to_").concat(var_type.type.charAt(0), "(").concat(mat, ");"), fun_params), main_function = _a[0], function_definitions = _a[1];
         fun_params.main_function = main_function;
@@ -295,6 +307,32 @@ function parseFunctionDefNode(node) {
             if (node.return_variableNode == undefined && node.namedChildren[0].type == "return_value" /* g.SyntaxType.ReturnValue */) {
                 node.return_variableNode = node.namedChildren[0];
             }
+            /*let types = [];
+            for (let child of node.namedChildren) {
+                types.push(child.type);
+            }
+            console.log(node.nextNamedSibling.text);
+            if (types.includes(g.SyntaxType.Parameters)) {
+                let param_idx = types.indexOf(g.SyntaxType.Parameters);
+                var parametersNode = node.namedChildren[param_idx];
+                var nameNode = node.namedChildren[param_idx - 1];
+                var bodyNode = node.namedChildren[param_idx + 1];
+                var return_variableNode = undefined;
+                let return_idx = types.indexOf(g.SyntaxType.ReturnValue);
+                if (return_idx != null && return_idx != undefined) {
+                    return_variableNode = node.namedChildren[return_idx];
+                }
+                //return [return_variableNode, nameNode, parametersNode, bodyNode];
+                return {
+                    type: g.SyntaxType.FunctionDefinition,
+                    return_variableNode: return_variableNode,
+                    nameNode: nameNode,
+                    parametersNode: parametersNode,
+                    bodyNode: bodyNode
+                };
+            } else {
+                return null;
+            }*/
             return node;
             break;
         }

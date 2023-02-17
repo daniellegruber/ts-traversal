@@ -278,7 +278,6 @@ int main(void) {
 		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp15;
 	
 	}
-	mat1 = mat1;
 	// Write matrix mat2
 	int size2 = 1;
 	for (int iter5 = 0 ; iter5 < ndim14; iter5++)
@@ -296,7 +295,7 @@ int main(void) {
 	int dim15[2]= {7, 9};
 	Matrix * tmp19= zerosM(ndim15, dim15);
 	a = tmp19;
-	complex* lhs_data3 = i_to_c(a);
+	complex* lhs_data3 = c_to_c(a);
 	for (int iter6 = 1; iter6 <= 63; ++ iter6) {
 		int tmp20= pow((-1), iter6);
 		int d0_3 = iter6 % 7;
@@ -309,7 +308,6 @@ int main(void) {
 		lhs_data3[(d1_3-1) + (d0_3-1) * 9] = tmp21;
 	
 	}
-	mat2 = mat2;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter7 = 0 ; iter7 < ndim15; iter7++)

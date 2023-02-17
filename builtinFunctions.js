@@ -2,6 +2,7 @@
 exports.__esModule = true;
 exports.builtin_functions = exports.operatorMapping = void 0;
 var helperFunctions_1 = require("./helperFunctions");
+var customTypes_1 = require("./customTypes");
 var type_to_matrix_type = [
     { type: "integer", matrix_type: 0 },
     { type: "int", matrix_type: 0 },
@@ -41,26 +42,6 @@ function parseVectorArg(arg) {
         return [arg, null];
     }
 }
-var binaryOpType = function (left_type, right_type) {
-    if (left_type == right_type) {
-        return left_type;
-    }
-    else if (left_type == 'complex' || right_type == 'complex') {
-        return 'complex';
-    }
-    else if (left_type == 'double' || right_type == 'double') {
-        return 'double';
-    }
-    else if (left_type == 'bool') {
-        return right_type;
-    }
-    else if (right_type == 'bool') {
-        return left_type;
-    }
-    else {
-        return 'unknown';
-    }
-};
 exports.operatorMapping = [
     {
         fun_matlab: '+',
@@ -76,7 +57,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -89,7 +70,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -122,7 +103,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -147,7 +128,7 @@ exports.operatorMapping = [
                 var right_ndim = arg_types[1].ndim;
                 var right_dim = arg_types[1].dim;
                 return {
-                    type: binaryOpType(left_type, right_type),
+                    type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
@@ -185,7 +166,7 @@ exports.operatorMapping = [
             if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
-                var type_1 = binaryOpType(left_type, right_type);
+                var type_1 = (0, customTypes_1.binaryOpType)(left_type, right_type);
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_1; });
                 if (left_ismatrix) {
                     return [args[0], "&scalar", obj.matrix_type.toString()];
@@ -198,7 +179,7 @@ exports.operatorMapping = [
                 return args;
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -214,7 +195,7 @@ exports.operatorMapping = [
             var right_ismatrix = arg_types[1].ismatrix;
             if (left_ismatrix && right_ismatrix) {
                 return {
-                    type: binaryOpType(left_type, right_type),
+                    type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                     ndim: left_ndim,
                     dim: left_dim,
                     ismatrix: true,
@@ -225,7 +206,7 @@ exports.operatorMapping = [
             }
             else {
                 return {
-                    type: binaryOpType(left_type, right_type),
+                    type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                     ndim: left_ndim,
                     dim: [left_dim[0], right_dim[1]],
                     ismatrix: true,
@@ -294,7 +275,7 @@ exports.operatorMapping = [
             else if (left_ismatrix && !right_ismatrix) {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
-                var type_2 = binaryOpType(left_type, right_type);
+                var type_2 = (0, customTypes_1.binaryOpType)(left_type, right_type);
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_2; });
                 return [args[0], "1/(".concat(args[1], ")"), obj.matrix_type.toString()];
             }
@@ -302,7 +283,7 @@ exports.operatorMapping = [
                 return args;
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -315,7 +296,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
@@ -354,12 +335,12 @@ exports.operatorMapping = [
             else {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
-                var type_3 = binaryOpType(left_type, right_type);
+                var type_3 = (0, customTypes_1.binaryOpType)(left_type, right_type);
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_3; });
                 return ["1/(".concat(args[0], ")"), args[1], obj.matrix_type.toString()];
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -372,7 +353,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
                 ismatrix: true,
@@ -406,8 +387,29 @@ exports.operatorMapping = [
             }
         },
         req_arg_types: null,
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        args_transform: function (args, arg_types, outs) {
+            var left_ismatrix = arg_types[0].ismatrix;
+            var left_type = arg_types[0].type;
+            var right_ismatrix = arg_types[1].ismatrix;
+            var right_type = arg_types[1].type;
+            if (left_ismatrix && !right_ismatrix) {
+                var type_4 = (0, customTypes_1.binaryOpType)(left_type, right_type);
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_4; });
+                /*let isnum = /^[\d.]+[\+\-][\d.]+\*I$/.test(args[1]);
+                if (!isnum) {
+                    isnum = /^[\d.]+$/.test(args[1]);
+                }*/
+                var isnum = !/^[a-z].*$/.test(args[1]);
+                if (isnum) {
+                    return [args[0], '&exponent', obj.matrix_type.toString()];
+                }
+                else {
+                    return [args[0], "&".concat(args[1]), obj.matrix_type.toString()];
+                }
+            }
+            return args;
+        },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -421,7 +423,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             var right_ismatrix = arg_types[1].ismatrix;
-            var type = binaryOpType(left_type, right_type);
+            var type = (0, customTypes_1.binaryOpType)(left_type, right_type);
             if (left_type == 'complex' || right_type != 'int') {
                 type = 'complex';
             }
@@ -437,7 +439,35 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var left_type = arg_types[0].type;
+            var left_ndim = arg_types[0].ndim;
+            var left_dim = arg_types[0].dim;
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_type = arg_types[1].type;
+            var right_ndim = arg_types[1].ndim;
+            var right_dim = arg_types[1].dim;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && !right_ismatrix) {
+                var isnum = !/^[a-z].*$/.test(args[1]);
+                if (isnum) {
+                    var init_var = [];
+                    init_var.push({
+                        name: 'exponent',
+                        val: "".concat(args[1]),
+                        type: right_type,
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                    return init_var;
+                }
+            }
+            return null;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
@@ -454,7 +484,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -467,7 +497,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -495,7 +525,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -508,7 +538,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -536,7 +566,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -549,7 +579,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -591,8 +621,8 @@ exports.operatorMapping = [
             var left_type = arg_types[0].type;
             var right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                var type_4 = binaryOpType(left_type, right_type);
-                var obj = type_to_matrix_type.find(function (x) { return x.type === type_4; });
+                var type_5 = (0, customTypes_1.binaryOpType)(left_type, right_type);
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_5; });
                 var isnum = /^\d+$/.test(args[1]);
                 if (isnum) {
                     return [args[0], 'scalar', "".concat(obj.matrix_type)];
@@ -605,7 +635,7 @@ exports.operatorMapping = [
                 return args;
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -618,7 +648,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -676,7 +706,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -708,7 +738,8 @@ exports.operatorMapping = [
         fun_c: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
-            if (left_ismatrix && right_ismatrix) {
+            //if (left_ismatrix && right_ismatrix) {
+            if (left_ismatrix) {
                 return 'leM';
             }
             else {
@@ -716,8 +747,17 @@ exports.operatorMapping = [
             }
         },
         req_arg_types: null,
-        args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        args_transform: function (args, arg_types, outs) {
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (!right_ismatrix) {
+                return [args[0], 'tmp'];
+            }
+            else {
+                return args;
+            }
+        },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -741,7 +781,63 @@ exports.operatorMapping = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (!right_ismatrix) {
+                var dim = "{".concat(arg_types[0].dim, "}");
+                var ndim = arg_types[0].ndim;
+                var init_var = [];
+                init_var.push({
+                    name: 'ndim',
+                    val: "".concat(ndim),
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+                init_var.push({
+                    name: 'scalar',
+                    val: args[1],
+                    type: arg_types[1].type,
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                var obj = type_to_matrix_type.find(function (x) { return x.type === arg_types[1].type; });
+                init_var.push({
+                    name: 'tmp',
+                    val: "scaleM(onesM(ndim, dim), &scalar, ".concat(obj.matrix_type, ")"),
+                    type: 'int',
+                    ndim: ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                return init_var;
+            }
+            else {
+                return null;
+            }
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
@@ -758,7 +854,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -799,7 +895,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -840,7 +936,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -881,7 +977,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -922,7 +1018,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -963,7 +1059,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -995,7 +1091,7 @@ exports.operatorMapping = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1008,7 +1104,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1027,7 +1123,7 @@ exports.operatorMapping = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1040,7 +1136,7 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1059,7 +1155,7 @@ exports.operatorMapping = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1088,7 +1184,7 @@ exports.operatorMapping = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1125,7 +1221,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1162,7 +1258,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1199,7 +1295,7 @@ exports.operatorMapping = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1230,7 +1326,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'isEqualM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1263,7 +1359,7 @@ exports.builtin_functions = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1316,7 +1412,7 @@ exports.builtin_functions = [
                 return ["fmod((".concat(args[0], "),360) * M_PI / 180")];
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1383,7 +1479,7 @@ exports.builtin_functions = [
             }
             return [x, y, maxlag, scale];
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 4,
         n_opt_args: 3,
         //opt_arg_defaults: ['null', '0', 'none'],
@@ -1397,7 +1493,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1432,7 +1528,7 @@ exports.builtin_functions = [
             }
             return args_transformed;
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['0'],
@@ -1469,7 +1565,7 @@ exports.builtin_functions = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return null; },
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['0'],
@@ -1576,7 +1672,7 @@ exports.builtin_functions = [
             }
         ],
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return null; },
         n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1676,7 +1772,7 @@ exports.builtin_functions = [
             }
         ],
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1779,7 +1875,7 @@ exports.builtin_functions = [
             }
         ],
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1792,7 +1888,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1811,7 +1907,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'exppdfM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['1'],
@@ -1824,7 +1920,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1843,7 +1939,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'chi2pdfM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1856,7 +1952,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1875,7 +1971,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'gampdfM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 3,
         n_opt_args: 1,
         opt_arg_defaults: ['1'],
@@ -1888,7 +1984,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1907,7 +2003,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'lognpdfM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 3,
         n_opt_args: 2,
         opt_arg_defaults: ['0', '1'],
@@ -1920,7 +2016,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1939,7 +2035,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'normpdfM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 3,
         n_opt_args: 2,
         opt_arg_defaults: ['0', '1'],
@@ -1952,7 +2048,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -1971,7 +2067,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'unidpdfM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1984,7 +2080,7 @@ exports.builtin_functions = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             return {
-                type: binaryOpType(left_type, right_type),
+                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,
@@ -2003,7 +2099,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'normfitM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2019,9 +2115,9 @@ exports.builtin_functions = [
             return [
                 {
                     name: arg_mu,
-                    type: 'void',
-                    ndim: 2,
-                    dim: [1, 1],
+                    type: 'double',
+                    ndim: 1,
+                    dim: [1],
                     ismatrix: false,
                     isvector: false,
                     ispointer: true,
@@ -2029,9 +2125,9 @@ exports.builtin_functions = [
                 },
                 {
                     name: arg_sigma,
-                    type: 'void',
-                    ndim: 2,
-                    dim: [1, 1],
+                    type: 'double',
+                    ndim: 1,
+                    dim: [1],
                     ismatrix: false,
                     isvector: false,
                     ispointer: true,
@@ -2050,7 +2146,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'unifitM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2102,7 +2198,7 @@ exports.builtin_functions = [
             }
             return args;
         },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2163,7 +2259,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'eigM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return null; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2253,7 +2349,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'absM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2282,7 +2378,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'roundM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2311,7 +2407,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'floorM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2340,7 +2436,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'ceilM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2376,7 +2472,7 @@ exports.builtin_functions = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) {
+        outs_transform: function (args, arg_types, outs) {
             return outs[0];
         },
         n_req_args: 1,
@@ -2430,7 +2526,7 @@ exports.builtin_functions = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) {
+        outs_transform: function (args, arg_types, outs) {
             return outs[0];
         },
         n_req_args: 1,
@@ -2484,7 +2580,7 @@ exports.builtin_functions = [
             return [args[0]];
         },
         req_arg_types: null,
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2556,7 +2652,7 @@ exports.builtin_functions = [
             }
             return [args[0], n_quantiles, quantiles];
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2661,7 +2757,7 @@ exports.builtin_functions = [
             }
             return ['ndim', 'dim'];
         },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -2751,7 +2847,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'identityM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -2779,52 +2875,18 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'reshapeM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
-            //return [args[0], 'ndim', 'dim'];
-            return [outs[0], 'ndim', 'dim'];
+            return [args[0], 'ndim', 'dim'];
         },
-        outs_transform: function (outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return null; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            if (arg_types[1].ismatrix) {
-                return {
-                    type: 'int',
-                    ndim: 1,
-                    dim: [1],
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-            else {
-                var dim = [];
-                var ndim = args.slice(1).length;
-                if (args.length == 2) {
-                    dim = [Number(args[1]), Number(args[1])];
-                    ndim = 2;
-                }
-                else {
-                    for (var _i = 0, _a = args.slice(1); _i < _a.length; _i++) {
-                        var arg = _a[_i];
-                        dim.push(Number(arg));
-                    }
-                }
-                return {
-                    type: 'int',
-                    ndim: ndim,
-                    dim: dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false,
-                    isstruct: false
-                };
-            }
-        },
+        return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) {
+            return "".concat(outs[0], " = ").concat(args[0], ";");
+        },
         init_before: function (args, arg_types, outs) {
             var init_var = [];
             init_var.push({
@@ -2902,7 +2964,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'detM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -2935,7 +2997,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'invertM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -2961,7 +3023,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return null; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3014,7 +3076,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'strcmp'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3040,7 +3102,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'strcmpi'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3066,7 +3128,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3082,7 +3144,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'getsizeM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3108,7 +3170,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'getDimsM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3138,7 +3200,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3154,7 +3216,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3170,7 +3232,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3186,7 +3248,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3202,7 +3264,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3215,48 +3277,132 @@ exports.builtin_functions = [
     },
     {
         fun_matlab: 'rand',
-        fun_c: function (args, arg_types, outs) { return 'randM'; },
-        req_arg_types: null,
-        args_transform: function (args) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
+        fun_c: function (args, arg_types, outs) {
+            var match = args.find(function (x) { return x.includes('seed'); });
+            if (match != null && match != undefined) {
+                //let tmp = args[args.indexOf(match)];
+                return 'randomSeed';
             }
-            return [ndim, dim];
+            else {
+                return 'randM';
+            }
         },
-        outs_transform: function (outs) { return outs; },
+        req_arg_types: null,
+        args_transform: function (args, arg_types, outs) {
+            var match = args.find(function (x) { return x.includes('seed'); });
+            if (match != null && match != undefined) {
+                return null;
+            }
+            else {
+                if (arg_types[0].ispointer) {
+                    return ['ndim', args[0]];
+                }
+                return ['ndim', 'dim'];
+            }
+        },
+        outs_transform: function (args, arg_types, outs) {
+            var match = args.find(function (x) { return x.includes('seed'); });
+            if (match != null && match != undefined) {
+                return null;
+            }
+            else {
+                return outs;
+            }
+        },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
-            var dim = [];
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = [Number(args[0]), Number(args[0])];
-                ndim = 2;
+            var match = args.find(function (x) { return x.includes('seed'); });
+            if (match != null && match != undefined) {
+                return null;
             }
             else {
-                for (var _i = 0, args_4 = args; _i < args_4.length; _i++) {
-                    var arg = args_4[_i];
-                    dim.push(Number(arg));
+                var dim = [];
+                var ndim = args.length;
+                if (arg_types[0].ispointer) {
+                    dim = arg_types[0].dim;
+                    ndim = arg_types[0].ndim;
                 }
+                else {
+                    if (args.length == 1) {
+                        dim = [Number(args[0]), Number(args[0])];
+                        ndim = 2;
+                    }
+                    else {
+                        for (var _i = 0, args_4 = args; _i < args_4.length; _i++) {
+                            var arg = args_4[_i];
+                            dim.push(Number(arg));
+                        }
+                    }
+                }
+                return {
+                    type: 'double',
+                    ndim: ndim,
+                    dim: dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
             }
-            return {
-                type: "double",
-                ndim: ndim,
-                dim: dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            };
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var match = args.find(function (x) { return x.includes('seed'); });
+            if (match != null && match != undefined) {
+                return null;
+            }
+            else {
+                var dim = "{".concat(args.join(", "), "}");
+                var ndim = args.length;
+                var init_var = [];
+                if (arg_types[0].ispointer) {
+                    init_var.push({
+                        name: 'ndim',
+                        val: arg_types[0].ndim,
+                        type: 'int',
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                }
+                else {
+                    if (args.length == 1) {
+                        dim = "{".concat(args[0], ",").concat(args[0], "}");
+                        ndim = 2;
+                    }
+                    init_var.push({
+                        name: 'ndim',
+                        val: ndim,
+                        type: 'int',
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                    init_var.push({
+                        name: 'dim',
+                        val: dim,
+                        type: 'int',
+                        ndim: 1,
+                        dim: [ndim],
+                        ismatrix: false,
+                        isvector: true,
+                        ispointer: false,
+                        isstruct: false
+                    });
+                }
+                return init_var;
+            }
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
@@ -3264,15 +3410,9 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'randiM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
-            var dim = "{".concat(args.slice(1).join(", "), "}");
-            var ndim = args.slice(1).length;
-            if (args.length == 2) {
-                dim = "{".concat(args[1], ",").concat(args[1], "}");
-                ndim = 2;
-            }
-            return [ndim, dim, 0, args[0]];
+            return ['ndim', 'dim', 0, args[0]];
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3302,7 +3442,56 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = '';
+            var ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = "{".concat(args[1], ", ").concat(args[1], "}");
+                ndim = 2;
+            }
+            else {
+                dim = "{".concat(args.slice(1).join(", "), "}");
+            }
+            var init_var = [];
+            if (arg_types[0].ispointer) {
+                init_var.push({
+                    name: 'ndim',
+                    val: arg_types[0].ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            else {
+                init_var.push({
+                    name: 'ndim',
+                    val: ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            return init_var;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
@@ -3310,15 +3499,12 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'randnM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
-            var dim = "{".concat(args.join(", "), "}");
-            var ndim = args.length;
-            if (args.length == 1) {
-                dim = "{".concat(args[0], ",").concat(args[0], "}");
-                ndim = 2;
+            if (arg_types[0].ispointer) {
+                return ['ndim', args[0]];
             }
-            return [ndim, dim];
+            return ['ndim', 'dim'];
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3348,7 +3534,53 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var dim = "{".concat(args.join(", "), "}");
+            var ndim = args.length;
+            var init_var = [];
+            if (arg_types[0].ispointer) {
+                init_var.push({
+                    name: 'ndim',
+                    val: arg_types[0].ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            else {
+                if (args.length == 1) {
+                    dim = "{".concat(args[0], ",").concat(args[0], "}");
+                    ndim = 2;
+                }
+                init_var.push({
+                    name: 'ndim',
+                    val: ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            return init_var;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; }
     },
     {
@@ -3356,7 +3588,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3372,7 +3604,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return 'medianM'; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3405,7 +3637,7 @@ exports.builtin_functions = [
             }
             return [args[0]];
         },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3471,7 +3703,7 @@ exports.builtin_functions = [
             }
             return [args[0]];
         },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3530,7 +3762,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3546,7 +3778,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3562,7 +3794,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return null; },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3610,10 +3842,12 @@ exports.builtin_functions = [
                     format = '"\\n%s\\n"';
                     args[0] = args[0].replace(/'/g, '"');
                 }
-                return [format, args[0]];
+                //return [format, args[0]];
+                args.unshift(format);
+                return args;
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3629,7 +3863,7 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs) { return "".concat(args[0], " % ").concat(args[1]); },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return null; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3657,7 +3891,7 @@ exports.builtin_functions = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return args; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3699,13 +3933,15 @@ exports.builtin_functions = [
                 return [args[1]];
             }
             else {
-                args[0] = args[0].replace(/'/g, '"');
-                args[1] = args[1].replace(/'/g, '"');
+                for (var i = 0; i < args.length; i++) {
+                    args[i] = args[i].replace(/'/g, '"');
+                }
                 args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
-                return [args[0], args[1]];
+                //return [args[0], args[1]];
+                return args;
             }
         },
-        outs_transform: function (outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3720,7 +3956,7 @@ exports.builtin_functions = [
         fun_matlab: 'fft',
         fun_c: function (args, arg_types, outs) { return 'fftM'; },
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3750,7 +3986,7 @@ exports.builtin_functions = [
         fun_matlab: 'ifft',
         fun_c: function (args, arg_types, outs) { return 'ifftM'; },
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3805,7 +4041,7 @@ exports.builtin_functions = [
             }
             return [args[0], win_size, inc, num_coef, win_type];
         },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3868,7 +4104,7 @@ exports.builtin_functions = [
         },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) { return [args[0]]; },
-        outs_transform: function (outs) { return outs[0]; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,

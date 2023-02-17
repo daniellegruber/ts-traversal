@@ -11,10 +11,10 @@ var binaryOpType = function (left_type, right_type) {
     else if (left_type == 'double' || right_type == 'double') {
         return 'double';
     }
-    else if (left_type == 'bool') {
+    else if (left_type == 'bool' || left_type == 'unknown') {
         return right_type;
     }
-    else if (right_type == 'bool') {
+    else if (right_type == 'bool' || right_type == 'unknown') {
         return left_type;
     }
     else {

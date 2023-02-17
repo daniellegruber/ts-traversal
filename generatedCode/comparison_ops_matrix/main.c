@@ -164,7 +164,7 @@ int main(void) {
 		}
 		int d1_6 = (iter1 - d0_6)/1 + 1;
 		int tmp7= iter1 * iter1;
-		lhs_data1[(d1_6-1) + (d0_6-1)] = tmp7;
+		lhs_data1[(d1_6-1) + (d0_6-1) ] = tmp7;
 	
 	}
 	// Write matrix mat1
@@ -175,7 +175,6 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim3, dim3, 0);
 	writeM(mat1, size1, lhs_data1);
-	matrices[4] = mat1;
 	Matrix * tmp8= transposeM(matrices[4]);
 	matrices[4] = tmp8;
 	int ndim4= 2;
@@ -184,13 +183,13 @@ int main(void) {
 	matrices[5] = tmp9;
 	double* lhs_data2 = i_to_d(matrices[5]);
 	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
-		int d0_12 = iter3 % 1;
-		if (d0_12 == 0) {
-			d0_12 = 1;
+		int d0_11 = iter3 % 1;
+		if (d0_11 == 0) {
+			d0_11 = 1;
 		}
-		int d1_12 = (iter3 - d0_12)/1 + 1;
+		int d1_11 = (iter3 - d0_11)/1 + 1;
 		double tmp10= iter3 * iter3 + 0.5;
-		lhs_data2[(d1_12-1) + (d0_12-1)] = tmp10;
+		lhs_data2[(d1_11-1) + (d0_11-1) ] = tmp10;
 	
 	}
 	// Write matrix mat2
@@ -201,7 +200,6 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim4, dim4, 1);
 	writeM(mat2, size2, lhs_data2);
-	matrices[5] = mat2;
 	Matrix * tmp11= transposeM(matrices[5]);
 	matrices[5] = tmp11;
 	int ndim5= 2;
@@ -210,13 +208,13 @@ int main(void) {
 	matrices[6] = tmp12;
 	complex* lhs_data3 = i_to_c(matrices[6]);
 	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
-		int d0_18 = iter5 % 1;
-		if (d0_18 == 0) {
-			d0_18 = 1;
+		int d0_16 = iter5 % 1;
+		if (d0_16 == 0) {
+			d0_16 = 1;
 		}
-		int d1_18 = (iter5 - d0_18)/1 + 1;
+		int d1_16 = (iter5 - d0_16)/1 + 1;
 		complex tmp13= iter5 * iter5 + 0.5*I;
-		lhs_data3[(d1_18-1) + (d0_18-1)] = tmp13;
+		lhs_data3[(d1_16-1) + (d0_16-1) ] = tmp13;
 	
 	}
 	// Write matrix mat3
@@ -227,7 +225,6 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
-	matrices[6] = mat3;
 	Matrix * tmp14= transposeM(matrices[6]);
 	matrices[6] = tmp14;
 	int ndim6= 2;
@@ -236,13 +233,13 @@ int main(void) {
 	matrices[7] = tmp15;
 	int* lhs_data4 = i_to_i(matrices[7]);
 	for (int iter7 = 1; iter7 <= 9; ++ iter7) {
-		int d0_24 = iter7 % 1;
-		if (d0_24 == 0) {
-			d0_24 = 1;
+		int d0_21 = iter7 % 1;
+		if (d0_21 == 0) {
+			d0_21 = 1;
 		}
-		int d1_24 = (iter7 - d0_24)/1 + 1;
+		int d1_21 = (iter7 - d0_21)/1 + 1;
 		int tmp16= (iter7 - 5) * iter7;
-		lhs_data4[(d1_24-1) + (d0_24-1)] = tmp16;
+		lhs_data4[(d1_21-1) + (d0_21-1) ] = tmp16;
 	
 	}
 	// Write matrix mat4
@@ -253,7 +250,6 @@ int main(void) {
 	}
 	Matrix *mat4 = createM(ndim6, dim6, 0);
 	writeM(mat4, size4, lhs_data4);
-	matrices[7] = mat4;
 	Matrix * tmp17= transposeM(matrices[7]);
 	matrices[7] = tmp17;
 	int ndim7= 2;
@@ -262,13 +258,13 @@ int main(void) {
 	matrices[8] = tmp18;
 	double* lhs_data5 = i_to_d(matrices[8]);
 	for (int iter9 = 1; iter9 <= 9; ++ iter9) {
-		int d0_30 = iter9 % 1;
-		if (d0_30 == 0) {
-			d0_30 = 1;
+		int d0_26 = iter9 % 1;
+		if (d0_26 == 0) {
+			d0_26 = 1;
 		}
-		int d1_30 = (iter9 - d0_30)/1 + 1;
+		int d1_26 = (iter9 - d0_26)/1 + 1;
 		double tmp19= (iter9 - 8.2) * iter9 + 0.5;
-		lhs_data5[(d1_30-1) + (d0_30-1)] = tmp19;
+		lhs_data5[(d1_26-1) + (d0_26-1) ] = tmp19;
 	
 	}
 	// Write matrix mat5
@@ -279,7 +275,6 @@ int main(void) {
 	}
 	Matrix *mat5 = createM(ndim7, dim7, 1);
 	writeM(mat5, size5, lhs_data5);
-	matrices[8] = mat5;
 	Matrix * tmp20= transposeM(matrices[8]);
 	matrices[8] = tmp20;
 	int ndim8= 2;
@@ -288,13 +283,13 @@ int main(void) {
 	matrices[9] = tmp21;
 	complex* lhs_data6 = i_to_c(matrices[9]);
 	for (int iter11 = 1; iter11 <= 9; ++ iter11) {
-		int d0_36 = iter11 % 1;
-		if (d0_36 == 0) {
-			d0_36 = 1;
+		int d0_31 = iter11 % 1;
+		if (d0_31 == 0) {
+			d0_31 = 1;
 		}
-		int d1_36 = (iter11 - d0_36)/1 + 1;
+		int d1_31 = (iter11 - d0_31)/1 + 1;
 		complex tmp22= (iter11 - 5.89) * (iter11) + ((0.5) * (4 - iter11)) * 1*I;
-		lhs_data6[(d1_36-1) + (d0_36-1)] = tmp22;
+		lhs_data6[(d1_31-1) + (d0_31-1) ] = tmp22;
 	
 	}
 	// Write matrix mat6
@@ -305,7 +300,6 @@ int main(void) {
 	}
 	Matrix *mat6 = createM(ndim8, dim8, 2);
 	writeM(mat6, size6, lhs_data6);
-	matrices[9] = mat6;
 	Matrix * tmp23= transposeM(matrices[9]);
 	matrices[9] = tmp23;
 	
@@ -346,6 +340,42 @@ int main(void) {
 	
 	for (int iter13 = 1; iter13 <= 12; ++ iter13) {
 		for (int iter14 = 1; iter14 <= 12; ++ iter14) {
+			int d0_37 = iter13 % 11;
+			if (d0_37 == 0) {
+				d0_37 = 11;
+			}
+			int d1_37 = (iter13 - d0_37)/11 + 1;
+			int d0_38 = iter14 % 11;
+			if (d0_38 == 0) {
+				d0_38 = 11;
+			}
+			int d1_38 = (iter14 - d0_38)/11 + 1;
+			Matrix * tmp24= ltM(matrices[(d1_37-1) + (d0_37-1) ], matrices[(d1_38-1) + (d0_38-1) ]);
+			printM(tmp24);
+			int d0_39 = iter13 % 11;
+			if (d0_39 == 0) {
+				d0_39 = 11;
+			}
+			int d1_39 = (iter13 - d0_39)/11 + 1;
+			int d0_40 = iter14 % 11;
+			if (d0_40 == 0) {
+				d0_40 = 11;
+			}
+			int d1_40 = (iter14 - d0_40)/11 + 1;
+			Matrix * tmp25= leM(matrices[(d1_39-1) + (d0_39-1) ], matrices[(d1_40-1) + (d0_40-1) ]);
+			printM(tmp25);
+			int d0_41 = iter13 % 11;
+			if (d0_41 == 0) {
+				d0_41 = 11;
+			}
+			int d1_41 = (iter13 - d0_41)/11 + 1;
+			int d0_42 = iter14 % 11;
+			if (d0_42 == 0) {
+				d0_42 = 11;
+			}
+			int d1_42 = (iter14 - d0_42)/11 + 1;
+			Matrix * tmp26= gtM(matrices[(d1_41-1) + (d0_41-1) ], matrices[(d1_42-1) + (d0_42-1) ]);
+			printM(tmp26);
 			int d0_43 = iter13 % 11;
 			if (d0_43 == 0) {
 				d0_43 = 11;
@@ -356,8 +386,8 @@ int main(void) {
 				d0_44 = 11;
 			}
 			int d1_44 = (iter14 - d0_44)/11 + 1;
-			Matrix * tmp24= ltM(matrices[(d1_43-1) + (d0_43-1)], matrices[(d1_44-1) + (d0_44-1)]);
-			printM(tmp24);
+			Matrix * tmp27= geM(matrices[(d1_43-1) + (d0_43-1) ], matrices[(d1_44-1) + (d0_44-1) ]);
+			printM(tmp27);
 			int d0_45 = iter13 % 11;
 			if (d0_45 == 0) {
 				d0_45 = 11;
@@ -368,8 +398,8 @@ int main(void) {
 				d0_46 = 11;
 			}
 			int d1_46 = (iter14 - d0_46)/11 + 1;
-			Matrix * tmp25= leM(matrices[(d1_45-1) + (d0_45-1)], matrices[(d1_46-1) + (d0_46-1)]);
-			printM(tmp25);
+			Matrix * tmp28= neM(matrices[(d1_45-1) + (d0_45-1) ], matrices[(d1_46-1) + (d0_46-1) ]);
+			printM(tmp28);
 			int d0_47 = iter13 % 11;
 			if (d0_47 == 0) {
 				d0_47 = 11;
@@ -380,45 +410,51 @@ int main(void) {
 				d0_48 = 11;
 			}
 			int d1_48 = (iter14 - d0_48)/11 + 1;
-			Matrix * tmp26= gtM(matrices[(d1_47-1) + (d0_47-1)], matrices[(d1_48-1) + (d0_48-1)]);
-			printM(tmp26);
-			int d0_49 = iter13 % 11;
-			if (d0_49 == 0) {
-				d0_49 = 11;
-			}
-			int d1_49 = (iter13 - d0_49)/11 + 1;
-			int d0_50 = iter14 % 11;
-			if (d0_50 == 0) {
-				d0_50 = 11;
-			}
-			int d1_50 = (iter14 - d0_50)/11 + 1;
-			Matrix * tmp27= geM(matrices[(d1_49-1) + (d0_49-1)], matrices[(d1_50-1) + (d0_50-1)]);
-			printM(tmp27);
-			int d0_51 = iter13 % 11;
-			if (d0_51 == 0) {
-				d0_51 = 11;
-			}
-			int d1_51 = (iter13 - d0_51)/11 + 1;
-			int d0_52 = iter14 % 11;
-			if (d0_52 == 0) {
-				d0_52 = 11;
-			}
-			int d1_52 = (iter14 - d0_52)/11 + 1;
-			Matrix * tmp28= neM(matrices[(d1_51-1) + (d0_51-1)], matrices[(d1_52-1) + (d0_52-1)]);
-			printM(tmp28);
-			int d0_53 = iter13 % 11;
-			if (d0_53 == 0) {
-				d0_53 = 11;
-			}
-			int d1_53 = (iter13 - d0_53)/11 + 1;
-			int d0_54 = iter14 % 11;
-			if (d0_54 == 0) {
-				d0_54 = 11;
-			}
-			int d1_54 = (iter14 - d0_54)/11 + 1;
-			Matrix * tmp29= equalM(matrices[(d1_53-1) + (d0_53-1)], matrices[(d1_54-1) + (d0_54-1)]);
+			Matrix * tmp29= equalM(matrices[(d1_47-1) + (d0_47-1) ], matrices[(d1_48-1) + (d0_48-1) ]);
 			printM(tmp29);
 			if ((iter13 == 4 || iter13 == 7 || iter13 == 10 || iter14 == 4 || iter14 == 7 || iter14 == 10)) {
+				int d0_49 = iter13 % 11;
+				if (d0_49 == 0) {
+					d0_49 = 11;
+				}
+				int d1_49 = (iter13 - d0_49)/11 + 1;
+				int d0_50 = iter14 % 11;
+				if (d0_50 == 0) {
+					d0_50 = 11;
+				}
+				int d1_50 = (iter14 - d0_50)/11 + 1;
+				Matrix * tmp30= maxM(matrices[(d1_49-1) + (d0_49-1) ], matrices[(d1_50-1) + (d0_50-1) ]);
+				int * tmp31 = i_to_i(tmp30);
+				printf("\n%d\n", tmp31[0]);
+				int d0_51 = iter13 % 11;
+				if (d0_51 == 0) {
+					d0_51 = 11;
+				}
+				int d1_51 = (iter13 - d0_51)/11 + 1;
+				int d0_52 = iter14 % 11;
+				if (d0_52 == 0) {
+					d0_52 = 11;
+				}
+				int d1_52 = (iter14 - d0_52)/11 + 1;
+				Matrix * tmp32= minM(matrices[(d1_51-1) + (d0_51-1) ], matrices[(d1_52-1) + (d0_52-1) ]);
+				int * tmp33 = i_to_i(tmp32);
+				printf("\n%d\n", tmp33[0]);
+
+				
+				} else if ((iter13 == 6 || iter13 == 9 || iter13 == 12 || iter14 == 6 || iter14 == 9 || iter14 == 12)) {
+				int d0_53 = iter13 % 11;
+				if (d0_53 == 0) {
+					d0_53 = 11;
+				}
+				int d1_53 = (iter13 - d0_53)/11 + 1;
+				int d0_54 = iter14 % 11;
+				if (d0_54 == 0) {
+					d0_54 = 11;
+				}
+				int d1_54 = (iter14 - d0_54)/11 + 1;
+				Matrix * tmp34= maxM(matrices[(d1_53-1) + (d0_53-1) ], matrices[(d1_54-1) + (d0_54-1) ]);
+				int * tmp35 = i_to_i(tmp34);
+				printf("\n%d\n", tmp35[0]);
 				int d0_55 = iter13 % 11;
 				if (d0_55 == 0) {
 					d0_55 = 11;
@@ -429,9 +465,12 @@ int main(void) {
 					d0_56 = 11;
 				}
 				int d1_56 = (iter14 - d0_56)/11 + 1;
-				Matrix * tmp30= maxM(matrices[(d1_55-1) + (d0_55-1)], matrices[(d1_56-1) + (d0_56-1)]);
-				int * tmp31 = i_to_i(tmp30);
-				printf("\n%d\n", tmp31[0]);
+				Matrix * tmp36= minM(matrices[(d1_55-1) + (d0_55-1) ], matrices[(d1_56-1) + (d0_56-1) ]);
+				int * tmp37 = i_to_i(tmp36);
+				printf("\n%d\n", tmp37[0]);
+
+				
+				} else {
 				int d0_57 = iter13 % 11;
 				if (d0_57 == 0) {
 					d0_57 = 11;
@@ -442,12 +481,9 @@ int main(void) {
 					d0_58 = 11;
 				}
 				int d1_58 = (iter14 - d0_58)/11 + 1;
-				Matrix * tmp32= minM(matrices[(d1_57-1) + (d0_57-1)], matrices[(d1_58-1) + (d0_58-1)]);
-				int * tmp33 = i_to_i(tmp32);
-				printf("\n%d\n", tmp33[0]);
-
-				
-				} else if ((iter13 == 6 || iter13 == 9 || iter13 == 12 || iter14 == 6 || iter14 == 9 || iter14 == 12)) {
+				Matrix * tmp38= maxM(matrices[(d1_57-1) + (d0_57-1) ], matrices[(d1_58-1) + (d0_58-1) ]);
+				int * tmp39 = i_to_i(tmp38);
+				printf("\n%d\n", tmp39[0]);
 				int d0_59 = iter13 % 11;
 				if (d0_59 == 0) {
 					d0_59 = 11;
@@ -458,49 +494,7 @@ int main(void) {
 					d0_60 = 11;
 				}
 				int d1_60 = (iter14 - d0_60)/11 + 1;
-				Matrix * tmp34= maxM(matrices[(d1_59-1) + (d0_59-1)], matrices[(d1_60-1) + (d0_60-1)]);
-				int * tmp35 = i_to_i(tmp34);
-				printf("\n%d\n", tmp35[0]);
-				int d0_61 = iter13 % 11;
-				if (d0_61 == 0) {
-					d0_61 = 11;
-				}
-				int d1_61 = (iter13 - d0_61)/11 + 1;
-				int d0_62 = iter14 % 11;
-				if (d0_62 == 0) {
-					d0_62 = 11;
-				}
-				int d1_62 = (iter14 - d0_62)/11 + 1;
-				Matrix * tmp36= minM(matrices[(d1_61-1) + (d0_61-1)], matrices[(d1_62-1) + (d0_62-1)]);
-				int * tmp37 = i_to_i(tmp36);
-				printf("\n%d\n", tmp37[0]);
-
-				
-				} else {
-				int d0_63 = iter13 % 11;
-				if (d0_63 == 0) {
-					d0_63 = 11;
-				}
-				int d1_63 = (iter13 - d0_63)/11 + 1;
-				int d0_64 = iter14 % 11;
-				if (d0_64 == 0) {
-					d0_64 = 11;
-				}
-				int d1_64 = (iter14 - d0_64)/11 + 1;
-				Matrix * tmp38= maxM(matrices[(d1_63-1) + (d0_63-1)], matrices[(d1_64-1) + (d0_64-1)]);
-				int * tmp39 = i_to_i(tmp38);
-				printf("\n%d\n", tmp39[0]);
-				int d0_65 = iter13 % 11;
-				if (d0_65 == 0) {
-					d0_65 = 11;
-				}
-				int d1_65 = (iter13 - d0_65)/11 + 1;
-				int d0_66 = iter14 % 11;
-				if (d0_66 == 0) {
-					d0_66 = 11;
-				}
-				int d1_66 = (iter14 - d0_66)/11 + 1;
-				Matrix * tmp40= minM(matrices[(d1_65-1) + (d0_65-1)], matrices[(d1_66-1) + (d0_66-1)]);
+				Matrix * tmp40= minM(matrices[(d1_59-1) + (d0_59-1) ], matrices[(d1_60-1) + (d0_60-1) ]);
 				int * tmp41 = i_to_i(tmp40);
 				printf("\n%d\n", tmp41[0]);
 

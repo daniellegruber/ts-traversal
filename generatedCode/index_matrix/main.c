@@ -57,7 +57,7 @@ int main(void) {
 			}
 			int d1_3 = (iter1 - d0_3)/3 + 1;
 			double tmp7= cimag(tmp2);
-			printf("%.5f  %.5fi  \n", tmp5);
+			printf("%.5f  %.5fi  \n", tmp5, tmp7);
 			
 			} else {
 			int d0_4 = iter1 % 3;
@@ -72,7 +72,7 @@ int main(void) {
 			}
 			int d1_5 = (iter1 - d0_5)/3 + 1;
 			double tmp11= cimag(tmp2);
-			printf("%.5f + %.5fi  \n", tmp9);
+			printf("%.5f + %.5fi  \n", tmp9, tmp11);
 			
 		
 		}
@@ -86,12 +86,12 @@ int main(void) {
 			if (tmp13 < 0) {
 				double tmp15= creal(tmp12);
 				double tmp17= cimag(tmp12);
-				printf("%.5f  %.5fi  \n", tmp15);
+				printf("%.5f  %.5fi  \n", tmp15, tmp17);
 				
 				} else {
 				double tmp19= creal(tmp12);
 				double tmp21= cimag(tmp12);
-				printf("%.5f + %.5fi  \n", tmp19);
+				printf("%.5f + %.5fi  \n", tmp19, tmp21);
 				
 			
 			}

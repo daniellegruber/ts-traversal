@@ -178,7 +178,7 @@ for index=3:12
 				continue
 			end
 			sprintf(stdout, 'Exponent: %.4f + %.4fi\n', i, j);
-			disp(matrices{index}^(i+ji));
+			disp(matrices{index}^(i+j*1i));
 		end
 	end
 end

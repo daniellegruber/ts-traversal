@@ -1,5 +1,6 @@
 import {Type, VarType} from "./typeInference";
 import {numel} from "./helperFunctions";
+import {binaryOpType} from "./customTypes";
 //import {SyntaxNode} from "./generated";
     
 type typeToMatrixType = {
@@ -32,7 +33,7 @@ type functionMapping = {
     fun_c: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): string; };
     req_arg_types: Array<Type>;
     args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
-    outs_transform: { (outs: Array<string>): Array<string>; }; 
+    outs_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
     n_req_args: number; // # required args
     n_opt_args: number; // # optional args
     opt_arg_defaults: Array<string>;
@@ -75,22 +76,6 @@ function parseVectorArg(arg:string) {
     }
 }
     
-const binaryOpType = (left_type, right_type) => {
-    if (left_type == right_type) {
-        return left_type;
-    } else if (left_type == 'complex' || right_type == 'complex') {
-        return 'complex';
-    } else if (left_type == 'double' || right_type == 'double') {
-        return 'double';
-    } else if (left_type == 'bool') {
-        return right_type;
-    } else if (right_type == 'bool') {
-        return left_type;
-    } else {
-        return 'unknown';
-    }
-}
-    
 export const operatorMapping: functionMapping[] = [
     { // Matrix * plusM(Matrix *m, Matrix *n)
         fun_matlab: '+', 
@@ -105,7 +90,7 @@ export const operatorMapping: functionMapping[] = [
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-        outs_transform: (outs) => outs,
+        outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -153,7 +138,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-        outs_transform: (outs) => outs,
+        outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -229,7 +214,7 @@ export const operatorMapping: functionMapping[] = [
                 return args;
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -331,7 +316,7 @@ export const operatorMapping: functionMapping[] = [
                 return args;
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -388,7 +373,7 @@ export const operatorMapping: functionMapping[] = [
                 return [`1/(${args[0]})`, args[1], obj.matrix_type.toString()];
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -435,8 +420,30 @@ export const operatorMapping: functionMapping[] = [
             }
         },  
         req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+        args_transform: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let left_type = arg_types[0].type;
+            let right_ismatrix = arg_types[1].ismatrix;
+            let right_type = arg_types[1].type;
+            if (left_ismatrix && !right_ismatrix) {
+                let type = binaryOpType(left_type, right_type);
+                let obj = type_to_matrix_type.find(x => x.type === type);
+                
+                /*let isnum = /^[\d.]+[\+\-][\d.]+\*I$/.test(args[1]);
+                if (!isnum) {
+                    isnum = /^[\d.]+$/.test(args[1]);
+                }*/
+                let isnum = !/^[a-z].*$/.test(args[1]);
+                if (isnum) {
+                    return [args[0], '&exponent', obj.matrix_type.toString()];
+                } else {
+                    return [args[0], `&${args[1]}`, obj.matrix_type.toString()];
+                }
+            }
+            
+            return args;
+        },
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -468,7 +475,36 @@ export const operatorMapping: functionMapping[] = [
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let left_type = arg_types[0].type;
+            let left_ndim = arg_types[0].ndim;
+            let left_dim = arg_types[0].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_type = arg_types[1].type;
+            let right_ndim = arg_types[1].ndim;
+            let right_dim = arg_types[1].dim;
+            let right_ismatrix = arg_types[1].ismatrix;
+            
+            if (left_ismatrix && !right_ismatrix) {
+                let isnum = !/^[a-z].*$/.test(args[1]);
+                if (isnum) {
+                    let init_var: InitVar[] = [];
+                    init_var.push({
+                        name: 'exponent',
+                        val: `${args[1]}`,
+                        type: right_type,
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    })
+                    return init_var;
+                }
+            }
+            return null;
+        },
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { // Matrix * timesM(Matrix *m, Matrix *n)
@@ -484,7 +520,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -526,7 +562,7 @@ export const operatorMapping: functionMapping[] = [
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -568,7 +604,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -626,16 +662,16 @@ export const operatorMapping: functionMapping[] = [
                 let type = binaryOpType(left_type, right_type);
                 let obj = type_to_matrix_type.find(x => x.type === type);
                 let isnum = /^\d+$/.test(args[1]);
-                    if (isnum) {
-                        return [args[0], 'scalar', `${obj.matrix_type}`];
-                    } else {
-                        return [args[0], `&${args[1]}`, `${obj.matrix_type}`];
-                    }
+                if (isnum) {
+                    return [args[0], 'scalar', `${obj.matrix_type}`];
+                } else {
+                    return [args[0], `&${args[1]}`, `${obj.matrix_type}`];
+                }
             } else {
                 return args;
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -708,7 +744,7 @@ export const operatorMapping: functionMapping[] = [
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -742,15 +778,24 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
-            if (left_ismatrix && right_ismatrix) {
+            //if (left_ismatrix && right_ismatrix) {
+            if (left_ismatrix) {
                 return 'leM';
             } else {
                 return null;
             }
         },  
         req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+        args_transform: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (!right_ismatrix) {
+                return [args[0], 'tmp'];
+            } else {
+                return args;
+            }
+        },
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -776,7 +821,62 @@ export const operatorMapping: functionMapping[] = [
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (!right_ismatrix) {
+                let dim = `{${arg_types[0].dim}}`;
+                let ndim = arg_types[0].ndim;
+                let init_var: InitVar[] = [];
+                init_var.push({
+                    name: 'ndim',
+                    val: `${ndim}`,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'scalar',
+                    val: args[1],
+                    type: arg_types[1].type,
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                let obj = type_to_matrix_type.find(x => x.type === arg_types[1].type);
+                init_var.push({
+                    name: 'tmp',
+                    val: `scaleM(onesM(ndim, dim), &scalar, ${obj.matrix_type})`,
+                    type: 'int',
+                    ndim: ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                return init_var;
+            } else {
+                return null;
+            }
+        },
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { // Matrix * gtM(Matrix *m, Matrix *n)
@@ -792,7 +892,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -834,7 +934,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -876,7 +976,7 @@ export const operatorMapping: functionMapping[] = [
         },   
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -918,7 +1018,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -960,7 +1060,7 @@ export const operatorMapping: functionMapping[] = [
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1002,7 +1102,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1036,7 +1136,7 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1069,7 +1169,7 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1103,7 +1203,7 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-        outs_transform: (outs) => outs,
+        outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1134,7 +1234,7 @@ export const operatorMapping: functionMapping[] = [
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1172,7 +1272,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1210,7 +1310,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1248,7 +1348,7 @@ export const operatorMapping: functionMapping[] = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1283,7 +1383,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'isEqualM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1315,7 +1415,7 @@ export const builtin_functions = [
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1365,7 +1465,7 @@ export const builtin_functions = [
                 return [`fmod((${args[0]}),360) * M_PI / 180`];
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1432,7 +1532,7 @@ export const builtin_functions = [
             
             return [x, y, maxlag, scale];
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 4,
         n_opt_args: 3,
         //opt_arg_defaults: ['null', '0', 'none'],
@@ -1481,7 +1581,7 @@ export const builtin_functions = [
             }
             return args_transformed;
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['0'],
@@ -1520,7 +1620,7 @@ export const builtin_functions = [
         },
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => null,
+		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['0'],
@@ -1627,7 +1727,7 @@ export const builtin_functions = [
 		    }
 		],
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => null,
+		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1727,7 +1827,7 @@ export const builtin_functions = [
 		    }
 		],
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1830,7 +1930,7 @@ export const builtin_functions = [
 		    }
 		],
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1863,7 +1963,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'exppdfM',
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 1,
         opt_arg_defaults: ['1'],
@@ -1897,7 +1997,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'chi2pdfM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -1930,7 +2030,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'gampdfM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 1,
         opt_arg_defaults: ['1'],
@@ -1964,7 +2064,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'lognpdfM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 2,
         opt_arg_defaults: ['0','1'],
@@ -1998,7 +2098,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'normpdfM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 2,
         opt_arg_defaults: ['0','1'],
@@ -2032,7 +2132,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'unidpdfM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2066,7 +2166,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'normfitM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2082,9 +2182,9 @@ export const builtin_functions = [
 			return [
 			    {
 			        name: arg_mu,
-			        type: 'void',
-			        ndim: 2,
-			        dim: [1,1],
+			        type: 'double',
+			        ndim: 1,
+			        dim: [1],
 			        ismatrix: false,
 			        isvector: false,
 			        ispointer: true,
@@ -2092,9 +2192,9 @@ export const builtin_functions = [
 			    },
 			    {
 			        name: arg_sigma,
-			        type: 'void',
-			        ndim: 2,
-			        dim: [1,1],
+			        type: 'double',
+			        ndim: 1,
+			        dim: [1],
 			        ismatrix: false,
 			        isvector: false,
 			        ispointer: true,
@@ -2113,7 +2213,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'unifitM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2166,7 +2266,7 @@ export const builtin_functions = [
             return args;
         },
         
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 3,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2227,7 +2327,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'eigM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => null,
+		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2318,7 +2418,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'absM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (outs) => outs,
+				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2348,7 +2448,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'roundM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2378,7 +2478,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'floorM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2408,7 +2508,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs) => 'ceilM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2445,7 +2545,7 @@ export const builtin_functions = [
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => {
+		outs_transform: (args, arg_types, outs) => {
 			return outs[0];
 		},
         n_req_args: 1,
@@ -2499,7 +2599,7 @@ export const builtin_functions = [
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => {
+		outs_transform: (args, arg_types, outs) => {
 			return outs[0];
 		},
         n_req_args: 1,
@@ -2553,7 +2653,7 @@ export const builtin_functions = [
             return [args[0]];
         },
         req_arg_types: null,
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2624,7 +2724,7 @@ export const builtin_functions = [
             }
             return [args[0], n_quantiles, quantiles];
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2735,7 +2835,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
             }
             return ['ndim', 'dim'];
         },
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -2822,7 +2922,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs) => 'identityM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => [args[0]],
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -2851,50 +2951,18 @@ for (int i = 0; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs) => 'reshapeM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => {
-            //return [args[0], 'ndim', 'dim'];
-            return [outs[0], 'ndim', 'dim'];
+            return [args[0], 'ndim', 'dim'];
         },
-		outs_transform: (outs) => null,
+		outs_transform: (args, arg_types, outs) => null,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        return_type: (args, arg_types, outs) => {
-            if (arg_types[1].ismatrix) {
-                return {
-                    type: 'int',
-                    ndim: 1,
-                    dim: [1],
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false 
-                };
-            } else {
-                let dim = [];
-                let ndim = args.slice(1).length;
-                if (args.length == 2) {
-                    dim = [Number(args[1]), Number(args[1])];
-                    ndim = 2;
-                } else {
-                    for (let arg of args.slice(1)) {
-                        dim.push(Number(arg));
-                    }
-                }
-                
-                return {
-                    type: 'int',
-                    ndim: ndim,
-                    dim: dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false 
-                };
-            }
-        },
+        return_type: (args, arg_types, outs) => null,
         push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,         
+        push_main_after: (args, arg_types, outs) => {
+            return `${outs[0]} = ${args[0]};`
+        },         
         init_before: (args, arg_types, outs) => {
             let init_var: InitVar[] = [];
             init_var.push({
@@ -2973,7 +3041,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs) => 'detM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3007,7 +3075,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs) => 'invertM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3033,7 +3101,7 @@ for (int i = 0; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => null,
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3086,7 +3154,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'strcmp', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3112,7 +3180,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'strcmpi', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3139,7 +3207,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3155,7 +3223,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'getsizeM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3181,7 +3249,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'getDimsM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => [args[0]],
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3211,7 +3279,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3227,7 +3295,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3243,7 +3311,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3259,7 +3327,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null,
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3275,7 +3343,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null,
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3288,46 +3356,124 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     },
     { // Matrix * randM(int ndim, int dim[ndim])
         fun_matlab: 'rand', 
-        fun_c: (args, arg_types, outs) => 'randM', 
-        req_arg_types: null,
-        args_transform: args => {
-            let dim = `{${args.join(", ")}}`;
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
+        fun_c: (args, arg_types, outs) => {
+            let match = args.find(x => x.includes('seed'));
+            if (match != null && match != undefined) {
+                //let tmp = args[args.indexOf(match)];
+                return 'randomSeed';
+            } else {
+                return 'randM'; 
             }
-            return [ndim, dim];
+        }, 
+        req_arg_types: null,
+        args_transform: (args, arg_types, outs) => {
+            let match = args.find(x => x.includes('seed'));
+            if (match != null && match != undefined) {
+                return null;
+            } else {
+                if (arg_types[0].ispointer) {
+                    return ['ndim', args[0]]
+                }
+                return ['ndim', 'dim'];
+            }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => {
+            let match = args.find(x => x.includes('seed'));
+            if (match != null && match != undefined) {
+                return null;
+            } else {
+                return outs; 
+            }
+        },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
-            let dim = [];
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = [Number(args[0]), Number(args[0])];
-                ndim = 2;
+            let match = args.find(x => x.includes('seed'));
+            if (match != null && match != undefined) {
+                return null;
             } else {
-                for (let arg of args) {
-                    dim.push(Number(arg));
+                let dim = [];
+                let ndim = args.length;
+                if (arg_types[0].ispointer) {
+                    dim = arg_types[0].dim;
+                    ndim = arg_types[0].ndim;
+                } else {
+                    if (args.length == 1) {
+                        dim = [Number(args[0]), Number(args[0])];
+                        ndim = 2;
+                    } else {
+                        for (let arg of args) {
+                            dim.push(Number(arg));
+                        }
+                    }
                 }
+                return {
+                    type: 'double',
+                    ndim: ndim,
+                    dim: dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
             }
-            return {
-                type: "double",
-                ndim: ndim,
-                dim: dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false,
-                isstruct: false 
-            };
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let match = args.find(x => x.includes('seed'));
+            if (match != null && match != undefined) {
+                return null;
+            } else {
+                let dim = `{${args.join(", ")}}`;
+                let ndim = args.length;
+                let init_var: InitVar[] = [];
+                
+                if (arg_types[0].ispointer) {
+                    init_var.push({
+                        name: 'ndim',
+                        val: arg_types[0].ndim,
+                        type: 'int',
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    })
+                } else {
+                    if (args.length == 1) {
+                        dim = `{${args[0]},${args[0]}}`;
+                        ndim = 2;
+                    }
+                    init_var.push({
+                        name: 'ndim',
+                        val: ndim,
+                        type: 'int',
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false
+                    })
+                    init_var.push({
+                        name: 'dim',
+                        val: dim,
+                        type: 'int',
+                        ndim: 1,
+                        dim: [ndim],
+                        ismatrix: false,
+                        isvector: true,
+                        ispointer: false,
+                        isstruct: false
+                    })
+                }
+                return init_var;
+            }
+        },
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { // Matrix * randiM(int ndim, int dim[ndim], int type, int imax)
@@ -3335,15 +3481,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'randiM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => {
-            let dim = `{${args.slice(1).join(", ")}}`;
-            let ndim = args.slice(1).length;
-            if (args.length == 2) {
-                dim = `{${args[1]},${args[1]}}`;
-                ndim = 2;
-            }
-            return [ndim, dim, 0, args[0]];
+            return ['ndim', 'dim', 0, args[0]];
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3371,7 +3511,55 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let dim = '';
+            let ndim = args.slice(1).length;
+            if (args.length == 2) {
+                dim = `{${args[1]}, ${args[1]}}`;
+                ndim = 2;
+            } else {
+                dim = `{${args.slice(1).join(", ")}}`;
+            }
+            let init_var: InitVar[] = [];
+            
+            if (arg_types[0].ispointer) {
+                init_var.push({
+                    name: 'ndim',
+                    val: arg_types[0].ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+            } else {
+                init_var.push({
+                    name: 'ndim',
+                    val: ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+            }
+            return init_var;
+        },
         tmp_out_transform: (args, arg_types, outs) => null
     },
     { // Matrix * randnM(int ndim, int dim[ndim])
@@ -3379,15 +3567,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'randnM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => {
-            let dim = `{${args.join(", ")}}`;
-            let ndim = args.length;
-            if (args.length == 1) {
-                dim = `{${args[0]},${args[0]}}`;
-                ndim = 2;
+            if (arg_types[0].ispointer) {
+                return ['ndim', args[0]]
             }
-            return [ndim, dim];
+            return ['ndim', 'dim'];
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3415,7 +3600,53 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let dim = `{${args.join(", ")}}`;
+            let ndim = args.length;
+            let init_var: InitVar[] = [];
+            
+            if (arg_types[0].ispointer) {
+                init_var.push({
+                    name: 'ndim',
+                    val: arg_types[0].ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+            } else {
+                if (args.length == 1) {
+                    dim = `{${args[0]},${args[0]}}`;
+                    ndim = 2;
+                }
+                init_var.push({
+                    name: 'ndim',
+                    val: ndim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+            }
+            return init_var;
+        },
         tmp_out_transform: (args, arg_types, outs) => null
     },
     {
@@ -3423,7 +3654,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3439,7 +3670,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => 'medianM',
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3472,7 +3703,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             return [args[0]];
         },
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3538,7 +3769,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             return [args[0]];
         },
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3597,7 +3828,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3613,7 +3844,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3629,7 +3860,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => null, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3673,10 +3904,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                     format = '"\\n%s\\n"';
                     args[0] = args[0].replace(/'/g, '"');
                 }
-                return [format, args[0]];
+                //return [format, args[0]];
+                args.unshift(format);
+                return args;
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3692,7 +3925,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs) => `${args[0]} % ${args[1]}`,
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => null,
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3720,7 +3953,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3760,13 +3993,15 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             if (arg_types[1].ismatrix) {
                 return [args[1]];
             } else {
-                args[0] = args[0].replace(/'/g, '"');
-                args[1] = args[1].replace(/'/g, '"');
+                for (let i = 0; i < args.length; i++) {
+                    args[i] = args[i].replace(/'/g, '"');
+                }
                 args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
-                return [args[0], args[1]];
+                //return [args[0], args[1]];
+                return args;
             }
         },
-		outs_transform: (outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3781,7 +4016,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_matlab: 'fft', 
         fun_c: (args, arg_types, outs) => 'fftM', 
         args_transform: (args, arg_types, outs) => [args[0]],
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3814,7 +4049,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_matlab: 'ifft', 
         fun_c: (args, arg_types, outs) => 'ifftM', 
         args_transform: (args, arg_types, outs) => [args[0]],
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3877,7 +4112,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             
             return [args[0], win_size, inc, num_coef, win_type];
         },
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
@@ -3941,7 +4176,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         }, 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => [args[0]], 
-		outs_transform: (outs) => outs[0],
+		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,

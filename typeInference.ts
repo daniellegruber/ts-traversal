@@ -308,12 +308,12 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
     return [var_types, custom_functions, block_idxs];
 }
 
-function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_functions, classes, file, alias_tbl, debug, isclass) {
+function getFunctionReturnType(fun_name, arg_types, var_types, fun_dictionary, custom_functions, classes, file, alias_tbl, debug, isclass) {
     // Update custom_functions with info on function return type
     if (debug == 1) {
         console.log("getFunctionReturnType");
     }
-    
+
     let obj = fun_dictionary.find(x => x.name === fun_name);
     if (obj != null) {
         let tree2 = parser.parse(obj.def_node.bodyNode.text);
@@ -351,12 +351,34 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
         custom_functions = c;
 
         let return_node = obj.def_node.return_variableNode;
-        
         if (return_node != undefined) {
             return_node = return_node.firstChild;
             // If multiple return values, use pointers
             if (return_node.type == g.SyntaxType.Matrix) {
                 let all_types = [];
+                let ptr_arg_types = [];
+                for (let i = 0; i < return_node.namedChildCount; i++) {
+                    let return_var = return_node.namedChildren[i];
+                    let [return_type, return_ndim, return_dim, return_ismatrix, return_ispointer, return_isstruct, c] = inferType(return_var, var_types2, custom_functions, classes, file, alias_tbl, debug);
+                    custom_functions = c;
+                    if (return_ismatrix && numel(return_dim) == 1) {
+                        return_ismatrix = false;
+                        return_ndim = 1;
+                        return_dim = [1];
+                    }
+                    if (obj.ptr_arg_types != null) {
+                        return_type = binaryOpType(return_type, obj.ptr_arg_types[i].type);
+                    }
+                    ptr_arg_types.push({
+        		        type: return_type,
+        		        ndim: return_ndim,
+        		        dim: return_dim,
+        		        ismatrix: return_ismatrix,
+        		        isvector: numel(return_dim) > 1 && !return_ismatrix,
+        		        ispointer: true,
+                        isstruct: return_isstruct
+        		    });
+                }
                 const v1: CustomFunction = { 
                     name: obj.name,
                     arg_types: tmp_arg_types,
@@ -365,12 +387,14 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                     external: obj.external,
                     file: obj.file,
                     def_node: obj.def_node,
+                    ptr_arg_types: ptr_arg_types,
                     ptr_args: (arg_types, outs) => {
                         let ptr_args = [];
                         for (let i = 0; i < return_node.namedChildCount; i++) {
                             let return_var = return_node.namedChildren[i];
-                            let [return_type, return_ndim, return_dim, return_ismatrix, return_ispointer, return_isstruct, c] = inferType(return_var, var_types2, custom_functions, classes, file, alias_tbl, debug);
-                            all_types.push(return_type);
+                            //let [return_type, return_ndim, return_dim, return_ismatrix, return_ispointer, return_isstruct, c] = inferType(return_var, var_types2, custom_functions, classes, file, alias_tbl, debug);
+                            //all_types.push(return_type);
+                            all_types.push(ptr_arg_types[i].type);
                             custom_functions = c;
                             let return_name = return_var.text;
                             if (outs.length > i) {
@@ -378,13 +402,13 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                             }
                             ptr_args.push({
             			        name: return_name,
-            			        type: return_type,
-            			        ndim: return_ndim,
-            			        dim: return_dim,
-            			        ismatrix: return_ismatrix,
-            			        isvector: numel(return_dim) > 1 && !return_ismatrix,
+            			        type: ptr_arg_types[i].type, //return_type,
+            			        ndim: ptr_arg_types[i].ndim, //return_ndim,
+            			        dim: ptr_arg_types[i].dim, //return_dim,
+            			        ismatrix: ptr_arg_types[i].ismatrix, //return_ismatrix,
+            			        isvector: ptr_arg_types[i].isvector, //numel(return_dim) > 1 && !return_ismatrix,
             			        ispointer: true,
-                                isstruct: return_isstruct
+                                isstruct: ptr_arg_types[i].isstruct, //return_isstruct
             			    });
                         }
             			return ptr_args;
@@ -415,6 +439,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                         isstruct: isstruct
                     },
                     ptr_args: (arg_types, outs) => null,
+                    ptr_arg_types: null,
                     external: obj.external,
                     file: obj.file,
                     def_node: obj.def_node,
@@ -436,6 +461,7 @@ function getFunctionReturnType(fun_name, arg_types, fun_dictionary, custom_funct
                 //ptr_param: null, 
                 //ptr_declaration: null,
                 ptr_args: (arg_types, outs) => null,
+                ptr_arg_types: null,
                 external: obj.external,
                 file: obj.file,
                 def_node: obj.def_node,
@@ -879,7 +905,7 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                                 let return_type = null;
                                 //[return_type, obj1.methods] = getFunctionReturnType(node.valueNode.text, obj.arg_types, obj1.methods, custom_functions, classes, file, alias_tbl, debug); 
                                 
-                                [return_type, obj1.methods] = getFunctionReturnType(node.valueNode.text, obj.arg_types, obj1.methods, custom_functions, classes, file, alias_tbl, debug, 1); 
+                                [return_type, obj1.methods] = getFunctionReturnType(node.valueNode.text, obj.arg_types, var_types, obj1.methods, custom_functions, classes, file, alias_tbl, debug, 1); 
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                                 } else {
@@ -916,7 +942,7 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                                 }
                                 let return_type = null;
                                 
-                                [return_type, custom_functions] = getFunctionReturnType(node.valueNode.text, obj2.arg_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0);
+                                [return_type, custom_functions] = getFunctionReturnType(node.valueNode.text, obj2.arg_types, var_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0);
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                                 } else {
@@ -1032,7 +1058,6 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
         if (debug == 1) {
             console.log("parseFunctionCallNode");
         }
-    
         if (node.parent.type == g.SyntaxType.Assignment) {
             return parseFunctionCallNode(node.parent);
         } else {
@@ -1149,7 +1174,6 @@ function inferType(node, var_types, custom_functions, classes, file, alias_tbl, 
                     outs.push(left_node.text);
                 //}
             }
-            
             return [args, arg_types, outs];
         }
     }

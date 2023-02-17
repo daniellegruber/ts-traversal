@@ -7,9 +7,9 @@ export const binaryOpType = (left_type, right_type) => {
         return 'complex';
     } else if (left_type == 'double' || right_type == 'double') {
         return 'double';
-    } else if (left_type == 'bool') {
+    } else if (left_type == 'bool' || left_type == 'unknown') {
         return right_type;
-    } else if (right_type == 'bool') {
+    } else if (right_type == 'bool' || right_type == 'unknown') {
         return left_type;
     } else {
         return 'unknown';
@@ -39,15 +39,25 @@ export type VarType = {
   scope: Array<number>;
 };
 
+/*export type DefNode = {
+    type: g.SyntaxType,
+    return_variableNode: g.SyntaxNode,
+    nameNode: g.SyntaxNode,
+    parametersNode: g.SyntaxNode,
+    bodyNode: g.SyntaxNode
+};*/
+
 export type CustomFunction = {
     name: string;
     arg_types: Array<VarType>;
     return_type:Type;
     outs_transform: { (outs: Array<string>): Array<string>; }; 
     ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };
+    ptr_arg_types: Array<VarType>;
     external: boolean;
     file: string;
     def_node: g.SyntaxNode;
+    //def_node: DefNode;
     var_types: Array<VarType>;
 };
 

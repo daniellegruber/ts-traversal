@@ -262,7 +262,7 @@ int ${tmp_d1} = (${tmp_var} - ${tmp_d0})/${dim[0]} + 1;`, fun_params);
         } else {
             expression = `(${tmp_d1}-1) + (${tmp_d0}-1) * ${dim[1]} + (${tmp_d2}-1) * ${dim[0]} * ${dim[1]} + (${tmp_d3}-1) * ${dim[0]} * ${dim[1]} * ${dim[2]}`;
         }
-        expression = expression.replace(' * 1', '');
+        expression = expression.replace(/\* 1\b/, '');
         return [fun_params, [expression]];
         
     }

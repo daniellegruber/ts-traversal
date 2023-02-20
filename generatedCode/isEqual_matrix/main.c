@@ -31,7 +31,7 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	Matrix * b= a;
+	Matrix * b = a;
 	printM(b);
 	return 0;
 }

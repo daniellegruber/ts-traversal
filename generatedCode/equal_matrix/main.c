@@ -31,9 +31,9 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	Matrix * b= a;
+	Matrix * b = a;
 	printM(b);
-	Matrix * tmp1= equalM(a, b);
+	Matrix * tmp1 = equalM(a, b);
 	printM(tmp1);
 	return 0;
 }

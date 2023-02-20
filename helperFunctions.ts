@@ -22,8 +22,9 @@ export function findBuiltin(builtin_funs, name) {
         if (x.fun_matlab instanceof RegExp) {
             found = name.search(x.fun_matlab);
         } else {
-            let re = new RegExp(`\\b${x.fun_matlab}\\b`, 'g');
-            found = name.search(re);
+            if (x.fun_matlab == name) {
+                found = 1;
+            }
         }
         return found !== -1;
     });
@@ -41,6 +42,18 @@ export function extractSingularMat(mat, var_type, node, fun_params) {
             ismatrix: false,
             isvector: false,
             ispointer: true,
+            isstruct: false,
+            initialized: true,
+            scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+        });
+        fun_params.var_types.push({
+            name: `${tmp_var}[0]`,
+            type: var_type.type,
+            ndim: 1,
+            dim: [1],
+            ismatrix: false,
+            isvector: false,
+            ispointer: false,
             isstruct: false,
             initialized: true,
             scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
@@ -162,10 +175,10 @@ export function initVar(var_name, var_val, var_type, node) {
         expression = `${var_type.type} ${var_name}`;
     } 
     if (var_val !== null) {
-        expression = expression.concat(`= ${var_val};`);
+        expression = expression.concat(` = ${var_val};`);
     } else {
         if (var_type.ismatrix) {
-            expression = expression.concat(`= NULL;`);
+            expression = expression.concat(` = NULL;`);
         } else {
             expression = expression.concat(`;`);
         }
@@ -282,7 +295,33 @@ export function parseFunctionDefNode(node) {
             if (node.return_variableNode == undefined && node.namedChildren[0].type == g.SyntaxType.ReturnValue) {
                 node.return_variableNode = node.namedChildren[0];
             }
-                        
+            /*let types = [];
+            for (let child of node.namedChildren) {
+                types.push(child.type);
+            }
+            console.log(node.nextNamedSibling.text);
+            if (types.includes(g.SyntaxType.Parameters)) {
+                let param_idx = types.indexOf(g.SyntaxType.Parameters);
+                var parametersNode = node.namedChildren[param_idx];
+                var nameNode = node.namedChildren[param_idx - 1];
+                var bodyNode = node.namedChildren[param_idx + 1];
+                var return_variableNode = undefined;
+                let return_idx = types.indexOf(g.SyntaxType.ReturnValue);
+                if (return_idx != null && return_idx != undefined) {
+                    return_variableNode = node.namedChildren[return_idx];
+                }
+                //return [return_variableNode, nameNode, parametersNode, bodyNode];
+                return {
+                    type: g.SyntaxType.FunctionDefinition,
+                    return_variableNode: return_variableNode,
+                    nameNode: nameNode,
+                    parametersNode: parametersNode,
+                    bodyNode: bodyNode
+                };
+            } else {
+                return null;
+            }*/ 
+            
             return node;
             break;
         }

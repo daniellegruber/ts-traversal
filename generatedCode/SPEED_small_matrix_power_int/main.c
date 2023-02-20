@@ -12,8 +12,8 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	int exponent= 30;
-	int iterations= 100000;
+	int exponent = 30;
+	int iterations = 100000;
 	
 	int ndim1 = 2;
 	int dim1[2] = {2,2};
@@ -28,11 +28,11 @@ int main(void) {
 	free(input1);
 	
 	printM(b);
-	Matrix * tmp1= mpowerM(b, exponent);
-	Matrix * c= tmp1;
+	Matrix * tmp1 = mpowerM(b, &exponent, 2);
+	Matrix * c = tmp1;
 	printM(c);
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		Matrix * tmp2= mpowerM(b, exponent);
+		Matrix * tmp2 = mpowerM(b, &exponent, 2);
 		c = tmp2;
 		//disp(c);
 	

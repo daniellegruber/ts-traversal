@@ -25,18 +25,12 @@ export function pushToMain(expression, fun_params) {
     return [fun_params.main_function, fun_params.function_definitions];
 }
 
-export function insertMain(expression, search_exp, num_back, before_after, fun_params) {
+//export function insertMain(expression, search_exp, num_back, before_after, fun_params) {
+export function insertMain(expression, search_exp, before_after, fun_params) {
     if (fun_params.debug == 1) {
         console.log("insertMain");
     }
     
-    // Indent expression
-    let indent = '\t'.repeat(fun_params.block_level);
-    if (expression.slice(0, 2) != '\n') {
-        expression = indent.concat(expression);
-    }
-    expression = expression.replace(/\n|\r/gm, `\n${indent}`);
-        
     // Push expression
     // num_back: if more than one instance of search_exp is found, which instance to choose as formatted as
     // matches[matches.length - num_back]
@@ -45,9 +39,19 @@ export function insertMain(expression, search_exp, num_back, before_after, fun_p
             a.push(i);
         return a;
     }, []); 
-    if (idx.length > 1) {
-        idx = idx[idx.length - num_back];
+    
+    //idx = idx[idx.length - num_back];
+    idx = idx[idx.length - 1];
+    
+    // Indent expression
+    let match = fun_params.main_function[idx].match(/\t+/);
+    let indent = match[0];
+    let block_level = indent.length;
+    if (expression.slice(0, 2) != '\n') {
+        expression = indent.concat(expression);
     }
+    expression = expression.replace(/\n|\r/gm, `\n${indent}`);
+        
     if (expression != null) {
         if (fun_params.current_code == "main") {
             if (before_after == 1) {
@@ -72,9 +76,8 @@ export function insertMain(expression, search_exp, num_back, before_after, fun_p
                     a.push(i);
                 return a;
             }, []); 
-            if (idx.length > 1) {
-                idx = idx[idx.length - num_back];
-            }
+            //idx = idx[idx.length - num_back];
+            idx = idx[idx.length - 1];
             if (before_after == 1) {
                 fun_params.function_definitions.splice(idx+1, 0, expression)
             } else {
@@ -82,7 +85,7 @@ export function insertMain(expression, search_exp, num_back, before_after, fun_p
             }
         }
     }
-    return [fun_params.main_function, fun_params.function_definitions];
+    return [fun_params.main_function, fun_params.function_definitions, block_level];
 }
 
 export function replaceMain(expression, search_exp, num_back, fun_params) {

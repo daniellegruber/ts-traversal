@@ -12,7 +12,7 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	int iterations= 1000000;
+	int iterations = 1000000;
 	
 	int ndim1 = 2;
 	int dim1[2] = {2,2};
@@ -28,11 +28,11 @@ int main(void) {
 	
 	printM(a);
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		complex complex_one= 1;
-		Matrix * V1= NULL;
-		Matrix * lambda1= NULL;
-		Matrix * evals1= NULL;
-		Matrix * evecs1= NULL;
+		complex complex_one = 1;
+		Matrix * V1 = NULL;
+		Matrix * lambda1 = NULL;
+		Matrix * evals1 = NULL;
+		Matrix * evecs1 = NULL;
 		eigM(a, &evals1, &evecs1);
 		lambda1 = scaleM(evals1, &complex_one, COMPLEX);
 		V1 = scaleM(evecs1, &complex_one, COMPLEX);

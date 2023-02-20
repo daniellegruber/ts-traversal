@@ -228,7 +228,7 @@ function rowMajorFlatIdx(count, dim, idx, fun_params) {
         else {
             expression = "(".concat(tmp_d1, "-1) + (").concat(tmp_d0, "-1) * ").concat(dim[1], " + (").concat(tmp_d2, "-1) * ").concat(dim[0], " * ").concat(dim[1], " + (").concat(tmp_d3, "-1) * ").concat(dim[0], " * ").concat(dim[1], " * ").concat(dim[2]);
         }
-        expression = expression.replace(' * 1', '');
+        expression = expression.replace(/\* 1\b/, '');
         return [fun_params, [expression]];
     }
 }

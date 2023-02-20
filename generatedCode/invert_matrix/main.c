@@ -27,10 +27,10 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	Matrix * tmp1= invertM(a);
+	Matrix * tmp1 = invertM(a);
 	printM(tmp1);
-	Matrix * tmp2= invertM(a);
-	Matrix * tmp3= invertM(tmp2);
+	Matrix * tmp2 = invertM(a);
+	Matrix * tmp3 = invertM(tmp2);
 	printM(tmp3);
 	//double_test
 	
@@ -47,10 +47,10 @@ int main(void) {
 	free(input2);
 	
 	printM(a);
-	Matrix * tmp4= invertM(a);
+	Matrix * tmp4 = invertM(a);
 	printM(tmp4);
-	Matrix * tmp5= invertM(a);
-	Matrix * tmp6= invertM(tmp5);
+	Matrix * tmp5 = invertM(a);
+	Matrix * tmp6 = invertM(tmp5);
 	printM(tmp6);
 	//complex_test
 	
@@ -67,20 +67,20 @@ int main(void) {
 	free(input3);
 	
 	printM(a);
-	Matrix * tmp7= invertM(a);
+	Matrix * tmp7 = invertM(a);
 	printM(tmp7);
-	Matrix * tmp8= invertM(a);
-	Matrix * tmp9= invertM(tmp8);
+	Matrix * tmp8 = invertM(a);
+	Matrix * tmp9 = invertM(tmp8);
 	printM(tmp9);
 	//singular_test
-	int ndim4= 2;
-	int dim4[2]= {2,2};
-	Matrix * tmp10= onesM(ndim4, dim4);
+	int ndim4 = 2;
+	int dim4[2] = {2,2};
+	Matrix * tmp10 = onesM(ndim4, dim4);
 	printM(tmp10);
 	//non_square_test
-	int ndim5= 2;
-	int dim5[2]= {2, 3};
-	Matrix * tmp11= onesM(ndim5, dim5);
+	int ndim5 = 2;
+	int dim5[2] = {2, 3};
+	Matrix * tmp11 = onesM(ndim5, dim5);
 	printM(tmp11);
 	return 0;
 }

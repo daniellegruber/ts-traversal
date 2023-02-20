@@ -42,10 +42,10 @@ int main(void) {
 	writeM( mat1, 6, input2);
 	free(input2);
 	
-	Matrix * tmp1= transposeM(mat1);
-	Matrix * b= tmp1;
-	Matrix * tmp2= mtimesM(a, b);
-	Matrix * c= tmp2;
+	Matrix * tmp1 = transposeM(mat1);
+	Matrix * b = tmp1;
+	Matrix * tmp2 = mtimesM(a, b);
+	Matrix * c = tmp2;
 	printM(a);
 	printM(b);
 	printM(c);

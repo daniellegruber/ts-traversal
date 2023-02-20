@@ -37,6 +37,7 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                 return_type: null,
                 outs_transform: function (outs) { return outs; },
                 ptr_args: function (arg_types, outs) { return null; },
+                ptr_arg_types: null,
                 external: filename !== file_traversal_order.slice(-1),
                 file: filename,
                 def_node: node,

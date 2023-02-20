@@ -227,22 +227,22 @@ int main(void) {
 	printM(a);
 	fourier_script(a);
 	//matrices_97_i
-	int ndim13= 2;
-	int dim13[2]= {7, 9};
-	Matrix * tmp5= zerosM(ndim13, dim13);
+	int ndim13 = 2;
+	int dim13[2] = {7, 9};
+	Matrix * tmp5 = zerosM(ndim13, dim13);
 	a = tmp5;
 	int* lhs_data1 = i_to_i(a);
 	for (int iter2 = 1; iter2 <= 63; ++ iter2) {
-		int tmp6= pow((-1), iter2);
-		int tmp7= pow(iter2, 2);
+		int tmp6 = pow((-1), iter2);
+		int tmp7 = pow(iter2, 2);
 		int d0_1 = iter2 % 7;
 		if (d0_1 == 0) {
 			d0_1 = 7;
 		}
 		int d1_1 = (iter2 - d0_1)/7 + 1;
-		int tmp9= pow((-1), iter2);
-		int tmp10= pow(iter2, 2);
-		int tmp8= tmp9 * tmp10;
+		int tmp9 = pow((-1), iter2);
+		int tmp10 = pow(iter2, 2);
+		int tmp8 = tmp9 * tmp10;
 		lhs_data1[(d1_1-1) + (d0_1-1) * 9] = tmp8;
 	
 	}
@@ -254,31 +254,30 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim13, dim13, 0);
 	writeM(mat1, size1, lhs_data1);
-	Matrix * tmp11= transposeM(mat1);
+	Matrix * tmp11 = transposeM(mat1);
 	a = tmp11;
 	printM(a);
 	fourier_script(a);
 	//matrices_97_d
-	int ndim14= 2;
-	int dim14[2]= {7, 9};
-	Matrix * tmp12= zerosM(ndim14, dim14);
+	int ndim14 = 2;
+	int dim14[2] = {7, 9};
+	Matrix * tmp12 = zerosM(ndim14, dim14);
 	a = tmp12;
 	int* lhs_data2 = i_to_i(a);
 	for (int iter4 = 1; iter4 <= 63; ++ iter4) {
-		int tmp13= pow((-1), iter4);
-		int tmp14= pow(iter4, 2);
+		int tmp13 = pow((-1), iter4);
+		int tmp14 = pow(iter4, 2);
 		int d0_2 = iter4 % 7;
 		if (d0_2 == 0) {
 			d0_2 = 7;
 		}
 		int d1_2 = (iter4 - d0_2)/7 + 1;
-		int tmp16= pow((-1), iter4);
-		int tmp17= pow(iter4, 2);
-		int tmp15= tmp16 * tmp17 / 17;
+		int tmp16 = pow((-1), iter4);
+		int tmp17 = pow(iter4, 2);
+		int tmp15 = tmp16 * tmp17 / 17;
 		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp15;
 	
 	}
-	mat1 = mat1;
 	// Write matrix mat2
 	int size2 = 1;
 	for (int iter5 = 0 ; iter5 < ndim14; iter5++)
@@ -287,29 +286,28 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim14, dim14, 0);
 	writeM(mat2, size2, lhs_data2);
-	Matrix * tmp18= transposeM(mat2);
+	Matrix * tmp18 = transposeM(mat2);
 	a = tmp18;
 	printM(a);
 	fourier_script(a);
 	//matrices_97_c
-	int ndim15= 2;
-	int dim15[2]= {7, 9};
-	Matrix * tmp19= zerosM(ndim15, dim15);
+	int ndim15 = 2;
+	int dim15[2] = {7, 9};
+	Matrix * tmp19 = zerosM(ndim15, dim15);
 	a = tmp19;
-	complex* lhs_data3 = i_to_c(a);
+	complex* lhs_data3 = c_to_c(a);
 	for (int iter6 = 1; iter6 <= 63; ++ iter6) {
-		int tmp20= pow((-1), iter6);
+		int tmp20 = pow((-1), iter6);
 		int d0_3 = iter6 % 7;
 		if (d0_3 == 0) {
 			d0_3 = 7;
 		}
 		int d1_3 = (iter6 - d0_3)/7 + 1;
-		int tmp22= pow((-1), iter6);
-		complex tmp21= tmp22 * iter6 - iter6 / 17*I;
+		int tmp22 = pow((-1), iter6);
+		complex tmp21 = tmp22 * iter6 - iter6 / 17*I;
 		lhs_data3[(d1_3-1) + (d0_3-1) * 9] = tmp21;
 	
 	}
-	mat2 = mat2;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter7 = 0 ; iter7 < ndim15; iter7++)
@@ -318,7 +316,7 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim15, dim15, 2);
 	writeM(mat3, size3, lhs_data3);
-	Matrix * tmp23= transposeM(mat3);
+	Matrix * tmp23 = transposeM(mat3);
 	a = tmp23;
 	printM(a);
 	fourier_script(a);
@@ -329,17 +327,17 @@ int main(void) {
 // Subprograms
 
 void fourier_script(Matrix * a) {
-	Matrix * tmp1= fftM(a);
+	Matrix * tmp1 = fftM(a);
 	printM(tmp1);
-	Matrix * tmp2= ifftM(a);
+	Matrix * tmp2 = ifftM(a);
 	printM(tmp2);
 }
 
 void fourier_vec_script(Matrix * a) {
 	for (int iter1 = 1; iter1 <= 20; ++ iter1) {
-		Matrix * tmp3= fftM(a);
+		Matrix * tmp3 = fftM(a);
 		printM(tmp3);
-		Matrix * tmp4= ifftM(a);
+		Matrix * tmp4 = ifftM(a);
 		printM(tmp4);
 	
 	}

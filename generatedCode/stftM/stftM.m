@@ -19,12 +19,12 @@ function fourier_vec_script(a)
 end
 
 %row_vectors_i
-a = -4:5;
+a = [-4:5];
 disp(a);
 fourier_vec_script(a);
 
 % %row_vectors_d
-% a = -4:0.5:1.5;
+% a = [-4:0.5:1.5];
 % disp(a);
 % fourier_vec_script(a);
 

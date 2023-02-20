@@ -48,9 +48,11 @@ regenall:
 # Compile all C programs
 dirs := $(shell ls -d */)
 compileall: $(dirs)
-	@for dir in $(dirs) ; do \
-		fulldir="$(shell pwd)/$$dir"; \
+	good=(); \
+	bad=(); \
+	for dir in $(dirs) ; do \
 		dir=$${dir//\//}; \
+		fulldir="$(shell pwd)/$$dir"; \
 		echo $$dir; \
 		mfiles=$$(find $$fulldir -type f -name "*.m"); \
 		srcs=$$(echo "$$mfiles" | sed "s/$$dir.m/main/"); \
@@ -60,13 +62,21 @@ compileall: $(dirs)
 		done; \
 		eval $(CC) -c -o $$fulldir/octavec_main.o $$fulldir/octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -o $$fulldir/test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
+		if $$($(CC) -o $$fulldir/test $$objects matrix.o $(CFLAGS) $(LIB) $(INC)); then \
+			good+="$$dir\n"; \
+		else \
+			bad+="$$dir\n"; \
+		fi; \
 		if [ -f "$$fulldir/octavec_main.c" ]; then \
 			eval $(CC) -o $$fulldir/check $$fulldir/octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
 		else \
 			echo "Custom test"; \
-		fi \
+		fi; \
 	done; \
-	
+	echo -e "SUCCESS" > compile_log.txt; \
+	echo -e $${good[@]} >> compile_log.txt; \
+	echo -e "\nERROR" >> compile_log.txt; \
+	echo -e $${bad[@]} >> compile_log.txt; \
 # Compile one C program
 # make compileone ARGS=testname
 compileone:
@@ -96,12 +106,14 @@ runmatlab:
 	
 # Compare outputs of generated C program and original mfile for all tests
 compareall:
+	good=(); \
+	bad=(); \
 	mfiles=$$(find $(shell pwd) -type f -name "*.m"); \
 	for mfile in $$mfiles; do \
 		filename=$$(basename -- "$$mfile"); \
 		filename="$${filename%.*}"; \
 		fulldir="$(shell pwd)/$$filename"; \
-		($$fulldir/test 2>/dev/null | \
+		(timeout 5 $$fulldir/test 2>/dev/null | \
 			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 			sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 			tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
@@ -111,7 +123,7 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
-		(matlab -nodisplay -nosplash < $$fulldir/$$filename.m 2>/dev/null | \
+		(timeout 5 matlab -nodisplay -nosplash < $$fulldir/$$filename.m 2>/dev/null | \
 			tail -n+10 | sed -z 's/>>//gi' | \
 			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 			sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
@@ -123,10 +135,16 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') | \
 			sed -z 's/\n\s/\n/gi' | sed -z 's/  \n//gi' > $$fulldir/f2; \
-		diff -wi $$fulldir/f1 $$fulldir/f2 && \
-			echo -e "\e[1;32mSUCCESS\e[0m : $$filename"||\
-			echo -e "\e[1;31mDIFF ERROR\e[0m : $$filename";\
+		timeout 5 diff -wi $$fulldir/f1 $$fulldir/f2 && \
+			(echo -e "\e[1;32mSUCCESS\e[0m : $$filename" && good+="$$filename\n")||\
+			(echo -e "\e[1;31mDIFF ERROR\e[0m : $$filename" && bad+="$$filename\n");\
+		rm $$fulldir/f1; \
+		rm $$fulldir/f2; \
 	done; \
+	echo -e "SUCCESS" > compare_log.txt; \
+	echo -e $${good[@]} >> compare_log.txt; \
+	echo -e "\nERROR" >> compare_log.txt; \
+	echo -e $${bad[@]} >> compare_log.txt; \
 	
 # Compare outputs of generated C program and original mfile for one test
 # make compareone ARGS=testname

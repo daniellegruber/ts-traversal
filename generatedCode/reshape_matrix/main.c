@@ -31,7 +31,7 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	Matrix * tmp1= transposeM(a);
+	Matrix * tmp1 = transposeM(a);
 	
 	int ndim2 = 2;
 	int dim2[2] = {1,2};
@@ -43,11 +43,11 @@ int main(void) {
 	writeM( mat1, 2, input2);
 	free(input2);
 	
-	Matrix * b1= tmp1;
-	int * dim3= i_to_i(mat1);
-	int ndim3= 2;
-	Matrix * tmp2= reshapeM(b1, ndim3, dim3);
-	tmp2;
+	Matrix * b1 = tmp1;
+	int * dim3 = i_to_i(mat1);
+	int ndim3 = 2;
+	reshapeM(tmp1, ndim3, dim3);
+	b1 = tmp1;
 	printM(b1);
 	return 0;
 }

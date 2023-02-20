@@ -12,7 +12,7 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	int iterations= 1000000;
+	int iterations = 1000000;
 	
 	int ndim1 = 2;
 	int dim1[2] = {2,2};
@@ -28,8 +28,8 @@ int main(void) {
 	
 	printM(a);
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		Matrix * tmp1= fftM(a);
-		Matrix * b= tmp1;
+		Matrix * tmp1 = fftM(a);
+		Matrix * b = tmp1;
 	
 	}
 	return 0;

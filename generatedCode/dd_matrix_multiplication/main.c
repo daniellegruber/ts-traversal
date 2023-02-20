@@ -38,8 +38,8 @@ int main(void) {
 	writeM( b, 4, input2);
 	free(input2);
 	
-	Matrix * tmp1= mtimesM(a, b);
-	Matrix * c= tmp1;
+	Matrix * tmp1 = mtimesM(a, b);
+	Matrix * c = tmp1;
 	printM(a);
 	printM(b);
 	printM(c);

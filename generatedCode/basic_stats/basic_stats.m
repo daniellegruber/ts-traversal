@@ -213,7 +213,7 @@ disp(a);
 complex_stats(a);
 
 %basic_quantile_test
-a = 1:100;
+a = [1:100];
 disp(quantile(a, 0:0.01:1).');
 
 b = zeros(1,1004);

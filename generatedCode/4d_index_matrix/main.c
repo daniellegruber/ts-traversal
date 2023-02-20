@@ -12,21 +12,21 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	int ndim1= 4;
-	int dim1[4]= {2, 3, 4, 5};
-	Matrix * tmp1= zerosM(ndim1, dim1);
-	Matrix * a= tmp1;
-	int counter= 0;
+	int ndim1 = 4;
+	int dim1[4] = {2, 3, 4, 5};
+	Matrix * tmp1 = zerosM(ndim1, dim1);
+	Matrix * a = tmp1;
+	double* lhs_data1 = d_to_d(a);
+	int counter = 0;
 	// Method 1 to create 4D matrix
 	// Creates the matrix row-major to match C's implementation
 	// Note that in Octave, the i (row) loop is outside the j (column) loop. this is
 	// because Octave is natively column-major, so we must assign carefully.
-	double* lhs_data1 = d_to_d(a);
 	for (int iter1 = 1; iter1 <= 5; ++ iter1) {
 		for (int iter2 = 1; iter2 <= 4; ++ iter2) {
 			for (int iter3 = 1; iter3 <= 2; ++ iter3) {
 				for (int iter4 = 1; iter4 <= 3; ++ iter4) {
-					double tmp2= counter + 0.5;
+					double tmp2 = counter + 0.5;
 					lhs_data1[(iter4-1) + (iter3-1)*3 + (iter2-1)*2*3 + (iter1-1)*2*3*4] = tmp2;
 					counter = counter + 1;
 				
@@ -45,7 +45,6 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 1);
 	writeM(mat1, size1, lhs_data1);
-	mat1 = mat1;
 	printM(mat1);
 	// Flat indexing in C must be must be matched in Octave by flipping the row & column iteration
 	for (int iter6 = 1; iter6 <= 5; ++ iter6) {
@@ -105,12 +104,12 @@ int main(void) {
 	printf("\n%s\n", "\n");
 	// Method 2 to create 4D matrix
 	// Creates the matrix column-major to match Octave's implementation
-	int ndim2= 4;
-	int dim2[4]= {2, 3, 4, 5};
-	Matrix * tmp6= zerosM(ndim2, dim2);
+	int ndim2 = 4;
+	int dim2[4] = {2, 3, 4, 5};
+	Matrix * tmp6 = zerosM(ndim2, dim2);
 	a = tmp6;
-	counter = 0;
 	double* lhs_data2 = d_to_d(a);
+	counter = 0;
 	for (int iter15 = 1; iter15 <= 120; ++ iter15) {
 		int d3_5 = ceil((double) iter15 / (2 * 3 * 4));
 		int d2_5 = ((int) ceil((double) iter15 / (2 * 3))) % 4;
@@ -126,7 +125,7 @@ int main(void) {
 			d0_5 = 2;
 		}
 		int d1_5 = (tmp_5 - d0_5)/2 + 1;
-		double tmp7= counter + 0.5;
+		double tmp7 = counter + 0.5;
 		lhs_data2[(d1_5-1) + (d0_5-1) * 3 + (d2_5-1) * 2 * 3 + (d3_5-1) * 2 * 3 * 4] = tmp7;
 		counter = counter + 1;
 	

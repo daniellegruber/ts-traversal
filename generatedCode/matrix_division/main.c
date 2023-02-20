@@ -39,13 +39,13 @@ int main(void) {
 	writeM( b, 4, input2);
 	free(input2);
 	
-	Matrix * tmp1= mldivideM(a, b);
-	Matrix * c= tmp1;
+	Matrix * tmp1 = mldivideM(a, b);
+	Matrix * c = tmp1;
 	printM(a);
 	printM(b);
 	printM(c);
 	//ldivide_test2
-	Matrix * tmp2= identityM(2);
+	Matrix * tmp2 = identityM(2);
 	a = tmp2;
 	
 	int ndim3 = 2;
@@ -60,7 +60,7 @@ int main(void) {
 	writeM( b, 4, input3);
 	free(input3);
 	
-	Matrix * tmp3= mldivideM(a, b);
+	Matrix * tmp3 = mldivideM(a, b);
 	c = tmp3;
 	printM(a);
 	printM(b);
@@ -92,7 +92,7 @@ int main(void) {
 	writeM( b, 4, input5);
 	free(input5);
 	
-	Matrix * tmp4= mldivideM(a, b);
+	Matrix * tmp4 = mldivideM(a, b);
 	c = tmp4;
 	printM(a);
 	printM(b);
@@ -124,13 +124,13 @@ int main(void) {
 	writeM( b, 4, input7);
 	free(input7);
 	
-	Matrix * tmp5= mrdivideM(a, b);
+	Matrix * tmp5 = mrdivideM(a, b);
 	c = tmp5;
 	printM(a);
 	printM(b);
 	printM(c);
 	//rdivide_test2
-	Matrix * tmp6= identityM(2);
+	Matrix * tmp6 = identityM(2);
 	a = tmp6;
 	
 	int ndim8 = 2;
@@ -145,7 +145,7 @@ int main(void) {
 	writeM( b, 4, input8);
 	free(input8);
 	
-	Matrix * tmp7= mrdivideM(a, b);
+	Matrix * tmp7 = mrdivideM(a, b);
 	c = tmp7;
 	printM(a);
 	printM(b);
@@ -177,15 +177,15 @@ int main(void) {
 	writeM( b, 4, input10);
 	free(input10);
 	
-	Matrix * tmp8= mrdivideM(a, b);
+	Matrix * tmp8 = mrdivideM(a, b);
 	c = tmp8;
 	printM(a);
 	printM(b);
 	printM(c);
 	//divide_by_zero
-	int ndim11= 2;
-	int dim11[2]= {2,2};
-	Matrix * tmp9= zerosM(ndim11, dim11);
+	int ndim11 = 2;
+	int dim11[2] = {2,2};
+	Matrix * tmp9 = zerosM(ndim11, dim11);
 	a = tmp9;
 	
 	int ndim12 = 2;
@@ -200,7 +200,7 @@ int main(void) {
 	writeM( b, 4, input11);
 	free(input11);
 	
-	Matrix * tmp10= mrdivideM(b, a);
+	Matrix * tmp10 = mrdivideM(b, a);
 	c = tmp10;
 	printM(a);
 	printM(b);

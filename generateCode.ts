@@ -1176,9 +1176,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 
                                 if (args == null) {
                                     updateFunParams(0);
+<<<<<<< HEAD
                                     [main_function, function_definitions] = pushToMain(`${fun_c};`, fun_params);
                                 } else if (args[0] == 'void') {
                                     updateFunParams(0);
+=======
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                                     [main_function, function_definitions] = pushToMain(`${fun_c}();`, fun_params);
                                 } else {
                                     updateFunParams(0);
@@ -1189,7 +1192,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 return null;
                                 
                             } else {
+<<<<<<< HEAD
                                 let var_val = `${fun_c}`;
+=======
+                                let var_val = `${fun_c}()`;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                                 if (args != null) {
                                     var_val = `${fun_c}(${args.join(", ")})`;
                                 }

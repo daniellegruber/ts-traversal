@@ -311,7 +311,11 @@ int main(void) {
 	Matrix * tmp51 = transposeM(mat10);
 	b = tmp51;
 	printM(b);
+<<<<<<< HEAD
 	Matrix * tmp52 = scalarpowerM(a, &exponent, 1);
+=======
+	Matrix * tmp52= scalarpowerM(a, &exponent, 1);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	c = tmp52;
 	printM(c);
 	//dd_test
@@ -547,7 +551,11 @@ int main(void) {
 	Matrix * tmp87 = transposeM(mat18);
 	b = tmp87;
 	printM(b);
+<<<<<<< HEAD
 	Matrix * tmp88 = scalarpowerM(a, &exponent, 2);
+=======
+	Matrix * tmp88= scalarpowerM(a, &exponent, 2);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	c = tmp88;
 	printM(c);
 	//cd_test
@@ -605,7 +613,11 @@ int main(void) {
 	Matrix * tmp95 = transposeM(mat20);
 	b = tmp95;
 	printM(b);
+<<<<<<< HEAD
 	Matrix * tmp96 = scalarpowerM(a, &exponent, 2);
+=======
+	Matrix * tmp96= scalarpowerM(a, &exponent, 2);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	c = tmp96;
 	printM(c);
 	//cc_test

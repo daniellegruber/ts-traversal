@@ -346,11 +346,19 @@ function getFunctionReturnType(fun_name, arg_types, var_types, fun_dictionary, c
                     var return_var = return_node_1.namedChildren[i];
                     var _b = inferType(return_var, var_types2, custom_functions, classes, file, alias_tbl, debug), return_type = _b[0], return_ndim = _b[1], return_dim = _b[2], return_ismatrix = _b[3], return_ispointer = _b[4], return_isstruct = _b[5], c_2 = _b[6];
                     custom_functions = c_2;
+<<<<<<< HEAD
                     /*if (return_ismatrix && numel(return_dim) == 1) {
                         return_ismatrix = false;
                         return_ndim = 1;
                         return_dim = [1];
                     }*/
+=======
+                    if (return_ismatrix && (0, helperFunctions_1.numel)(return_dim) == 1) {
+                        return_ismatrix = false;
+                        return_ndim = 1;
+                        return_dim = [1];
+                    }
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                     if (obj.ptr_arg_types != null) {
                         return_type = (0, customTypes_1.binaryOpType)(return_type, obj.ptr_arg_types[i].type);
                     }

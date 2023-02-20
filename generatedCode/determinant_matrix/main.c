@@ -95,6 +95,7 @@ int main(void) {
 				lhs_data2[(d1_2-1) + (d0_2-1) * 5] = tmp5;
 				
 				} else {
+<<<<<<< HEAD
 				int tmp7 = (counter + iter5) % 7;
 				int d0_3 = counter % 5;
 				if (d0_3 == 0) {
@@ -104,6 +105,12 @@ int main(void) {
 				int tmp9 = (counter + iter5) % 7;
 				int tmp8 = -1 * tmp9;
 				lhs_data2[(d1_3-1) + (d0_3-1) * 5] = tmp8;
+=======
+				int tmp8= (counter + iter5) % 7;
+				int tmp10= (counter + iter5) % 7;
+				int tmp9= -1 * tmp10;
+				lhs_data2[(d1_3-1) + (d0_3-1) ] = tmp9;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				
 			
 			}
@@ -131,6 +138,7 @@ int main(void) {
 	Matrix * tmp11 = zerosM(ndim5, dim5);
 	a = tmp11;
 	complex* lhs_data3 = i_to_c(a);
+<<<<<<< HEAD
 	complex tmp12 = 26 + 1*I;
 	lhs_data3[0] = tmp12;
 	complex tmp13 = 3 - 8*I;
@@ -143,6 +151,19 @@ int main(void) {
 	lhs_data3[3] = tmp16;
 	int tmp17 = 1;
 	lhs_data3[5] = tmp17;
+=======
+	lhs_data3[0] = tmp13;
+	complex tmp14= 3 - 8*I;
+	lhs_data3[1] = tmp14;
+	complex tmp15= 20*I;
+	lhs_data3[2] = tmp15;
+	complex tmp16= 1 + 25*I;
+	lhs_data3[3] = tmp16;
+	int tmp17= 0;
+	lhs_data3[4] = tmp17;
+	int tmp18= 1;
+	lhs_data3[5] = tmp18;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter7 = 0 ; iter7 < ndim5; iter7++)

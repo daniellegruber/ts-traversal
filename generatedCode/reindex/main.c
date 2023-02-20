@@ -286,10 +286,17 @@ int main(void) {
 	printM(a);
 	double_reindexing_tests(a);
 	//matrices_97_c
+<<<<<<< HEAD
 	int ndim33 = 2;
 	int dim33[2] = {7, 9};
 	Matrix * tmp87 = zerosM(ndim33, dim33);
 	a = tmp87;
+=======
+	int ndim33= 2;
+	int dim33[2]= {7, 9};
+	Matrix * tmp93= zerosM(ndim33, dim33);
+	a = tmp93;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	complex* lhs_data3 = c_to_c(a);
 	for (int iter5 = 1; iter5 <= 63; ++ iter5) {
 		int tmp88 = pow((-1), iter5);
@@ -528,9 +535,16 @@ void complex_reindexing_tests(Matrix * a) {
 	writeM( mat13, 1, input13);
 	free(input13);
 	
+<<<<<<< HEAD
 	printM(mat13);
 	complex tmp51;
 	indexM(a, &tmp51, 1, 22);
+=======
+	complex * tmp55 = c_to_c(mat13);
+	printf("\n%f\n", tmp55[0]);
+	complex tmp56;
+	indexM(a, &tmp56, 1, 22);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	
 	int ndim14 = 2;
 	int dim14[2] = {1,1};
@@ -541,11 +555,20 @@ void complex_reindexing_tests(Matrix * a) {
 	writeM( mat14, 1, input14);
 	free(input14);
 	
+<<<<<<< HEAD
 	printM(mat14);
 	complex tmp53;
 	indexM(a, &tmp53, 1, 8);
 	complex tmp54;
 	indexM(a, &tmp54, 1, 15);
+=======
+	complex * tmp57 = c_to_c(mat14);
+	printf("\n%f\n", tmp57[0]);
+	complex tmp59;
+	indexM(a, &tmp59, 1, 8);
+	complex tmp60;
+	indexM(a, &tmp60, 1, 15);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	
 	int ndim15 = 2;
 	int dim15[2] = {4,1};

@@ -78,7 +78,11 @@ function parseVectorArg(arg:string) {
     }
 }
     
+<<<<<<< HEAD
 export const operatorMapping = [
+=======
+export const operatorMapping: functionMapping[] = [
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
     { // Matrix * plusM(Matrix *m, Matrix *n)
         fun_matlab: '+', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
@@ -512,8 +516,12 @@ export const operatorMapping = [
             }
             return null;
         },
+<<<<<<< HEAD
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
+=======
+        tmp_out_transform: (args, arg_types, outs) => null
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
     },
     { // Matrix * timesM(Matrix *m, Matrix *n)
         fun_matlab: '.*', 
@@ -747,6 +755,7 @@ export const operatorMapping = [
         fun_matlab: /(<=)|(>=)|<|>/, 
         fun_c: (args, arg_types, outs, fun_matlab) => {
             let left_ismatrix = arg_types[0].ismatrix;
+<<<<<<< HEAD
             if (left_ismatrix) {
                 if (fun_matlab == "<") {
                     return 'ltM';
@@ -757,12 +766,63 @@ export const operatorMapping = [
                 } else if (fun_matlab == ">=") {
                     return 'geM';
                 }
+=======
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && right_ismatrix) {
+                return 'ltM';
+            } else {
+                return null;
+            }
+        }, 
+        req_arg_types: null,
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        
+        return_type: (args, arg_types, outs) => {
+            let left_type = arg_types[0].type;
+            let left_ndim = arg_types[0].ndim;
+            let left_dim = arg_types[0].dim;
+            let right_type = arg_types[1].type;
+            let right_ndim = arg_types[1].ndim;
+            let right_dim = arg_types[1].dim;
+            
+            return {
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
+                ndim: left_ndim,
+                dim: left_dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null
+    },
+    { // Matrix * leM(Matrix *m, Matrix *n)
+        fun_matlab: '<=', 
+        fun_c: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            //if (left_ismatrix && right_ismatrix) {
+            if (left_ismatrix) {
+                return 'leM';
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
             } else {
                 return null;
             }
         },  
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => {
+<<<<<<< HEAD
+=======
+            let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
             if (!right_ismatrix) {
                 return [args[0], 'tmp'];
@@ -770,6 +830,108 @@ export const operatorMapping = [
                 return args;
             }
         },
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        
+        return_type: (args, arg_types, outs) => {
+            let left_type = arg_types[0].type;
+            let left_ndim = arg_types[0].ndim;
+            let left_dim = arg_types[0].dim;
+            let right_type = arg_types[1].type;
+            let right_ndim = arg_types[1].ndim;
+            let right_dim = arg_types[1].dim;
+            
+            return {
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
+                ndim: left_ndim,
+                dim: left_dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (!right_ismatrix) {
+                let dim = `{${arg_types[0].dim}}`;
+                let ndim = arg_types[0].ndim;
+                let init_var: InitVar[] = [];
+                init_var.push({
+                    name: 'ndim',
+                    val: `${ndim}`,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'dim',
+                    val: dim,
+                    type: 'int',
+                    ndim: 1,
+                    dim: [ndim],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+                init_var.push({
+                    name: 'scalar',
+                    val: args[1],
+                    type: arg_types[1].type,
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                let obj = type_to_matrix_type.find(x => x.type === arg_types[1].type);
+                init_var.push({
+                    name: 'tmp',
+                    val: `scaleM(onesM(ndim, dim), &scalar, ${obj.matrix_type})`,
+                    type: 'int',
+                    ndim: ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                return init_var;
+            } else {
+                return null;
+            }
+        },
+        tmp_out_transform: (args, arg_types, outs) => null
+    },
+    { // Matrix * gtM(Matrix *m, Matrix *n)
+        fun_matlab: '>', 
+        fun_c: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (!right_ismatrix) {
+                return [args[0], 'tmp'];
+            } else {
+                return args;
+            }
+<<<<<<< HEAD
+        },
+=======
+        },  
+        req_arg_types: null,
+        args_transform: (args, arg_types, outs) => args,
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -847,6 +1009,35 @@ export const operatorMapping = [
             } else {
                 return null;
             }
+<<<<<<< HEAD
+=======
+        },  
+        req_arg_types: null,
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: 2,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        
+        return_type: (args, arg_types, outs) => {
+            let left_type = arg_types[0].type;
+            let left_ndim = arg_types[0].ndim;
+            let left_dim = arg_types[0].dim;
+            let right_type = arg_types[1].type;
+            let right_ndim = arg_types[1].ndim;
+            let right_dim = arg_types[1].dim;
+            
+            return {
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
+                ndim: left_ndim,
+                dim: left_dim,
+                ismatrix: true,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
         },
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
@@ -3318,7 +3509,11 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     },
     { // Matrix * randM(int ndim, int dim[ndim])
         fun_matlab: 'rand', 
+<<<<<<< HEAD
         fun_c: (args, arg_types, outs, fun_matlab) => {
+=======
+        fun_c: (args, arg_types, outs) => {
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
             let match = args.find(x => x.includes('seed'));
             if (match != null && match != undefined) {
                 //let tmp = args[args.indexOf(match)];
@@ -3331,7 +3526,11 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         args_transform: (args, arg_types, outs) => {
             let match = args.find(x => x.includes('seed'));
             if (match != null && match != undefined) {
+<<<<<<< HEAD
                 return ['void'];
+=======
+                return null;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
             } else {
                 if (arg_types[0].ispointer) {
                     return ['ndim', args[0]]
@@ -3436,8 +3635,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 return init_var;
             }
         },
+<<<<<<< HEAD
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
+=======
+        tmp_out_transform: (args, arg_types, outs) => null
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
     },
     { // Matrix * randiM(int ndim, int dim[ndim], int type, int imax)
         fun_matlab: 'randi', // X = randi(imax,sz1,...,szN)
@@ -3523,8 +3726,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             return init_var;
         },
+<<<<<<< HEAD
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
+=======
+        tmp_out_transform: (args, arg_types, outs) => null
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
     },
     { // Matrix * randnM(int ndim, int dim[ndim])
         fun_matlab: 'randn', 
@@ -3611,8 +3818,12 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             return init_var;
         },
+<<<<<<< HEAD
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
+=======
+        tmp_out_transform: (args, arg_types, outs) => null
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
     },
     {
         fun_matlab: 'memmapfile', 

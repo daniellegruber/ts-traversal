@@ -31,9 +31,15 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 0);
 	writeM(mat1, size1, lhs_data1);
+<<<<<<< HEAD
 	int ndim2 = 2;
 	int dim2[2] = {20, 1};
 	Matrix * tmp3 = onesM(ndim2, dim2);
+=======
+	int ndim2= 2;
+	int dim2[2]= {20, 1};
+	Matrix * tmp3= onesM(ndim2, dim2);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[1] = tmp3;
 	int ndim3 = 2;
 	int dim3[2] = {1, 10};
@@ -56,7 +62,11 @@ int main(void) {
 			d0_8 = 1;
 		}
 		int d1_8 = (iter2 - d0_8)/1 + 1;
+<<<<<<< HEAD
 		int tmp8 = iter2;
+=======
+		int tmp8= iter2;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data2[(d1_8-1) + (d0_8-1) ] = tmp8;
 	
 	}
@@ -80,7 +90,11 @@ int main(void) {
 			d0_13 = 1;
 		}
 		int d1_13 = (iter4 - d0_13)/1 + 1;
+<<<<<<< HEAD
 		double tmp10 = iter4 * iter4 + 0.5;
+=======
+		double tmp10= iter4 * iter4 + 0.5;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data3[(d1_13-1) + (d0_13-1) ] = tmp10;
 	
 	}
@@ -104,7 +118,11 @@ int main(void) {
 			d0_18 = 1;
 		}
 		int d1_18 = (iter6 - d0_18)/1 + 1;
+<<<<<<< HEAD
 		complex tmp12 = iter6 * iter6 + 0.5*I;
+=======
+		complex tmp12= iter6 * iter6 + 0.5*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data4[(d1_18-1) + (d0_18-1) ] = tmp12;
 	
 	}
@@ -128,7 +146,11 @@ int main(void) {
 			d0_23 = 1;
 		}
 		int d1_23 = (iter8 - d0_23)/1 + 1;
+<<<<<<< HEAD
 		int tmp14 = (iter8 - 5) * iter8;
+=======
+		int tmp14= (iter8 - 5) * iter8;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data5[(d1_23-1) + (d0_23-1) ] = tmp14;
 	
 	}
@@ -152,7 +174,11 @@ int main(void) {
 			d0_28 = 1;
 		}
 		int d1_28 = (iter10 - d0_28)/1 + 1;
+<<<<<<< HEAD
 		double tmp16 = (iter10 - 8.5) * iter10 + 0.5;
+=======
+		double tmp16= (iter10 - 8.5) * iter10 + 0.5;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data6[(d1_28-1) + (d0_28-1) ] = tmp16;
 	
 	}
@@ -176,7 +202,11 @@ int main(void) {
 			d0_33 = 1;
 		}
 		int d1_33 = (iter12 - d0_33)/1 + 1;
+<<<<<<< HEAD
 		complex tmp18 = (iter12 - 5.5) * (iter12) + ((0.5) * (4 - iter12)) * 1*I;
+=======
+		complex tmp18= (iter12 - 5.5) * (iter12) + ((0.5) * (4 - iter12)) * 1*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data7[(d1_33-1) + (d0_33-1) ] = tmp18;
 	
 	}
@@ -281,11 +311,20 @@ int main(void) {
 					d0_45 = 12;
 				}
 				int d1_45 = (iter16 - d0_45)/12 + 1;
+<<<<<<< HEAD
 				int state_size1[1] = {(int) fmax(getsizeM(matrices[(d1_43-1) + (d0_43-1) ]), getsizeM(matrices[(d1_44-1) + (d0_44-1) ])) - 1};
 				Matrix * zero1 = zerosM(1, state_size1);
 				Matrix * tmp19 = filterM(matrices[(d1_43-1) + (d0_43-1) ], matrices[(d1_44-1) + (d0_44-1) ], matrices[(d1_45-1) + (d0_45-1) ], &zero1);
 				Matrix * y = tmp19;
 				printM(tmp19);
+=======
+				int state_size1[1]= {(int) fmax(getsizeM(matrices[(d1_43-1) + (d0_43-1) ]), getsizeM(matrices[(d1_44-1) + (d0_44-1) ])) - 1};
+				Matrix * zero1= zerosM(1, state_size1);
+				Matrix * tmp19= filterM(matrices[(d1_43-1) + (d0_43-1) ], matrices[(d1_44-1) + (d0_44-1) ], matrices[(d1_45-1) + (d0_45-1) ], &zero1);
+				Matrix * y= tmp19;
+				complex * tmp20 = c_to_c(tmp19);
+				printf("\n%f\n", tmp20[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				printf("\n%s\n", "\n");
 				printf("\n%d\n", sf);
 			

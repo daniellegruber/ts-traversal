@@ -46,7 +46,11 @@ int main(void) {
 			d0_6 = 1;
 		}
 		int d1_6 = (iter1 - d0_6)/1 + 1;
+<<<<<<< HEAD
 		int tmp7 = iter1 * iter1;
+=======
+		int tmp7= iter1 * iter1;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data1[(d1_6-1) + (d0_6-1) ] = tmp7;
 	
 	}
@@ -70,7 +74,11 @@ int main(void) {
 			d0_11 = 1;
 		}
 		int d1_11 = (iter3 - d0_11)/1 + 1;
+<<<<<<< HEAD
 		double tmp9 = iter3 * iter3 + 0.5;
+=======
+		double tmp9= iter3 * iter3 + 0.5;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data2[(d1_11-1) + (d0_11-1) ] = tmp9;
 	
 	}
@@ -94,7 +102,11 @@ int main(void) {
 			d0_16 = 1;
 		}
 		int d1_16 = (iter5 - d0_16)/1 + 1;
+<<<<<<< HEAD
 		complex tmp11 = iter5 * iter5 + 0.5*I;
+=======
+		complex tmp11= iter5 * iter5 + 0.5*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data3[(d1_16-1) + (d0_16-1) ] = tmp11;
 	
 	}
@@ -118,7 +130,11 @@ int main(void) {
 			d0_21 = 1;
 		}
 		int d1_21 = (iter7 - d0_21)/1 + 1;
+<<<<<<< HEAD
 		int tmp13 = (iter7 - 5) * iter7;
+=======
+		int tmp13= (iter7 - 5) * iter7;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data4[(d1_21-1) + (d0_21-1) ] = tmp13;
 	
 	}
@@ -142,7 +158,11 @@ int main(void) {
 			d0_26 = 1;
 		}
 		int d1_26 = (iter9 - d0_26)/1 + 1;
+<<<<<<< HEAD
 		double tmp15 = (iter9 - 8.5) * iter9 + 0.5;
+=======
+		double tmp15= (iter9 - 8.5) * iter9 + 0.5;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data5[(d1_26-1) + (d0_26-1) ] = tmp15;
 	
 	}
@@ -166,7 +186,11 @@ int main(void) {
 			d0_31 = 1;
 		}
 		int d1_31 = (iter11 - d0_31)/1 + 1;
+<<<<<<< HEAD
 		complex tmp17 = (iter11 - 5.5) * (iter11) + ((0.5) * (4 - iter11)) * 1*I;
+=======
+		complex tmp17= (iter11 - 5.5) * (iter11) + ((0.5) * (4 - iter11)) * 1*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data6[(d1_31-1) + (d0_31-1) ] = tmp17;
 	
 	}
@@ -244,6 +268,7 @@ int main(void) {
 				d0_40 = 11;
 			}
 			int d1_40 = (iter14 - d0_40)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp18 = xcorrM(matrices[(d1_39-1) + (d0_39-1) ], matrices[(d1_40-1) + (d0_40-1) ], 0, "none");
 			printM(tmp18);
 			int ndim13 = 1;
@@ -254,17 +279,27 @@ int main(void) {
 			int dim14[1] = {1};
 			int scalar3 = 1;
 			Matrix * tmp20 = scaleM(onesM(ndim14, dim14), &scalar3, 0);
+=======
+			Matrix * tmp18= xcorrM(matrices[(d1_39-1) + (d0_39-1) ], matrices[(d1_40-1) + (d0_40-1) ], 0, "none");
+			int * tmp19 = i_to_i(tmp18);
+			printf("\n%d\n", tmp19[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			int d0_41 = iter13 % 11;
 			if (d0_41 == 0) {
 				d0_41 = 11;
 			}
 			int d1_41 = (iter13 - d0_41)/11 + 1;
+<<<<<<< HEAD
 			int * tmp21 = getDimsM(matrices[(d1_41-1) + (d0_41-1) ]);
+=======
+			int * tmp20= getDimsM(matrices[(d1_41-1) + (d0_41-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			int d0_42 = iter13 % 11;
 			if (d0_42 == 0) {
 				d0_42 = 11;
 			}
 			int d1_42 = (iter13 - d0_42)/11 + 1;
+<<<<<<< HEAD
 			int * tmp22 = getDimsM(matrices[(d1_42-1) + (d0_42-1) ]);
 			int d0_43 = iter14 % 11;
 			if (d0_43 == 0) {
@@ -324,12 +359,32 @@ int main(void) {
 				int d0_51 = iter13 % 11;
 				if (d0_51 == 0) {
 					d0_51 = 11;
+=======
+			int * tmp21= getDimsM(matrices[(d1_42-1) + (d0_42-1) ]);
+			int d0_43 = iter14 % 11;
+			if (d0_43 == 0) {
+				d0_43 = 11;
+			}
+			int d1_43 = (iter14 - d0_43)/11 + 1;
+			int * tmp22= getDimsM(matrices[(d1_43-1) + (d0_43-1) ]);
+			int d0_44 = iter14 % 11;
+			if (d0_44 == 0) {
+				d0_44 = 11;
+			}
+			int d1_44 = (iter14 - d0_44)/11 + 1;
+			int * tmp23= getDimsM(matrices[(d1_44-1) + (d0_44-1) ]);
+			if ((iter13 > 1 && iter14 > 1 && tmp20[0] * tmp21[1] == tmp22[0] * tmp23[1])) {
+				int d0_45 = iter13 % 11;
+				if (d0_45 == 0) {
+					d0_45 = 11;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				}
-				int d1_51 = (iter13 - d0_51)/11 + 1;
-				int d0_52 = iter14 % 11;
-				if (d0_52 == 0) {
-					d0_52 = 11;
+				int d1_45 = (iter13 - d0_45)/11 + 1;
+				int d0_46 = iter14 % 11;
+				if (d0_46 == 0) {
+					d0_46 = 11;
 				}
+<<<<<<< HEAD
 				int d1_52 = (iter14 - d0_52)/11 + 1;
 				Matrix * tmp28 = xcorrM(matrices[(d1_51-1) + (d0_51-1) ], matrices[(d1_52-1) + (d0_52-1) ], iter15, "none");
 				printM(tmp28);
@@ -366,6 +421,82 @@ int main(void) {
 				int d1_56 = (iter14 - d0_56)/11 + 1;
 				int * tmp34 = getDimsM(matrices[(d1_56-1) + (d0_56-1) ]);
 				if ((iter13 > tmp29 && iter14 > tmp30 && tmp31[0] * tmp32[1] == tmp33[0] * tmp34[1])) {
+=======
+				int d1_46 = (iter14 - d0_46)/11 + 1;
+				Matrix * tmp24= xcorrM(matrices[(d1_45-1) + (d0_45-1) ], matrices[(d1_46-1) + (d0_46-1) ], 0, "unbiased");
+				int * tmp25 = i_to_i(tmp24);
+				printf("\n%d\n", tmp25[0]);
+				int d0_47 = iter13 % 11;
+				if (d0_47 == 0) {
+					d0_47 = 11;
+				}
+				int d1_47 = (iter13 - d0_47)/11 + 1;
+				int d0_48 = iter14 % 11;
+				if (d0_48 == 0) {
+					d0_48 = 11;
+				}
+				int d1_48 = (iter14 - d0_48)/11 + 1;
+				Matrix * tmp26= xcorrM(matrices[(d1_47-1) + (d0_47-1) ], matrices[(d1_48-1) + (d0_48-1) ], 0, "biased");
+				int * tmp27 = i_to_i(tmp26);
+				printf("\n%d\n", tmp27[0]);
+				int d0_49 = iter13 % 11;
+				if (d0_49 == 0) {
+					d0_49 = 11;
+				}
+				int d1_49 = (iter13 - d0_49)/11 + 1;
+				int d0_50 = iter14 % 11;
+				if (d0_50 == 0) {
+					d0_50 = 11;
+				}
+				int d1_50 = (iter14 - d0_50)/11 + 1;
+				Matrix * tmp28= xcorrM(matrices[(d1_49-1) + (d0_49-1) ], matrices[(d1_50-1) + (d0_50-1) ], 0, "coeff");
+				int * tmp29 = i_to_i(tmp28);
+				printf("\n%d\n", tmp29[0]);
+				
+				
+				
+			
+			}
+			for (int iter15 = 9; iter15 <= 21; ++ iter15) {
+				int d0_51 = iter13 % 11;
+				if (d0_51 == 0) {
+					d0_51 = 11;
+				}
+				int d1_51 = (iter13 - d0_51)/11 + 1;
+				int d0_52 = iter14 % 11;
+				if (d0_52 == 0) {
+					d0_52 = 11;
+				}
+				int d1_52 = (iter14 - d0_52)/11 + 1;
+				Matrix * tmp30= xcorrM(matrices[(d1_51-1) + (d0_51-1) ], matrices[(d1_52-1) + (d0_52-1) ], iter15, "none");
+				int * tmp31 = i_to_i(tmp30);
+				printf("\n%d\n", tmp31[0]);
+				int d0_53 = iter13 % 11;
+				if (d0_53 == 0) {
+					d0_53 = 11;
+				}
+				int d1_53 = (iter13 - d0_53)/11 + 1;
+				int * tmp32= getDimsM(matrices[(d1_53-1) + (d0_53-1) ]);
+				int d0_54 = iter13 % 11;
+				if (d0_54 == 0) {
+					d0_54 = 11;
+				}
+				int d1_54 = (iter13 - d0_54)/11 + 1;
+				int * tmp33= getDimsM(matrices[(d1_54-1) + (d0_54-1) ]);
+				int d0_55 = iter14 % 11;
+				if (d0_55 == 0) {
+					d0_55 = 11;
+				}
+				int d1_55 = (iter14 - d0_55)/11 + 1;
+				int * tmp34= getDimsM(matrices[(d1_55-1) + (d0_55-1) ]);
+				int d0_56 = iter14 % 11;
+				if (d0_56 == 0) {
+					d0_56 = 11;
+				}
+				int d1_56 = (iter14 - d0_56)/11 + 1;
+				int * tmp35= getDimsM(matrices[(d1_56-1) + (d0_56-1) ]);
+				if ((iter13 > 1 && iter14 > 1 && tmp32[0] * tmp33[1] == tmp34[0] * tmp35[1])) {
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 					int d0_57 = iter13 % 11;
 					if (d0_57 == 0) {
 						d0_57 = 11;
@@ -376,8 +507,14 @@ int main(void) {
 						d0_58 = 11;
 					}
 					int d1_58 = (iter14 - d0_58)/11 + 1;
+<<<<<<< HEAD
 					Matrix * tmp35 = xcorrM(matrices[(d1_57-1) + (d0_57-1) ], matrices[(d1_58-1) + (d0_58-1) ], iter15, "unbiased");
 					printM(tmp35);
+=======
+					Matrix * tmp36= xcorrM(matrices[(d1_57-1) + (d0_57-1) ], matrices[(d1_58-1) + (d0_58-1) ], iter15, "unbiased");
+					int * tmp37 = i_to_i(tmp36);
+					printf("\n%d\n", tmp37[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 					int d0_59 = iter13 % 11;
 					if (d0_59 == 0) {
 						d0_59 = 11;
@@ -388,8 +525,14 @@ int main(void) {
 						d0_60 = 11;
 					}
 					int d1_60 = (iter14 - d0_60)/11 + 1;
+<<<<<<< HEAD
 					Matrix * tmp36 = xcorrM(matrices[(d1_59-1) + (d0_59-1) ], matrices[(d1_60-1) + (d0_60-1) ], iter15, "biased");
 					printM(tmp36);
+=======
+					Matrix * tmp38= xcorrM(matrices[(d1_59-1) + (d0_59-1) ], matrices[(d1_60-1) + (d0_60-1) ], iter15, "biased");
+					int * tmp39 = i_to_i(tmp38);
+					printf("\n%d\n", tmp39[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 					int d0_61 = iter13 % 11;
 					if (d0_61 == 0) {
 						d0_61 = 11;
@@ -400,8 +543,14 @@ int main(void) {
 						d0_62 = 11;
 					}
 					int d1_62 = (iter14 - d0_62)/11 + 1;
+<<<<<<< HEAD
 					Matrix * tmp37 = xcorrM(matrices[(d1_61-1) + (d0_61-1) ], matrices[(d1_62-1) + (d0_62-1) ], iter15, "coeff");
 					printM(tmp37);
+=======
+					Matrix * tmp40= xcorrM(matrices[(d1_61-1) + (d0_61-1) ], matrices[(d1_62-1) + (d0_62-1) ], iter15, "coeff");
+					int * tmp41 = i_to_i(tmp40);
+					printf("\n%d\n", tmp41[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 					
 					
 					

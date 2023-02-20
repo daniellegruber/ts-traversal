@@ -261,7 +261,11 @@ void two_t_test(Matrix * a, Matrix * b) {
 	double df1;
 	double sd1;
 	ttestM_xy(a, b, &h1, &pval1, &ci1, &tstat1, &df1, &sd1);
+<<<<<<< HEAD
 	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h1, pval1, tstat1, df1, sd1);
+=======
+	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h1, pval1, stats.tstat, stats.df, stats.sd);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 }
 
 void int_vec_stats(Matrix * a) {
@@ -321,6 +325,7 @@ void int_vec_stats(Matrix * a) {
 
 void double_vec_stats(Matrix * a) {
 	int index3;
+<<<<<<< HEAD
 	Matrix * tmp31 = maxV(a, &index3);
 	Matrix * greatest = tmp31;
 	printM(tmp31);
@@ -329,6 +334,18 @@ void double_vec_stats(Matrix * a) {
 	Matrix * tmp32 = minV(a, &index4);
 	Matrix * least = tmp32;
 	printM(tmp32);
+=======
+	Matrix * tmp31= maxV(a, &index3);
+	Matrix * greatest= tmp31;
+	double * tmp32 = d_to_d(tmp31);
+	printf("\n%f\n", tmp32[0]);
+	printf("max index: %d\n", index3);
+	int index4;
+	Matrix * tmp33= minV(a, &index4);
+	Matrix * least= tmp33;
+	double * tmp34 = d_to_d(tmp33);
+	printf("\n%f\n", tmp34[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	printf("min index: %d\n", index4);
 	double * tmp33 = d_to_d(tmp32);
 	double * tmp34 = d_to_d(tmp31);

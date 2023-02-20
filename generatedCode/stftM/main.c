@@ -73,9 +73,18 @@ void fourier_vec_script(Matrix * a) {
 			for (int iter3 = 2; iter3 <= 9; ++ iter3) {
 				for (int iter4 = 1; iter4 <= 3; ++ iter4) {
 					printf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", iter1, iter2, iter3, iter4);
+<<<<<<< HEAD
 					Matrix * tmp1 = stftV(a, 80, 24, 64, 1);
 					Matrix * y = tmp1;
 					printM(y);
+=======
+					int ndim1= 1;
+					int dim1= {1};
+					Matrix * tmp1= stftV(a, 80, 24, 64, 1);
+					Matrix * y= tmp1;
+					double * tmp2 = d_to_d(y);
+					printf("\n%f\n", tmp2[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				
 				}
 			

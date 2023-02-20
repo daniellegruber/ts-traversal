@@ -30,17 +30,29 @@ int main(void) {
 			d0_1 = 100;
 		}
 		int d1_1 = (iter1 - d0_1)/100 + 1;
+<<<<<<< HEAD
 		int tmp5 = pow(iter1, 2);
 		double tmp4 = tmp5 + 0.5;
 		lhs_data1[(d1_1-1) + (d0_1-1) * 100] = tmp4;
 		int tmp6 = pow(iter1, 2);
+=======
+		int tmp5= pow(iter1, 2);
+		double tmp4= tmp5 + 0.5;
+		lhs_data1[(d1_1-1) + (d0_1-1) * 100] = tmp4;
+		int tmp6= pow(iter1, 2);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		int d0_2 = iter1 % 100;
 		if (d0_2 == 0) {
 			d0_2 = 100;
 		}
 		int d1_2 = (iter1 - d0_2)/100 + 1;
+<<<<<<< HEAD
 		int tmp8 = pow(iter1, 2);
 		complex tmp7 = (tmp8 + 0.5) * 1*I;
+=======
+		int tmp8= pow(iter1, 2);
+		complex tmp7= (tmp8 + 0.5) * 1*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data1[(d1_2-1) + (d0_2-1) * 100] = tmp7;
 	
 	}

@@ -60,8 +60,13 @@ int main(void) {
 				d0_3 = 3;
 			}
 			int d1_3 = (iter1 - d0_3)/3 + 1;
+<<<<<<< HEAD
 			double tmp8 = cimag(tmp2);
 			printf("%.5f  %.5fi  \n", tmp6, tmp8);
+=======
+			double tmp7= cimag(tmp2);
+			printf("%.5f  %.5fi  \n", tmp5, tmp7);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			
 			} else {
 			int d0_4 = iter1 % 3;
@@ -75,8 +80,13 @@ int main(void) {
 				d0_5 = 3;
 			}
 			int d1_5 = (iter1 - d0_5)/3 + 1;
+<<<<<<< HEAD
 			double tmp12 = cimag(tmp2);
 			printf("%.5f + %.5fi  \n", tmp10, tmp12);
+=======
+			double tmp11= cimag(tmp2);
+			printf("%.5f + %.5fi  \n", tmp9, tmp11);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			
 		
 		}
@@ -84,6 +94,7 @@ int main(void) {
 	}
 	for (int iter2 = 1; iter2 <= 3; ++ iter2) {
 		for (int iter3 = 1; iter3 <= 3; ++ iter3) {
+<<<<<<< HEAD
 			complex tmp13;
 			indexM(a, &tmp13, 2, iter2, iter3);
 			double tmp14 = cimag(tmp13);
@@ -100,6 +111,20 @@ int main(void) {
 				double tmp21 = creal(tmp13);
 				double tmp23 = cimag(tmp13);
 				printf("%.5f + %.5fi  \n", tmp21, tmp23);
+=======
+			complex tmp12;
+			indexM(a, &tmp12, 2, iter2, iter3);
+			double tmp13= cimag(tmp12);
+			if (tmp13 < 0) {
+				double tmp15= creal(tmp12);
+				double tmp17= cimag(tmp12);
+				printf("%.5f  %.5fi  \n", tmp15, tmp17);
+				
+				} else {
+				double tmp19= creal(tmp12);
+				double tmp21= cimag(tmp12);
+				printf("%.5f + %.5fi  \n", tmp19, tmp21);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				
 			
 			}

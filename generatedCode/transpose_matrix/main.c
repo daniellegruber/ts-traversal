@@ -50,6 +50,10 @@ int main(void) {
 	a = tmp6;
 	double* lhs_data2 = d_to_d(a);
 	counter = 1;
+<<<<<<< HEAD
+=======
+	double* lhs_data2 = d_to_d(a);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	for (int iter4 = 1; iter4 <= 3; ++ iter4) {
 		for (int iter5 = 1; iter5 <= 6; ++ iter5) {
 			double tmp7 = counter * counter + 0.5;
@@ -81,6 +85,10 @@ int main(void) {
 	a = tmp11;
 	complex* lhs_data3 = c_to_c(a);
 	counter = 1;
+<<<<<<< HEAD
+=======
+	complex* lhs_data3 = c_to_c(a);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	for (int iter7 = 1; iter7 <= 3; ++ iter7) {
 		for (int iter8 = 1; iter8 <= 6; ++ iter8) {
 			complex tmp12 = counter * counter + 0.5 - 0.5*I;
@@ -112,6 +120,10 @@ int main(void) {
 	a = tmp16;
 	complex* lhs_data4 = c_to_c(a);
 	counter = 1;
+<<<<<<< HEAD
+=======
+	complex* lhs_data4 = c_to_c(a);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	for (int iter10 = 1; iter10 <= 3; ++ iter10) {
 		for (int iter11 = 1; iter11 <= 6; ++ iter11) {
 			complex tmp17 = counter * counter + 0.5 - 0.5*I;

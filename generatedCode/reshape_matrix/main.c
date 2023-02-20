@@ -43,9 +43,15 @@ int main(void) {
 	writeM( mat1, 2, input2);
 	free(input2);
 	
+<<<<<<< HEAD
 	Matrix * b1 = tmp1;
 	int * dim3 = i_to_i(mat1);
 	int ndim3 = 2;
+=======
+	Matrix * b1= tmp1;
+	int * dim3= i_to_i(mat1);
+	int ndim3= 2;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	reshapeM(tmp1, ndim3, dim3);
 	b1 = tmp1;
 	printM(b1);

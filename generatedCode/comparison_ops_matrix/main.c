@@ -163,7 +163,11 @@ int main(void) {
 			d0_6 = 1;
 		}
 		int d1_6 = (iter1 - d0_6)/1 + 1;
+<<<<<<< HEAD
 		int tmp7 = iter1 * iter1;
+=======
+		int tmp7= iter1 * iter1;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data1[(d1_6-1) + (d0_6-1) ] = tmp7;
 	
 	}
@@ -175,7 +179,11 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim3, dim3, 0);
 	writeM(mat1, size1, lhs_data1);
+<<<<<<< HEAD
 	Matrix * tmp8 = transposeM(matrices[4]);
+=======
+	Matrix * tmp8= transposeM(matrices[4]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[4] = tmp8;
 	int ndim4 = 2;
 	int dim4[2] = {3,3};
@@ -188,7 +196,11 @@ int main(void) {
 			d0_11 = 1;
 		}
 		int d1_11 = (iter3 - d0_11)/1 + 1;
+<<<<<<< HEAD
 		double tmp10 = iter3 * iter3 + 0.5;
+=======
+		double tmp10= iter3 * iter3 + 0.5;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data2[(d1_11-1) + (d0_11-1) ] = tmp10;
 	
 	}
@@ -200,7 +212,11 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim4, dim4, 1);
 	writeM(mat2, size2, lhs_data2);
+<<<<<<< HEAD
 	Matrix * tmp11 = transposeM(matrices[5]);
+=======
+	Matrix * tmp11= transposeM(matrices[5]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[5] = tmp11;
 	int ndim5 = 2;
 	int dim5[2] = {3,3};
@@ -213,7 +229,11 @@ int main(void) {
 			d0_16 = 1;
 		}
 		int d1_16 = (iter5 - d0_16)/1 + 1;
+<<<<<<< HEAD
 		complex tmp13 = iter5 * iter5 + 0.5*I;
+=======
+		complex tmp13= iter5 * iter5 + 0.5*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data3[(d1_16-1) + (d0_16-1) ] = tmp13;
 	
 	}
@@ -225,7 +245,11 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
+<<<<<<< HEAD
 	Matrix * tmp14 = transposeM(matrices[6]);
+=======
+	Matrix * tmp14= transposeM(matrices[6]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[6] = tmp14;
 	int ndim6 = 2;
 	int dim6[2] = {3,3};
@@ -238,7 +262,11 @@ int main(void) {
 			d0_21 = 1;
 		}
 		int d1_21 = (iter7 - d0_21)/1 + 1;
+<<<<<<< HEAD
 		int tmp16 = (iter7 - 5) * iter7;
+=======
+		int tmp16= (iter7 - 5) * iter7;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data4[(d1_21-1) + (d0_21-1) ] = tmp16;
 	
 	}
@@ -250,7 +278,11 @@ int main(void) {
 	}
 	Matrix *mat4 = createM(ndim6, dim6, 0);
 	writeM(mat4, size4, lhs_data4);
+<<<<<<< HEAD
 	Matrix * tmp17 = transposeM(matrices[7]);
+=======
+	Matrix * tmp17= transposeM(matrices[7]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[7] = tmp17;
 	int ndim7 = 2;
 	int dim7[2] = {3,3};
@@ -263,7 +295,11 @@ int main(void) {
 			d0_26 = 1;
 		}
 		int d1_26 = (iter9 - d0_26)/1 + 1;
+<<<<<<< HEAD
 		double tmp19 = (iter9 - 8.2) * iter9 + 0.5;
+=======
+		double tmp19= (iter9 - 8.2) * iter9 + 0.5;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data5[(d1_26-1) + (d0_26-1) ] = tmp19;
 	
 	}
@@ -275,7 +311,11 @@ int main(void) {
 	}
 	Matrix *mat5 = createM(ndim7, dim7, 1);
 	writeM(mat5, size5, lhs_data5);
+<<<<<<< HEAD
 	Matrix * tmp20 = transposeM(matrices[8]);
+=======
+	Matrix * tmp20= transposeM(matrices[8]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[8] = tmp20;
 	int ndim8 = 2;
 	int dim8[2] = {3,3};
@@ -288,7 +328,11 @@ int main(void) {
 			d0_31 = 1;
 		}
 		int d1_31 = (iter11 - d0_31)/1 + 1;
+<<<<<<< HEAD
 		complex tmp22 = (iter11 - 5.89) * (iter11) + ((0.5) * (4 - iter11)) * 1*I;
+=======
+		complex tmp22= (iter11 - 5.89) * (iter11) + ((0.5) * (4 - iter11)) * 1*I;
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 		lhs_data6[(d1_31-1) + (d0_31-1) ] = tmp22;
 	
 	}
@@ -300,7 +344,11 @@ int main(void) {
 	}
 	Matrix *mat6 = createM(ndim8, dim8, 2);
 	writeM(mat6, size6, lhs_data6);
+<<<<<<< HEAD
 	Matrix * tmp23 = transposeM(matrices[9]);
+=======
+	Matrix * tmp23= transposeM(matrices[9]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	matrices[9] = tmp23;
 	
 	int ndim9 = 2;
@@ -350,7 +398,11 @@ int main(void) {
 				d0_38 = 11;
 			}
 			int d1_38 = (iter14 - d0_38)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp24 = ltM(matrices[(d1_37-1) + (d0_37-1) ], matrices[(d1_38-1) + (d0_38-1) ]);
+=======
+			Matrix * tmp24= ltM(matrices[(d1_37-1) + (d0_37-1) ], matrices[(d1_38-1) + (d0_38-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			printM(tmp24);
 			int d0_39 = iter13 % 11;
 			if (d0_39 == 0) {
@@ -362,7 +414,11 @@ int main(void) {
 				d0_40 = 11;
 			}
 			int d1_40 = (iter14 - d0_40)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp25 = leM(matrices[(d1_39-1) + (d0_39-1) ], matrices[(d1_40-1) + (d0_40-1) ]);
+=======
+			Matrix * tmp25= leM(matrices[(d1_39-1) + (d0_39-1) ], matrices[(d1_40-1) + (d0_40-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			printM(tmp25);
 			int d0_41 = iter13 % 11;
 			if (d0_41 == 0) {
@@ -374,7 +430,11 @@ int main(void) {
 				d0_42 = 11;
 			}
 			int d1_42 = (iter14 - d0_42)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp26 = gtM(matrices[(d1_41-1) + (d0_41-1) ], matrices[(d1_42-1) + (d0_42-1) ]);
+=======
+			Matrix * tmp26= gtM(matrices[(d1_41-1) + (d0_41-1) ], matrices[(d1_42-1) + (d0_42-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			printM(tmp26);
 			int d0_43 = iter13 % 11;
 			if (d0_43 == 0) {
@@ -386,7 +446,11 @@ int main(void) {
 				d0_44 = 11;
 			}
 			int d1_44 = (iter14 - d0_44)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp27 = geM(matrices[(d1_43-1) + (d0_43-1) ], matrices[(d1_44-1) + (d0_44-1) ]);
+=======
+			Matrix * tmp27= geM(matrices[(d1_43-1) + (d0_43-1) ], matrices[(d1_44-1) + (d0_44-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			printM(tmp27);
 			int d0_45 = iter13 % 11;
 			if (d0_45 == 0) {
@@ -398,7 +462,11 @@ int main(void) {
 				d0_46 = 11;
 			}
 			int d1_46 = (iter14 - d0_46)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp28 = neM(matrices[(d1_45-1) + (d0_45-1) ], matrices[(d1_46-1) + (d0_46-1) ]);
+=======
+			Matrix * tmp28= neM(matrices[(d1_45-1) + (d0_45-1) ], matrices[(d1_46-1) + (d0_46-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			printM(tmp28);
 			int d0_47 = iter13 % 11;
 			if (d0_47 == 0) {
@@ -410,7 +478,11 @@ int main(void) {
 				d0_48 = 11;
 			}
 			int d1_48 = (iter14 - d0_48)/11 + 1;
+<<<<<<< HEAD
 			Matrix * tmp29 = equalM(matrices[(d1_47-1) + (d0_47-1) ], matrices[(d1_48-1) + (d0_48-1) ]);
+=======
+			Matrix * tmp29= equalM(matrices[(d1_47-1) + (d0_47-1) ], matrices[(d1_48-1) + (d0_48-1) ]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 			printM(tmp29);
 			if ((iter13 == 4 || iter13 == 7 || iter13 == 10 || iter14 == 4 || iter14 == 7 || iter14 == 10)) {
 				int d0_49 = iter13 % 11;
@@ -423,8 +495,14 @@ int main(void) {
 					d0_50 = 11;
 				}
 				int d1_50 = (iter14 - d0_50)/11 + 1;
+<<<<<<< HEAD
 				Matrix * tmp30 = pairwise_maxM(matrices[(d1_49-1) + (d0_49-1) ], matrices[(d1_50-1) + (d0_50-1) ]);
 				printM(tmp30);
+=======
+				Matrix * tmp30= maxM(matrices[(d1_49-1) + (d0_49-1) ], matrices[(d1_50-1) + (d0_50-1) ]);
+				int * tmp31 = i_to_i(tmp30);
+				printf("\n%d\n", tmp31[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				int d0_51 = iter13 % 11;
 				if (d0_51 == 0) {
 					d0_51 = 11;
@@ -435,8 +513,14 @@ int main(void) {
 					d0_52 = 11;
 				}
 				int d1_52 = (iter14 - d0_52)/11 + 1;
+<<<<<<< HEAD
 				Matrix * tmp31 = pairwise_minM(matrices[(d1_51-1) + (d0_51-1) ], matrices[(d1_52-1) + (d0_52-1) ]);
 				printM(tmp31);
+=======
+				Matrix * tmp32= minM(matrices[(d1_51-1) + (d0_51-1) ], matrices[(d1_52-1) + (d0_52-1) ]);
+				int * tmp33 = i_to_i(tmp32);
+				printf("\n%d\n", tmp33[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 
 				
 				} else if ((iter13 == 6 || iter13 == 9 || iter13 == 12 || iter14 == 6 || iter14 == 9 || iter14 == 12)) {
@@ -450,8 +534,14 @@ int main(void) {
 					d0_54 = 11;
 				}
 				int d1_54 = (iter14 - d0_54)/11 + 1;
+<<<<<<< HEAD
 				Matrix * tmp32 = pairwise_maxM(matrices[(d1_53-1) + (d0_53-1) ], matrices[(d1_54-1) + (d0_54-1) ]);
 				printM(tmp32);
+=======
+				Matrix * tmp34= maxM(matrices[(d1_53-1) + (d0_53-1) ], matrices[(d1_54-1) + (d0_54-1) ]);
+				int * tmp35 = i_to_i(tmp34);
+				printf("\n%d\n", tmp35[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				int d0_55 = iter13 % 11;
 				if (d0_55 == 0) {
 					d0_55 = 11;
@@ -462,8 +552,14 @@ int main(void) {
 					d0_56 = 11;
 				}
 				int d1_56 = (iter14 - d0_56)/11 + 1;
+<<<<<<< HEAD
 				Matrix * tmp33 = pairwise_minM(matrices[(d1_55-1) + (d0_55-1) ], matrices[(d1_56-1) + (d0_56-1) ]);
 				printM(tmp33);
+=======
+				Matrix * tmp36= minM(matrices[(d1_55-1) + (d0_55-1) ], matrices[(d1_56-1) + (d0_56-1) ]);
+				int * tmp37 = i_to_i(tmp36);
+				printf("\n%d\n", tmp37[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 
 				
 				} else {
@@ -477,8 +573,14 @@ int main(void) {
 					d0_58 = 11;
 				}
 				int d1_58 = (iter14 - d0_58)/11 + 1;
+<<<<<<< HEAD
 				Matrix * tmp34 = pairwise_maxM(matrices[(d1_57-1) + (d0_57-1) ], matrices[(d1_58-1) + (d0_58-1) ]);
 				printM(tmp34);
+=======
+				Matrix * tmp38= maxM(matrices[(d1_57-1) + (d0_57-1) ], matrices[(d1_58-1) + (d0_58-1) ]);
+				int * tmp39 = i_to_i(tmp38);
+				printf("\n%d\n", tmp39[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				int d0_59 = iter13 % 11;
 				if (d0_59 == 0) {
 					d0_59 = 11;
@@ -489,8 +591,14 @@ int main(void) {
 					d0_60 = 11;
 				}
 				int d1_60 = (iter14 - d0_60)/11 + 1;
+<<<<<<< HEAD
 				Matrix * tmp35 = pairwise_minM(matrices[(d1_59-1) + (d0_59-1) ], matrices[(d1_60-1) + (d0_60-1) ]);
 				printM(tmp35);
+=======
+				Matrix * tmp40= minM(matrices[(d1_59-1) + (d0_59-1) ], matrices[(d1_60-1) + (d0_60-1) ]);
+				int * tmp41 = i_to_i(tmp40);
+				printf("\n%d\n", tmp41[0]);
+>>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 
 				
 			

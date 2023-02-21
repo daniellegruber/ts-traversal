@@ -230,7 +230,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             }
             case "for_statement" /* g.SyntaxType.ForStatement */: {
                 var expression = [];
-                var tmp_iter = (0, helperFunctions_1.generateTmpVar)("iter", tmp_tbl);
+                //let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                var tmp_iter = node.leftNode.text;
                 if (node.rightNode.type == "slice" /* g.SyntaxType.Slice */) {
                     var children = [];
                     for (var i = 0; i < node.rightNode.namedChildCount; i++) {
@@ -241,8 +242,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     var obj = tmp_var_types.find(function (x) { return x.name === node.leftNode.text; });
                     expression.push("for (int ".concat(tmp_iter, " = ").concat(children[0], ";"));
                     loop_iterators.push(tmp_iter);
-                    updateFunParams(0);
-                    alias_tbl = (0, helperFunctions_1.pushAliasTbl)(node.leftNode.text, tmp_iter, node, fun_params);
+                    //updateFunParams(0);
+                    //alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
                     tmp_var_types.push({
                         name: tmp_iter,
                         type: "int",
@@ -408,7 +409,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     else {
                         var obj1 = custom_functions.find(function (x) { return x.name === node.rightNode.valueNode.text; });
                         //let obj2 = builtin_funs.find(x => x.fun_matlab === node.rightNode.valueNode.text);
-                        var obj2 = (0, helperFunctions_1.findBuiltin)(builtin_funs, node.rightNode.valueNode.text, 1);
+                        var obj2 = (0, helperFunctions_1.findBuiltin)(builtin_funs, node.rightNode.valueNode.text);
                         if (obj1 != null && obj1 != undefined) {
                             lhs = obj1.outs_transform(args, arg_types, outs);
                         }
@@ -646,23 +647,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             var _42 = (0, typeInference_1.inferType)(outs[0], tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ismatrix_2 = _42[3], c_4 = _42[6];
                             custom_functions = c_4;
                             var _43 = (0, typeInference_1.inferType)(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ltype = _43[0];
-<<<<<<< HEAD
                             var tmp_block_level = block_level;
                             var transformed_lhs_valueNode = transformNode(node.leftNode.valueNode);
                             updateFunParams(0);
                             _5 = (0, modifyCode_1.insertMain)("".concat(type, "* ").concat(tmp_lhs, " = ").concat(ltype.charAt(0), "_to_").concat(type.charAt(0), "(").concat(transformed_lhs_valueNode, ");"), "".concat(transformed_lhs_valueNode, " ="), 1, fun_params), main_function = _5[0], function_definitions = _5[1], tmp_block_level = _5[2];
-=======
-                            if (num_back == 0) {
-                                updateFunParams(0);
-                                _5 = (0, modifyCode_1.pushToMain)("".concat(type, "* ").concat(tmp_lhs, " = ").concat(ltype.charAt(0), "_to_").concat(type.charAt(0), "(").concat(transformNode(node.leftNode.valueNode), ");"), fun_params), main_function = _5[0], function_definitions = _5[1];
-                            }
-                            else {
-                                block_level -= num_back;
-                                updateFunParams(0);
-                                _6 = (0, modifyCode_1.insertMain)("".concat(type, "* ").concat(tmp_lhs, " = ").concat(ltype.charAt(0), "_to_").concat(type.charAt(0), "(").concat(transformNode(node.leftNode.valueNode), ");"), 'for', num_back, 0, fun_params), main_function = _6[0], function_definitions = _6[1];
-                                block_level += num_back;
-                            }
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                             // If RHS is matrix
                             if (ismatrix_2) {
                                 updateFunParams(0);
@@ -831,11 +819,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     args.push(transformNode(arg));
                     var _48 = (0, typeInference_1.inferType)(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_2 = _48[0], ndim_1 = _48[1], dim_1 = _48[2], ismatrix_3 = _48[3], ispointer_1 = _48[4], isstruct_1 = _48[5], c_5 = _48[6];
                     if (/tmp.*\[0\]/.test(args[i])) {
-<<<<<<< HEAD
                         _12 = (0, typeInference_1.inferTypeByName)(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug), type_2 = _12[0], ndim_1 = _12[1], dim_1 = _12[2], ismatrix_3 = _12[3], ispointer_1 = _12[4], isstruct_1 = _12[5], c_5 = _12[6];
-=======
-                        _13 = (0, typeInference_1.inferTypeByName)(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug), type_2 = _13[0], ndim_1 = _13[1], dim_1 = _13[2], ismatrix_3 = _13[3], ispointer_1 = _13[4], isstruct_1 = _13[5], c_5 = _13[6];
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                     }
                     /*if (arg.type != g.SyntaxType.CellSubscript && ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
@@ -881,7 +865,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             });
                         }
                         updateFunParams(0);
-                        _14 = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _14[0], function_definitions = _14[1];
+                        _13 = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _13[0], function_definitions = _13[1];
                     }
                     if (path.parse(obj.file).name !== path.parse(file).name) {
                         link.push("#include <".concat(path.parse(obj.file).name, ".h>"));
@@ -890,11 +874,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                 }
                 else {
                     // Is a builtin function call
-<<<<<<< HEAD
-                    var obj_2 = (0, helperFunctions_1.findBuiltin)(builtin_funs, node.valueNode.text, 1);
-=======
                     var obj_2 = (0, helperFunctions_1.findBuiltin)(builtin_funs, node.valueNode.text);
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                     if (obj_2 != null && obj_2 != undefined) {
                         var req_arg_types = obj_2.req_arg_types;
                         var init_before_1 = obj_2.init_before(args, arg_types, outs);
@@ -912,7 +892,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                     if (arg_types[i].dim.every(function (x) { return x === 1; })) {
                                         var expression = "";
                                         updateFunParams(0);
-                                        _15 = (0, helperFunctions_1.extractSingularMat)(args[i], arg_types[i], node, fun_params), expression = _15[0], fun_params = _15[1];
+                                        _14 = (0, helperFunctions_1.extractSingularMat)(args[i], arg_types[i], node, fun_params), expression = _14[0], fun_params = _14[1];
                                         updateFunParams(1);
                                         args[i] = expression;
                                     }
@@ -981,7 +961,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             }
                         }
                         updateFunParams(0);
-                        _16 = (0, modifyCode_1.pushToMain)(push_before, fun_params), main_function = _16[0], function_definitions = _16[1];
+                        _15 = (0, modifyCode_1.pushToMain)(push_before, fun_params), main_function = _15[0], function_definitions = _15[1];
                         var n_args = node.namedChildCount - 1;
                         if (n_args < obj_2.n_req_args && obj_2.opt_arg_defaults != null) {
                             args = args.concat(obj_2.opt_arg_defaults.slice(0, obj_2.n_req_args - n_args));
@@ -1021,7 +1001,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 alias_tbl = (0, helperFunctions_1.pushAliasTbl)(ptr_args[i].name, tmp_ptr, node, fun_params);
                             }
                             updateFunParams(0);
-<<<<<<< HEAD
                             _16 = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _16[0], function_definitions = _16[1];
                             if (push_alias_tbl != null) {
                                 for (var i = 0; i < push_alias_tbl.length; i++) {
@@ -1031,9 +1010,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                     alias_tbl.push(push_alias_tbl[i]);
                                 }
                             }
-=======
-                            _17 = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _17[0], function_definitions = _17[1];
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                             // ptr args were originally outputs in MATLAB code
                             // in the case of 1 ptr arg:
                             // disp(det(A)) -> determinantM(A, &d); fprint("%i", d) 
@@ -1045,9 +1021,9 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 });
                                 if (fun_c != null) {
                                     updateFunParams(0);
-                                    _18 = (0, modifyCode_1.pushToMain)("".concat(fun_c, "(").concat(args.join(", "), ");"), fun_params), main_function = _18[0], function_definitions = _18[1];
+                                    _17 = (0, modifyCode_1.pushToMain)("".concat(fun_c, "(").concat(args.join(", "), ");"), fun_params), main_function = _17[0], function_definitions = _17[1];
                                     updateFunParams(0);
-                                    _19 = (0, modifyCode_1.pushToMain)(push_after, fun_params), main_function = _19[0], function_definitions = _19[1];
+                                    _18 = (0, modifyCode_1.pushToMain)(push_after, fun_params), main_function = _18[0], function_definitions = _18[1];
                                 }
                                 return tmp_ptr;
                             }
@@ -1059,13 +1035,10 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             if (return_type == null) {
                                 if (args == null) {
                                     updateFunParams(0);
-<<<<<<< HEAD
                                     _19 = (0, modifyCode_1.pushToMain)("".concat(fun_c, ";"), fun_params), main_function = _19[0], function_definitions = _19[1];
                                 }
                                 else if (args[0] == 'void') {
                                     updateFunParams(0);
-=======
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                                     _20 = (0, modifyCode_1.pushToMain)("".concat(fun_c, "();"), fun_params), main_function = _20[0], function_definitions = _20[1];
                                 }
                                 else {
@@ -1077,11 +1050,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 return null;
                             }
                             else {
-<<<<<<< HEAD
                                 var var_val = "".concat(fun_c);
-=======
-                                var var_val = "".concat(fun_c, "()");
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                                 if (args != null) {
                                     var_val = "".concat(fun_c, "(").concat(args.join(", "), ")");
                                 }
@@ -1527,6 +1496,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         for (var _i = 0, args1_2 = args1; _i < args1_2.length; _i++) {
             var arg = args1_2[_i];
             args.push(transformNode(arg));
+            //console.log(transformNode(arg));
             var _d = (0, typeInference_1.inferType)(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type = _d[0], ndim = _d[1], dim = _d[2], ismatrix = _d[3], ispointer = _d[4], isstruct = _d[5], c = _d[6];
             custom_functions = c;
             arg_types.push({
@@ -1542,7 +1512,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
         for (var i = 0; i < outs.length; i++) {
             outs[i] = outs[i].text;
         }
-        var obj = (0, helperFunctions_1.findBuiltin)(builtinFunctions_1.operatorMapping, node.operatorNode.type, 0);
+        var obj = (0, helperFunctions_1.findBuiltin)(builtinFunctions_1.operatorMapping, node.operatorNode.type);
         //let obj = operatorMapping.find(x => x.fun_matlab === node.operatorNode.type );
         var return_type = obj.return_type(args, arg_types, outs);
         var init_before = obj.init_before(args, arg_types, outs);

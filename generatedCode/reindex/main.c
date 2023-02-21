@@ -227,25 +227,25 @@ int main(void) {
 	Matrix * tmp73 = zerosM(ndim31, dim31);
 	a = tmp73;
 	int* lhs_data1 = i_to_i(a);
-	for (int iter1 = 1; iter1 <= 63; ++ iter1) {
-		int tmp74 = pow((-1), iter1);
-		int tmp75 = pow(iter1, 2);
-		int d0_70 = iter1 % 7;
+	for (int i = 1; i <= 63; ++ i) {
+		int tmp74 = pow((-1), i);
+		int tmp75 = pow(i, 2);
+		int d0_70 = i % 7;
 		if (d0_70 == 0) {
 			d0_70 = 7;
 		}
-		int d1_70 = (iter1 - d0_70)/7 + 1;
-		int tmp77 = pow((-1), iter1);
-		int tmp78 = pow(iter1, 2);
+		int d1_70 = (i - d0_70)/7 + 1;
+		int tmp77 = pow((-1), i);
+		int tmp78 = pow(i, 2);
 		int tmp76 = tmp77 * tmp78;
 		lhs_data1[(d1_70-1) + (d0_70-1) * 9] = tmp76;
 	
 	}
 	// Write matrix mat19
 	int size1 = 1;
-	for (int iter2 = 0 ; iter2 < ndim31; iter2++)
+	for (int iter1 = 0 ; iter1 < ndim31; iter1++)
 	{
-		size1 *= dim31[iter2];
+		size1 *= dim31[iter1];
 	}
 	Matrix *mat19 = createM(ndim31, dim31, 0);
 	writeM(mat19, size1, lhs_data1);
@@ -258,67 +258,42 @@ int main(void) {
 	int dim32[2] = {7, 9};
 	Matrix * tmp80 = zerosM(ndim32, dim32);
 	a = tmp80;
-	int* lhs_data2 = i_to_i(a);
-	for (int iter3 = 1; iter3 <= 63; ++ iter3) {
-		int tmp81 = pow((-1), iter3);
-		int tmp82 = pow(iter3, 2);
-		int d0_71 = iter3 % 7;
+	for (int i = 1; i <= 63; ++ i) {
+		int tmp81 = pow((-1), i);
+		int tmp82 = pow(i, 2);
+		int d0_71 = i % 7;
 		if (d0_71 == 0) {
 			d0_71 = 7;
 		}
-		int d1_71 = (iter3 - d0_71)/7 + 1;
-		int tmp84 = pow((-1), iter3);
-		int tmp85 = pow(iter3, 2);
+		int d1_71 = (i - d0_71)/7 + 1;
+		int tmp84 = pow((-1), i);
+		int tmp85 = pow(i, 2);
 		int tmp83 = tmp84 * tmp85 / 17;
-		lhs_data2[(d1_71-1) + (d0_71-1) * 9] = tmp83;
+		lhs_data1[(d1_71-1) + (d0_71-1) * 9] = tmp83;
 	
 	}
-	// Write matrix mat20
-	int size2 = 1;
-	for (int iter4 = 0 ; iter4 < ndim32; iter4++)
-	{
-		size2 *= dim32[iter4];
-	}
-	Matrix *mat20 = createM(ndim32, dim32, 0);
-	writeM(mat20, size2, lhs_data2);
-	Matrix * tmp86 = transposeM(mat20);
+	Matrix * tmp86 = transposeM(a);
 	a = tmp86;
 	printM(a);
 	double_reindexing_tests(a);
 	//matrices_97_c
-<<<<<<< HEAD
 	int ndim33 = 2;
 	int dim33[2] = {7, 9};
 	Matrix * tmp87 = zerosM(ndim33, dim33);
 	a = tmp87;
-=======
-	int ndim33= 2;
-	int dim33[2]= {7, 9};
-	Matrix * tmp93= zerosM(ndim33, dim33);
-	a = tmp93;
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
-	complex* lhs_data3 = c_to_c(a);
-	for (int iter5 = 1; iter5 <= 63; ++ iter5) {
-		int tmp88 = pow((-1), iter5);
-		int d0_72 = iter5 % 7;
+	for (int i = 1; i <= 63; ++ i) {
+		int tmp88 = pow((-1), i);
+		int d0_72 = i % 7;
 		if (d0_72 == 0) {
 			d0_72 = 7;
 		}
-		int d1_72 = (iter5 - d0_72)/7 + 1;
-		int tmp90 = pow((-1), iter5);
-		complex tmp89 = tmp90 * iter5 - iter5 / 17*I;
-		lhs_data3[(d1_72-1) + (d0_72-1) * 9] = tmp89;
+		int d1_72 = (i - d0_72)/7 + 1;
+		int tmp90 = pow((-1), i);
+		complex tmp89 = tmp90 * i - i / 17*I;
+		lhs_data1[(d1_72-1) + (d0_72-1) * 9] = tmp89;
 	
 	}
-	// Write matrix mat21
-	int size3 = 1;
-	for (int iter6 = 0 ; iter6 < ndim33; iter6++)
-	{
-		size3 *= dim33[iter6];
-	}
-	Matrix *mat21 = createM(ndim33, dim33, 2);
-	writeM(mat21, size3, lhs_data3);
-	Matrix * tmp91 = transposeM(mat21);
+	Matrix * tmp91 = transposeM(a);
 	a = tmp91;
 	printM(a);
 	complex_reindexing_tests(a);
@@ -535,16 +510,9 @@ void complex_reindexing_tests(Matrix * a) {
 	writeM( mat13, 1, input13);
 	free(input13);
 	
-<<<<<<< HEAD
 	printM(mat13);
 	complex tmp51;
 	indexM(a, &tmp51, 1, 22);
-=======
-	complex * tmp55 = c_to_c(mat13);
-	printf("\n%f\n", tmp55[0]);
-	complex tmp56;
-	indexM(a, &tmp56, 1, 22);
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	
 	int ndim14 = 2;
 	int dim14[2] = {1,1};
@@ -555,20 +523,11 @@ void complex_reindexing_tests(Matrix * a) {
 	writeM( mat14, 1, input14);
 	free(input14);
 	
-<<<<<<< HEAD
 	printM(mat14);
 	complex tmp53;
 	indexM(a, &tmp53, 1, 8);
 	complex tmp54;
 	indexM(a, &tmp54, 1, 15);
-=======
-	complex * tmp57 = c_to_c(mat14);
-	printf("\n%f\n", tmp57[0]);
-	complex tmp59;
-	indexM(a, &tmp59, 1, 8);
-	complex tmp60;
-	indexM(a, &tmp60, 1, 15);
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 	
 	int ndim15 = 2;
 	int dim15[2] = {4,1};

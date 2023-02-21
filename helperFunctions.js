@@ -15,7 +15,7 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
-function findBuiltin(builtin_funs, name, operator_or_builtin) {
+function findBuiltin(builtin_funs, name) {
     return builtin_funs.find(function (x) {
         var found = -1;
         if (x.fun_matlab instanceof RegExp) {
@@ -99,7 +99,8 @@ function pushAliasTbl(lhs, rhs, node, fun_params) {
     var scope = (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     var obj = filterByScope(fun_params.var_types, lhs, node, 0);
     if (obj !== null && obj !== undefined) {
-        scope = obj.scope;
+        console.log(obj);
+        //scope = obj.scope;
     }
     fun_params.alias_tbl = fun_params.alias_tbl.filter(function (e) {
         return (e.name !== lhs) ||
@@ -110,6 +111,9 @@ function pushAliasTbl(lhs, rhs, node, fun_params) {
         tmp_var: rhs,
         scope: scope
     });
+    if (lhs == "n") {
+        console.log(fun_params.alias_tbl.filter(function (x) { return x.name == "n"; }));
+    }
     return fun_params.alias_tbl;
 }
 exports.pushAliasTbl = pushAliasTbl;

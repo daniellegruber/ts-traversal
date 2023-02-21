@@ -55,8 +55,8 @@ compileall: $(dirs)
 		fulldir="$(shell pwd)/$$dir"; \
 		echo $$dir; \
 		mfiles=$$(find $$fulldir -type f -name "*.m"); \
-		srcs=$$(echo "$$mfiles" | sed "s/$$dir.m/main/"); \
-		objects=$$(echo "$$mfiles" | sed "s/$$dir.m/main.o/"); \
+		srcs=$$(echo "$$mfiles" | sed "s/$$dir\.m/main/"); \
+		objects=$$(echo "$$mfiles" | sed "s/$$dir\.m/main.o/"); \
 		for src in $$srcs; do \
 			eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
 		done; \
@@ -82,8 +82,8 @@ compileall: $(dirs)
 compileone:
 	fulldir="$(shell pwd)/$(ARGS)"; \
 	mfiles=$$(find $$fulldir -type f -name "*.m"); \
-	srcs=$$(echo "$$mfiles" | sed "s/$(ARGS).m/main/"); \
-	objects=$$(echo "$$mfiles" | sed "s/$(ARGS).m/main.o/"); \
+	srcs=$$(echo "$$mfiles" | sed "s/$(ARGS)\.m/main/"); \
+	objects=$$(echo "$$mfiles" | sed "s/$(ARGS)\.m/main.o/"); \
 	for src in $$srcs; do \
 		eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
 	done; \
@@ -133,8 +133,8 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') | \
-			sed -z 's/\n\s/\n/gi' | sed -z 's/  \n//gi' > $$fulldir/f2; \
+			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+			sed -z 's/\n\s/\n/gi' | sed -z 's/  \n//gi') > $$fulldir/f2; \
 		timeout 5 diff -wi $$fulldir/f1 $$fulldir/f2 && \
 			(echo -e "\e[1;32mSUCCESS\e[0m : $$filename" && good+="$$filename\n")||\
 			(echo -e "\e[1;31mDIFF ERROR\e[0m : $$filename" && bad+="$$filename\n");\
@@ -170,8 +170,8 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') | \
-		sed -z 's/\n\s/\n/gi' | sed -z 's/  \n//gi' > $$fulldir/f2; \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z 's/\n\s/\n/gi' | sed -z 's/  \n//gi') > $$fulldir/f2; \
 	diff -wi $$fulldir/f1 $$fulldir/f2 && \
 		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
 		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\

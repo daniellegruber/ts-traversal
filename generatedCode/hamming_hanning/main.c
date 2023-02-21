@@ -13,14 +13,14 @@ int main(void) {
 	//format short
 	//source octaveIncludes.m;
 	int iterations = 100;
-	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		double * tmp1 = hamming(iter1);
+	for (int i = 1; i <= iterations; ++ i) {
+		double * tmp1 = hamming(i);
 		printf("\n%f\n", tmp1);
-		double * tmp2 = periodichamming(iter1);
+		double * tmp2 = periodichamming(i);
 		printf("\n%f\n", tmp2);
-		double * tmp3 = hanning(iter1);
+		double * tmp3 = hanning(i);
 		printf("\n%f\n", tmp3);
-		double * tmp4 = periodichanning(iter1);
+		double * tmp4 = periodichanning(i);
 		printf("\n%f\n", tmp4);
 	
 	}

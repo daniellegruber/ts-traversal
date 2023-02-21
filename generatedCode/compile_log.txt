@@ -40,6 +40,7 @@ index_matrix
 invert_matrix
 isEqual_matrix
 logic_ops_matrix
+matrix_division
 power_matrix
 randomness
 reindex
@@ -83,7 +84,6 @@ xcorrM
 ERROR
 external_fun
 filterM
-matrix_division
 octaveIncludes
 octaveTimer
 

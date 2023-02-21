@@ -41,7 +41,7 @@ int main(void) {
 	
 	printM(a);
 	printM(b);
-	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
+	for (int i = 1; i <= iterations; ++ i) {
 		Matrix * tmp1 = plusM(b, a);
 		Matrix * c = tmp1;
 		//disp(c);

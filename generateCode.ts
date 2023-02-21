@@ -275,7 +275,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 
             case g.SyntaxType.ForStatement: {
                 let expression = [];
-                let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                //let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                let tmp_iter = node.leftNode.text;
                 if (node.rightNode.type == g.SyntaxType.Slice) {
                     let children = [];
                     for (let i = 0; i < node.rightNode.namedChildCount; i ++) {
@@ -288,8 +289,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                     expression.push(`for (int ${tmp_iter} = ${children[0]};`);
                     loop_iterators.push(tmp_iter);
-                    updateFunParams(0);
-                    alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node, fun_params);
+                    //updateFunParams(0);
+                    //alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
                     
                     tmp_var_types.push({
                         name: tmp_iter,
@@ -1176,12 +1177,9 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 
                                 if (args == null) {
                                     updateFunParams(0);
-<<<<<<< HEAD
                                     [main_function, function_definitions] = pushToMain(`${fun_c};`, fun_params);
                                 } else if (args[0] == 'void') {
                                     updateFunParams(0);
-=======
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                                     [main_function, function_definitions] = pushToMain(`${fun_c}();`, fun_params);
                                 } else {
                                     updateFunParams(0);
@@ -1192,11 +1190,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 return null;
                                 
                             } else {
-<<<<<<< HEAD
                                 let var_val = `${fun_c}`;
-=======
-                                let var_val = `${fun_c}()`;
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
                                 if (args != null) {
                                     var_val = `${fun_c}(${args.join(", ")})`;
                                 }
@@ -1267,7 +1261,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                             //let dim = obj2.dim;
                             //index = rowMajorFlatIdx(obj3.count, dim, node.namedChildren[1].text, lhs_flag);
                             index = flat_idx;
-                            
                         } else {
                             for (let i=1; i<node.namedChildCount; i++) {
                                 index.push(transformNode(node.namedChildren[i]));
@@ -1689,6 +1682,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
         
         for (let arg of args1) {
             args.push(transformNode(arg));
+            //console.log(transformNode(arg));
             let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
             custom_functions = c;
             arg_types.push({

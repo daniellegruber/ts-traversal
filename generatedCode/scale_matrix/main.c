@@ -21,21 +21,21 @@ int main(void) {
 	Matrix * tmp2 = zerosM(ndim2, dim2);
 	Matrix * a = tmp2;
 	int* lhs_data1 = i_to_i(a);
-	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
-		int d0_1 = iter1 % 3;
+	for (int i = 1; i <= 9; ++ i) {
+		int d0_1 = i % 3;
 		if (d0_1 == 0) {
 			d0_1 = 3;
 		}
-		int d1_1 = (iter1 - d0_1)/3 + 1;
-		int tmp3 = iter1;
+		int d1_1 = (i - d0_1)/3 + 1;
+		int tmp3 = i;
 		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp3;
 	
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
+	for (int iter1 = 0 ; iter1 < ndim2; iter1++)
 	{
-		size1 *= dim2[iter2];
+		size1 *= dim2[iter1];
 	}
 	Matrix *mat1 = createM(ndim2, dim2, 0);
 	writeM(mat1, size1, lhs_data1);
@@ -46,26 +46,17 @@ int main(void) {
 	int dim3[2] = {3,3};
 	Matrix * tmp5 = zerosM(ndim3, dim3);
 	Matrix * b = tmp5;
-	complex* lhs_data2 = c_to_c(b);
-	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
-		int d0_2 = iter3 % 3;
+	for (int i = 1; i <= 9; ++ i) {
+		int d0_2 = i % 3;
 		if (d0_2 == 0) {
 			d0_2 = 3;
 		}
-		int d1_2 = (iter3 - d0_2)/3 + 1;
-		complex tmp6 = iter3 + iter3 * 1*I;
-		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp6;
+		int d1_2 = (i - d0_2)/3 + 1;
+		complex tmp6 = i + i * 1*I;
+		lhs_data1[(d1_2-1) + (d0_2-1) * 3] = tmp6;
 	
 	}
-	// Write matrix mat2
-	int size2 = 1;
-	for (int iter4 = 0 ; iter4 < ndim3; iter4++)
-	{
-		size2 *= dim3[iter4];
-	}
-	Matrix *mat2 = createM(ndim3, dim3, 2);
-	writeM(mat2, size2, lhs_data2);
-	Matrix * tmp7 = transposeM(mat2);
+	Matrix * tmp7 = transposeM(b);
 	b = tmp7;
 	printM(b);
 	int ndim4 = 2;

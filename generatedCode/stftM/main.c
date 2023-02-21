@@ -18,8 +18,8 @@ int main(void) {
 	//row_vectors_i
 	int vec1[10];
 	
-	for (int iter5 = 0; -4 + 1*iter5 <= 5; iter5++) {
-		vec1[iter5] = -4 + 1*iter5;
+	for (int iter1 = 0; -4 + 1*iter1 <= 5; iter1++) {
+		vec1[iter1] = -4 + 1*iter1;
 	}
 	
 	int ndim1 = 2;
@@ -27,8 +27,8 @@ int main(void) {
 	Matrix * a = createM(ndim1, dim1, 0);
 	int *input1 = NULL;
 	input1 = malloc( 10*sizeof(*input1));
-	for (int iter6 = 0; iter6 < 10; iter6++) {
-	   input1[0 + iter6] = vec1[iter6];
+	for (int iter2 = 0; iter2 < 10; iter2++) {
+	   input1[0 + iter2] = vec1[iter2];
 	}
 	writeM( a, 10, input1);
 	free(input1);
@@ -68,23 +68,14 @@ int main(void) {
 // Subprograms
 
 void fourier_vec_script(Matrix * a) {
-	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
-		for (int iter2 = 1; iter2 <= 9; ++ iter2) {
-			for (int iter3 = 2; iter3 <= 9; ++ iter3) {
-				for (int iter4 = 1; iter4 <= 3; ++ iter4) {
-					printf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", iter1, iter2, iter3, iter4);
-<<<<<<< HEAD
+	for (int win_size = 1; win_size <= 9; ++ win_size) {
+		for (int inc = 1; inc <= 9; ++ inc) {
+			for (int num_coef = 2; num_coef <= 9; ++ num_coef) {
+				for (int win_type = 1; win_type <= 3; ++ win_type) {
+					printf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", win_size, inc, num_coef, win_type);
 					Matrix * tmp1 = stftV(a, 80, 24, 64, 1);
 					Matrix * y = tmp1;
 					printM(y);
-=======
-					int ndim1= 1;
-					int dim1= {1};
-					Matrix * tmp1= stftV(a, 80, 24, 64, 1);
-					Matrix * y= tmp1;
-					double * tmp2 = d_to_d(y);
-					printf("\n%f\n", tmp2[0]);
->>>>>>> 97db0fcb01c01fa4c840575d4d54ea867c46ec4f
 				
 				}
 			

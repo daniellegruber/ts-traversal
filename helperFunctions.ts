@@ -95,9 +95,9 @@ export function filterByScope(obj, name, node, find_or_filter) {
 export function pushAliasTbl(lhs, rhs, node, fun_params) {
     let scope = findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     let obj = filterByScope(fun_params.var_types, lhs, node, 0);
-    if (obj !== null && obj !== undefined) {
+    /*if (obj !== null && obj !== undefined) {
         scope = obj.scope;
-    }
+    }*/
     fun_params.alias_tbl = fun_params.alias_tbl.filter(function(e) { 
         return (e.name !== lhs) ||
             ((e.name == lhs) && (e.scope[0] !== scope[0]) && (e.scope[1] !== scope[1]))
@@ -107,6 +107,9 @@ export function pushAliasTbl(lhs, rhs, node, fun_params) {
         tmp_var: rhs,
         scope: scope
     });
+    if (lhs == "n") {
+        console.log(fun_params.alias_tbl.filter(x => x.name == "n"));
+    }
     return fun_params.alias_tbl;
 }
 

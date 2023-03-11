@@ -885,7 +885,6 @@ generateCode.ts
 - cell_test — problem with new addition to modifyCode.ts
 - external_fun (fails compare)
 - custom tests don’t have _torun version -- change makefile so that _torun isn't part of copyall routine
-- ceil_matrix — problem with conversion from dispArr, two plus signs, maybe because 0 isn’t positive or negative?
 - for comparison: how to convert matlab outputs that are like columns 1-6 then columns 7 -9 to make all one one line
 - Also still have some outputs with ellipsis when tehy are too loong (elem_multiply_matrix)
 - elem_divide matrix: printM(c) output looks weird, first two rows are fine but last seems like it's using the wrong numeric type

@@ -98,10 +98,9 @@ exports.filterByScope = filterByScope;
 function pushAliasTbl(lhs, rhs, node, fun_params) {
     var scope = (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     var obj = filterByScope(fun_params.var_types, lhs, node, 0);
-    if (obj !== null && obj !== undefined) {
-        console.log(obj);
-        //scope = obj.scope;
-    }
+    /*if (obj !== null && obj !== undefined) {
+        scope = obj.scope;
+    }*/
     fun_params.alias_tbl = fun_params.alias_tbl.filter(function (e) {
         return (e.name !== lhs) ||
             ((e.name == lhs) && (e.scope[0] !== scope[0]) && (e.scope[1] !== scope[1]));

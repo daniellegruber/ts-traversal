@@ -66,7 +66,7 @@ int main(void) {
 		}
 		int d1_2 = (i - d0_2)/3 + 1;
 		int tmp10 = i * i;
-		lhs_data1[(d1_2-1) + (d0_2-1) * 3] = tmp10;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp10;
 	
 	}
 	int tmp11 = 10;

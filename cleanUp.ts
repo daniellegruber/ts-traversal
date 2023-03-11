@@ -12,12 +12,12 @@ if (args.length != 2) {
 let mfile = args[0];
 let name = path.parse(mfile).name;
 //let out_folder = args[1] + "/generatedCode/" + name;
-let out_folder = args[1] + "/generatedCode_test/" + name;
+let out_folder = args[1] + "/generatedCode/" + name;
 if (!fs.existsSync(out_folder)){
 fs.mkdirSync(out_folder);
 }
 
-if (!fs.existsSync(`${out_folder}/${name}.c`)){
+if (!fs.existsSync(`${out_folder}/${name}.c`) && fs.existsSync(`${OCTAVEC}/tests_C_Octave/${name}/${name}.c`)){
     //fs.copyFile(`${OCTAVEC}/tests/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
     fs.copyFile(`${OCTAVEC}/tests_C_Octave/${name}/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
         if (err) throw err;
@@ -86,10 +86,35 @@ if (!fs.existsSync(`${out_folder}/${mfile}`)){
         code = code.replace(/endif/g, 'end');
         code = code.replace(/endfunction/g, 'end');
         
+        // Replace tic with tic() and toc with toc() 
+        // so parser recognizes as calls
+        code = code.replace(/tic/g, 'tic()');
+        code = code.replace(/toc/g, 'toc()');
+        
         writeToFile(out_folder, mfile, code);
         
     }, 8000);
     
-    
-
 }
+
+if (!fs.existsSync(`${out_folder}/${name}_torun.m`)){
+    //fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
+    fs.copyFile(`${out_folder}/${mfile}`, `${out_folder}/${name}_torun.m`, (err) => {
+        if (err) throw err;
+    });
+    
+    setTimeout(function () {
+        
+        let code = fs.readFileSync(`${out_folder}/${name}_torun.m`, "utf8");
+
+        code = "addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');\n" + code;
+        
+        // Replace disp with dispArr
+        code = code.replace(/disp/g, 'dispArr');
+        
+        writeToFile(out_folder, `${name}_torun.m`, code);
+        
+    }, 8000);
+    
+}
+

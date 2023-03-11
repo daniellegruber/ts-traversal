@@ -16,12 +16,12 @@ int main(void) {
 	int dim1[2] = {3,3};
 	Matrix * tmp1 = onesM(ndim1, dim1);
 	Matrix * a = tmp1;
-	double* lhs_data1 = d_to_d(a);
-	double tmp2 = -0.75 + I;
+	complex* lhs_data1 = c_to_c(a);
+	complex tmp2 = -0.75 + 1*I;
 	lhs_data1[0] = tmp2;
-	double tmp3 = -0.75 + I;
+	complex tmp3 = -0.75 + 1*I;
 	lhs_data1[4] = tmp3;
-	double tmp4 = -0.75 + I;
+	complex tmp4 = -0.75 + 1*I;
 	lhs_data1[8] = tmp4;
 	// Write matrix mat1
 	int size1 = 1;
@@ -29,7 +29,7 @@ int main(void) {
 	{
 		size1 *= dim1[iter1];
 	}
-	Matrix *mat1 = createM(ndim1, dim1, 1);
+	Matrix *mat1 = createM(ndim1, dim1, 2);
 	writeM(mat1, size1, lhs_data1);
 	Matrix * tmp5 = transposeM(mat1);
 	a = tmp5;
@@ -38,13 +38,22 @@ int main(void) {
 	int dim2[2] = {3,3};
 	Matrix * tmp6 = onesM(ndim2, dim2);
 	Matrix * b = tmp6;
-	double tmp7 = 0.5 + I;
-	lhs_data1[0] = tmp7;
-	double tmp8 = 0.5 + I;
-	lhs_data1[4] = tmp8;
-	double tmp9 = 0.5 + I;
-	lhs_data1[8] = tmp9;
-	Matrix * tmp10 = transposeM(b);
+	complex* lhs_data2 = c_to_c(b);
+	complex tmp7 = 0.5 + 1*I;
+	lhs_data2[0] = tmp7;
+	complex tmp8 = 0.5 + 1*I;
+	lhs_data2[4] = tmp8;
+	complex tmp9 = 0.5 + 1*I;
+	lhs_data2[8] = tmp9;
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
+	{
+		size2 *= dim2[iter2];
+	}
+	Matrix *mat2 = createM(ndim2, dim2, 2);
+	writeM(mat2, size2, lhs_data2);
+	Matrix * tmp10 = transposeM(mat2);
 	b = tmp10;
 	printM(b);
 	Matrix * tmp11 = rdivideM(a, b);

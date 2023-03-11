@@ -11,11 +11,11 @@ if (args.length != 2) {
 var mfile = args[0];
 var name = path.parse(mfile).name;
 //let out_folder = args[1] + "/generatedCode/" + name;
-var out_folder = args[1] + "/generatedCode_test/" + name;
+var out_folder = args[1] + "/generatedCode/" + name;
 if (!fs.existsSync(out_folder)) {
     fs.mkdirSync(out_folder);
 }
-if (!fs.existsSync("".concat(out_folder, "/").concat(name, ".c"))) {
+if (!fs.existsSync("".concat(out_folder, "/").concat(name, ".c")) && fs.existsSync("".concat(OCTAVEC, "/tests_C_Octave/").concat(name, "/").concat(name, ".c"))) {
     //fs.copyFile(`${OCTAVEC}/tests/${name}.c`, `${out_folder}/octavec_main.c`, (err) => {
     fs.copyFile("".concat(OCTAVEC, "/tests_C_Octave/").concat(name, "/").concat(name, ".c"), "".concat(out_folder, "/octavec_main.c"), function (err) {
         if (err)
@@ -68,10 +68,29 @@ if (!fs.existsSync("".concat(out_folder, "/").concat(mfile))) {
         code = code.replace(/\bfprintf\b/g, 'sprintf');
         code = code.replace(/fdisp/g, 'sprintf');
         //code = code.replace(/printf/g, 'disp');
-        // Replace endfor and endfunction
+        // Replace endfor, endif and endfunction
         code = code.replace(/endfor/g, 'end');
+        code = code.replace(/endif/g, 'end');
         code = code.replace(/endfunction/g, 'end');
+        // Replace tic with tic() and toc with toc() 
+        // so parser recognizes as calls
+        code = code.replace(/tic/g, 'tic()');
+        code = code.replace(/toc/g, 'toc()');
         (0, helperFunctions_1.writeToFile)(out_folder, mfile, code);
+    }, 8000);
+}
+if (!fs.existsSync("".concat(out_folder, "/").concat(name, "_torun.m"))) {
+    //fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
+    fs.copyFile("".concat(out_folder, "/").concat(mfile), "".concat(out_folder, "/").concat(name, "_torun.m"), function (err) {
+        if (err)
+            throw err;
+    });
+    setTimeout(function () {
+        var code = fs.readFileSync("".concat(out_folder, "/").concat(name, "_torun.m"), "utf8");
+        code = "addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');\n" + code;
+        // Replace disp with dispArr
+        code = code.replace(/disp/g, 'dispArr');
+        (0, helperFunctions_1.writeToFile)(out_folder, "".concat(name, "_torun.m"), code);
     }, 8000);
 }
 //# sourceMappingURL=cleanUp.js.map

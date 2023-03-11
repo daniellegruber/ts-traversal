@@ -82,6 +82,5 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
             }
         }
     } while(gotoPreorderSucc(cursor, debug));
-    
     return [custom_functions, file_traversal_order];
 }

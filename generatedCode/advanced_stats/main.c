@@ -204,6 +204,7 @@ int main(void) {
 	int dim10[2] = {7, 9};
 	Matrix * tmp12 = zerosM(ndim12, dim10);
 	a = tmp12;
+	int* lhs_data2 = i_to_i(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp13 = pow((-1), i);
 		int tmp14 = pow(i, 2);
@@ -215,10 +216,18 @@ int main(void) {
 		int tmp16 = pow((-1), i);
 		int tmp17 = pow(i, 2);
 		int tmp15 = tmp16 * tmp17 / 17;
-		lhs_data1[(d1_2-1) + (d0_2-1) * 9] = tmp15;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp15;
 	
 	}
-	Matrix * tmp18 = transposeM(a);
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim12; iter2++)
+	{
+		size2 *= dim10[iter2];
+	}
+	Matrix *mat2 = createM(ndim12, dim10, 0);
+	writeM(mat2, size2, lhs_data2);
+	Matrix * tmp18 = transposeM(mat2);
 	a = tmp18;
 	printM(a);
 	double_stats(a);

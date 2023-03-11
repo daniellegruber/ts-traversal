@@ -30,6 +30,7 @@ elem_power_matrix
 elem_scalarpower_matrix
 elem_trig_matrix
 equal_matrix
+external_fun
 floor_matrix
 fourier
 hamming_hanning
@@ -82,7 +83,6 @@ xcorrM
 
 
 ERROR
-external_fun
 filterM
 octaveIncludes
 octaveTimer

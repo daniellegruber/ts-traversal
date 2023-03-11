@@ -19,55 +19,67 @@ int main(void) {
 	double scalar1 = 0.5;
 	Matrix * tmp2 = scaleM(tmp1, &scalar1, 1);
 	Matrix * a = tmp2;
-	double tmp3;
-	indexM(a, &tmp3, 1, 1);
-	tmp3 + 1*I;
-	double tmp4;
-	indexM(a, &tmp4, 1, 5);
-	tmp4 + 1*I;
-	double tmp5;
-	indexM(a, &tmp5, 1, 9);
-	tmp5 + 1*I;
-	Matrix * tmp6 = transposeM(a);
-	a = tmp6;
+	complex* lhs_data1 = c_to_c(a);
+	complex tmp5;
+	indexM(a, &tmp5, 1, 1);
+	complex tmp4 = tmp5 + 1*I;
+	lhs_data1[0] = tmp4;
+	complex tmp8;
+	indexM(a, &tmp8, 1, 5);
+	complex tmp7 = tmp8 + 1*I;
+	lhs_data1[4] = tmp7;
+	complex tmp11;
+	indexM(a, &tmp11, 1, 9);
+	complex tmp10 = tmp11 + 1*I;
+	lhs_data1[8] = tmp10;
+	// Write matrix mat1
+	int size1 = 1;
+	for (int iter1 = 0 ; iter1 < ndim1; iter1++)
+	{
+		size1 *= dim1[iter1];
+	}
+	Matrix *mat1 = createM(ndim1, dim1, 2);
+	writeM(mat1, size1, lhs_data1);
+	Matrix * tmp12 = transposeM(mat1);
+	a = tmp12;
 	printM(a);
 	int ndim2 = 2;
 	int dim2[2] = {3,3};
-	Matrix * tmp7 = onesM(ndim2, dim2);
+	Matrix * tmp13 = onesM(ndim2, dim2);
 	double scalar2 = -0.5;
-	Matrix * tmp8 = scaleM(tmp7, &scalar2, 1);
-	Matrix * b = tmp8;
-	complex* lhs_data1 = c_to_c(b);
-	complex tmp9 = 0.5 - 1*I;
-	lhs_data1[0] = tmp9;
-	complex tmp10 = 0.5 - 1*I;
-	lhs_data1[4] = tmp10;
-	complex tmp11 = 0.5 - 1*I;
-	lhs_data1[8] = tmp11;
-	// Write matrix mat1
-	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim2; iter1++)
+	Matrix * tmp14 = scaleM(tmp13, &scalar2, 1);
+	Matrix * b = tmp14;
+	complex* lhs_data2 = c_to_c(b);
+	complex tmp15 = 0.5 - 1*I;
+	lhs_data2[0] = tmp15;
+	complex tmp16 = 0.5 - 1*I;
+	lhs_data2[4] = tmp16;
+	complex tmp17 = 0.5 - 1*I;
+	lhs_data2[8] = tmp17;
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
 	{
-		size1 *= dim2[iter1];
+		size2 *= dim2[iter2];
 	}
-	Matrix *mat1 = createM(ndim2, dim2, 2);
-	writeM(mat1, size1, lhs_data1);
-	Matrix * tmp12 = transposeM(mat1);
-	b = tmp12;
+	Matrix *mat2 = createM(ndim2, dim2, 2);
+	writeM(mat2, size2, lhs_data2);
+	Matrix * tmp18 = transposeM(mat2);
+	b = tmp18;
 	printM(b);
-	Matrix * tmp13 = plusM(a, b);
-	Matrix * c = tmp13;
+	Matrix * tmp19 = plusM(a, b);
+	Matrix * c = tmp19;
 	printM(c);
-	Matrix * tmp14 = plusM(c, c);
-	Matrix * d = tmp14;
+	Matrix * tmp20 = plusM(c, c);
+	Matrix * d = tmp20;
 	printM(d);
 	// overflowTest
-	Matrix * tmp15 = identityM(3);
+	Matrix * tmp21 = identityM(3);
 	int scalar3 = INT_MAX;
-	Matrix * tmp16 = scaleM(tmp15, &scalar3, 0);
-	Matrix * tmp17 = identityM(3);
-	Matrix * tmp18 = plusM(tmp16, tmp17);
-	d = tmp18;
+	Matrix * tmp22 = scaleM(tmp21, &scalar3, 0);
+	Matrix * tmp23 = identityM(3);
+	Matrix * tmp24 = plusM(tmp22, tmp23);
+	d = tmp24;
 	printM(d);
 	return 0;
 }

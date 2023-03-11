@@ -4104,6 +4104,106 @@ exports.builtin_functions = [
         init_before: function (args, arg_types, outs) { return null; },
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'tic',
+        fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
+        req_arg_types: null,
+        args_transform: function (args, arg_types, outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (outs.length == 1) {
+                return {
+                    type: 'time_t',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return null;
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) {
+            return 'tstart = time(0);';
+        },
+        init_before: function (args, arg_types, outs) {
+            // time_t tstart, tend;
+            var init_var = [];
+            init_var.push({
+                name: 'tstart',
+                val: null,
+                type: 'time_t',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'tend',
+                val: null,
+                type: 'time_t',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'toc',
+        fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
+        req_arg_types: null,
+        args_transform: function (args, arg_types, outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            if (outs.length == 1) {
+                return {
+                    type: 'double',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return null;
+            }
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) {
+            var expression = [];
+            expression.push('tend = time(0);');
+            if (outs.length == 1) {
+                expression.push("double ".concat(outs[0], " = difftime(tend, tstart)"));
+            }
+            return 'tend = time(0);';
+            // difftime(tend, tstart)
+        },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
     }
 ];
 //# sourceMappingURL=builtinFunctions.js.map

@@ -269,6 +269,7 @@ int main(void) {
 	int dim17[2] = {7, 9};
 	Matrix * tmp66 = zerosM(ndim17, dim17);
 	a = tmp66;
+	int* lhs_data2 = i_to_i(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp67 = pow((-1), i);
 		int tmp68 = pow(i, 2);
@@ -280,10 +281,18 @@ int main(void) {
 		int tmp70 = pow((-1), i);
 		int tmp71 = pow(i, 2);
 		int tmp69 = tmp70 * tmp71 / 17;
-		lhs_data1[(d1_2-1) + (d0_2-1) * 9] = tmp69;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp69;
 	
 	}
-	Matrix * tmp72 = transposeM(a);
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim17; iter2++)
+	{
+		size2 *= dim17[iter2];
+	}
+	Matrix *mat2 = createM(ndim17, dim17, 0);
+	writeM(mat2, size2, lhs_data2);
+	Matrix * tmp72 = transposeM(mat2);
 	a = tmp72;
 	printM(a);
 	double_stats(a);
@@ -292,6 +301,7 @@ int main(void) {
 	int dim18[2] = {7, 9};
 	Matrix * tmp73 = zerosM(ndim18, dim18);
 	a = tmp73;
+	complex* lhs_data3 = c_to_c(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp74 = pow((-1), i);
 		int d0_3 = i % 7;
@@ -301,18 +311,26 @@ int main(void) {
 		int d1_3 = (i - d0_3)/7 + 1;
 		int tmp76 = pow((-1), i);
 		complex tmp75 = tmp76 * i - i / 17*I;
-		lhs_data1[(d1_3-1) + (d0_3-1) * 9] = tmp75;
+		lhs_data3[(d1_3-1) + (d0_3-1) * 9] = tmp75;
 	
 	}
-	Matrix * tmp77 = transposeM(a);
+	// Write matrix mat3
+	int size3 = 1;
+	for (int iter3 = 0 ; iter3 < ndim18; iter3++)
+	{
+		size3 *= dim18[iter3];
+	}
+	Matrix *mat3 = createM(ndim18, dim18, 2);
+	writeM(mat3, size3, lhs_data3);
+	Matrix * tmp77 = transposeM(mat3);
 	a = tmp77;
 	printM(a);
 	complex_stats(a);
 	//basic_quantile_test
 	int vec7[100];
 	
-	for (int iter2 = 0; 1 + 1*iter2 <= 100; iter2++) {
-		vec7[iter2] = 1 + 1*iter2;
+	for (int iter4 = 0; 1 + 1*iter4 <= 100; iter4++) {
+		vec7[iter4] = 1 + 1*iter4;
 	}
 	
 	int ndim19 = 2;
@@ -320,16 +338,16 @@ int main(void) {
 	a = createM(ndim19, dim19, 0);
 	int *input16 = NULL;
 	input16 = malloc( 100*sizeof(*input16));
-	for (int iter3 = 0; iter3 < 100; iter3++) {
-	   input16[0 + iter3] = vec7[iter3];
+	for (int iter5 = 0; iter5 < 100; iter5++) {
+	   input16[0 + iter5] = vec7[iter5];
 	}
 	writeM( a, 100, input16);
 	free(input16);
 	
 	double vec8[101];
 	
-	for (int iter4 = 0; 0 + 0.01*iter4 <= 1; iter4++) {
-		vec8[iter4] = 0 + 0.01*iter4;
+	for (int iter6 = 0; 0 + 0.01*iter6 <= 1; iter6++) {
+		vec8[iter6] = 0 + 0.01*iter6;
 	}
 	Matrix * tmp78 = quantileM_vec(a, 101, vec8);
 	Matrix * tmp79 = transposeM(tmp78);
@@ -338,6 +356,7 @@ int main(void) {
 	int dim20[2] = {1, 1004};
 	Matrix * tmp80 = zerosM(ndim20, dim20);
 	Matrix * b = tmp80;
+	int* lhs_data4 = i_to_i(b);
 	for (int i = 1; i <= 1004; ++ i) {
 		int d0_4 = i % 1;
 		if (d0_4 == 0) {
@@ -345,15 +364,23 @@ int main(void) {
 		}
 		int d1_4 = (i - d0_4)/1 + 1;
 		int tmp81 = i * i / 17;
-		lhs_data1[(d1_4-1) + (d0_4-1) * 1004] = tmp81;
+		lhs_data4[(d1_4-1) + (d0_4-1) * 1004] = tmp81;
 	
 	}
-	Matrix * tmp82 = transposeM(b);
+	// Write matrix mat4
+	int size4 = 1;
+	for (int iter7 = 0 ; iter7 < ndim20; iter7++)
+	{
+		size4 *= dim20[iter7];
+	}
+	Matrix *mat4 = createM(ndim20, dim20, 0);
+	writeM(mat4, size4, lhs_data4);
+	Matrix * tmp82 = transposeM(mat4);
 	b = tmp82;
 	double vec9[101];
 	
-	for (int iter5 = 0; 0 + 0.01*iter5 <= 1; iter5++) {
-		vec9[iter5] = 0 + 0.01*iter5;
+	for (int iter8 = 0; 0 + 0.01*iter8 <= 1; iter8++) {
+		vec9[iter8] = 0 + 0.01*iter8;
 	}
 	Matrix * tmp83 = quantileM_vec(b, 101, vec9);
 	Matrix * tmp84 = transposeM(tmp83);
@@ -362,6 +389,7 @@ int main(void) {
 	int dim21[2] = {1, 57};
 	Matrix * tmp85 = zerosM(ndim21, dim21);
 	Matrix * c = tmp85;
+	complex* lhs_data5 = c_to_c(c);
 	for (int i = 1; i <= 57; ++ i) {
 		int d0_5 = i % 1;
 		if (d0_5 == 0) {
@@ -369,15 +397,23 @@ int main(void) {
 		}
 		int d1_5 = (i - d0_5)/1 + 1;
 		complex tmp86 = i - i / 17*I;
-		lhs_data1[(d1_5-1) + (d0_5-1) * 57] = tmp86;
+		lhs_data5[(d1_5-1) + (d0_5-1) * 57] = tmp86;
 	
 	}
-	Matrix * tmp87 = transposeM(c);
+	// Write matrix mat5
+	int size5 = 1;
+	for (int iter9 = 0 ; iter9 < ndim21; iter9++)
+	{
+		size5 *= dim21[iter9];
+	}
+	Matrix *mat5 = createM(ndim21, dim21, 2);
+	writeM(mat5, size5, lhs_data5);
+	Matrix * tmp87 = transposeM(mat5);
 	c = tmp87;
 	double vec10[101];
 	
-	for (int iter6 = 0; 0 + 0.01*iter6 <= 1; iter6++) {
-		vec10[iter6] = 0 + 0.01*iter6;
+	for (int iter10 = 0; 0 + 0.01*iter10 <= 1; iter10++) {
+		vec10[iter10] = 0 + 0.01*iter10;
 	}
 	Matrix * tmp88 = quantileM_vec(c, 101, vec10);
 	Matrix * tmp89 = transposeM(tmp88);

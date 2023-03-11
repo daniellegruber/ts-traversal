@@ -59,6 +59,7 @@ int main(void) {
 	int dim2[2] = {3,3};
 	Matrix * tmp12 = zerosM(ndim2, dim2);
 	a = tmp12;
+	double* lhs_data2 = d_to_d(a);
 	for (int i = 1; i <= 9; ++ i) {
 		int tmp13 = pow((-1), (i + 1));
 		int d0_2 = i % 3;
@@ -68,10 +69,18 @@ int main(void) {
 		int d1_2 = (i - d0_2)/3 + 1;
 		int tmp15 = pow((-1), (i + 1));
 		double tmp14 = (tmp15) * (i + 0.4);
-		lhs_data1[(d1_2-1) + (d0_2-1) * 3] = tmp14;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp14;
 	
 	}
-	Matrix * tmp16 = transposeM(a);
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
+	{
+		size2 *= dim2[iter2];
+	}
+	Matrix *mat2 = createM(ndim2, dim2, 1);
+	writeM(mat2, size2, lhs_data2);
+	Matrix * tmp16 = transposeM(mat2);
 	a = tmp16;
 	printM(a);
 	Matrix * tmp17 = sinM(a);
@@ -92,6 +101,7 @@ int main(void) {
 	int dim3[2] = {3,3};
 	Matrix * tmp23 = zerosM(ndim3, dim3);
 	a = tmp23;
+	complex* lhs_data3 = c_to_c(a);
 	for (int i = 1; i <= 9; ++ i) {
 		int d0_3 = i % 3;
 		if (d0_3 == 0) {
@@ -99,10 +109,18 @@ int main(void) {
 		}
 		int d1_3 = (i - d0_3)/3 + 1;
 		complex tmp24 = i + 0.5*I;
-		lhs_data1[(d1_3-1) + (d0_3-1) * 3] = tmp24;
+		lhs_data3[(d1_3-1) + (d0_3-1) * 3] = tmp24;
 	
 	}
-	Matrix * tmp25 = transposeM(a);
+	// Write matrix mat3
+	int size3 = 1;
+	for (int iter3 = 0 ; iter3 < ndim3; iter3++)
+	{
+		size3 *= dim3[iter3];
+	}
+	Matrix *mat3 = createM(ndim3, dim3, 2);
+	writeM(mat3, size3, lhs_data3);
+	Matrix * tmp25 = transposeM(mat3);
 	a = tmp25;
 	printM(a);
 	Matrix * tmp26 = sinM(a);

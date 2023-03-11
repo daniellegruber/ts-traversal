@@ -23,6 +23,7 @@ int main(void) {
 	int dim2[2] = {1000,1000};
 	Matrix * tmp2 = onesM(ndim2, dim2);
 	Matrix * b = tmp2;
+	complex* lhs_data2 = c_to_c(b);
 	for (int n = 1; n <= size; ++ n) {
 		int tmp3 = pow(n, 2);
 		int d0_1 = n % 1000;
@@ -41,7 +42,7 @@ int main(void) {
 		int d1_2 = (n - d0_2)/1000 + 1;
 		int tmp8 = pow(n, 2);
 		complex tmp7 = (tmp8 + 0.5) * 1*I;
-		lhs_data1[(d1_2-1) + (d0_2-1) * 1000] = tmp7;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 1000] = tmp7;
 	
 	}
 	// Write matrix mat1
@@ -52,8 +53,16 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim2, dim2, 1);
 	writeM(mat1, size1, lhs_data1);
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
+	{
+		size2 *= dim2[iter2];
+	}
+	Matrix *mat2 = createM(ndim2, dim2, 2);
+	writeM(mat2, size2, lhs_data2);
 	for (int i = 1; i <= iterations; ++ i) {
-		Matrix * tmp9 = plusM(b, mat1);
+		Matrix * tmp9 = plusM(mat2, mat1);
 		Matrix * c = tmp9;
 		//disp(c);
 	

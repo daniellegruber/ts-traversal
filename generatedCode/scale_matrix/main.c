@@ -46,6 +46,7 @@ int main(void) {
 	int dim3[2] = {3,3};
 	Matrix * tmp5 = zerosM(ndim3, dim3);
 	Matrix * b = tmp5;
+	complex* lhs_data2 = c_to_c(b);
 	for (int i = 1; i <= 9; ++ i) {
 		int d0_2 = i % 3;
 		if (d0_2 == 0) {
@@ -53,10 +54,18 @@ int main(void) {
 		}
 		int d1_2 = (i - d0_2)/3 + 1;
 		complex tmp6 = i + i * 1*I;
-		lhs_data1[(d1_2-1) + (d0_2-1) * 3] = tmp6;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp6;
 	
 	}
-	Matrix * tmp7 = transposeM(b);
+	// Write matrix mat2
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim3; iter2++)
+	{
+		size2 *= dim3[iter2];
+	}
+	Matrix *mat2 = createM(ndim3, dim3, 2);
+	writeM(mat2, size2, lhs_data2);
+	Matrix * tmp7 = transposeM(mat2);
 	b = tmp7;
 	printM(b);
 	int ndim4 = 2;

@@ -4170,5 +4170,106 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
+    },
+    { 
+        fun_matlab: 'tic', 
+        fun_c: (args, arg_types, outs, fun_matlab) => null, 
+        req_arg_types: null,
+        args_transform: (args, arg_types, outs) => null,
+		outs_transform: (args, arg_types, outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (outs.length == 1) {
+                return {
+                    type: 'time_t',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
+            } else {
+                return null;
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => {
+            return 'tstart = time(0);';
+        },         
+        init_before: (args, arg_types, outs) => {
+           // time_t tstart, tend;
+            let init_var: InitVar[] = [];
+            
+            
+            init_var.push({
+                name: 'tstart',
+                val: null,
+                type: 'time_t',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            })
+            init_var.push({
+                name: 'tend',
+                val: null,
+                type: 'time_t',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            })
+            
+            return init_var;
+        },
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },
+    { 
+        fun_matlab: 'toc', 
+        fun_c: (args, arg_types, outs, fun_matlab) => null, 
+        req_arg_types: null,
+        args_transform: (args, arg_types, outs) => null,
+		outs_transform: (args, arg_types, outs) => outs[0],
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            if (outs.length == 1) {
+                return {
+                    type: 'double',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
+            } else {
+                return null;
+            }
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => {
+            let expression = [];
+            expression.push('tend = time(0);');
+            if (outs.length == 1) {
+                expression.push(`double ${outs[0]} = difftime(tend, tstart)`);
+            }
+            return 'tend = time(0);';
+            // difftime(tend, tstart)
+        },         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
     }
 ];

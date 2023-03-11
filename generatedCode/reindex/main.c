@@ -258,6 +258,7 @@ int main(void) {
 	int dim32[2] = {7, 9};
 	Matrix * tmp80 = zerosM(ndim32, dim32);
 	a = tmp80;
+	int* lhs_data2 = i_to_i(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp81 = pow((-1), i);
 		int tmp82 = pow(i, 2);
@@ -269,10 +270,18 @@ int main(void) {
 		int tmp84 = pow((-1), i);
 		int tmp85 = pow(i, 2);
 		int tmp83 = tmp84 * tmp85 / 17;
-		lhs_data1[(d1_71-1) + (d0_71-1) * 9] = tmp83;
+		lhs_data2[(d1_71-1) + (d0_71-1) * 9] = tmp83;
 	
 	}
-	Matrix * tmp86 = transposeM(a);
+	// Write matrix mat20
+	int size2 = 1;
+	for (int iter2 = 0 ; iter2 < ndim32; iter2++)
+	{
+		size2 *= dim32[iter2];
+	}
+	Matrix *mat20 = createM(ndim32, dim32, 0);
+	writeM(mat20, size2, lhs_data2);
+	Matrix * tmp86 = transposeM(mat20);
 	a = tmp86;
 	printM(a);
 	double_reindexing_tests(a);
@@ -281,6 +290,7 @@ int main(void) {
 	int dim33[2] = {7, 9};
 	Matrix * tmp87 = zerosM(ndim33, dim33);
 	a = tmp87;
+	complex* lhs_data3 = c_to_c(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp88 = pow((-1), i);
 		int d0_72 = i % 7;
@@ -290,10 +300,18 @@ int main(void) {
 		int d1_72 = (i - d0_72)/7 + 1;
 		int tmp90 = pow((-1), i);
 		complex tmp89 = tmp90 * i - i / 17*I;
-		lhs_data1[(d1_72-1) + (d0_72-1) * 9] = tmp89;
+		lhs_data3[(d1_72-1) + (d0_72-1) * 9] = tmp89;
 	
 	}
-	Matrix * tmp91 = transposeM(a);
+	// Write matrix mat21
+	int size3 = 1;
+	for (int iter3 = 0 ; iter3 < ndim33; iter3++)
+	{
+		size3 *= dim33[iter3];
+	}
+	Matrix *mat21 = createM(ndim33, dim33, 2);
+	writeM(mat21, size3, lhs_data3);
+	Matrix * tmp91 = transposeM(mat21);
 	a = tmp91;
 	printM(a);
 	complex_reindexing_tests(a);

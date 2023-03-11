@@ -869,7 +869,7 @@ generateCode.ts
  - Example: functions maxM and minM return 1x1 matrices
 - Added function parameters object and related updating/retrieving function to generateCode.ts to more easily pass global variables in this file to functions in other files
 
-# Current limitations/works in progress
+# Current limitations/works in progress (OLD)
 - Initializing cell matrices containing strings
  - In generateCode.ts, initalizeMatrix (lines 659 - 686)
 - Input/output types for a custom function are unknown unless a call to that function is issued at some point in the source code
@@ -880,6 +880,14 @@ generateCode.ts
  - For example, the C function `Matrix * quantileM_vec(Matrix* restrict m, int N, double* restrict quantiles)` requires the third argument to be a vector, so if the MATLAB code `quantile(A, [0.25 0.5 0.75])` initializes `[0.25 0.5 0.75]` as a matrix this would be incorrect. 
  - (Current solution, which works, is in builtinFunctions.ts for `quantileM_vec`: if second argument has been initialized as matrix, extract data as vector and pass to function.)
  - However, in other cases, we want to preserve the matrix structure despite one dimension being "flat."
+
+# Current limitations/works in progess (03/11/23)
+- cell_test — problem with new addition to modifyCode.ts
+- external_fun (fails compare)
+- custom tests don’t have _torun version -- change makefile so that _torun isn't part of copyall routine
+- ceil_matrix — problem with conversion from dispArr, two plus signs, maybe because 0 isn’t positive or negative?
+- for comparison: how to convert matlab outputs that are like columns 1-6 then columns 7 -9 to make all one one line
+- Also still have some outputs with ellipsis when tehy are too loong (elem_multiply_matrix)
  
 
 

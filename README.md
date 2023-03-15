@@ -70,6 +70,12 @@ Alternatively, to copy only one mfile, use
 make copyone ARGS=mfile
 ```
 
+### Create "torun" version 
+Copy mfiles in all folders and create "torun" versions to be used in the comparison stage
+```sh
+make matlabtorun
+```
+
 ### Generate c code
 Generate main.c for all mfiles in generatedCode folder that haven't already been generated
 ```sh

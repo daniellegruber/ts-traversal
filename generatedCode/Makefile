@@ -62,7 +62,7 @@ regenall:
 
 
 # Compile all C programs
-# make compileall SPEED=1
+# Example: make compileall SPEED=1
 compileall:
 	dirs=$$(echo $(all_dirs)); \
 	if [[ "$(SPEED)" == "1" ]]; then \
@@ -105,7 +105,7 @@ compileall:
 	echo -e $${bad[@]} >> compile_log.txt; \
 	
 # Compile one C program
-# make compileone ARGS=testname
+# Example: make compileone ARGS=testname
 compileone:
 	fulldir="$(shell pwd)/$(ARGS)"; \
 	mfiles=$$(ls -d $$fulldir/* | grep -oP '^((?!_torun).)*\.m'); \
@@ -136,7 +136,7 @@ runmatlab:
 	module unload MATLAB/2021a; \
 	
 # Compare outputs of generated C program and original mfile for all tests
-# add argument to ignore speed tests
+# Example: make compareall SPEED=1
 compareall:
 	module load MATLAB/2021a; \
 	dirs=$$(echo $(all_dirs)); \
@@ -165,6 +165,7 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
 		(timeout 120 matlab -nodisplay -nosplash < $$fulldir/$${dir}_torun.m 2>/dev/null | \
 			tail -n+10 | sed -z 's/>>//gi' | \
+			sed -z -E 's/(\(:,:,[0-9]+\)|\(:,:,:,[0-9]+\)) =//g' | \
 			sed -E "s/\"@(-?[0-9]+(\.[0-9]+)?( [+-] ?[0-9]+(\.[0-9]+)?i)?)\"/\1/g" | \
 			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 			sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
@@ -194,14 +195,14 @@ compareall:
 	echo -e $${bad[@]} >> compare_log.txt; \
 	module unload MATLAB/2021a; \
 	
-	
 # Compare outputs of generated C program and original mfile for one test
-# make compareone ARGS=testname
-compareone:
+# Example: make compareone ARGS=testname
+compareone2:
 	module load MATLAB/2021a; \
 	fulldir="$(shell pwd)/$(ARGS)"; \
 	($$fulldir/test 2>/dev/null | \
 		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | \
+		sed -z 's/+0i//gi' | \
 		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
 		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
@@ -212,6 +213,7 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
 	(matlab -nodisplay -nosplash < $$fulldir/$(ARGS)_torun.m 2>/dev/null | \
 		tail -n+10 | sed -z 's/>>//gi' | \
+		sed -z -E 's/(\(:,:,[0-9]+\)|\(:,:,:,[0-9]+\)) =//g' | \
 		sed -E "s/\"@(-?[0-9]+(\.[0-9]+)?( [+-] ?[0-9]+(\.[0-9]+)?i)?)\"/\1/g" | \
 		sed -E "s/\"@Inf\"/inf/g" | \
 		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
@@ -228,6 +230,48 @@ compareone:
 		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
 		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\
 	module unload MATLAB/2021a; \
+	
+	
+# Compare outputs of generated C program and original mfile for one test
+# Example: make compareone ARGS=testname
+compareone:
+	module load MATLAB/2021a; \
+	fulldir="$(shell pwd)/$(ARGS)"; \
+	($$fulldir/test 2>/dev/null | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | \
+		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
+		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
+		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
+	(matlab -nodisplay -nosplash < $$fulldir/$(ARGS)_torun.m 2>/dev/null | \
+		tail -n+10 | sed -z 's/>>//gi' | \
+		sed -z -E 's/(\(:,:,[0-9]+\)|\(:,:,:,[0-9]+\)) =//g' | \
+		sed -E "s/\"@(-?[0-9]+(\.[0-9]+)?( [+-] ?[0-9]+(\.[0-9]+)?i)?)\"/\1/g" | \
+		sed -E "s/\"@Inf\"/inf/g" | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
+		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
+		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
+		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f2; \
+	diff -wi $$fulldir/f1 $$fulldir/f2 && \
+		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
+		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\
+	module unload MATLAB/2021a; \
+	
+# Example: make updategithub MESSAGE=Fixed bugs, updated makefile
+updategithub:
+	git pull origin master; \
+	git add -A && git commit -m "$(MESSAGE)"; \
+	git push origin master; \
 	
 
 # OLD STUFF

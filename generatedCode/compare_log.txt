@@ -1,4 +1,5 @@
 SUCCESS
+3d_index_matrix
 abs_matrix
 areEqual_matrix
 cc_matrix_multiplication
@@ -29,7 +30,6 @@ testing
 
 
 ERROR
-3d_index_matrix
 4d_index_matrix
 add_matrix
 advanced_stats

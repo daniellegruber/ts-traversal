@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/stftM/output.txt','w');
 %more off
 %format short
 
@@ -12,7 +13,7 @@ function fourier_vec_script(a)
 				for win_type=1:3
 					sprintf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", win_size, inc, num_coef, win_type);
 					y = stft(a, win_size, inc, num_coef, win_type);
-					dispArr(y);
+					dispArr(fileID, y);
 				end
 			end
 		end
@@ -21,12 +22,12 @@ end
 
 %row_vectors_i
 a = [-4:5];
-dispArr(a);
+dispArr(fileID, a);
 fourier_vec_script(a);
 
 % %row_vectors_d
 % a = [-4:0.5:1.5];
-% dispArr(a);
+% dispArr(fileID, a);
 % fourier_vec_script(a);
 
 % %row_vectors_c
@@ -34,17 +35,17 @@ fourier_vec_script(a);
 % for i=1:100
 % 	a(i) = 101-i + (i-1)*1i;
 % end
-% dispArr(a);
+% dispArr(fileID, a);
 % fourier_vec_script(a);
 
 % %column_vectors_i
 % a = [-4:5].';
-% dispArr(a);
+% dispArr(fileID, a);
 % fourier_vec_script(a);
 
 % %column_vectors_d
 % a = [-4:0.5:1.5].';
-% dispArr(a);
+% dispArr(fileID, a);
 % fourier_vec_script(a);
 
 % %column_vectors_c
@@ -52,5 +53,5 @@ fourier_vec_script(a);
 % for i=1:100
 % 	a(i) = 101-i + (i-1)*1i;
 % end
-% dispArr(a);
+% dispArr(fileID, a);
 % fourier_vec_script(a);

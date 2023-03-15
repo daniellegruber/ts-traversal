@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/SPEED_medium_matrix_power_complex/output.txt','w');
 %more off
 %format short
 
@@ -17,5 +18,5 @@ end
 
 for i = 1:iterations
 	c = a^exponent;
-	%dispArr(c);
+	%dispArr(fileID, c);
 end

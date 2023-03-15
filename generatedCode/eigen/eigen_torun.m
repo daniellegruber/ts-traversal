@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/eigen/output.txt','w');
 %more off
 %format short
 
@@ -67,13 +68,13 @@ matrices{15} = [3,4,3;   -1,0,-1;   1,2,3]; % Returns slightly different eigenve
 
 for index=1:14
 	sprintf(stdout, 'Original\n');
-	dispArr(matrices{index});
+	dispArr(fileID, matrices{index});
 
 	[V, lambda] = eig(matrices{index});
 
 	sprintf(stdout, 'Eigenvalues:\n');
-	dispArr(lambda);
+	dispArr(fileID, lambda);
 
 	sprintf(stdout, 'Eigenvectors:\n');
-	dispArr(V);
+	dispArr(fileID, V);
 end

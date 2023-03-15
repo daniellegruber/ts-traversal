@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/comparison_ops_matrix/output.txt','w');
 %more off
 %format short
 
@@ -13,7 +14,7 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(5) -= 1;
 % a(9) -= 1;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
@@ -21,9 +22,9 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % end
 % b(5) = 25.5;
 % b = b.';
-% dispArr(b);
+% dispArr(fileID, b);
 
-% dispArr(a < b);
+% dispArr(fileID, a < b);
 
 
 
@@ -37,7 +38,7 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(5) -= 1;
 % a(9) -= 1;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
@@ -45,9 +46,9 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % end
 % b(5) = 25.5;
 % b = b.';
-% dispArr(b);
+% dispArr(fileID, b);
 
-% dispArr(a <= b);
+% dispArr(fileID, a <= b);
 
 
 
@@ -61,16 +62,16 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(5) += 1;
 % a(9) += 1;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
 % 	b(i) = i*i;
 % end
 % b = b.';
-% dispArr(b);
+% dispArr(fileID, b);
 
-% dispArr(a > b);
+% dispArr(fileID, a > b);
 
 
 
@@ -84,16 +85,16 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(5) += 1;
 % a(9) += 1;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
 % 	b(i) = i*i;
 % end
 % b = b.';
-% dispArr(b);
+% dispArr(fileID, b);
 
-% dispArr(a >= b);
+% dispArr(fileID, a >= b);
 
 
 % %ne
@@ -104,7 +105,7 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(1) *= 2;
 % a(9) *= 9;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
@@ -112,9 +113,9 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % end
 % b(5) = 25.5;
 % b = b.';
-% dispArr(b);
+% dispArr(fileID, b);
 
-% dispArr(a ~= b);
+% dispArr(fileID, a ~= b);
 
 
 % %pairwise_max
@@ -125,7 +126,7 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(1) *= 2;
 % a(9) *= 19;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
@@ -133,8 +134,8 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % end
 % b(5) = 25.5;
 % b = b.';
-% dispArr(b);
-% dispArr(max(a,b));
+% dispArr(fileID, b);
+% dispArr(fileID, max(a,b));
 
 % %pairwise_min
 % a = zeros(3);
@@ -144,7 +145,7 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % a(1) *= 2;
 % a(9) *= 19;
 % a = a.';
-% dispArr(a);
+% dispArr(fileID, a);
 
 % b = zeros(3);
 % for i=1:9
@@ -152,8 +153,8 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 % end
 % b(5) = 25.5;
 % b = b.';
-% dispArr(b);
-% dispArr(min(a,b));
+% dispArr(fileID, b);
+% dispArr(fileID, min(a,b));
 
 %brutal_test
 matrices = cell(11,1);
@@ -210,22 +211,22 @@ matrices{12} = [11.25, -7.525, -1.45;    11, -6.9, -2.2;    5.5, -5.45, 2.9];
 
 for i=1:12
 	for j=1:12
-		dispArr(matrices{i} < matrices{j});
-		dispArr(matrices{i} <= matrices{j});
-		dispArr(matrices{i} > matrices{j});
-		dispArr(matrices{i} >= matrices{j});
-		dispArr(matrices{i} ~= matrices{j});
-		dispArr(matrices{i} == matrices{j});
+		dispArr(fileID, matrices{i} < matrices{j});
+		dispArr(fileID, matrices{i} <= matrices{j});
+		dispArr(fileID, matrices{i} > matrices{j});
+		dispArr(fileID, matrices{i} >= matrices{j});
+		dispArr(fileID, matrices{i} ~= matrices{j});
+		dispArr(fileID, matrices{i} == matrices{j});
 
 		if (i == 4 || i == 7 || i == 10 || j == 4 || j == 7 || j == 10)
-			dispArr(max(matrices{i} , matrices{j}));
-			dispArr(min(matrices{i} , matrices{j}));
+			dispArr(fileID, max(matrices{i} , matrices{j}));
+			dispArr(fileID, min(matrices{i} , matrices{j}));
 		elseif (i == 6 || i == 9 || i == 12 || j == 6 || j == 9 || j == 12)
-			dispArr(max(matrices{i} , matrices{j}));
-			dispArr(min(matrices{i} , matrices{j}));
+			dispArr(fileID, max(matrices{i} , matrices{j}));
+			dispArr(fileID, min(matrices{i} , matrices{j}));
 		else
-			dispArr(max(matrices{i} , matrices{j}));
-			dispArr(min(matrices{i} , matrices{j}));
+			dispArr(fileID, max(matrices{i} , matrices{j}));
+			dispArr(fileID, min(matrices{i} , matrices{j}));
 		end
 	end
 end

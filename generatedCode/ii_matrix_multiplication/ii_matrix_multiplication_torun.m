@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/ii_matrix_multiplication/output.txt','w');
 %more off
 %format short
 
@@ -8,6 +9,6 @@ a = [1,4;9,16;25,36];
 b = [2,0;0,2;0,0].';
 c = a*b;
 
-dispArr(a);
-dispArr(b);
-dispArr(c);
+dispArr(fileID, a);
+dispArr(fileID, b);
+dispArr(fileID, c);

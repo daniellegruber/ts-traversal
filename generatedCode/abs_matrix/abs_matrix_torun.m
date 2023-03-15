@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/abs_matrix/output.txt','w');
 %more off
 %format short
 
@@ -10,5 +11,5 @@ a = [0, 10, 10i;
 
 b = abs(a);
 
-dispArr(a);
-dispArr(b);
+dispArr(fileID, a);
+dispArr(fileID, b);

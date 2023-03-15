@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/advanced_stats/output.txt','w');
 %more off
 %format short
 
@@ -7,48 +8,48 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 
 %row_vectors_i
 a = [3,-5,0,1];
-dispArr(a);
+dispArr(fileID, a);
 two_t_test(a, ones(size(a)));
 int_vec_stats(a);
 double_stats(a);
 
 %row_vectors_d
 a = [0.5,0.25,0,0.6];
-dispArr(a);
+dispArr(fileID, a);
 two_t_test(a, ones(size(a)));
 double_vec_stats(a);
 double_stats(a);
 
 %column_vectors_i
 a = [3;-5;0;1];
-dispArr(a);
+dispArr(fileID, a);
 int_vec_stats(a);
 double_stats(a);
 
 %column_vectors_d
 a = [0.25;0.5;0;0.6];
-dispArr(a);
+dispArr(fileID, a);
 double_vec_stats(a);
 double_stats(a);
 
 %matrices_23_i
 a=[3,-2,0;1,5,10];
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_23_d
 a=[3.25,-2,0;1,5,10];
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_32_i
 a=[3,-2;0,1;5,10];
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_32_d
 a=[3.25,-2;0,1;5,10];
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_97_i
@@ -57,7 +58,7 @@ for i=1:63
 	a(i) = (-1)^i*i^2;
 end
 a=a.';
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_97_d
@@ -66,17 +67,17 @@ for i=1:63
 	a(i) = (-1)^i*i^2/17;
 end
 a=a.';
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %big_matrix
 a=ones(32,32);
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %big_vector
 a=ones(1010,1);
-dispArr(a);
+dispArr(fileID, a);
 int_vec_stats(a);
 double_stats(a);
 
@@ -87,11 +88,11 @@ end
 
 function int_vec_stats(a)
 	[greatest, index] = max(a);
-	dispArr(greatest);
+	dispArr(fileID, greatest);
 	sprintf("max index: %d\n\n", index);
 
 	[least, index] = min(a);
-	dispArr(least);
+	dispArr(fileID, least);
 	sprintf("min index: %d\n\n", index);
 
 	for i=least:0.5:greatest
@@ -114,11 +115,11 @@ end
 
 function double_vec_stats(a)
 	[greatest, index] = max(a);
-	dispArr(greatest);
+	dispArr(fileID, greatest);
 	sprintf("max index: %d\n", index);
 
 	[least, index] = min(a);
-	dispArr(least);
+	dispArr(fileID, least);
 	sprintf("min index: %d\n", index);
 
 	for i=least:0.5:greatest
@@ -144,46 +145,46 @@ function double_stats(a)
 	% Beta PDF
 	for i=0:0.05:0.95
 		for j=0:0.05:0.95
-			dispArr(betapdf(a, i, j));
+			dispArr(fileID, betapdf(a, i, j));
 		end
 	end
 
 	% Exponential PDF
 	for lambda=0.05:0.05:4.95
-		dispArr(exppdf(a, lambda));
+		dispArr(fileID, exppdf(a, lambda));
 	end
 
 	% Chi-square PDF
 	for n=0.05:0.05:4.95
 		sprintf("n = %.3f\n", n);
-		dispArr(chi2pdf(a, n));
+		dispArr(fileID, chi2pdf(a, n));
 	end
 
 	% Gamma PDF
 	for i=0.25:0.25:1.75
 		for j=0.25:0.25:1.75
-			dispArr(gampdf(a, i, j));
+			dispArr(fileID, gampdf(a, i, j));
 		end
 	end
 
 	% Lognormal PDF
 	for mu = -2:0.5:5
 		for sd=0.5:0.5:5
-			dispArr(lognpdf(a, mu, sd));
+			dispArr(fileID, lognpdf(a, mu, sd));
 		end
 	end
 
 	% Normal PDF
 	for mu = -2:0.5:5
 		for sd=0.5:0.5:5
-			dispArr(normpdf(a, mu, sd));
+			dispArr(fileID, normpdf(a, mu, sd));
 		end
 	end
 
 	% Uniform discrete PDF
 	for n=1:9
 		sprintf("n = %d\n",n);
-		dispArr(unidpdf(a, n));
+		dispArr(fileID, unidpdf(a, n));
 	end
 
 end

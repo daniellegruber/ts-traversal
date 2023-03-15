@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/4d_index_matrix/output.txt','w');
 %more off
 %format short
 
@@ -23,14 +24,14 @@ for l=1:5
 		end
 	end
 end
-dispArr(a);
+dispArr(fileID, a);
 
 % Flat indexing in C must be must be matched in Octave by flipping the row & column iteration
 for l=1:5
 	for k=1:4
 		for i=1:2
 			for j=1:3
-				dispArr(a(i,j,k,l));
+				dispArr(fileID, a(i,j,k,l));
 			end
 		end
 	end
@@ -42,7 +43,7 @@ for l=1:5
 	for k=1:4
 		for j=1:3
 			for i=1:2	
-				dispArr(a(i,j,k,l));
+				dispArr(fileID, a(i,j,k,l));
 			end
 		end
 	end
@@ -51,7 +52,7 @@ sprintf("\n");
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:120
-	dispArr(a(i));
+	dispArr(fileID, a(i));
 end
 sprintf("\n");
 
@@ -65,7 +66,7 @@ for i=1:120
 	a(i) = counter+0.5;
 	counter = counter + 1;
 end
-dispArr(a);
+dispArr(fileID, a);
 
 
 % Flat indexing in C must be must be matched in Octave by flipping the row & column iteration
@@ -73,7 +74,7 @@ for l=1:5
 	for k=1:4
 		for i=1:2
 			for j=1:3
-				dispArr(a(i,j,k,l));
+				dispArr(fileID, a(i,j,k,l));
 			end
 		end
 	end
@@ -85,7 +86,7 @@ for l=1:5
 	for k=1:4
 		for j=1:3
 			for i=1:2
-				dispArr(a(i,j,k,l));
+				dispArr(fileID, a(i,j,k,l));
 			end
 		end
 	end
@@ -94,7 +95,7 @@ sprintf("\n");
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:120
-	dispArr(a(i));
+	dispArr(fileID, a(i));
 end
 sprintf("\n");
 

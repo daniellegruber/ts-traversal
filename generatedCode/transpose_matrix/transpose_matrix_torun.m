@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/transpose_matrix/output.txt','w');
 %more off
 %format short
 
@@ -14,12 +15,12 @@ for i=1:3
 	end
 end
 
-dispArr(a);
+dispArr(fileID, a);
 
-dispArr(a.');
+dispArr(fileID, a.');
 
 b=a.';
-dispArr(b.');
+dispArr(fileID, b.');
 
 % double_test
 a = zeros(3,6);
@@ -31,12 +32,12 @@ for i=1:3
 	end
 end
 
-dispArr(a);
+dispArr(fileID, a);
 
-dispArr(a.');
+dispArr(fileID, a.');
 
 b=a.';
-dispArr(b.');
+dispArr(fileID, b.');
 
 % complex_test
 a = zeros(3,6);
@@ -48,12 +49,12 @@ for i=1:3
 	end
 end
 
-dispArr(a);
+dispArr(fileID, a);
 
-dispArr(a.');
+dispArr(fileID, a.');
 
 b=a.';
-dispArr(b.');
+dispArr(fileID, b.');
 
 % complex_conjugate_test
 a = zeros(3,6);
@@ -65,9 +66,9 @@ for i=1:3
 	end
 end
 
-dispArr(a);
+dispArr(fileID, a);
 
-dispArr(a');
+dispArr(fileID, a');
 
 b=a';
-dispArr(b');
+dispArr(fileID, b');

@@ -1,22 +1,23 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/elem_multiply_matrix/output.txt','w');
 %more off
 %format short
 
 %source octaveIncludes.m;
 
 a = (0.5 + 1i)*eye(3);
-dispArr(a);
+dispArr(fileID, a);
 
 b = (0.4 - 0.8i)*eye(3);
 b = b.';
 
-dispArr(b);
+dispArr(fileID, b);
 
 c = a.*b;
-dispArr(c);
+dispArr(fileID, c);
 
 d = eye(3).*a;
-dispArr(d);
+dispArr(fileID, d);
 
-e = 2*INT_MAX*eye(3);
-dispArr(e);
+e = 2*eye(3);
+dispArr(fileID, e);

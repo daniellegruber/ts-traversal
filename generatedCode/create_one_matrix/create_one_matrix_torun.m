@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/create_one_matrix/output.txt','w');
 %more off
 %format short
 
@@ -8,6 +9,6 @@ a = ones(3,3);
 b = ones(1,6);
 c = ones(4,1);
 
-dispArr(a);
-dispArr(b);
-dispArr(c);
+dispArr(fileID, a);
+dispArr(fileID, b);
+dispArr(fileID, c);

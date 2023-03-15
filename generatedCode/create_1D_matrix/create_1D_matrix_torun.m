@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/create_1D_matrix/output.txt','w');
 %more off
 %format short
 
@@ -6,4 +7,4 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 
 a = [1; 4; 9.5];
 
-dispArr(a);
+dispArr(fileID, a);

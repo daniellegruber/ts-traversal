@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/reshape_matrix/output.txt','w');
 %more off
 %format short
 
@@ -8,7 +9,7 @@ a = [0, 10, 10i;
 10.102, 10.102+0.5i, -12i; 
 -0.0002-0.1i, -100.01i, 81];
 
-dispArr(a);
+dispArr(fileID, a);
 
 b = reshape(a.', [9,1]);
-dispArr(b);
+dispArr(fileID, b);

@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/index_matrix/output.txt','w');
 %more off
 %format short
 
@@ -9,7 +10,7 @@ a = [0, 10, 10i;
 -0.0002-0.1i, -100.01i, 81];
 a_trans = a.';
 
-dispArr(a);
+dispArr(fileID, a);
 
 for i=1:9
 	% Octave is natively column-major matrix storage, but C is row-major

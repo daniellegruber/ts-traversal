@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/determinant_matrix/output.txt','w');
 %more off
 %format short
 
@@ -6,13 +7,13 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 
 %test1
 a=[1];
-dispArr(a);
-dispArr(det(a));
+dispArr(fileID, a);
+dispArr(fileID, det(a));
 
 %test2
 a = [26 + 1i, 3 - 8i; 20i, 1 + 25i];
-dispArr(a);
-dispArr(det(a));
+dispArr(fileID, a);
+dispArr(fileID, det(a));
 
 %test3
 a = zeros(3);
@@ -23,7 +24,7 @@ for i=1:3
 		counter = counter + 1;
 	end
 end
-dispArr(a);
+dispArr(fileID, a);
 sprintf('%.5f\n',det(a));
 
 %testn
@@ -40,7 +41,7 @@ for i=0:4
 	end
 end
 a=a.';
-dispArr(a);
+dispArr(fileID, a);
 sprintf('%.5f\n',det(a));
 
 %non_square
@@ -52,4 +53,4 @@ a(4) = 1 + 25i;
 a(5) = 0;
 a(6) = 1;
 a=a.';
-dispArr(a);
+dispArr(fileID, a);

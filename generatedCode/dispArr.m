@@ -1,27 +1,32 @@
-function dispArr(A)
-    numStart="@";
-    numEnd="";
-    if prod(size(A)) == 1
-        fprintf('"%s%.4f%s"\n', numStart, A, numEnd)
-    elseif ~isreal(A)
-        real_A = num2cell(real(A));
-        imag_A = num2cell(imag(A));
-        neg_idx = imag(A) < 0;
-        inf_idx = isinf(A);
-        plus_arr = repmat(" + ", size(A));
-        i_arr = repmat("i", size(A));
-        plus_arr(neg_idx) = " ";
-        real_A1 = cellfun(@(x) sprintf("%.4f", x), real_A);
-        imag_A1 = cellfun(@(x) sprintf("%.4f", x), imag_A);
-        real_A1 = strrep(real_A1, "-0.0000", "0.0000");
-        imag_A1 = strrep(imag_A1, "-0.0000", "0.0000");
-        imag_A1(inf_idx) = "";
-        plus_arr(inf_idx) = "";
-        i_arr(inf_idx) = "";
-        disp(numStart + real_A1 + plus_arr + imag_A1 + i_arr + numEnd);
-    elseif isinteger(A)
-        disp(cellfun(@(x) sprintf("%s%d%s", numStart, x, numEnd), num2cell(A)));
-    else
-        disp(cellfun(@(x) sprintf("%s%.4f%s", numStart, x, numEnd), num2cell(A)));
+function dispArr(fileID, A)
+    for l = 0:size(A, 4)-1
+        for k = 0:size(A,3)-1
+            for i = 0:size(A,1)-1
+                for j = 0:size(A, 2)-1
+%                     index = j + i*size(A,2) + k*size(A,1)*size(A,2) + ...
+%                         l*size(A,1)*size(A,2)*size(A,3);
+                    index = i + j*size(A,1) + k*size(A,1)*size(A,2) + ...
+                        l*size(A,1)*size(A,2)*size(A,3);
+                    if isstring(A)
+                        fprintf(fileID, "%s\t", A(index+1));
+                    elseif ~isreal(A)
+                        real_A = real(A(index+1));
+                        imag_A = imag(A(index+1));
+                        if isinf(A(index+1))
+                            fprintf(fileID, "inf\t");
+                        elseif imag_A < 0
+                            fprintf(fileID, "%.4f %.4fi\t", real_A, imag_A);
+                        else
+                            fprintf(fileID, "%.4f +%.4fi\t", real_A, imag_A);
+                        end
+                    else
+                        fprintf(fileID, "%.4f\t", A(index+1));
+                    end
+                end
+                fprintf(fileID, "\n");
+            end
+            fprintf(fileID, "\n");
+        end
+        fprintf(fileID, "\n");
     end
 end

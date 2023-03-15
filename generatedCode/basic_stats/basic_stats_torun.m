@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/basic_stats/output.txt','w');
 %more off
 %format short
 
@@ -16,11 +17,11 @@ end
 
 function int_vec_stats(a)
 	[greatest, index] = max(a);
-	dispArr(greatest);
+	dispArr(fileID, greatest);
 	sprintf("max index: %d\n", index);
 
 	[least, index] = min(a);
-	dispArr(least);
+	dispArr(fileID, least);
 	sprintf("min index: %d\n", index);
 
 	[mu, sd] = normfit(a);
@@ -34,11 +35,11 @@ end
 
 function double_vec_stats(a)
 	[greatest, index] = max(a);
-	dispArr(greatest);
+	dispArr(fileID, greatest);
 	sprintf("max index: %d\n", index);
 
 	[least, index] = min(a);
-	dispArr(least);
+	dispArr(fileID, least);
 	sprintf("min index: %d\n", index);
 
 	[mu, sd] = normfit(a);
@@ -52,11 +53,11 @@ end
 
 function complex_vec_stats(a)
 	[greatest, index] = max(a);
-	dispArr(greatest);
+	dispArr(fileID, greatest);
 	sprintf("max index: %d\n", index);
 
 	[least, index] = min(a);
-	dispArr(least);
+	dispArr(fileID, least);
 	sprintf("min index: %d\n", index);
 
 	[mu, sd] = normfit(a);
@@ -72,118 +73,118 @@ end
 function int_stats(a)
 	fun_qs = [0, -1, 3, 0.2, 0.9, 0.53, 0.75, 1, 0.34, 0.17];
 
-	dispArr(mean(a));
-	dispArr(var(a));
-	dispArr(var(a,1));
-	dispArr(std(a));
-	dispArr(std(a,1));
-	dispArr(sort(a));
-	dispArr(sort(a, "descend"));
-	dispArr(median(a));
-	dispArr(min(a));
-	dispArr(max(a));
-	dispArr(quantile(a, 4));
-	dispArr(quantile(a, fun_qs));
+	dispArr(fileID, mean(a));
+	dispArr(fileID, var(a));
+	dispArr(fileID, var(a,1));
+	dispArr(fileID, std(a));
+	dispArr(fileID, std(a,1));
+	dispArr(fileID, sort(a));
+	dispArr(fileID, sort(a, "descend"));
+	dispArr(fileID, median(a));
+	dispArr(fileID, min(a));
+	dispArr(fileID, max(a));
+	dispArr(fileID, quantile(a, 4));
+	dispArr(fileID, quantile(a, fun_qs));
 end
 
 function double_stats(a)
 	fun_qs = [0, -1, 3, 0.2, 0.9, 0.53, 0.75, 1, 0.34, 0.17];
 
-	dispArr(mean(a));
-	dispArr(var(a));
-	dispArr(var(a,1));
-	dispArr(std(a));
-	dispArr(std(a,1));
-	dispArr(sort(a));
-	dispArr(sort(a, "descend"));
-	dispArr(median(a));
-	dispArr(min(a));
-	dispArr(max(a));
-	dispArr(quantile(a, 4));
-	dispArr(quantile(a, fun_qs));
+	dispArr(fileID, mean(a));
+	dispArr(fileID, var(a));
+	dispArr(fileID, var(a,1));
+	dispArr(fileID, std(a));
+	dispArr(fileID, std(a,1));
+	dispArr(fileID, sort(a));
+	dispArr(fileID, sort(a, "descend"));
+	dispArr(fileID, median(a));
+	dispArr(fileID, min(a));
+	dispArr(fileID, max(a));
+	dispArr(fileID, quantile(a, 4));
+	dispArr(fileID, quantile(a, fun_qs));
 end
 
 function complex_stats(a)
 	fun_qs = [0, -1, 3, 0.2, 0.9, 0.53, 0.75, 1, 0.34, 0.17];
 
-	dispArr(mean(a));
-	dispArr(var(a));
-	dispArr(var(a,1));
-	dispArr(std(a));
-	dispArr(std(a,1));
-	dispArr(sort(a));
-	dispArr(sort(a, "descend"));
-	dispArr(median(a));
-	dispArr(min(a));
-	dispArr(max(a));
-	dispArr(quantile(a, 4));
-	dispArr(quantile(a, fun_qs));
+	dispArr(fileID, mean(a));
+	dispArr(fileID, var(a));
+	dispArr(fileID, var(a,1));
+	dispArr(fileID, std(a));
+	dispArr(fileID, std(a,1));
+	dispArr(fileID, sort(a));
+	dispArr(fileID, sort(a, "descend"));
+	dispArr(fileID, median(a));
+	dispArr(fileID, min(a));
+	dispArr(fileID, max(a));
+	dispArr(fileID, quantile(a, 4));
+	dispArr(fileID, quantile(a, fun_qs));
 end
 
 %row_vectors_i
 a = [3,-5,0,1];
-dispArr(a);
+dispArr(fileID, a);
 int_vec_stats(a);
 int_stats(a);
 
 %row_vectors_d
 a = [3.25,-2,0,10.1];
-dispArr(a);
+dispArr(fileID, a);
 double_vec_stats(a);
 double_stats(a);
 
 %row_vectors_c
 a = [3.25,-2,0,1-1i];
-dispArr(a);
+dispArr(fileID, a);
 complex_vec_stats(a);
 complex_stats(a);
 
 %column_vectors_i
 a = [3;-5;0;1];
-dispArr(a);
+dispArr(fileID, a);
 int_vec_stats(a);
 int_stats(a);
 
 %column_vectors_d
 a = [3.25;-2;0;10.1];
-dispArr(a);
+dispArr(fileID, a);
 double_vec_stats(a);
 double_stats(a);
 
 %column_vectors_c
 a = [3.25;-2;0;1-1i];
-dispArr(a);
+dispArr(fileID, a);
 complex_vec_stats(a);
 complex_stats(a);
 
 %matrices_23_i
 a=[3,-2,0;1,5,10];
-dispArr(a);
+dispArr(fileID, a);
 int_stats(a);
 
 %matrices_23_d
 a=[3.25,-2,0;1,5,10];
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_23_c
 a=[3.25,-2,0;1,5-1i,10];
-dispArr(a);
+dispArr(fileID, a);
 complex_stats(a);
 
 %matrices_32_i
 a=[3,-2;0,1;5,10];
-dispArr(a);
+dispArr(fileID, a);
 int_stats(a);
 
 %matrices_32_d
 a=[3.25,-2;0,1;5,10];
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_32_c
 a=[3.25,-2;0,1;5-1i,10];
-dispArr(a);
+dispArr(fileID, a);
 complex_stats(a);
 
 %matrices_97_i
@@ -192,7 +193,7 @@ for i=1:63
 	a(i) = (-1)^i*i^2;
 end
 a=a.';
-dispArr(a);
+dispArr(fileID, a);
 int_stats(a);
 
 %matrices_97_d
@@ -201,7 +202,7 @@ for i=1:63
 	a(i) = (-1)^i*i^2/17;
 end
 a=a.';
-dispArr(a);
+dispArr(fileID, a);
 double_stats(a);
 
 %matrices_97_c
@@ -210,23 +211,23 @@ for i=1:63
 	a(i) = (-1)^i*i-i/17i;
 end
 a=a.';
-dispArr(a);
+dispArr(fileID, a);
 complex_stats(a);
 
 %basic_quantile_test
 a = [1:100];
-dispArr(quantile(a, 0:0.01:1).');
+dispArr(fileID, quantile(a, 0:0.01:1).');
 
 b = zeros(1,1004);
 for i=1:1004
 	b(i) = i*i/17;
 end
 b=b.';
-dispArr(quantile(b, 0:0.01:1).');
+dispArr(fileID, quantile(b, 0:0.01:1).');
 
 c = zeros(1,57);
 for i=1:57
 	c(i) = i-i/17i;
 end
 c=c.';
-dispArr(quantile(c, 0:0.01:1).');
+dispArr(fileID, quantile(c, 0:0.01:1).');

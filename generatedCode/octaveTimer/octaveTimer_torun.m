@@ -1,12 +1,13 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/octaveTimer/output.txt','w');
 %more off
 %format short
 
 tic;
 for j=1:5
-	dispArr(j);
+	dispArr(fileID, j);
 end
 
 a = toc;
 
-dispArr(a);
+dispArr(fileID, a);

@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/SPEED_small_matrix_eigen/output.txt','w');
 %more off
 %format short
 
@@ -8,7 +9,7 @@ iterations = 1000000;
 
 a = [1.5,4.5;9.5,16.5];
 
-dispArr(a);
+dispArr(fileID, a);
 
 for i = 1:iterations
 	[V, lambda] = eig(a);

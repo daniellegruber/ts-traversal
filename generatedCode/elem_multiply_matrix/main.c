@@ -32,7 +32,7 @@ int main(void) {
 	Matrix * d = tmp8;
 	printM(d);
 	Matrix * tmp9 = identityM(3);
-	int scalar3 = 2 * INT_MAX;
+	int scalar3 = 2;
 	Matrix * tmp10 = scaleM(tmp9, &scalar3, 0);
 	Matrix * e = tmp10;
 	printM(e);

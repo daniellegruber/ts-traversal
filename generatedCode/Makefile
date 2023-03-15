@@ -33,6 +33,15 @@ copyall:
 			eval npx ts-node $$TS_TRAVERSAL/cleanUp.ts $$filename.m $$TS_TRAVERSAL; \
 		fi \
 	done; \
+
+matlabtorun:
+	for dir in $(all_dirs) ; do \
+		dir=$${dir//\//}; \
+		fulldir="$(shell pwd)/$$dir"; \
+		echo $$dir; \
+		eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $$dir.m $$TS_TRAVERSAL; \
+	done; \
+
 	
 # Generate one C program
 # make genone ARGS=testname
@@ -135,6 +144,7 @@ runmatlab:
 	done; \
 	module unload MATLAB/2021a; \
 	
+	
 # Compare outputs of generated C program and original mfile for all tests
 # Example: make compareall SPEED=1
 compareall:
@@ -162,11 +172,10 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
-		(timeout 120 matlab -nodisplay -nosplash < $$fulldir/$${dir}_torun.m 2>/dev/null | \
-			tail -n+10 | sed -z 's/>>//gi' | \
-			sed -z -E 's/(\(:,:,[0-9]+\)|\(:,:,:,[0-9]+\)) =//g' | \
-			sed -E "s/\"@(-?[0-9]+(\.[0-9]+)?( [+-] ?[0-9]+(\.[0-9]+)?i)?)\"/\1/g" | \
+			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+			sed -z -E 's/\+0i//g') > $$fulldir/f1; \
+		timeout 120 matlab -nodisplay -nosplash < $$fulldir/$${dir}_torun.m; \
+		(cat $$fulldir/output.txt 2>/dev/null | \
 			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 			sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 			tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
@@ -176,6 +185,7 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+			sed -z -E 's/\+0i//g' | \
 			sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f2; \
 		timeout 120 diff -wi $$fulldir/f1 $$fulldir/f2; \
 		RESULT=$$?; \
@@ -188,49 +198,13 @@ compareall:
 		fi; \
 		rm $$fulldir/f1; \
 		rm $$fulldir/f2; \
+		rm $$fulldir/output.txt; \
 	done; \
 	echo -e "SUCCESS" > compare_log.txt; \
 	echo -e $${good[@]} >> compare_log.txt; \
 	echo -e "\nERROR" >> compare_log.txt; \
 	echo -e $${bad[@]} >> compare_log.txt; \
 	module unload MATLAB/2021a; \
-	
-# Compare outputs of generated C program and original mfile for one test
-# Example: make compareone ARGS=testname
-compareone2:
-	module load MATLAB/2021a; \
-	fulldir="$(shell pwd)/$(ARGS)"; \
-	($$fulldir/test 2>/dev/null | \
-		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | \
-		sed -z 's/+0i//gi' | \
-		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
-		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
-		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
-	(matlab -nodisplay -nosplash < $$fulldir/$(ARGS)_torun.m 2>/dev/null | \
-		tail -n+10 | sed -z 's/>>//gi' | \
-		sed -z -E 's/(\(:,:,[0-9]+\)|\(:,:,:,[0-9]+\)) =//g' | \
-		sed -E "s/\"@(-?[0-9]+(\.[0-9]+)?( [+-] ?[0-9]+(\.[0-9]+)?i)?)\"/\1/g" | \
-		sed -E "s/\"@Inf\"/inf/g" | \
-		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
-		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
-		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
-		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f2; \
-	diff -wi $$fulldir/f1 $$fulldir/f2 && \
-		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
-		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\
-	module unload MATLAB/2021a; \
-	
 	
 # Compare outputs of generated C program and original mfile for one test
 # Example: make compareone ARGS=testname
@@ -246,12 +220,10 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g') > $$fulldir/f1; \
-	(matlab -nodisplay -nosplash < $$fulldir/$(ARGS)_torun.m 2>/dev/null | \
-		tail -n+10 | sed -z 's/>>//gi' | \
-		sed -z -E 's/(\(:,:,[0-9]+\)|\(:,:,:,[0-9]+\)) =//g' | \
-		sed -E "s/\"@(-?[0-9]+(\.[0-9]+)?( [+-] ?[0-9]+(\.[0-9]+)?i)?)\"/\1/g" | \
-		sed -E "s/\"@Inf\"/inf/g" | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/\+0i//g') > $$fulldir/f1; \
+	matlab -nodisplay -nosplash < $$fulldir/$(ARGS)_torun.m; \
+	(cat $$fulldir/output.txt 2>/dev/null | \
 		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
@@ -261,6 +233,7 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/\+0i//g' | \
 		sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f2; \
 	diff -wi $$fulldir/f1 $$fulldir/f2 && \
 		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
@@ -275,6 +248,13 @@ updategithub:
 	
 
 # OLD STUFF
+
+testing2:
+	for dir in $(all_dirs) ; do \
+		dir=$${dir//\//}; \
+		fulldir="$(shell pwd)/$$dir"; \
+		rm $$fulldir/$${dir}_torun.m; \
+	done; \
 
 # For testing
 testing:

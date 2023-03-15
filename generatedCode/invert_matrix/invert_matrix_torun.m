@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/invert_matrix/output.txt','w');
 %more off
 %format short
 
@@ -6,24 +7,24 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 
 %int_test
 a = [1,2;3,4];
-dispArr(a);
-dispArr(inv(a));
-dispArr(inv(inv(a)));
+dispArr(fileID, a);
+dispArr(fileID, inv(a));
+dispArr(fileID, inv(inv(a)));
 
 %double_test
 a = [1.5,2.5;3.5,4.5];
-dispArr(a);
-dispArr(inv(a));
-dispArr(inv(inv(a)));
+dispArr(fileID, a);
+dispArr(fileID, inv(a));
+dispArr(fileID, inv(inv(a)));
 
 %complex_test
 a = [1.5+1i,2.5+2i;3.5+3i,4.5+4i];
-dispArr(a);
-dispArr(inv(a));
-dispArr(inv(inv(a)));
+dispArr(fileID, a);
+dispArr(fileID, inv(a));
+dispArr(fileID, inv(inv(a)));
 
 %singular_test
-dispArr(ones(2));
+dispArr(fileID, ones(2));
 
 %non_square_test
-dispArr(ones(2,3));
+dispArr(fileID, ones(2,3));

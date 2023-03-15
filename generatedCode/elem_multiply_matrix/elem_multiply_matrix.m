@@ -17,5 +17,5 @@ disp(c);
 d = eye(3).*a;
 disp(d);
 
-e = 2*INT_MAX*eye(3);
+e = 2*eye(3);
 disp(e);

@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/randomness/output.txt','w');
 %more off
 %format short
 
@@ -18,7 +19,7 @@ s2 = rand("seed");
 %randi_test
 rand("seed", "reset");
 a = randi(10, 3, 4);
-dispArr(a <= 10);
+dispArr(fileID, a <= 10);
 
 
 %randn_test

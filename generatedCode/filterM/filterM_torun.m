@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/filterM/output.txt','w');
 %more off
 %format short
 
@@ -61,20 +62,20 @@ matrices{13} = [1,2,3,4,5];
 
 for i=1:13
 	sprintf(stdout, 'b\n');
-	dispArr(matrices{i});
+	dispArr(fileID, matrices{i});
 
 	for j=1:13
 		sprintf(stdout, '\na\n');
-		dispArr(matrices{j});
+		dispArr(fileID, matrices{j});
 
 		for k=1:13
 			sprintf(stdout, '\nx\n');
-			dispArr(matrices{k});
+			dispArr(fileID, matrices{k});
 			sprintf(stdout, '\n');
 			[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
-			dispArr(y);
+			dispArr(fileID, y);
 			sprintf(stdout, '\n');
-			dispArr(sf);
+			dispArr(fileID, sf);
 		end
 
 	end

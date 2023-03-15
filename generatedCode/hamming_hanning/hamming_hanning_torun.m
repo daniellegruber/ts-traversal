@@ -1,4 +1,5 @@
 addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
+fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/hamming_hanning/output.txt','w');
 %more off
 %format short
 
@@ -8,8 +9,8 @@ addpath('/gpfs/gibbs/project/manohar/dlg59/ts-traversal/generatedCode');
 iterations = 100;
 
 for i=1:iterations
-	dispArr(hamming(i));
-	dispArr(hamming(i, "periodic"));
-	dispArr(hanning(i));
-	dispArr(hanning(i, "periodic"));
+	dispArr(fileID, hamming(i));
+	dispArr(fileID, hamming(i, "periodic"));
+	dispArr(fileID, hanning(i));
+	dispArr(fileID, hanning(i, "periodic"));
 end

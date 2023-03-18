@@ -1,4 +1,4 @@
-function [ahat, bhat] = unifit(fileID, a)
+function [ahat, bhat] = unifit(a)
 	ahat = min(a);
 	bhat = max(a);
 end

@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -21,14 +22,10 @@ int main(void) {
 	int* lhs_data1 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
 		int tmp2 = pow((-1), (i + 1));
-		int d0_1 = i % 3;
-		if (d0_1 == 0) {
-			d0_1 = 3;
-		}
-		int d1_1 = (i - d0_1)/3 + 1;
 		int tmp4 = pow((-1), (i + 1));
 		int tmp3 = (tmp4) * (i - 1);
-		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp3;
+		int idx1 = convertSubscript(ndim1, dim1, i);
+		lhs_data1[idx1] = tmp3;
 	
 	}
 	// Write matrix mat1
@@ -62,14 +59,10 @@ int main(void) {
 	double* lhs_data2 = i_to_d(a);
 	for (int i = 1; i <= 9; ++ i) {
 		int tmp13 = pow((-1), (i + 1));
-		int d0_2 = i % 3;
-		if (d0_2 == 0) {
-			d0_2 = 3;
-		}
-		int d1_2 = (i - d0_2)/3 + 1;
 		int tmp15 = pow((-1), (i + 1));
 		double tmp14 = (tmp15) * (i + 0.4);
-		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp14;
+		int idx2 = convertSubscript(ndim2, dim2, i);
+		lhs_data2[idx2] = tmp14;
 	
 	}
 	// Write matrix mat2
@@ -103,13 +96,9 @@ int main(void) {
 	a = tmp23;
 	complex* lhs_data3 = i_to_c(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_3 = i % 3;
-		if (d0_3 == 0) {
-			d0_3 = 3;
-		}
-		int d1_3 = (i - d0_3)/3 + 1;
 		complex tmp24 = i + 0.5*I;
-		lhs_data3[(d1_3-1) + (d0_3-1) * 3] = tmp24;
+		int idx3 = convertSubscript(ndim3, dim3, i);
+		lhs_data3[idx3] = tmp24;
 	
 	}
 	// Write matrix mat3

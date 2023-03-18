@@ -14,6 +14,7 @@ nonspeed_dirs := $(shell ls -d */ | grep '^[^SPEED].*')
 
 # Example: make updategithub MESSAGE=Fixed bugs, updated makefile
 updategithub:
+	git pull origin master; \
 	git add -A && git commit -m "$(MESSAGE)"; \
 	git push origin master; \
 	

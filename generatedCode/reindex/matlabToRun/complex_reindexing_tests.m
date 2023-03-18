@@ -1,9 +1,9 @@
-function complex_reindexing_tests(fileID, a)
+function complex_reindexing_tests(a)
 	a=a.';
-	dispArr(fileID, [a(1)]);
-	dispArr(fileID, [a(4)]);
-	dispArr(fileID, [a(1) ; a(2) ; a(3) ; a(4)]);
-	dispArr(fileID, [a(4) ; a(3) ; a(2) ; a(1)]);
-	dispArr(fileID, [a(2) ; a(2) ; a(2)]);
-	dispArr(fileID, [a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
+	disp([a(1)]);
+	disp([a(4)]);
+	disp([a(1) ; a(2) ; a(3) ; a(4)]);
+	disp([a(4) ; a(3) ; a(2) ; a(1)]);
+	disp([a(2) ; a(2) ; a(2)]);
+	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
 end

@@ -249,12 +249,6 @@ compareone:
 		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\
 	module unload MATLAB/2021a; \
 	
-# Example: make updategithub MESSAGE=Fixed bugs, updated makefile
-updategithub:
-	git --git-dir $$TS_TRAVERSAL/.git pull origin master; \
-	git --git-dir $$TS_TRAVERSAL/.git add -A && git commit -m "$(MESSAGE)"; \
-	git --git-dir $$TS_TRAVERSAL/.git push origin master; \
-	
 
 # OLD STUFF
 

@@ -1,6 +1,8 @@
-function fourier_vec_script(fileID, a)
+function fourier_vec_script(a)
 
 	for i=1:20
-		dispArr(fileID, fft(a,i));
-		dispArr(fileID, ifft(a,i));
+		disp(fft(a,i));
+		disp(ifft(a,i));
 	end
+
+end

@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -22,14 +23,10 @@ int main(void) {
 	double* lhs_data1 = i_to_d(a);
 	for (int n = 1; n <= size; ++ n) {
 		int tmp2 = pow(n, 2);
-		int d0_1 = n % 1000;
-		if (d0_1 == 0) {
-			d0_1 = 1000;
-		}
-		int d1_1 = (n - d0_1)/1000 + 1;
 		int tmp4 = pow(n, 2);
 		double tmp3 = tmp4 + 0.5;
-		lhs_data1[(d1_1-1) + (d0_1-1) * 1000] = tmp3;
+		int idx1 = convertSubscript(ndim1, dim1, n);
+		lhs_data1[idx1] = tmp3;
 	
 	}
 	// Write matrix mat1

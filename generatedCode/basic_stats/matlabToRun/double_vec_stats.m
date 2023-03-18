@@ -1,17 +1,17 @@
-function double_vec_stats(fileID, a)
+function double_vec_stats(a)
 	[greatest, index] = max(a);
-	dispArr(fileID, greatest);
+	disp(greatest);
 	sprintf("max index: %d\n", index);
 
 	[least, index] = min(a);
-	dispArr(fileID, least);
+	disp(least);
 	sprintf("min index: %d\n", index);
 
-	[mu, sd] = normfit(fileID, a);
+	[mu, sd] = normfit(a);
 	sprintf("mean: %.3f\n", mu);
 	sprintf("sd: %.3f\n", sd);
 
-	[ahat, bhat] = unifit(fileID, a);
+	[ahat, bhat] = unifit(a);
 	sprintf("a: %.3f\n", ahat);
 	sprintf("b: %.3f\n", bhat);
 end

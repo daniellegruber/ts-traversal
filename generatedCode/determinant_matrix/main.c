@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -85,25 +86,17 @@ int main(void) {
 			counter = counter + 1;
 			int tmp4 = (counter - 1) % 2;
 			if ((tmp4 == 0)) {
-				int d0_2 = counter % 5;
-				if (d0_2 == 0) {
-					d0_2 = 5;
-				}
-				int d1_2 = (counter - d0_2)/5 + 1;
 				int tmp6 = (counter + i) % 7;
 				int tmp5 = tmp6;
-				lhs_data2[(d1_2-1) + (d0_2-1) * 5] = tmp5;
+				int idx1 = convertSubscript(ndim4, dim4, counter);
+				lhs_data2[idx1] = tmp5;
 				
 				} else {
 				int tmp7 = (counter + j) % 7;
-				int d0_3 = counter % 5;
-				if (d0_3 == 0) {
-					d0_3 = 5;
-				}
-				int d1_3 = (counter - d0_3)/5 + 1;
 				int tmp9 = (counter + j) % 7;
 				int tmp8 = -1 * tmp9;
-				lhs_data2[(d1_3-1) + (d0_3-1) * 5] = tmp8;
+				int idx2 = convertSubscript(ndim4, dim4, counter);
+				lhs_data2[idx2] = tmp8;
 				
 			
 			}
@@ -132,17 +125,23 @@ int main(void) {
 	a = tmp11;
 	complex* lhs_data3 = i_to_c(a);
 	complex tmp12 = 26 + 1*I;
-	lhs_data3[0] = tmp12;
+	int idx3 = convertSubscript(ndim5, dim5, 1);
+	lhs_data3[idx3] = tmp12;
 	complex tmp13 = 3 - 8*I;
-	lhs_data3[2] = tmp13;
+	int idx4 = convertSubscript(ndim5, dim5, 2);
+	lhs_data3[idx4] = tmp13;
 	complex tmp14 = 20*I;
-	lhs_data3[4] = tmp14;
+	int idx5 = convertSubscript(ndim5, dim5, 3);
+	lhs_data3[idx5] = tmp14;
 	complex tmp15 = 1 + 25*I;
-	lhs_data3[1] = tmp15;
+	int idx6 = convertSubscript(ndim5, dim5, 4);
+	lhs_data3[idx6] = tmp15;
 	int tmp16 = 0;
-	lhs_data3[3] = tmp16;
+	int idx7 = convertSubscript(ndim5, dim5, 5);
+	lhs_data3[idx7] = tmp16;
 	int tmp17 = 1;
-	lhs_data3[5] = tmp17;
+	int idx8 = convertSubscript(ndim5, dim5, 6);
+	lhs_data3[idx8] = tmp17;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter3 = 0 ; iter3 < ndim5; iter3++)

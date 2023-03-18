@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -19,13 +20,9 @@ int main(void) {
 	Matrix * a = tmp1;
 	int* lhs_data1 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_1 = i % 3;
-		if (d0_1 == 0) {
-			d0_1 = 3;
-		}
-		int d1_1 = (i - d0_1)/3 + 1;
 		int tmp2 = i;
-		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp2;
+		int idx1 = convertSubscript(ndim1, dim1, i);
+		lhs_data1[idx1] = tmp2;
 	
 	}
 	// Write matrix mat1
@@ -51,13 +48,9 @@ int main(void) {
 	a = tmp5;
 	int* lhs_data2 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_2 = i % 3;
-		if (d0_2 == 0) {
-			d0_2 = 3;
-		}
-		int d1_2 = (i - d0_2)/3 + 1;
 		int tmp6 = i;
-		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp6;
+		int idx2 = convertSubscript(ndim2, dim2, i);
+		lhs_data2[idx2] = tmp6;
 	
 	}
 	// Write matrix mat2
@@ -77,13 +70,9 @@ int main(void) {
 	b = tmp8;
 	double* lhs_data3 = i_to_d(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_3 = i % 3;
-		if (d0_3 == 0) {
-			d0_3 = 3;
-		}
-		int d1_3 = (i - d0_3)/3 + 1;
 		double tmp9 = i + 0.4;
-		lhs_data3[(d1_3-1) + (d0_3-1) * 3] = tmp9;
+		int idx3 = convertSubscript(ndim3, dim3, i);
+		lhs_data3[idx3] = tmp9;
 	
 	}
 	// Write matrix mat3
@@ -107,13 +96,9 @@ int main(void) {
 	a = tmp12;
 	int* lhs_data4 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_4 = i % 3;
-		if (d0_4 == 0) {
-			d0_4 = 3;
-		}
-		int d1_4 = (i - d0_4)/3 + 1;
 		int tmp13 = -i;
-		lhs_data4[(d1_4-1) + (d0_4-1) * 3] = tmp13;
+		int idx4 = convertSubscript(ndim4, dim4, i);
+		lhs_data4[idx4] = tmp13;
 	
 	}
 	// Write matrix mat4
@@ -133,13 +118,9 @@ int main(void) {
 	b = tmp15;
 	double* lhs_data5 = i_to_d(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_5 = i % 3;
-		if (d0_5 == 0) {
-			d0_5 = 3;
-		}
-		int d1_5 = (i - d0_5)/3 + 1;
 		double tmp16 = i + 0.4;
-		lhs_data5[(d1_5-1) + (d0_5-1) * 3] = tmp16;
+		int idx5 = convertSubscript(ndim5, dim5, i);
+		lhs_data5[idx5] = tmp16;
 	
 	}
 	// Write matrix mat5
@@ -163,13 +144,9 @@ int main(void) {
 	a = tmp19;
 	int* lhs_data6 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_6 = i % 3;
-		if (d0_6 == 0) {
-			d0_6 = 3;
-		}
-		int d1_6 = (i - d0_6)/3 + 1;
 		int tmp20 = i;
-		lhs_data6[(d1_6-1) + (d0_6-1) * 3] = tmp20;
+		int idx6 = convertSubscript(ndim6, dim6, i);
+		lhs_data6[idx6] = tmp20;
 	
 	}
 	// Write matrix mat6
@@ -189,13 +166,9 @@ int main(void) {
 	b = tmp22;
 	complex* lhs_data7 = i_to_c(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_7 = i % 3;
-		if (d0_7 == 0) {
-			d0_7 = 3;
-		}
-		int d1_7 = (i - d0_7)/3 + 1;
 		complex tmp23 = i + 0.4*I;
-		lhs_data7[(d1_7-1) + (d0_7-1) * 3] = tmp23;
+		int idx7 = convertSubscript(ndim7, dim7, i);
+		lhs_data7[idx7] = tmp23;
 	
 	}
 	// Write matrix mat7
@@ -219,13 +192,9 @@ int main(void) {
 	a = tmp26;
 	double* lhs_data8 = i_to_d(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_8 = i % 3;
-		if (d0_8 == 0) {
-			d0_8 = 3;
-		}
-		int d1_8 = (i - d0_8)/3 + 1;
 		double tmp27 = i + 0.4;
-		lhs_data8[(d1_8-1) + (d0_8-1) * 3] = tmp27;
+		int idx8 = convertSubscript(ndim8, dim8, i);
+		lhs_data8[idx8] = tmp27;
 	
 	}
 	// Write matrix mat8
@@ -245,13 +214,9 @@ int main(void) {
 	b = tmp29;
 	int* lhs_data9 = i_to_i(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_9 = i % 3;
-		if (d0_9 == 0) {
-			d0_9 = 3;
-		}
-		int d1_9 = (i - d0_9)/3 + 1;
 		int tmp30 = i;
-		lhs_data9[(d1_9-1) + (d0_9-1) * 3] = tmp30;
+		int idx9 = convertSubscript(ndim9, dim9, i);
+		lhs_data9[idx9] = tmp30;
 	
 	}
 	// Write matrix mat9
@@ -275,13 +240,9 @@ int main(void) {
 	a = tmp33;
 	double* lhs_data10 = i_to_d(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_10 = i % 3;
-		if (d0_10 == 0) {
-			d0_10 = 3;
-		}
-		int d1_10 = (i - d0_10)/3 + 1;
 		double tmp34 = i + 0.4;
-		lhs_data10[(d1_10-1) + (d0_10-1) * 3] = tmp34;
+		int idx10 = convertSubscript(ndim10, dim10, i);
+		lhs_data10[idx10] = tmp34;
 	
 	}
 	// Write matrix mat10
@@ -301,13 +262,9 @@ int main(void) {
 	b = tmp36;
 	double* lhs_data11 = i_to_d(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_11 = i % 3;
-		if (d0_11 == 0) {
-			d0_11 = 3;
-		}
-		int d1_11 = (i - d0_11)/3 + 1;
 		double tmp37 = (i + 0.4);
-		lhs_data11[(d1_11-1) + (d0_11-1) * 3] = tmp37;
+		int idx11 = convertSubscript(ndim11, dim11, i);
+		lhs_data11[idx11] = tmp37;
 	
 	}
 	// Write matrix mat11
@@ -331,13 +288,9 @@ int main(void) {
 	a = tmp40;
 	double* lhs_data12 = i_to_d(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_12 = i % 3;
-		if (d0_12 == 0) {
-			d0_12 = 3;
-		}
-		int d1_12 = (i - d0_12)/3 + 1;
 		double tmp41 = -(i + 0.4);
-		lhs_data12[(d1_12-1) + (d0_12-1) * 3] = tmp41;
+		int idx12 = convertSubscript(ndim12, dim12, i);
+		lhs_data12[idx12] = tmp41;
 	
 	}
 	// Write matrix mat12
@@ -357,13 +310,9 @@ int main(void) {
 	b = tmp43;
 	double* lhs_data13 = i_to_d(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_13 = i % 3;
-		if (d0_13 == 0) {
-			d0_13 = 3;
-		}
-		int d1_13 = (i - d0_13)/3 + 1;
 		double tmp44 = -(i + 0.4);
-		lhs_data13[(d1_13-1) + (d0_13-1) * 3] = tmp44;
+		int idx13 = convertSubscript(ndim13, dim13, i);
+		lhs_data13[idx13] = tmp44;
 	
 	}
 	// Write matrix mat13
@@ -387,13 +336,9 @@ int main(void) {
 	a = tmp47;
 	double* lhs_data14 = i_to_d(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_14 = i % 3;
-		if (d0_14 == 0) {
-			d0_14 = 3;
-		}
-		int d1_14 = (i - d0_14)/3 + 1;
 		double tmp48 = i + 0.4;
-		lhs_data14[(d1_14-1) + (d0_14-1) * 3] = tmp48;
+		int idx14 = convertSubscript(ndim14, dim14, i);
+		lhs_data14[idx14] = tmp48;
 	
 	}
 	// Write matrix mat14
@@ -413,13 +358,9 @@ int main(void) {
 	b = tmp50;
 	complex* lhs_data15 = i_to_c(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_15 = i % 3;
-		if (d0_15 == 0) {
-			d0_15 = 3;
-		}
-		int d1_15 = (i - d0_15)/3 + 1;
 		complex tmp51 = i + 0.4*I;
-		lhs_data15[(d1_15-1) + (d0_15-1) * 3] = tmp51;
+		int idx15 = convertSubscript(ndim15, dim15, i);
+		lhs_data15[idx15] = tmp51;
 	
 	}
 	// Write matrix mat15
@@ -443,13 +384,9 @@ int main(void) {
 	a = tmp54;
 	complex* lhs_data16 = i_to_c(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_16 = i % 3;
-		if (d0_16 == 0) {
-			d0_16 = 3;
-		}
-		int d1_16 = (i - d0_16)/3 + 1;
 		complex tmp55 = i + 1*I;
-		lhs_data16[(d1_16-1) + (d0_16-1) * 3] = tmp55;
+		int idx16 = convertSubscript(ndim16, dim16, i);
+		lhs_data16[idx16] = tmp55;
 	
 	}
 	// Write matrix mat16
@@ -469,13 +406,9 @@ int main(void) {
 	b = tmp57;
 	int* lhs_data17 = i_to_i(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_17 = i % 3;
-		if (d0_17 == 0) {
-			d0_17 = 3;
-		}
-		int d1_17 = (i - d0_17)/3 + 1;
 		int tmp58 = i;
-		lhs_data17[(d1_17-1) + (d0_17-1) * 3] = tmp58;
+		int idx17 = convertSubscript(ndim17, dim17, i);
+		lhs_data17[idx17] = tmp58;
 	
 	}
 	// Write matrix mat17
@@ -499,13 +432,9 @@ int main(void) {
 	a = tmp61;
 	complex* lhs_data18 = i_to_c(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_18 = i % 3;
-		if (d0_18 == 0) {
-			d0_18 = 3;
-		}
-		int d1_18 = (i - d0_18)/3 + 1;
 		complex tmp62 = i + 0.5*I;
-		lhs_data18[(d1_18-1) + (d0_18-1) * 3] = tmp62;
+		int idx18 = convertSubscript(ndim18, dim18, i);
+		lhs_data18[idx18] = tmp62;
 	
 	}
 	// Write matrix mat18
@@ -525,13 +454,9 @@ int main(void) {
 	b = tmp64;
 	double* lhs_data19 = i_to_d(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_19 = i % 3;
-		if (d0_19 == 0) {
-			d0_19 = 3;
-		}
-		int d1_19 = (i - d0_19)/3 + 1;
 		double tmp65 = (i + 0.4);
-		lhs_data19[(d1_19-1) + (d0_19-1) * 3] = tmp65;
+		int idx19 = convertSubscript(ndim19, dim19, i);
+		lhs_data19[idx19] = tmp65;
 	
 	}
 	// Write matrix mat19
@@ -555,13 +480,9 @@ int main(void) {
 	a = tmp68;
 	complex* lhs_data20 = i_to_c(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_20 = i % 3;
-		if (d0_20 == 0) {
-			d0_20 = 3;
-		}
-		int d1_20 = (i - d0_20)/3 + 1;
 		complex tmp69 = i + 0.4*I;
-		lhs_data20[(d1_20-1) + (d0_20-1) * 3] = tmp69;
+		int idx20 = convertSubscript(ndim20, dim20, i);
+		lhs_data20[idx20] = tmp69;
 	
 	}
 	// Write matrix mat20
@@ -581,13 +502,9 @@ int main(void) {
 	b = tmp71;
 	complex* lhs_data21 = i_to_c(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_21 = i % 3;
-		if (d0_21 == 0) {
-			d0_21 = 3;
-		}
-		int d1_21 = (i - d0_21)/3 + 1;
 		complex tmp72 = i + 0.4*I;
-		lhs_data21[(d1_21-1) + (d0_21-1) * 3] = tmp72;
+		int idx21 = convertSubscript(ndim21, dim21, i);
+		lhs_data21[idx21] = tmp72;
 	
 	}
 	// Write matrix mat21

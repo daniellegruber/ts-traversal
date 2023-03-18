@@ -71,7 +71,13 @@ make copyone ARGS=mfile
 ```
 
 ### Create "torun" version 
-Copy mfiles in all folders and create "torun" versions to be used in the comparison stage
+- Copy mfiles in all folders and create "torun" versions to be used in the comparison stage
+- Within each mfile folder, generates folder matlabToRun and mfile testname_torun.m
+- The "torun" version does the following:
+  - Creates a fileID for the output file output.txt
+  - Replaces calls to `disp` with `dispArr` (a function within the generateCode folder to help format outputs and send to output file)
+  - Moves functions defined in file to their own files since the former isn't supported when calling MATLAB from command line
+
 ```sh
 make matlabtorun
 ```
@@ -88,7 +94,8 @@ make genone ARGS=mfile
 ```
 
 ### Compile c code
-Compile all C programs in generatedCode folder
+- Compile all C programs in generatedCode folder
+- Generates log compile_log.txt with list of successful and failed tests
 ```sh
 make compileall
 ```
@@ -99,7 +106,8 @@ make compileone ARGS=testname
 ```
 
 ### Compare C and MATLAB
-Compare outputs of generated C program and original mfile for all tests
+- Compare outputs of generated C program and original mfile for all tests
+- Generates log compare_log.txt with list of successful and failed tests
 ```sh
 make compareall
 ```
@@ -833,41 +841,6 @@ generateCode.ts
 	]
 	```
 
-# OctaveC Tests
-
-| Test  | Complete | Notes |
-| ------------- | ------------- | ------------- |
-| abs_matrix  | Yes  |   |
-| ceil_matrix  | Yes  |   |
-| create_1D_matrix  | Yes  |   |
-| create_2D_matrix  | Yes  |   |
-| create_zero_matrix  | Yes  |   |
-| create_one_matrix  | Yes  |   |
-| create_identity_matrix  | Yes  |   |
-| ci_matrix_multiplication  | Yes  |   |
-| cd_matrix_multiplication  | Yes  |   |
-| cc_matrix_multiplication  | Yes  |   |
-| di_matrix_multiplication  | Yes  |   |
-| dd_matrix_multiplication  | Yes  | All outputs are the same, however first two matrices are stored/printed as type `int` since that it is their inferred type. |
-| dc_matrix_multiplication  | Yes  |   |
-| duplicate_matrix  | Yes  |   |
-| 3d_index_matrix  | Yes  |  |
-| 4d_index_matrix  | Yes  |  |
-| areEqual_matrix  | Yes  | All outputs are the same, however all the matrices are stored/printed as type `int` since that it is their inferred type. |
-| eigen  | No  | Kind of works when I comment out `free(input)` stuff, probably a memory allocation issue? |
-| elem_divide_matrix  | No  | Casting to complex (or other type) makes all values zero. |
-| elem_power_matrix  | Yes  |  |
-| elem_scalarpower_matrix  | No  | Choice of when to use cpow is different, e.g., line 360 in main.c/line 359 in octave_main.c. |
-| fourier  | Maybe  | I'm currently comparing the outputs visually and since there are a lot of outputs it's hard to say whether everything matches up. |
-| determinant_matrix | No  | |
-| external_fun | Yes  | One of my own tests. Tests a case of custom function defined outside of main script (i.e., in separate m file). |
-| cell_test | Yes  | One of my own tests. Tests a few cases of cell arrays with heterogeneous data types. |
-| basic_stats | No  | Segmentation error. |
-| elem_trig_matrix | Yes  | |
-| logic_ops_matrix | Yes  | |
-| filterM | Maybe  | |
-| stftM | No  | It was tricky for me to figure out direct translation between stft MATLAB function and stftV C function. |
-| xcorrM | Maybe  | |
 
 # Updates
 - Redefinition of a variable creates a new entry in var_types. If the scopes of two same-named variables overlap then the scope of the first ends where the scope of the second begins.
@@ -889,11 +862,6 @@ generateCode.ts
 
 # Current limitations/works in progess (03/11/23)
 - cell_test — problem with new addition to modifyCode.ts
-- external_fun (fails compare)
-- custom tests don’t have _torun version -- change makefile so that _torun isn't part of copyall routine
-- for comparison: how to convert matlab outputs that are like columns 1-6 then columns 7 -9 to make all one one line
-- Also still have some outputs with ellipsis when tehy are too loong (elem_multiply_matrix)
-- elem_divide matrix: printM(c) output looks weird, first two rows are fine but last seems like it's using the wrong numeric type
  
 
 

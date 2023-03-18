@@ -7,17 +7,17 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/subtract_matrix/o
 %source octaveIncludes.m;
 
 a = 0.5*ones(3);
-a(1) += I;
-a(5) += I;
-a(9) += I;
+a(1) = a(1) + 1i;
+a(5) = a(5) + 1i;
+a(9) = a(9) + 1i;
 a = a.';
 dispArr(fileID, a);
 
 
 b = 0.5*ones(3);
-b(1) = -0.5 + I;
-b(5) = -0.5 + I;
-b(9) = -0.5 + I;
+b(1) = -0.5 + 1i;
+b(5) = -0.5 + 1i;
+b(9) = -0.5 + 1i;
 b = b.';
 
 dispArr(fileID, b);

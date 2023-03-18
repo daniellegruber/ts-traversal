@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 #include "./myfun3.h"
 

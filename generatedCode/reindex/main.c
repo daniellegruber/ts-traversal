@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 
 // Function declarations
@@ -247,11 +246,15 @@ int main(void) {
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp2 = pow((-1), i);
 		int tmp3 = pow(i, 2);
+		int d0_1 = i % 7;
+		if (d0_1 == 0) {
+			d0_1 = 7;
+		}
+		int d1_1 = (i - d0_1)/7 + 1;
 		int tmp5 = pow((-1), i);
 		int tmp6 = pow(i, 2);
 		int tmp4 = tmp5 * tmp6;
-		int idx1 = convertSubscript(ndim13, dim13, i);
-		lhs_data1[idx1] = tmp4;
+		lhs_data1[(d1_1-1) + (d0_1-1) * 9] = tmp4;
 	
 	}
 	// Write matrix mat1
@@ -272,15 +275,19 @@ int main(void) {
 	int dim14[2] = {7, 9};
 	Matrix * tmp8 = zerosM(ndim14, dim14);
 	a = tmp8;
-	double* lhs_data2 = d_to_d(a);
+	int* lhs_data2 = i_to_i(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp9 = pow((-1), i);
 		int tmp10 = pow(i, 2);
+		int d0_2 = i % 7;
+		if (d0_2 == 0) {
+			d0_2 = 7;
+		}
+		int d1_2 = (i - d0_2)/7 + 1;
 		int tmp12 = pow((-1), i);
 		int tmp13 = pow(i, 2);
-		double tmp11 = (double) tmp12 * tmp13 / 17;
-		int idx2 = convertSubscript(ndim14, dim14, i);
-		lhs_data2[idx2] = tmp11;
+		int tmp11 = (double) tmp12 * tmp13 / 17;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp11;
 	
 	}
 	// Write matrix mat2
@@ -289,7 +296,7 @@ int main(void) {
 	{
 		size2 *= dim14[iter2];
 	}
-	Matrix *mat2 = createM(ndim14, dim14, 1);
+	Matrix *mat2 = createM(ndim14, dim14, 0);
 	writeM(mat2, size2, lhs_data2);
 	Matrix * tmp14 = transposeM(mat2);
 	a = tmp14;
@@ -301,13 +308,17 @@ int main(void) {
 	int dim15[2] = {7, 9};
 	Matrix * tmp15 = zerosM(ndim15, dim15);
 	a = tmp15;
-	complex* lhs_data3 = c_to_c(a);
+	complex* lhs_data3 = i_to_c(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp16 = pow((-1), i);
+		int d0_3 = i % 7;
+		if (d0_3 == 0) {
+			d0_3 = 7;
+		}
+		int d1_3 = (i - d0_3)/7 + 1;
 		int tmp18 = pow((-1), i);
 		complex tmp17 = tmp18 * i - ((complex) i) / (17*I);
-		int idx3 = convertSubscript(ndim15, dim15, i);
-		lhs_data3[idx3] = tmp17;
+		lhs_data3[(d1_3-1) + (d0_3-1) * 9] = tmp17;
 	
 	}
 	// Write matrix mat3
@@ -331,11 +342,8 @@ int main(void) {
 void int_reindexing_tests(Matrix * a) {
 	Matrix * tmp20 = transposeM(a);
 	a = tmp20;
-	int ndim17 = getnDimM(a);
-	int *dim17 = getDimsM(a);
-	int idx4 = convertSubscript(ndim17, dim17, 1);
 	int tmp21;
-	indexM(a, &tmp21, 1, idx4 + 1);
+	indexM(a, &tmp21, 1, 1);
 	
 	int ndim16 = 2;
 	int dim16[2] = {1,1};
@@ -347,13 +355,12 @@ void int_reindexing_tests(Matrix * a) {
 	free(input13);
 	
 	printM(mat4);
-	int idx5 = convertSubscript(ndim17, dim17, 4);
 	int tmp22;
-	indexM(a, &tmp22, 1, idx5 + 1);
+	indexM(a, &tmp22, 1, 22);
 	
-	int ndim18 = 2;
-	int dim18[2] = {1,1};
-	Matrix * mat5 = createM(ndim18, dim18, 0);
+	int ndim17 = 2;
+	int dim17[2] = {1,1};
+	Matrix * mat5 = createM(ndim17, dim17, 0);
 	int *input14 = NULL;
 	input14 = malloc( 1*sizeof(*input14));
 	input14[0] = tmp22;
@@ -361,16 +368,14 @@ void int_reindexing_tests(Matrix * a) {
 	free(input14);
 	
 	printM(mat5);
-	int idx6 = convertSubscript(ndim17, dim17, 2);
 	int tmp24;
-	indexM(a, &tmp24, 1, idx6 + 1);
-	int idx7 = convertSubscript(ndim17, dim17, 3);
+	indexM(a, &tmp24, 1, 8);
 	int tmp25;
-	indexM(a, &tmp25, 1, idx7 + 1);
+	indexM(a, &tmp25, 1, 15);
 	
-	int ndim19 = 2;
-	int dim19[2] = {4,1};
-	Matrix * mat6 = createM(ndim19, dim19, 0);
+	int ndim18 = 2;
+	int dim18[2] = {4,1};
+	Matrix * mat6 = createM(ndim18, dim18, 0);
 	int *input15 = NULL;
 	input15 = malloc( 4*sizeof(*input15));
 	input15[0] = tmp21;
@@ -382,9 +387,9 @@ void int_reindexing_tests(Matrix * a) {
 	
 	printM(mat6);
 	
-	int ndim20 = 2;
-	int dim20[2] = {4,1};
-	Matrix * mat7 = createM(ndim20, dim20, 0);
+	int ndim19 = 2;
+	int dim19[2] = {4,1};
+	Matrix * mat7 = createM(ndim19, dim19, 0);
 	int *input16 = NULL;
 	input16 = malloc( 4*sizeof(*input16));
 	input16[0] = tmp22;
@@ -396,9 +401,9 @@ void int_reindexing_tests(Matrix * a) {
 	
 	printM(mat7);
 	
-	int ndim21 = 2;
-	int dim21[2] = {3,1};
-	Matrix * mat8 = createM(ndim21, dim21, 0);
+	int ndim20 = 2;
+	int dim20[2] = {3,1};
+	Matrix * mat8 = createM(ndim20, dim20, 0);
 	int *input17 = NULL;
 	input17 = malloc( 3*sizeof(*input17));
 	input17[0] = tmp24;
@@ -409,9 +414,9 @@ void int_reindexing_tests(Matrix * a) {
 	
 	printM(mat8);
 	
-	int ndim22 = 2;
-	int dim22[2] = {10,1};
-	Matrix * mat9 = createM(ndim22, dim22, 0);
+	int ndim21 = 2;
+	int dim21[2] = {10,1};
+	Matrix * mat9 = createM(ndim21, dim21, 0);
 	int *input18 = NULL;
 	input18 = malloc( 10*sizeof(*input18));
 	input18[0] = tmp21;
@@ -433,47 +438,41 @@ void int_reindexing_tests(Matrix * a) {
 void double_reindexing_tests(Matrix * a) {
 	Matrix * tmp44 = transposeM(a);
 	a = tmp44;
-	int ndim24 = getnDimM(a);
-	int *dim24 = getDimsM(a);
-	int idx8 = convertSubscript(ndim24, dim24, 1);
-	double tmp45;
-	indexM(a, &tmp45, 1, idx8 + 1);
+	int tmp45;
+	indexM(a, &tmp45, 1, 1);
 	
-	int ndim23 = 2;
-	int dim23[2] = {1,1};
-	Matrix * mat10 = createM(ndim23, dim23, 1);
-	double *input19 = NULL;
+	int ndim22 = 2;
+	int dim22[2] = {1,1};
+	Matrix * mat10 = createM(ndim22, dim22, 0);
+	int *input19 = NULL;
 	input19 = malloc( 1*sizeof(*input19));
 	input19[0] = tmp45;
 	writeM( mat10, 1, input19);
 	free(input19);
 	
 	printM(mat10);
-	int idx9 = convertSubscript(ndim24, dim24, 4);
-	double tmp46;
-	indexM(a, &tmp46, 1, idx9 + 1);
+	int tmp46;
+	indexM(a, &tmp46, 1, 22);
 	
-	int ndim25 = 2;
-	int dim25[2] = {1,1};
-	Matrix * mat11 = createM(ndim25, dim25, 1);
-	double *input20 = NULL;
+	int ndim23 = 2;
+	int dim23[2] = {1,1};
+	Matrix * mat11 = createM(ndim23, dim23, 0);
+	int *input20 = NULL;
 	input20 = malloc( 1*sizeof(*input20));
 	input20[0] = tmp46;
 	writeM( mat11, 1, input20);
 	free(input20);
 	
 	printM(mat11);
-	int idx10 = convertSubscript(ndim24, dim24, 2);
-	double tmp48;
-	indexM(a, &tmp48, 1, idx10 + 1);
-	int idx11 = convertSubscript(ndim24, dim24, 3);
-	double tmp49;
-	indexM(a, &tmp49, 1, idx11 + 1);
+	int tmp48;
+	indexM(a, &tmp48, 1, 8);
+	int tmp49;
+	indexM(a, &tmp49, 1, 15);
 	
-	int ndim26 = 2;
-	int dim26[2] = {4,1};
-	Matrix * mat12 = createM(ndim26, dim26, 1);
-	double *input21 = NULL;
+	int ndim24 = 2;
+	int dim24[2] = {4,1};
+	Matrix * mat12 = createM(ndim24, dim24, 0);
+	int *input21 = NULL;
 	input21 = malloc( 4*sizeof(*input21));
 	input21[0] = tmp45;
 	input21[1] = tmp48;
@@ -484,10 +483,10 @@ void double_reindexing_tests(Matrix * a) {
 	
 	printM(mat12);
 	
-	int ndim27 = 2;
-	int dim27[2] = {4,1};
-	Matrix * mat13 = createM(ndim27, dim27, 1);
-	double *input22 = NULL;
+	int ndim25 = 2;
+	int dim25[2] = {4,1};
+	Matrix * mat13 = createM(ndim25, dim25, 0);
+	int *input22 = NULL;
 	input22 = malloc( 4*sizeof(*input22));
 	input22[0] = tmp46;
 	input22[1] = tmp49;
@@ -498,10 +497,10 @@ void double_reindexing_tests(Matrix * a) {
 	
 	printM(mat13);
 	
-	int ndim28 = 2;
-	int dim28[2] = {3,1};
-	Matrix * mat14 = createM(ndim28, dim28, 1);
-	double *input23 = NULL;
+	int ndim26 = 2;
+	int dim26[2] = {3,1};
+	Matrix * mat14 = createM(ndim26, dim26, 0);
+	int *input23 = NULL;
 	input23 = malloc( 3*sizeof(*input23));
 	input23[0] = tmp48;
 	input23[1] = tmp48;
@@ -511,10 +510,10 @@ void double_reindexing_tests(Matrix * a) {
 	
 	printM(mat14);
 	
-	int ndim29 = 2;
-	int dim29[2] = {10,1};
-	Matrix * mat15 = createM(ndim29, dim29, 1);
-	double *input24 = NULL;
+	int ndim27 = 2;
+	int dim27[2] = {10,1};
+	Matrix * mat15 = createM(ndim27, dim27, 0);
+	int *input24 = NULL;
 	input24 = malloc( 10*sizeof(*input24));
 	input24[0] = tmp45;
 	input24[1] = tmp48;
@@ -535,15 +534,12 @@ void double_reindexing_tests(Matrix * a) {
 void complex_reindexing_tests(Matrix * a) {
 	Matrix * tmp68 = transposeM(a);
 	a = tmp68;
-	int ndim31 = getnDimM(a);
-	int *dim31 = getDimsM(a);
-	int idx12 = convertSubscript(ndim31, dim31, 1);
 	complex tmp69;
-	indexM(a, &tmp69, 1, idx12 + 1);
+	indexM(a, &tmp69, 1, 1);
 	
-	int ndim30 = 2;
-	int dim30[2] = {1,1};
-	Matrix * mat16 = createM(ndim30, dim30, 2);
+	int ndim28 = 2;
+	int dim28[2] = {1,1};
+	Matrix * mat16 = createM(ndim28, dim28, 2);
 	complex *input25 = NULL;
 	input25 = malloc( 1*sizeof(*input25));
 	input25[0] = tmp69;
@@ -551,13 +547,12 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input25);
 	
 	printM(mat16);
-	int idx13 = convertSubscript(ndim31, dim31, 4);
 	complex tmp70;
-	indexM(a, &tmp70, 1, idx13 + 1);
+	indexM(a, &tmp70, 1, 22);
 	
-	int ndim32 = 2;
-	int dim32[2] = {1,1};
-	Matrix * mat17 = createM(ndim32, dim32, 2);
+	int ndim29 = 2;
+	int dim29[2] = {1,1};
+	Matrix * mat17 = createM(ndim29, dim29, 2);
 	complex *input26 = NULL;
 	input26 = malloc( 1*sizeof(*input26));
 	input26[0] = tmp70;
@@ -565,16 +560,14 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input26);
 	
 	printM(mat17);
-	int idx14 = convertSubscript(ndim31, dim31, 2);
 	complex tmp72;
-	indexM(a, &tmp72, 1, idx14 + 1);
-	int idx15 = convertSubscript(ndim31, dim31, 3);
+	indexM(a, &tmp72, 1, 8);
 	complex tmp73;
-	indexM(a, &tmp73, 1, idx15 + 1);
+	indexM(a, &tmp73, 1, 15);
 	
-	int ndim33 = 2;
-	int dim33[2] = {4,1};
-	Matrix * mat18 = createM(ndim33, dim33, 2);
+	int ndim30 = 2;
+	int dim30[2] = {4,1};
+	Matrix * mat18 = createM(ndim30, dim30, 2);
 	complex *input27 = NULL;
 	input27 = malloc( 4*sizeof(*input27));
 	input27[0] = tmp69;
@@ -586,9 +579,9 @@ void complex_reindexing_tests(Matrix * a) {
 	
 	printM(mat18);
 	
-	int ndim34 = 2;
-	int dim34[2] = {4,1};
-	Matrix * mat19 = createM(ndim34, dim34, 2);
+	int ndim31 = 2;
+	int dim31[2] = {4,1};
+	Matrix * mat19 = createM(ndim31, dim31, 2);
 	complex *input28 = NULL;
 	input28 = malloc( 4*sizeof(*input28));
 	input28[0] = tmp70;
@@ -600,9 +593,9 @@ void complex_reindexing_tests(Matrix * a) {
 	
 	printM(mat19);
 	
-	int ndim35 = 2;
-	int dim35[2] = {3,1};
-	Matrix * mat20 = createM(ndim35, dim35, 2);
+	int ndim32 = 2;
+	int dim32[2] = {3,1};
+	Matrix * mat20 = createM(ndim32, dim32, 2);
 	complex *input29 = NULL;
 	input29 = malloc( 3*sizeof(*input29));
 	input29[0] = tmp72;
@@ -613,9 +606,9 @@ void complex_reindexing_tests(Matrix * a) {
 	
 	printM(mat20);
 	
-	int ndim36 = 2;
-	int dim36[2] = {10,1};
-	Matrix * mat21 = createM(ndim36, dim36, 2);
+	int ndim33 = 2;
+	int dim33[2] = {10,1};
+	Matrix * mat21 = createM(ndim33, dim33, 2);
 	complex *input30 = NULL;
 	input30 = malloc( 10*sizeof(*input30));
 	input30[0] = tmp69;

@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -20,9 +19,13 @@ int main(void) {
 	Matrix * a = tmp1;
 	int* lhs_data1 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
+		int d0_1 = i % 3;
+		if (d0_1 == 0) {
+			d0_1 = 3;
+		}
+		int d1_1 = (i - d0_1)/3 + 1;
 		int tmp2 = i * i;
-		int idx1 = convertSubscript(ndim1, dim1, i);
-		lhs_data1[idx1] = tmp2;
+		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp2;
 	
 	}
 	// Write matrix mat1
@@ -57,20 +60,21 @@ int main(void) {
 	c = tmp9;
 	int* lhs_data2 = i_to_i(c);
 	for (int i = 1; i <= 9; ++ i) {
+		int d0_2 = i % 3;
+		if (d0_2 == 0) {
+			d0_2 = 3;
+		}
+		int d1_2 = (i - d0_2)/3 + 1;
 		int tmp10 = i * i;
-		int idx2 = convertSubscript(ndim2, dim2, i);
-		lhs_data2[idx2] = tmp10;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp10;
 	
 	}
 	int tmp11 = 10;
-	int idx3 = convertSubscript(ndim2, dim2, 2);
-	lhs_data2[idx3] = tmp11;
+	lhs_data2[3] = tmp11;
 	int tmp12 = 11;
-	int idx4 = convertSubscript(ndim2, dim2, 3);
-	lhs_data2[idx4] = tmp12;
+	lhs_data2[6] = tmp12;
 	int tmp13 = 12;
-	int idx5 = convertSubscript(ndim2, dim2, 6);
-	lhs_data2[idx5] = tmp13;
+	lhs_data2[7] = tmp13;
 	// Write matrix mat2
 	int size2 = 1;
 	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
@@ -88,20 +92,21 @@ int main(void) {
 	d = tmp15;
 	int* lhs_data3 = i_to_i(d);
 	for (int i = 1; i <= 9; ++ i) {
+		int d0_6 = i % 3;
+		if (d0_6 == 0) {
+			d0_6 = 3;
+		}
+		int d1_6 = (i - d0_6)/3 + 1;
 		int tmp16 = i * i;
-		int idx6 = convertSubscript(ndim3, dim3, i);
-		lhs_data3[idx6] = tmp16;
+		lhs_data3[(d1_6-1) + (d0_6-1) * 3] = tmp16;
 	
 	}
 	int tmp17 = 13;
-	int idx7 = convertSubscript(ndim3, dim3, 4);
-	lhs_data3[idx7] = tmp17;
+	lhs_data3[1] = tmp17;
 	int tmp18 = 14;
-	int idx8 = convertSubscript(ndim3, dim3, 7);
-	lhs_data3[idx8] = tmp18;
+	lhs_data3[2] = tmp18;
 	int tmp19 = 15;
-	int idx9 = convertSubscript(ndim3, dim3, 8);
-	lhs_data3[idx9] = tmp19;
+	lhs_data3[5] = tmp19;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter3 = 0 ; iter3 < ndim3; iter3++)

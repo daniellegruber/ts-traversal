@@ -17,7 +17,7 @@ int main(void) {
 	int dim1[3] = {2, 3, 5};
 	Matrix * tmp1 = zerosM(ndim1, dim1);
 	Matrix * a = tmp1;
-	double* lhs_data1 = d_to_d(a);
+	double* lhs_data1 = i_to_d(a);
 	int counter = 0;
 	// Method 1 to create 3D matrix
 	// Creates the matrix row-major to match C's implementation
@@ -76,7 +76,7 @@ int main(void) {
 	for (int i = 1; i <= 30; ++ i) {
 		int idx1 = convertSubscript(ndim1, dim1, i);
 		double tmp5;
-		indexM(mat1, &tmp5, 1, idx1 + 1);
+		indexM(mat1, &tmp5, 1, idx1+1);
 		printf("\n%f\n", tmp5);
 	
 	}
@@ -87,7 +87,7 @@ int main(void) {
 	int dim2[3] = {2, 3, 5};
 	Matrix * tmp6 = zerosM(ndim2, dim2);
 	a = tmp6;
-	double* lhs_data2 = d_to_d(a);
+	double* lhs_data2 = i_to_d(a);
 	counter = 0;
 	for (int i = 1; i <= 30; ++ i) {
 		double tmp7 = counter * counter + 0.5;
@@ -135,9 +135,9 @@ int main(void) {
 	printf("\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int i = 1; i <= 30; ++ i) {
-		int idx3 = convertSubscript(ndim2, dim2, i);
+		int idx3 = convertSubscript(ndim1, dim1, i);
 		double tmp10;
-		indexM(mat2, &tmp10, 1, idx3 + 1);
+		indexM(mat2, &tmp10, 1, idx3+1);
 		printf("\n%f\n", tmp10);
 	
 	}

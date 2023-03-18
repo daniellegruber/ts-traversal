@@ -173,7 +173,7 @@ compareall:
 		fulldir="$(shell pwd)/$$dir"; \
 		echo $$dir; \
 		(timeout 120 $$fulldir/test 2>/dev/null | \
-			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | \
+			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | sed -z 's/inf + infi/inf/gi' | \
 			sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 			tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
 			sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
@@ -221,7 +221,7 @@ compareone:
 	module load MATLAB/2021a; \
 	fulldir="$(shell pwd)/$(ARGS)"; \
 	($$fulldir/test 2>/dev/null | \
-		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | sed -z 's/inf + infi/inf/gi' | \
 		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
 		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \

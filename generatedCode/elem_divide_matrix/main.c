@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -17,16 +16,13 @@ int main(void) {
 	int dim1[2] = {3,3};
 	Matrix * tmp1 = onesM(ndim1, dim1);
 	Matrix * a = tmp1;
-	complex* lhs_data1 = c_to_c(a);
+	complex* lhs_data1 = i_to_c(a);
 	complex tmp2 = -0.75 + 1*I;
-	int idx1 = convertSubscript(ndim1, dim1, 1);
-	lhs_data1[idx1] = tmp2;
+	lhs_data1[0] = tmp2;
 	complex tmp3 = -0.75 + 1*I;
-	int idx2 = convertSubscript(ndim1, dim1, 5);
-	lhs_data1[idx2] = tmp3;
+	lhs_data1[4] = tmp3;
 	complex tmp4 = -0.75 + 1*I;
-	int idx3 = convertSubscript(ndim1, dim1, 9);
-	lhs_data1[idx3] = tmp4;
+	lhs_data1[8] = tmp4;
 	// Write matrix mat1
 	int size1 = 1;
 	for (int iter1 = 0 ; iter1 < ndim1; iter1++)
@@ -42,16 +38,13 @@ int main(void) {
 	int dim2[2] = {3,3};
 	Matrix * tmp6 = onesM(ndim2, dim2);
 	Matrix * b = tmp6;
-	complex* lhs_data2 = c_to_c(b);
+	complex* lhs_data2 = i_to_c(b);
 	complex tmp7 = 0.5 + 1*I;
-	int idx4 = convertSubscript(ndim2, dim2, 1);
-	lhs_data2[idx4] = tmp7;
+	lhs_data2[0] = tmp7;
 	complex tmp8 = 0.5 + 1*I;
-	int idx5 = convertSubscript(ndim2, dim2, 5);
-	lhs_data2[idx5] = tmp8;
+	lhs_data2[4] = tmp8;
 	complex tmp9 = 0.5 + 1*I;
-	int idx6 = convertSubscript(ndim2, dim2, 9);
-	lhs_data2[idx6] = tmp9;
+	lhs_data2[8] = tmp9;
 	// Write matrix mat2
 	int size2 = 1;
 	for (int iter2 = 0 ; iter2 < ndim2; iter2++)

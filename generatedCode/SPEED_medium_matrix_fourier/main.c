@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -19,7 +18,7 @@ int main(void) {
 	int dim1[2] = {100,100};
 	Matrix * tmp1 = onesM(ndim1, dim1);
 	Matrix * a = tmp1;
-	complex* lhs_data1 = c_to_c(a);
+	complex* lhs_data1 = i_to_c(a);
 	for (int n = 1; n <= size; ++ n) {
 		for (int m = 1; m <= size; ++ m) {
 			complex tmp2 = cpow(((n - 1) * size + m), 2.1);

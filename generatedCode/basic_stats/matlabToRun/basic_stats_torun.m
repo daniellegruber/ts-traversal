@@ -6,22 +6,6 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/basic_stats/outpu
 
 %source octaveIncludes.m;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 %row_vectors_i
 a = [3,-5,0,1];
 dispArr(fileID, a);
@@ -131,4 +115,19 @@ for i=1:57
 	c(i) = i-i/17i;
 end
 c=c.';
-dispArr(fileID, quantile(c, 0:0.01:1).');
+%dispArr(fileID, quantile(c, 0:0.01:1).');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

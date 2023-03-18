@@ -1,5 +1,5 @@
 function complex_stats(fileID, a)
-	fun_qs = [0, -1, 3, 0.2, 0.9, 0.53, 0.75, 1, 0.34, 0.17];
+	fun_qs = [0, 0.2, 0.9, 0.53, 0.75, 1, 0.34, 0.17];
 
 	dispArr(fileID, mean(a));
 	dispArr(fileID, var(a));
@@ -11,6 +11,6 @@ function complex_stats(fileID, a)
 	dispArr(fileID, median(a));
 	dispArr(fileID, min(a));
 	dispArr(fileID, max(a));
-	dispArr(fileID, quantile(a, 4));
-	dispArr(fileID, quantile(a, fun_qs));
+	%dispArr(fileID, quantile(a, 4));
+	%dispArr(fileID, quantile(a, fun_qs));
 end

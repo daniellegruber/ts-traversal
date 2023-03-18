@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 
 // Function declarations
@@ -242,11 +241,15 @@ int main(void) {
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp60 = pow((-1), i);
 		int tmp61 = pow(i, 2);
+		int d0_1 = i % 7;
+		if (d0_1 == 0) {
+			d0_1 = 7;
+		}
+		int d1_1 = (i - d0_1)/7 + 1;
 		int tmp63 = pow((-1), i);
 		int tmp64 = pow(i, 2);
 		int tmp62 = tmp63 * tmp64;
-		int idx1 = convertSubscript(ndim16, dim16, i);
-		lhs_data1[idx1] = tmp62;
+		lhs_data1[(d1_1-1) + (d0_1-1) * 9] = tmp62;
 	
 	}
 	// Write matrix mat1
@@ -266,15 +269,19 @@ int main(void) {
 	int dim17[2] = {7, 9};
 	Matrix * tmp66 = zerosM(ndim17, dim17);
 	a = tmp66;
-	double* lhs_data2 = d_to_d(a);
+	int* lhs_data2 = i_to_i(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp67 = pow((-1), i);
 		int tmp68 = pow(i, 2);
+		int d0_2 = i % 7;
+		if (d0_2 == 0) {
+			d0_2 = 7;
+		}
+		int d1_2 = (i - d0_2)/7 + 1;
 		int tmp70 = pow((-1), i);
 		int tmp71 = pow(i, 2);
-		double tmp69 = (double) tmp70 * tmp71 / 17;
-		int idx2 = convertSubscript(ndim17, dim17, i);
-		lhs_data2[idx2] = tmp69;
+		int tmp69 = (double) tmp70 * tmp71 / 17;
+		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp69;
 	
 	}
 	// Write matrix mat2
@@ -283,7 +290,7 @@ int main(void) {
 	{
 		size2 *= dim17[iter2];
 	}
-	Matrix *mat2 = createM(ndim17, dim17, 1);
+	Matrix *mat2 = createM(ndim17, dim17, 0);
 	writeM(mat2, size2, lhs_data2);
 	Matrix * tmp72 = transposeM(mat2);
 	a = tmp72;
@@ -294,13 +301,17 @@ int main(void) {
 	int dim18[2] = {7, 9};
 	Matrix * tmp73 = zerosM(ndim18, dim18);
 	a = tmp73;
-	complex* lhs_data3 = c_to_c(a);
+	complex* lhs_data3 = i_to_c(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp74 = pow((-1), i);
+		int d0_3 = i % 7;
+		if (d0_3 == 0) {
+			d0_3 = 7;
+		}
+		int d1_3 = (i - d0_3)/7 + 1;
 		int tmp76 = pow((-1), i);
 		complex tmp75 = tmp76 * i - ((complex) i) / (17*I);
-		int idx3 = convertSubscript(ndim18, dim18, i);
-		lhs_data3[idx3] = tmp75;
+		lhs_data3[(d1_3-1) + (d0_3-1) * 9] = tmp75;
 	
 	}
 	// Write matrix mat3
@@ -345,11 +356,15 @@ int main(void) {
 	int dim20[2] = {1, 1004};
 	Matrix * tmp80 = zerosM(ndim20, dim20);
 	Matrix * b = tmp80;
-	double* lhs_data4 = d_to_d(b);
+	int* lhs_data4 = i_to_i(b);
 	for (int i = 1; i <= 1004; ++ i) {
-		double tmp81 = (double) i * i / 17;
-		int idx4 = convertSubscript(ndim20, dim20, i);
-		lhs_data4[idx4] = tmp81;
+		int d0_4 = i % 1;
+		if (d0_4 == 0) {
+			d0_4 = 1;
+		}
+		int d1_4 = (i - d0_4)/1 + 1;
+		int tmp81 = (double) i * i / 17;
+		lhs_data4[(d1_4-1) + (d0_4-1) * 1004] = tmp81;
 	
 	}
 	// Write matrix mat4
@@ -358,7 +373,7 @@ int main(void) {
 	{
 		size4 *= dim20[iter7];
 	}
-	Matrix *mat4 = createM(ndim20, dim20, 1);
+	Matrix *mat4 = createM(ndim20, dim20, 0);
 	writeM(mat4, size4, lhs_data4);
 	Matrix * tmp82 = transposeM(mat4);
 	b = tmp82;
@@ -374,11 +389,15 @@ int main(void) {
 	int dim21[2] = {1, 57};
 	Matrix * tmp85 = zerosM(ndim21, dim21);
 	Matrix * c = tmp85;
-	complex* lhs_data5 = c_to_c(c);
+	complex* lhs_data5 = i_to_c(c);
 	for (int i = 1; i <= 57; ++ i) {
+		int d0_5 = i % 1;
+		if (d0_5 == 0) {
+			d0_5 = 1;
+		}
+		int d1_5 = (i - d0_5)/1 + 1;
 		complex tmp86 = i - ((complex) i) / (17*I);
-		int idx5 = convertSubscript(ndim21, dim21, i);
-		lhs_data5[idx5] = tmp86;
+		lhs_data5[(d1_5-1) + (d0_5-1) * 57] = tmp86;
 	
 	}
 	// Write matrix mat5

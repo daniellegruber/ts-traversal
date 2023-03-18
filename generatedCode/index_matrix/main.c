@@ -4,7 +4,6 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
-#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -37,19 +36,41 @@ int main(void) {
 	for (int i = 1; i <= 9; ++ i) {
 		// Octave is natively column-major matrix storage, but C is row-major
 		// So when iterating over a matrix flatly (i.e., not calling dimensions), you must transpose
-		int ndim2 = getnDimM(a_trans);
-		int *dim2 = getDimsM(a_trans);
-		int idx1 = convertSubscript(ndim2, dim2, i);
+		int d0_1 = i % 3;
+		if (d0_1 == 0) {
+			d0_1 = 3;
+		}
+		int d1_1 = (i - d0_1)/3 + 1;
 		complex tmp2;
-		indexM(a_trans, &tmp2, 1, idx1 + 1);
+		indexM(a_trans, &tmp2, 1, (d1_1) + (d0_1-1) * 3);
 		double tmp3 = cimag(tmp2);
 		if (tmp3 < 0) {
+			int d0_2 = i % 3;
+			if (d0_2 == 0) {
+				d0_2 = 3;
+			}
+			int d1_2 = (i - d0_2)/3 + 1;
 			double tmp5 = creal(tmp2);
+			int d0_3 = i % 3;
+			if (d0_3 == 0) {
+				d0_3 = 3;
+			}
+			int d1_3 = (i - d0_3)/3 + 1;
 			double tmp7 = cimag(tmp2);
 			printf("%.5f  %.5fi  \n", tmp5, tmp7);
 			
 			} else {
+			int d0_4 = i % 3;
+			if (d0_4 == 0) {
+				d0_4 = 3;
+			}
+			int d1_4 = (i - d0_4)/3 + 1;
 			double tmp9 = creal(tmp2);
+			int d0_5 = i % 3;
+			if (d0_5 == 0) {
+				d0_5 = 3;
+			}
+			int d1_5 = (i - d0_5)/3 + 1;
 			double tmp11 = cimag(tmp2);
 			printf("%.5f + %.5fi  \n", tmp9, tmp11);
 			

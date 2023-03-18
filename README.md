@@ -97,9 +97,9 @@ make genone ARGS=mfile
 - Compile all C programs in generatedCode folder
 - Generates log compile_log.txt with list of successful and failed tests
 - SPEED argument
- - 0: all tests
- - 1: non-speed tests
- - 2: speed tests
+  - 0: all tests
+  - 1: non-speed tests
+  - 2: speed tests
 ```sh
 make compileall SPEED=1
 ```
@@ -113,9 +113,9 @@ make compileone ARGS=testname
 - Compare outputs of generated C program and original mfile for all tests
 - Generates log compare_log.txt with list of successful and failed tests
 - SPEED argument
- - 0: all tests
- - 1: non-speed tests
- - 2: speed tests
+  - 0: all tests
+  - 1: non-speed tests
+  - 2: speed tests
 ```sh
 make compareall SPEED=1
 ```

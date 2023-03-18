@@ -96,8 +96,12 @@ make genone ARGS=mfile
 ### Compile c code
 - Compile all C programs in generatedCode folder
 - Generates log compile_log.txt with list of successful and failed tests
+- SPEED argument
+ -0: all tests
+ -1: non-speed tests
+ -2: speed tests
 ```sh
-make compileall
+make compileall SPEED=1
 ```
 
 Alternatively, to compile only one C program, use
@@ -108,8 +112,12 @@ make compileone ARGS=testname
 ### Compare C and MATLAB
 - Compare outputs of generated C program and original mfile for all tests
 - Generates log compare_log.txt with list of successful and failed tests
+- SPEED argument
+ -0: all tests
+ -1: non-speed tests
+ -2: speed tests
 ```sh
-make compareall
+make compareall SPEED=1
 ```
 
 Alternatively, to compare outputs of the generated C program and original mfile for one test, use

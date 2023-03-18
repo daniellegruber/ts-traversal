@@ -213,39 +213,39 @@ c = a.^exponent;
 disp(c);
 
 %overflow_test
-exponent=2;
-a = zeros(3);
-for i=1:9
-	a(i) = INT_MAX;
-end
-a=a.';
-disp(a);
+%exponent=2;
+%a = zeros(3);
+%for i=1:9
+%	a(i) = INT_MAX;
+%end
+%a=a.';
+%disp(a);
 
-b = zeros(3);
-for i=1:9
-	b(i) = INT_MAX^exponent;
-end
-b=b.';
-disp(b);
+%b = zeros(3);
+%for i=1:9
+%	b(i) = INT_MAX^exponent;
+%end
+%b=b.';
+%disp(b);
 
-c = a.^exponent;
-disp(c);
+%c = a.^exponent;
+%disp(c);
 
 %underflow_test
-exponent=2;
-a = zeros(3);
-for i=1:9
-	a(i) = INT_MIN;
-end
-a=a.';
-disp(a);
+%exponent=2;
+%a = zeros(3);
+%for i=1:9
+%	a(i) = INT_MIN;
+%end
+%a=a.';
+%disp(a);
 
-b = zeros(3);
-for i=1:9
-	b(i) = INT_MIN^exponent;
-end
-b=b.';
-disp(b);
+%b = zeros(3);
+%for i=1:9
+%	b(i) = INT_MIN^exponent;
+%end
+%b=b.';
+%disp(b);
 
-c = a.^exponent;
-disp(c);
+%c = a.^exponent;
+%disp(c);

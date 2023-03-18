@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Function declarations
@@ -176,24 +177,20 @@ int main(void) {
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp6 = pow((-1), i);
 		int tmp7 = pow(i, 2);
-		int d0_1 = i % 7;
-		if (d0_1 == 0) {
-			d0_1 = 7;
-		}
-		int d1_1 = (i - d0_1)/7 + 1;
 		int tmp9 = pow((-1), i);
 		int tmp10 = pow(i, 2);
 		int tmp8 = tmp9 * tmp10;
-		lhs_data1[(d1_1-1) + (d0_1-1) * 9] = tmp8;
+		int idx1 = convertSubscript(ndim11, dim11, i);
+		lhs_data1[idx1] = tmp8;
 	
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim11; iter1++)
+	for (int iter1 = 0 ; iter1 < ndim9; iter1++)
 	{
 		size1 *= dim9[iter1];
 	}
-	Matrix *mat1 = createM(ndim11, dim9, 0);
+	Matrix *mat1 = createM(ndim9, dim9, 0);
 	writeM(mat1, size1, lhs_data1);
 	Matrix * tmp11 = transposeM(mat1);
 	a = tmp11;
@@ -204,28 +201,24 @@ int main(void) {
 	int dim10[2] = {7, 9};
 	Matrix * tmp12 = zerosM(ndim12, dim10);
 	a = tmp12;
-	int* lhs_data2 = i_to_i(a);
+	double* lhs_data2 = d_to_d(a);
 	for (int i = 1; i <= 63; ++ i) {
 		int tmp13 = pow((-1), i);
 		int tmp14 = pow(i, 2);
-		int d0_2 = i % 7;
-		if (d0_2 == 0) {
-			d0_2 = 7;
-		}
-		int d1_2 = (i - d0_2)/7 + 1;
 		int tmp16 = pow((-1), i);
 		int tmp17 = pow(i, 2);
-		int tmp15 = tmp16 * tmp17 / 17;
-		lhs_data2[(d1_2-1) + (d0_2-1) * 9] = tmp15;
+		double tmp15 = (double) tmp16 * tmp17 / 17;
+		int idx2 = convertSubscript(ndim12, dim12, i);
+		lhs_data2[idx2] = tmp15;
 	
 	}
 	// Write matrix mat2
 	int size2 = 1;
-	for (int iter2 = 0 ; iter2 < ndim12; iter2++)
+	for (int iter2 = 0 ; iter2 < ndim10; iter2++)
 	{
 		size2 *= dim10[iter2];
 	}
-	Matrix *mat2 = createM(ndim12, dim10, 0);
+	Matrix *mat2 = createM(ndim10, dim10, 1);
 	writeM(mat2, size2, lhs_data2);
 	Matrix * tmp18 = transposeM(mat2);
 	a = tmp18;

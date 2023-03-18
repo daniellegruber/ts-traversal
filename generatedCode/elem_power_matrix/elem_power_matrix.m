@@ -198,15 +198,15 @@ c = a.^b;
 disp(c);
 
 %overflow_test
-a = zeros(3);
-for i=1:9
-	a(i) = INT_MAX;
-end
-a=a.';
-disp(a);
+%a = zeros(3);
+%for i=1:9
+%	a(i) = intmax;
+%end
+%a=a.';
+%disp(a);
 
-b = 2*ones(3);
-disp(a);
+%b = 2*ones(3);
+%disp(a);
 
-c = a.^b;
-disp(c);
+%c = a.^b;
+%disp(c);

@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -26,32 +27,24 @@ int main(void) {
 	complex* lhs_data2 = c_to_c(b);
 	for (int n = 1; n <= size; ++ n) {
 		int tmp3 = pow(n, 2);
-		int d0_1 = n % 100;
-		if (d0_1 == 0) {
-			d0_1 = 100;
-		}
-		int d1_1 = (n - d0_1)/100 + 1;
 		int tmp5 = pow(n, 2);
 		double tmp4 = tmp5 + 0.5;
-		lhs_data1[(d1_1-1) + (d0_1-1) * 100] = tmp4;
+		int idx1 = convertSubscript(ndim2, dim2, n);
+		lhs_data1[idx1] = tmp4;
 		int tmp6 = pow(n, 2);
-		int d0_2 = n % 100;
-		if (d0_2 == 0) {
-			d0_2 = 100;
-		}
-		int d1_2 = (n - d0_2)/100 + 1;
 		int tmp8 = pow(n, 2);
 		complex tmp7 = (tmp8 + 0.5) * 1*I;
-		lhs_data2[(d1_2-1) + (d0_2-1) * 100] = tmp7;
+		int idx2 = convertSubscript(ndim2, dim2, n);
+		lhs_data2[idx2] = tmp7;
 	
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim2; iter1++)
+	for (int iter1 = 0 ; iter1 < ndim1; iter1++)
 	{
-		size1 *= dim2[iter1];
+		size1 *= dim1[iter1];
 	}
-	Matrix *mat1 = createM(ndim2, dim2, 1);
+	Matrix *mat1 = createM(ndim1, dim1, 1);
 	writeM(mat1, size1, lhs_data1);
 	// Write matrix mat2
 	int size2 = 1;

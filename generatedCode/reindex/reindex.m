@@ -3,36 +3,6 @@
 
 %source octaveIncludes.m;
 
-function int_reindexing_tests(a)
-	a=a.';
-	disp([a(1)]);
-	disp([a(4)]);
-	disp([a(1) ; a(2) ; a(3) ; a(4)]);
-	disp([a(4) ; a(3) ; a(2) ; a(1)]);
-	disp([a(2) ; a(2) ; a(2)]);
-	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
-end
-
-function double_reindexing_tests(a)
-	a=a.';
-	disp([a(1)]);
-	disp([a(4)]);
-	disp([a(1) ; a(2) ; a(3) ; a(4)]);
-	disp([a(4) ; a(3) ; a(2) ; a(1)]);
-	disp([a(2) ; a(2) ; a(2)]);
-	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
-end
-
-function complex_reindexing_tests(a)
-	a=a.';
-	disp([a(1)]);
-	disp([a(4)]);
-	disp([a(1) ; a(2) ; a(3) ; a(4)]);
-	disp([a(4) ; a(3) ; a(2) ; a(1)]);
-	disp([a(2) ; a(2) ; a(2)]);
-	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
-end
-
 %row_vectors_i
 a = [3,-5,0,1];
 disp(a);
@@ -119,3 +89,33 @@ end
 a=a.';
 disp(a);
 complex_reindexing_tests(a);
+
+function int_reindexing_tests(a)
+	a=a.';
+	disp([a(1)]);
+	disp([a(4)]);
+	disp([a(1) ; a(2) ; a(3) ; a(4)]);
+	disp([a(4) ; a(3) ; a(2) ; a(1)]);
+	disp([a(2) ; a(2) ; a(2)]);
+	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
+end
+
+function double_reindexing_tests(a)
+	a=a.';
+	disp([a(1)]);
+	disp([a(4)]);
+	disp([a(1) ; a(2) ; a(3) ; a(4)]);
+	disp([a(4) ; a(3) ; a(2) ; a(1)]);
+	disp([a(2) ; a(2) ; a(2)]);
+	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
+end
+
+function complex_reindexing_tests(a)
+	a=a.';
+	disp([a(1)]);
+	disp([a(4)]);
+	disp([a(1) ; a(2) ; a(3) ; a(4)]);
+	disp([a(4) ; a(3) ; a(2) ; a(1)]);
+	disp([a(2) ; a(2) ; a(2)]);
+	disp([a(1) ; a(2) ; a(2) ; a(3) ; a(3) ; a(3) ; a(4) ; a(4) ; a(4) ; a(4)]);
+end

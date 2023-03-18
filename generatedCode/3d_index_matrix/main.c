@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -73,18 +74,9 @@ int main(void) {
 	printf("\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int i = 1; i <= 30; ++ i) {
-		int d2_4 = ceil((double) i / (2 * 3));
-		int tmp_4 = i % (2 * 3);
-		if (tmp_4 == 0) {
-			tmp_4 = 2 * 3;
-		}
-		int d0_4 = tmp_4 % 2;
-		if (d0_4 == 0) {
-			d0_4 = 2;
-		}
-		int d1_4 = (tmp_4 - d0_4)/2 + 1;
+		int idx1 = convertSubscript(ndim1, dim1, i);
 		double tmp5;
-		indexM(mat1, &tmp5, 1, (d1_4) + (d0_4-1) * 3 + (d2_4-1) * 2 * 3);
+		indexM(mat1, &tmp5, 1, idx1 + 1);
 		printf("\n%f\n", tmp5);
 	
 	}
@@ -98,18 +90,9 @@ int main(void) {
 	double* lhs_data2 = d_to_d(a);
 	counter = 0;
 	for (int i = 1; i <= 30; ++ i) {
-		int d2_5 = ceil((double) i / (2 * 3));
-		int tmp_5 = i % (2 * 3);
-		if (tmp_5 == 0) {
-			tmp_5 = 2 * 3;
-		}
-		int d0_5 = tmp_5 % 2;
-		if (d0_5 == 0) {
-			d0_5 = 2;
-		}
-		int d1_5 = (tmp_5 - d0_5)/2 + 1;
 		double tmp7 = counter * counter + 0.5;
-		lhs_data2[(d1_5-1) + (d0_5-1) * 3 + (d2_5-1) * 2 * 3] = tmp7;
+		int idx2 = convertSubscript(ndim2, dim2, i);
+		lhs_data2[idx2] = tmp7;
 		counter = counter + 1;
 	
 	}
@@ -152,18 +135,9 @@ int main(void) {
 	printf("\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int i = 1; i <= 30; ++ i) {
-		int d2_8 = ceil((double) i / (2 * 3));
-		int tmp_8 = i % (2 * 3);
-		if (tmp_8 == 0) {
-			tmp_8 = 2 * 3;
-		}
-		int d0_8 = tmp_8 % 2;
-		if (d0_8 == 0) {
-			d0_8 = 2;
-		}
-		int d1_8 = (tmp_8 - d0_8)/2 + 1;
+		int idx3 = convertSubscript(ndim2, dim2, i);
 		double tmp10;
-		indexM(mat2, &tmp10, 1, (d1_8) + (d0_8-1) * 3 + (d2_8-1) * 2 * 3);
+		indexM(mat2, &tmp10, 1, idx3 + 1);
 		printf("\n%f\n", tmp10);
 	
 	}

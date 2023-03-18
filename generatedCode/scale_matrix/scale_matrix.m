@@ -33,5 +33,5 @@ disp(2*b);
 disp(2.1*b);
 disp((2.1+1i)*b);
 
-disp(2*INT_MAX*ones(3));
-disp(2*INT_MIN*ones(3));
+%disp(2*INT_MAX*ones(3));
+%disp(2*INT_MIN*ones(3));

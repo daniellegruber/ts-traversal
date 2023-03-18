@@ -37,7 +37,6 @@ copyall:
 matlabtorun:
 	for dir in $(all_dirs) ; do \
 		dir=$${dir//\//}; \
-		fulldir="$(shell pwd)/$$dir"; \
 		echo $$dir; \
 		eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $$dir.m $$TS_TRAVERSAL; \
 	done; \
@@ -81,6 +80,7 @@ compileall:
 		echo "Compiling all speed tests";\
 		dirs=$$(echo $(speed_dirs)); \
 	fi; \
+	eval $(CC) -c -o $(shell pwd)/convertSubscript.o $(shell pwd)/convertSubscript.c $(CFLAGS) $(LIB) $(INC); \
 	good=(); \
 	bad=(); \
 	for dir in $$dirs; do \
@@ -92,6 +92,7 @@ compileall:
 		srcs=$$(echo "$$srcs" | sed "s/\.m//"); \
 		objects=$$(echo "$$mfiles" | sed "s/$$dir\.m/main.o/"); \
 		objects=$$(echo "$$objects" | sed "s/\.m/.o/"); \
+		objects+=" $(shell pwd)/convertSubscript.o";\
 		for src in $$srcs; do \
 			eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
 		done; \
@@ -120,8 +121,10 @@ compileone:
 	mfiles=$$(ls -d $$fulldir/* | grep -oP '^((?!_torun).)*\.m'); \
 	srcs=$$(echo "$$mfiles" | sed "s/$(ARGS)\.m/main/"); \
 	srcs=$$(echo "$$srcs" | sed "s/\.m//"); \
+	srcs+=" $(shell pwd)/convertSubscript";\
 	objects=$$(echo "$$mfiles" | sed "s/$(ARGS)\.m/main.o/"); \
 	objects=$$(echo "$$objects" | sed "s/\.m/.o/"); \
+	objects+=" $(shell pwd)/convertSubscript.o";\
 	for src in $$srcs; do \
 		eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
 	done; \
@@ -144,7 +147,13 @@ runmatlab:
 	done; \
 	module unload MATLAB/2021a; \
 	
+# Show MATLAB output for all mfiles
+runmatlabone:
+	module load MATLAB/2021a; \
+	matlab -nojvm -nodisplay -nosplash < $(shell pwd)/$(ARGS)/$(ARGS)_torun.m; \
+	module unload MATLAB/2021a; \
 	
+
 # Compare outputs of generated C program and original mfile for all tests
 # Example: make compareall SPEED=1
 compareall:
@@ -174,7 +183,7 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/\+0i//g') > $$fulldir/f1; \
-		timeout 120 matlab -nodisplay -nosplash < $$fulldir/$${dir}_torun.m; \
+		timeout 120 matlab -nodisplay -nosplash < $$fulldir/matlabToRun/$${dir}_torun.m; \
 		(cat $$fulldir/output.txt 2>/dev/null | \
 			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 			sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
@@ -222,7 +231,7 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/\+0i//g') > $$fulldir/f1; \
-	matlab -nodisplay -nosplash < $$fulldir/$(ARGS)_torun.m; \
+	matlab -nodisplay -nosplash < $$fulldir/matlabToRun/$(ARGS)_torun.m; \
 	(cat $$fulldir/output.txt 2>/dev/null | \
 		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
 		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \

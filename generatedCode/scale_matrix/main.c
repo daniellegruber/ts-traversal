@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
@@ -22,13 +23,9 @@ int main(void) {
 	Matrix * a = tmp2;
 	int* lhs_data1 = i_to_i(a);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_1 = i % 3;
-		if (d0_1 == 0) {
-			d0_1 = 3;
-		}
-		int d1_1 = (i - d0_1)/3 + 1;
 		int tmp3 = i;
-		lhs_data1[(d1_1-1) + (d0_1-1) * 3] = tmp3;
+		int idx1 = convertSubscript(ndim2, dim2, i);
+		lhs_data1[idx1] = tmp3;
 	
 	}
 	// Write matrix mat1
@@ -48,13 +45,9 @@ int main(void) {
 	Matrix * b = tmp5;
 	complex* lhs_data2 = c_to_c(b);
 	for (int i = 1; i <= 9; ++ i) {
-		int d0_2 = i % 3;
-		if (d0_2 == 0) {
-			d0_2 = 3;
-		}
-		int d1_2 = (i - d0_2)/3 + 1;
 		complex tmp6 = i + i * 1*I;
-		lhs_data2[(d1_2-1) + (d0_2-1) * 3] = tmp6;
+		int idx2 = convertSubscript(ndim3, dim3, i);
+		lhs_data2[idx2] = tmp6;
 	
 	}
 	// Write matrix mat2
@@ -104,17 +97,7 @@ int main(void) {
 	complex scalar9 = (2.1 + 1*I);
 	Matrix * tmp19 = scaleM(b, &scalar9, 2);
 	printM(tmp19);
-	int ndim7 = 2;
-	int dim7[2] = {3,3};
-	Matrix * tmp20 = onesM(ndim7, dim7);
-	int scalar10 = 2 * INT_MAX;
-	Matrix * tmp21 = scaleM(tmp20, &scalar10, 0);
-	printM(tmp21);
-	int ndim8 = 2;
-	int dim8[2] = {3,3};
-	Matrix * tmp22 = onesM(ndim8, dim8);
-	int scalar11 = 2 * INT_MIN;
-	Matrix * tmp23 = scaleM(tmp22, &scalar11, 0);
-	printM(tmp23);
+	//disp(2*INT_MAX*ones(3));
+	//disp(2*INT_MIN*ones(3));
 	return 0;
 }

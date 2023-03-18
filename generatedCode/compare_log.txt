@@ -16,7 +16,9 @@ dc_matrix_multiplication
 dd_matrix_multiplication
 di_matrix_multiplication
 duplicate_matrix
+eigen
 elem_multiply_matrix
+elem_power_matrix
 elem_trig_matrix
 equal_matrix
 filterM
@@ -26,11 +28,15 @@ id_matrix_multiplication
 ii_matrix_multiplication
 invert_matrix
 isEqual_matrix
+logic_ops_matrix
 matrix_division
 octaveIncludes
 randomness
+reindex
 round_matrix
+testing
 transpose_matrix
+xcorrM
 
 
 ERROR
@@ -41,22 +47,16 @@ cell_test
 comparison_ops_matrix
 create_fails_negative_dims
 determinant_matrix
-eigen
 elem_divide_matrix
-elem_power_matrix
 elem_scalarpower_matrix
 external_fun
 fourier
 hamming_hanning
 index_matrix
-logic_ops_matrix
 octaveTimer
 power_matrix
-reindex
 reshape_matrix
 scale_matrix
 stftM
 subtract_matrix
-testing
-xcorrM
 

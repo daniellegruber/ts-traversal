@@ -37,7 +37,7 @@ for l=1:5
 		end
 	end
 end
-sprintf("\n");
+dispArr(fileID, sprintf("\n"));
 
 % Normal indexing in C and normal indexing in Octave are the same
 for l=1:5
@@ -49,13 +49,13 @@ for l=1:5
 		end
 	end
 end
-sprintf("\n");
+dispArr(fileID, sprintf("\n"));
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:120
 	dispArr(fileID, a(i));
 end
-sprintf("\n");
+dispArr(fileID, sprintf("\n"));
 
 
 
@@ -80,7 +80,7 @@ for l=1:5
 		end
 	end
 end
-sprintf("\n");
+dispArr(fileID, sprintf("\n"));
 
 % Normal indexing in C and normal indexing in Octave are the same
 for l=1:5
@@ -92,11 +92,11 @@ for l=1:5
 		end
 	end
 end
-sprintf("\n");
+dispArr(fileID, sprintf("\n"));
 
 % Flat indexing in Octave must be matched by normal indexing in C
 for i=1:120
 	dispArr(fileID, a(i));
 end
-sprintf("\n");
+dispArr(fileID, sprintf("\n"));
 

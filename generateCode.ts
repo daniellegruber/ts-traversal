@@ -718,12 +718,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                     } else if (is_subscript[0]) {
                         // Convert to linear idx
                         let obj4 = tmp_var_types.filter(x => /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
-                        //lhs_flag = true;
                         let idx = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
-                        console.log("HEY!")
-                        console.log(node.text);
-                        console.log(idx);
-                        //lhs_flag = false;
 
                         let scope = findVarScope(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
@@ -1009,13 +1004,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
 
                 if (node.valueNode.text == "sprintf") {
-                    console.log("SPRINTF");
                     if (node.parent.type == g.SyntaxType.CallOrSubscript) {
                         if (node.parent.valueNode.text == "disp") {
                             args.unshift('disp');
                         }
                     }
-                    console.log("-----------------------");
                 }
                 
                 for (let i = 0; i < outs.length; i ++) {
@@ -2086,8 +2079,6 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             } else {
                 //[fun_params, idx] = rowMajorFlatIdx(count, dim, transformNode(node.namedChildren[1]), fun_params);
                 //updateFunParams(1);
-                //console.log(node.text);
-                //console.log(node.nextSibling);
                 let good_flag = !lhs_flag || node.type == g.SyntaxType.CellSubscript;
                 if (node.type == g.SyntaxType.CellSubscript) {
                     if (node.nextSibling != null) {

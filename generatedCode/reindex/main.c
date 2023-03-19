@@ -331,9 +331,9 @@ int main(void) {
 void int_reindexing_tests(Matrix * a) {
 	Matrix * tmp20 = transposeM(a);
 	a = tmp20;
-	int tmp_ndim1 = getnDimM(a);
-	int *tmp_dim1 = getDimsM(a);
-	int idx4 = convertSubscript(ndim1, dim1, 1);
+	int ndim17 = getnDimM(a);
+	int *dim17 = getDimsM(a);
+	int idx4 = convertSubscript(ndim17, dim17, 1);
 	int tmp21;
 	indexM(a, &tmp21, 1, idx4+1);
 	
@@ -347,13 +347,13 @@ void int_reindexing_tests(Matrix * a) {
 	free(input13);
 	
 	printM(mat4);
-	int idx5 = convertSubscript(ndim1, dim1, 4);
+	int idx5 = convertSubscript(ndim17, dim17, 4);
 	int tmp22;
 	indexM(a, &tmp22, 1, idx5+1);
 	
-	int ndim17 = 2;
-	int dim17[2] = {1,1};
-	Matrix * mat5 = createM(ndim17, dim17, 0);
+	int ndim18 = 2;
+	int dim18[2] = {1,1};
+	Matrix * mat5 = createM(ndim18, dim18, 0);
 	int *input14 = NULL;
 	input14 = malloc( 1*sizeof(*input14));
 	input14[0] = tmp22;
@@ -361,18 +361,18 @@ void int_reindexing_tests(Matrix * a) {
 	free(input14);
 	
 	printM(mat5);
-	int idx6 = convertSubscript(ndim1, dim1, 1);
-	int idx7 = convertSubscript(ndim1, dim1, 2);
+	int idx6 = convertSubscript(ndim17, dim17, 1);
+	int idx7 = convertSubscript(ndim17, dim17, 2);
 	int tmp24;
 	indexM(a, &tmp24, 1, idx7+1);
-	int idx8 = convertSubscript(ndim1, dim1, 3);
+	int idx8 = convertSubscript(ndim17, dim17, 3);
 	int tmp25;
 	indexM(a, &tmp25, 1, idx8+1);
-	int idx9 = convertSubscript(ndim1, dim1, 4);
+	int idx9 = convertSubscript(ndim17, dim17, 4);
 	
-	int ndim18 = 2;
-	int dim18[2] = {4,1};
-	Matrix * mat6 = createM(ndim18, dim18, 0);
+	int ndim19 = 2;
+	int dim19[2] = {4,1};
+	Matrix * mat6 = createM(ndim19, dim19, 0);
 	int *input15 = NULL;
 	input15 = malloc( 4*sizeof(*input15));
 	input15[0] = tmp21;
@@ -383,14 +383,14 @@ void int_reindexing_tests(Matrix * a) {
 	free(input15);
 	
 	printM(mat6);
-	int idx10 = convertSubscript(ndim1, dim1, 4);
-	int idx11 = convertSubscript(ndim1, dim1, 3);
-	int idx12 = convertSubscript(ndim1, dim1, 2);
-	int idx13 = convertSubscript(ndim1, dim1, 1);
+	int idx10 = convertSubscript(ndim17, dim17, 4);
+	int idx11 = convertSubscript(ndim17, dim17, 3);
+	int idx12 = convertSubscript(ndim17, dim17, 2);
+	int idx13 = convertSubscript(ndim17, dim17, 1);
 	
-	int ndim19 = 2;
-	int dim19[2] = {4,1};
-	Matrix * mat7 = createM(ndim19, dim19, 0);
+	int ndim20 = 2;
+	int dim20[2] = {4,1};
+	Matrix * mat7 = createM(ndim20, dim20, 0);
 	int *input16 = NULL;
 	input16 = malloc( 4*sizeof(*input16));
 	input16[0] = tmp22;
@@ -401,13 +401,13 @@ void int_reindexing_tests(Matrix * a) {
 	free(input16);
 	
 	printM(mat7);
-	int idx14 = convertSubscript(ndim1, dim1, 2);
-	int idx15 = convertSubscript(ndim1, dim1, 2);
-	int idx16 = convertSubscript(ndim1, dim1, 2);
+	int idx14 = convertSubscript(ndim17, dim17, 2);
+	int idx15 = convertSubscript(ndim17, dim17, 2);
+	int idx16 = convertSubscript(ndim17, dim17, 2);
 	
-	int ndim20 = 2;
-	int dim20[2] = {3,1};
-	Matrix * mat8 = createM(ndim20, dim20, 0);
+	int ndim21 = 2;
+	int dim21[2] = {3,1};
+	Matrix * mat8 = createM(ndim21, dim21, 0);
 	int *input17 = NULL;
 	input17 = malloc( 3*sizeof(*input17));
 	input17[0] = tmp24;
@@ -417,20 +417,20 @@ void int_reindexing_tests(Matrix * a) {
 	free(input17);
 	
 	printM(mat8);
-	int idx17 = convertSubscript(ndim1, dim1, 1);
-	int idx18 = convertSubscript(ndim1, dim1, 2);
-	int idx19 = convertSubscript(ndim1, dim1, 2);
-	int idx20 = convertSubscript(ndim1, dim1, 3);
-	int idx21 = convertSubscript(ndim1, dim1, 3);
-	int idx22 = convertSubscript(ndim1, dim1, 3);
-	int idx23 = convertSubscript(ndim1, dim1, 4);
-	int idx24 = convertSubscript(ndim1, dim1, 4);
-	int idx25 = convertSubscript(ndim1, dim1, 4);
-	int idx26 = convertSubscript(ndim1, dim1, 4);
+	int idx17 = convertSubscript(ndim17, dim17, 1);
+	int idx18 = convertSubscript(ndim17, dim17, 2);
+	int idx19 = convertSubscript(ndim17, dim17, 2);
+	int idx20 = convertSubscript(ndim17, dim17, 3);
+	int idx21 = convertSubscript(ndim17, dim17, 3);
+	int idx22 = convertSubscript(ndim17, dim17, 3);
+	int idx23 = convertSubscript(ndim17, dim17, 4);
+	int idx24 = convertSubscript(ndim17, dim17, 4);
+	int idx25 = convertSubscript(ndim17, dim17, 4);
+	int idx26 = convertSubscript(ndim17, dim17, 4);
 	
-	int ndim21 = 2;
-	int dim21[2] = {10,1};
-	Matrix * mat9 = createM(ndim21, dim21, 0);
+	int ndim22 = 2;
+	int dim22[2] = {10,1};
+	Matrix * mat9 = createM(ndim22, dim22, 0);
 	int *input18 = NULL;
 	input18 = malloc( 10*sizeof(*input18));
 	input18[0] = tmp21;
@@ -452,15 +452,15 @@ void int_reindexing_tests(Matrix * a) {
 void double_reindexing_tests(Matrix * a) {
 	Matrix * tmp44 = transposeM(a);
 	a = tmp44;
-	int tmp_ndim2 = getnDimM(a);
-	int *tmp_dim2 = getDimsM(a);
-	int idx27 = convertSubscript(ndim2, dim2, 1);
+	int ndim24 = getnDimM(a);
+	int *dim24 = getDimsM(a);
+	int idx27 = convertSubscript(ndim24, dim24, 1);
 	int tmp45;
 	indexM(a, &tmp45, 1, idx27+1);
 	
-	int ndim22 = 2;
-	int dim22[2] = {1,1};
-	Matrix * mat10 = createM(ndim22, dim22, 0);
+	int ndim23 = 2;
+	int dim23[2] = {1,1};
+	Matrix * mat10 = createM(ndim23, dim23, 0);
 	int *input19 = NULL;
 	input19 = malloc( 1*sizeof(*input19));
 	input19[0] = tmp45;
@@ -468,13 +468,13 @@ void double_reindexing_tests(Matrix * a) {
 	free(input19);
 	
 	printM(mat10);
-	int idx28 = convertSubscript(ndim2, dim2, 4);
+	int idx28 = convertSubscript(ndim24, dim24, 4);
 	int tmp46;
 	indexM(a, &tmp46, 1, idx28+1);
 	
-	int ndim23 = 2;
-	int dim23[2] = {1,1};
-	Matrix * mat11 = createM(ndim23, dim23, 0);
+	int ndim25 = 2;
+	int dim25[2] = {1,1};
+	Matrix * mat11 = createM(ndim25, dim25, 0);
 	int *input20 = NULL;
 	input20 = malloc( 1*sizeof(*input20));
 	input20[0] = tmp46;
@@ -482,18 +482,18 @@ void double_reindexing_tests(Matrix * a) {
 	free(input20);
 	
 	printM(mat11);
-	int idx29 = convertSubscript(ndim2, dim2, 1);
-	int idx30 = convertSubscript(ndim2, dim2, 2);
+	int idx29 = convertSubscript(ndim24, dim24, 1);
+	int idx30 = convertSubscript(ndim24, dim24, 2);
 	int tmp48;
 	indexM(a, &tmp48, 1, idx30+1);
-	int idx31 = convertSubscript(ndim2, dim2, 3);
+	int idx31 = convertSubscript(ndim24, dim24, 3);
 	int tmp49;
 	indexM(a, &tmp49, 1, idx31+1);
-	int idx32 = convertSubscript(ndim2, dim2, 4);
+	int idx32 = convertSubscript(ndim24, dim24, 4);
 	
-	int ndim24 = 2;
-	int dim24[2] = {4,1};
-	Matrix * mat12 = createM(ndim24, dim24, 0);
+	int ndim26 = 2;
+	int dim26[2] = {4,1};
+	Matrix * mat12 = createM(ndim26, dim26, 0);
 	int *input21 = NULL;
 	input21 = malloc( 4*sizeof(*input21));
 	input21[0] = tmp45;
@@ -504,14 +504,14 @@ void double_reindexing_tests(Matrix * a) {
 	free(input21);
 	
 	printM(mat12);
-	int idx33 = convertSubscript(ndim2, dim2, 4);
-	int idx34 = convertSubscript(ndim2, dim2, 3);
-	int idx35 = convertSubscript(ndim2, dim2, 2);
-	int idx36 = convertSubscript(ndim2, dim2, 1);
+	int idx33 = convertSubscript(ndim24, dim24, 4);
+	int idx34 = convertSubscript(ndim24, dim24, 3);
+	int idx35 = convertSubscript(ndim24, dim24, 2);
+	int idx36 = convertSubscript(ndim24, dim24, 1);
 	
-	int ndim25 = 2;
-	int dim25[2] = {4,1};
-	Matrix * mat13 = createM(ndim25, dim25, 0);
+	int ndim27 = 2;
+	int dim27[2] = {4,1};
+	Matrix * mat13 = createM(ndim27, dim27, 0);
 	int *input22 = NULL;
 	input22 = malloc( 4*sizeof(*input22));
 	input22[0] = tmp46;
@@ -522,13 +522,13 @@ void double_reindexing_tests(Matrix * a) {
 	free(input22);
 	
 	printM(mat13);
-	int idx37 = convertSubscript(ndim2, dim2, 2);
-	int idx38 = convertSubscript(ndim2, dim2, 2);
-	int idx39 = convertSubscript(ndim2, dim2, 2);
+	int idx37 = convertSubscript(ndim24, dim24, 2);
+	int idx38 = convertSubscript(ndim24, dim24, 2);
+	int idx39 = convertSubscript(ndim24, dim24, 2);
 	
-	int ndim26 = 2;
-	int dim26[2] = {3,1};
-	Matrix * mat14 = createM(ndim26, dim26, 0);
+	int ndim28 = 2;
+	int dim28[2] = {3,1};
+	Matrix * mat14 = createM(ndim28, dim28, 0);
 	int *input23 = NULL;
 	input23 = malloc( 3*sizeof(*input23));
 	input23[0] = tmp48;
@@ -538,20 +538,20 @@ void double_reindexing_tests(Matrix * a) {
 	free(input23);
 	
 	printM(mat14);
-	int idx40 = convertSubscript(ndim2, dim2, 1);
-	int idx41 = convertSubscript(ndim2, dim2, 2);
-	int idx42 = convertSubscript(ndim2, dim2, 2);
-	int idx43 = convertSubscript(ndim2, dim2, 3);
-	int idx44 = convertSubscript(ndim2, dim2, 3);
-	int idx45 = convertSubscript(ndim2, dim2, 3);
-	int idx46 = convertSubscript(ndim2, dim2, 4);
-	int idx47 = convertSubscript(ndim2, dim2, 4);
-	int idx48 = convertSubscript(ndim2, dim2, 4);
-	int idx49 = convertSubscript(ndim2, dim2, 4);
+	int idx40 = convertSubscript(ndim24, dim24, 1);
+	int idx41 = convertSubscript(ndim24, dim24, 2);
+	int idx42 = convertSubscript(ndim24, dim24, 2);
+	int idx43 = convertSubscript(ndim24, dim24, 3);
+	int idx44 = convertSubscript(ndim24, dim24, 3);
+	int idx45 = convertSubscript(ndim24, dim24, 3);
+	int idx46 = convertSubscript(ndim24, dim24, 4);
+	int idx47 = convertSubscript(ndim24, dim24, 4);
+	int idx48 = convertSubscript(ndim24, dim24, 4);
+	int idx49 = convertSubscript(ndim24, dim24, 4);
 	
-	int ndim27 = 2;
-	int dim27[2] = {10,1};
-	Matrix * mat15 = createM(ndim27, dim27, 0);
+	int ndim29 = 2;
+	int dim29[2] = {10,1};
+	Matrix * mat15 = createM(ndim29, dim29, 0);
 	int *input24 = NULL;
 	input24 = malloc( 10*sizeof(*input24));
 	input24[0] = tmp45;
@@ -573,15 +573,15 @@ void double_reindexing_tests(Matrix * a) {
 void complex_reindexing_tests(Matrix * a) {
 	Matrix * tmp68 = transposeM(a);
 	a = tmp68;
-	int tmp_ndim3 = getnDimM(a);
-	int *tmp_dim3 = getDimsM(a);
-	int idx50 = convertSubscript(ndim3, dim3, 1);
+	int ndim31 = getnDimM(a);
+	int *dim31 = getDimsM(a);
+	int idx50 = convertSubscript(ndim31, dim31, 1);
 	complex tmp69;
 	indexM(a, &tmp69, 1, idx50+1);
 	
-	int ndim28 = 2;
-	int dim28[2] = {1,1};
-	Matrix * mat16 = createM(ndim28, dim28, 2);
+	int ndim30 = 2;
+	int dim30[2] = {1,1};
+	Matrix * mat16 = createM(ndim30, dim30, 2);
 	complex *input25 = NULL;
 	input25 = malloc( 1*sizeof(*input25));
 	input25[0] = tmp69;
@@ -589,13 +589,13 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input25);
 	
 	printM(mat16);
-	int idx51 = convertSubscript(ndim3, dim3, 4);
+	int idx51 = convertSubscript(ndim31, dim31, 4);
 	complex tmp70;
 	indexM(a, &tmp70, 1, idx51+1);
 	
-	int ndim29 = 2;
-	int dim29[2] = {1,1};
-	Matrix * mat17 = createM(ndim29, dim29, 2);
+	int ndim32 = 2;
+	int dim32[2] = {1,1};
+	Matrix * mat17 = createM(ndim32, dim32, 2);
 	complex *input26 = NULL;
 	input26 = malloc( 1*sizeof(*input26));
 	input26[0] = tmp70;
@@ -603,18 +603,18 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input26);
 	
 	printM(mat17);
-	int idx52 = convertSubscript(ndim3, dim3, 1);
-	int idx53 = convertSubscript(ndim3, dim3, 2);
+	int idx52 = convertSubscript(ndim31, dim31, 1);
+	int idx53 = convertSubscript(ndim31, dim31, 2);
 	complex tmp72;
 	indexM(a, &tmp72, 1, idx53+1);
-	int idx54 = convertSubscript(ndim3, dim3, 3);
+	int idx54 = convertSubscript(ndim31, dim31, 3);
 	complex tmp73;
 	indexM(a, &tmp73, 1, idx54+1);
-	int idx55 = convertSubscript(ndim3, dim3, 4);
+	int idx55 = convertSubscript(ndim31, dim31, 4);
 	
-	int ndim30 = 2;
-	int dim30[2] = {4,1};
-	Matrix * mat18 = createM(ndim30, dim30, 2);
+	int ndim33 = 2;
+	int dim33[2] = {4,1};
+	Matrix * mat18 = createM(ndim33, dim33, 2);
 	complex *input27 = NULL;
 	input27 = malloc( 4*sizeof(*input27));
 	input27[0] = tmp69;
@@ -625,14 +625,14 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input27);
 	
 	printM(mat18);
-	int idx56 = convertSubscript(ndim3, dim3, 4);
-	int idx57 = convertSubscript(ndim3, dim3, 3);
-	int idx58 = convertSubscript(ndim3, dim3, 2);
-	int idx59 = convertSubscript(ndim3, dim3, 1);
+	int idx56 = convertSubscript(ndim31, dim31, 4);
+	int idx57 = convertSubscript(ndim31, dim31, 3);
+	int idx58 = convertSubscript(ndim31, dim31, 2);
+	int idx59 = convertSubscript(ndim31, dim31, 1);
 	
-	int ndim31 = 2;
-	int dim31[2] = {4,1};
-	Matrix * mat19 = createM(ndim31, dim31, 2);
+	int ndim34 = 2;
+	int dim34[2] = {4,1};
+	Matrix * mat19 = createM(ndim34, dim34, 2);
 	complex *input28 = NULL;
 	input28 = malloc( 4*sizeof(*input28));
 	input28[0] = tmp70;
@@ -643,13 +643,13 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input28);
 	
 	printM(mat19);
-	int idx60 = convertSubscript(ndim3, dim3, 2);
-	int idx61 = convertSubscript(ndim3, dim3, 2);
-	int idx62 = convertSubscript(ndim3, dim3, 2);
+	int idx60 = convertSubscript(ndim31, dim31, 2);
+	int idx61 = convertSubscript(ndim31, dim31, 2);
+	int idx62 = convertSubscript(ndim31, dim31, 2);
 	
-	int ndim32 = 2;
-	int dim32[2] = {3,1};
-	Matrix * mat20 = createM(ndim32, dim32, 2);
+	int ndim35 = 2;
+	int dim35[2] = {3,1};
+	Matrix * mat20 = createM(ndim35, dim35, 2);
 	complex *input29 = NULL;
 	input29 = malloc( 3*sizeof(*input29));
 	input29[0] = tmp72;
@@ -659,20 +659,20 @@ void complex_reindexing_tests(Matrix * a) {
 	free(input29);
 	
 	printM(mat20);
-	int idx63 = convertSubscript(ndim3, dim3, 1);
-	int idx64 = convertSubscript(ndim3, dim3, 2);
-	int idx65 = convertSubscript(ndim3, dim3, 2);
-	int idx66 = convertSubscript(ndim3, dim3, 3);
-	int idx67 = convertSubscript(ndim3, dim3, 3);
-	int idx68 = convertSubscript(ndim3, dim3, 3);
-	int idx69 = convertSubscript(ndim3, dim3, 4);
-	int idx70 = convertSubscript(ndim3, dim3, 4);
-	int idx71 = convertSubscript(ndim3, dim3, 4);
-	int idx72 = convertSubscript(ndim3, dim3, 4);
+	int idx63 = convertSubscript(ndim31, dim31, 1);
+	int idx64 = convertSubscript(ndim31, dim31, 2);
+	int idx65 = convertSubscript(ndim31, dim31, 2);
+	int idx66 = convertSubscript(ndim31, dim31, 3);
+	int idx67 = convertSubscript(ndim31, dim31, 3);
+	int idx68 = convertSubscript(ndim31, dim31, 3);
+	int idx69 = convertSubscript(ndim31, dim31, 4);
+	int idx70 = convertSubscript(ndim31, dim31, 4);
+	int idx71 = convertSubscript(ndim31, dim31, 4);
+	int idx72 = convertSubscript(ndim31, dim31, 4);
 	
-	int ndim33 = 2;
-	int dim33[2] = {10,1};
-	Matrix * mat21 = createM(ndim33, dim33, 2);
+	int ndim36 = 2;
+	int dim36[2] = {10,1};
+	Matrix * mat21 = createM(ndim36, dim36, 2);
 	complex *input30 = NULL;
 	input30 = malloc( 10*sizeof(*input30));
 	input30[0] = tmp69;

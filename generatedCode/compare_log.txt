@@ -22,11 +22,11 @@ elem_multiply_matrix
 elem_power_matrix
 elem_trig_matrix
 equal_matrix
-filterM
 floor_matrix
 ic_matrix_multiplication
 id_matrix_multiplication
 ii_matrix_multiplication
+index_matrix
 invert_matrix
 isEqual_matrix
 logic_ops_matrix
@@ -37,7 +37,6 @@ round_matrix
 subtract_matrix
 testing
 transpose_matrix
-xcorrM
 
 
 ERROR
@@ -50,13 +49,14 @@ determinant_matrix
 eigen
 elem_scalarpower_matrix
 external_fun
+filterM
 fourier
 hamming_hanning
-index_matrix
 octaveTimer
 power_matrix
 reindex
 reshape_matrix
 scale_matrix
 stftM
+xcorrM
 

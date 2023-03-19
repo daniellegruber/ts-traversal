@@ -17,9 +17,9 @@ for i=1:9
 	% Octave is natively column-major matrix storage, but C is row-major
 	% So when iterating over a matrix flatly (i.e., not calling dimensions), you must transpose
 	if imag(a_trans(i)) < 0
-		sprintf('%.5f  %.5fi  \n',real(a_trans(i)),imag(a_trans(i)));
+		dispArr(fileID, sprintf('%.5f  %.5fi  \n',real(a_trans(i)),imag(a_trans(i))));
 	else
-		sprintf('%.5f + %.5fi  \n',real(a_trans(i)),imag(a_trans(i)));
+		dispArr(fileID, sprintf('%.5f + %.5fi  \n',real(a_trans(i)),imag(a_trans(i))));
 	end
 end
 
@@ -27,9 +27,9 @@ for i=1:3
 	for j=1:3
 
 		if imag(a(i,j)) < 0
-			sprintf('%.5f  %.5fi  \n',real(a(i,j)),imag(a(i,j)));
+			dispArr(fileID, sprintf('%.5f  %.5fi  \n',real(a(i,j)),imag(a(i,j))));
 		else
-			sprintf('%.5f + %.5fi  \n',real(a(i,j)),imag(a(i,j)));
+			dispArr(fileID, sprintf('%.5f + %.5fi  \n',real(a(i,j)),imag(a(i,j))));
 		end
 
 	end

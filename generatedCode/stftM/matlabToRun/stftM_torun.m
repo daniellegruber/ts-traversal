@@ -7,10 +7,6 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/stftM/output.txt'
 %source octaveIncludes.m;
 
 
-			end
-		end
-	end
-end
 
 %row_vectors_i
 a = [-4:5];

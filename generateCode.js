@@ -620,12 +620,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     else if (is_subscript[0]) {
                         // Convert to linear idx
                         var obj4 = tmp_var_types.filter(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
-                        //lhs_flag = true;
                         var idx_3 = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
-                        console.log("HEY!");
-                        console.log(node.text);
-                        console.log(idx_3);
-                        //lhs_flag = false;
                         var scope_2 = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
                             scope_2 = block_idxs.filter(function (e) { return e[2] == scope_2[2] - loop_iterators.length; });
@@ -879,13 +874,11 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     });
                 }
                 if (node.valueNode.text == "sprintf") {
-                    console.log("SPRINTF");
                     if (node.parent.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */) {
                         if (node.parent.valueNode.text == "disp") {
                             args.unshift('disp');
                         }
                     }
-                    console.log("-----------------------");
                 }
                 for (var i = 0; i < outs.length; i++) {
                     //outs[i] = transformNode(outs[i]);
@@ -1886,8 +1879,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             else {
                 //[fun_params, idx] = rowMajorFlatIdx(count, dim, transformNode(node.namedChildren[1]), fun_params);
                 //updateFunParams(1);
-                //console.log(node.text);
-                //console.log(node.nextSibling);
                 var good_flag = !lhs_flag || node.type == "cell_subscript" /* g.SyntaxType.CellSubscript */;
                 if (node.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
                     if (node.nextSibling != null) {

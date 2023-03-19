@@ -13,7 +13,7 @@ int main(void) {
 	//more off
 	//format short
 	//source octaveIncludes.m;
-	int iterations = 100;
+	int iterations = 10;
 	for (int i = 1; i <= iterations; ++ i) {
 		double * tmp1 = hamming(i);
 		printf("\n%f\n", tmp1);

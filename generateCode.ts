@@ -420,23 +420,20 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     if (type == 'heterogeneous') {
                     numCellStruct += 1;
                     if (numCellStruct == 1) {
-                        updateFunParams(0);
-                        fun_params.block_level = 0;
-[main_function, function_definitions, ] = insertMain(
-`// Structure for cell arrays
-struct cell {
-\tint type;
-\tunion {
-\t\tint ival;
-\t\tdouble dval;
-\t\tcomplex double cval;
-\t\tchar chval[${MAXCHAR}];
-\t} data;
-};`, `int ${filename}(void) {`, 0, fun_params);
+main_function.unshift(
+    `// Structure for cell arrays
+    struct cell {
+    \tint type;
+    \tunion {
+    \t\tint ival;
+    \t\tdouble dval;
+    \t\tcomplex double cval;
+    \t\tchar chval[${MAXCHAR}];
+    \t} data;
+    };`);
                         }
                         let expression = [];
-                        expression.push(`struct cell ${outs[0]}[${node.rightNode.namedChildCount}];`)
-                        
+                        expression.push(`struct cell ${outs[0]}[${node.rightNode.namedChildCount}];`);
                         let types = [];
                         for (let i=0; i<node.rightNode.namedChildCount; i++) {
                             let child = node.rightNode.namedChildren[i];
@@ -907,6 +904,17 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             }
             
             case g.SyntaxType.CellSubscript: {
+                
+                /*`// Structure for cell arrays
+                struct cell {
+                \tint type;
+                \tunion {
+                \t\tint ival;
+                \t\tdouble dval;
+                \t\tcomplex double cval;
+                \t\tchar chval[${MAXCHAR}];
+                \t} data;
+                };`*/
                 
                 // only use indexM if subscript is on rhs
                 let count = '';

@@ -4,22 +4,23 @@
 #include <complex.h>
 #include <string.h>
 #include <matrix.h>
+#include "../convertSubscript.h"
 #include "./main.h"
 
 // Entry-point function
 int main(void) {
 
 // Structure for cell arrays
-struct cell {
-	int type;
-	union {
-		int ival;
-		double dval;
-		complex double cval;
-		char chval[20];
-	} data;
-};
-	int A= 1;
+    struct cell {
+    	int type;
+    	union {
+    		int ival;
+    		double dval;
+    		complex double cval;
+    		char chval[20];
+    	} data;
+    };
+	int A = 1;
 	
 	int ndim1 = 2;
 	int dim1[2] = {1,2};
@@ -60,5 +61,9 @@ struct cell {
 		}
 	}
 	
+	int ndim2 = 2;
+	int dim2[2] = {1,15};
+	int idx1 = convertSubscript(ndim2, dim2, 1);
+	printf("\n%d\n", C[idx1]);
 	return 0;
 }

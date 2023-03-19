@@ -4,3 +4,4 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/cell_test/output.
 A = 1;
 B = {2.0, 3 + 5i};
 C = {'hello world', 1, 2.0};
+dispArr(fileID, C{1});

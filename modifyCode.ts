@@ -42,7 +42,6 @@ export function insertMain(expression, search_exp, before_after, fun_params) {
     
     //idx = idx[idx.length - num_back];
     idx = idx[idx.length - 1];
-    
     // Indent expression
     let match = fun_params.main_function[idx].match(/\t+/);
     let indent = match[0];

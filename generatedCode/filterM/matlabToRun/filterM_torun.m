@@ -62,21 +62,22 @@ matrices{13} = [1,2,3,4,5];
 
 
 for i=1:13
-	sprintf(stdout, 'b\n');
+	dispArr(fileID, sprintf('b\n'));
 	dispArr(fileID, matrices{i});
 
 	for j=1:13
-		sprintf(stdout, '\na\n');
+		dispArr(fileID, sprintf('\na\n'));
 		dispArr(fileID, matrices{j});
 
 		for k=1:13
-			sprintf(stdout, '\nx\n');
+			dispArr(fileID, sprintf('\nx\n'));
 			dispArr(fileID, matrices{k});
-			sprintf(stdout, '\n');
-			[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
+			dispArr(fileID, sprintf('\n'));
+			%[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
+			y = filter(matrices{i}, matrices{j}, matrices{k});
 			dispArr(fileID, y);
-			sprintf(stdout, '\n');
-			dispArr(fileID, sf);
+			dispArr(fileID, sprintf('\n'));
+			%dispArr(fileID, sf);
 		end
 
 	end

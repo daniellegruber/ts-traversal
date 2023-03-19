@@ -45,7 +45,9 @@ matlabtorun:
 # Generate one C program
 # make genone ARGS=testname
 genone:
+	eval npx tsc -sourcemap $$TS_TRAVERSAL/index.ts; \
 	eval npx ts-node $$TS_TRAVERSAL/index.ts $(shell pwd)/$(ARGS)/$(ARGS).m $(shell pwd)/$(ARGS) $$TS_TRAVERSAL 0 0; \
+	eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $(ARGS).m $$TS_TRAVERSAL; \
 	
 # Generate main.c for all mfiles that haven't already been generated
 # eval npx ts-node $$TS_TRAVERSAL/index.ts $$fulldir/$$dir.m $$TEST $$TS_TRAVERSAL 0 0;
@@ -56,6 +58,7 @@ genall:
 		if [ ! -f "$$fulldir/main.c" ]; then \
 			echo $$dir; \
 			eval npx ts-node $$TS_TRAVERSAL/index.ts $$fulldir/$$dir.m $$fulldir $$TS_TRAVERSAL 0 0; \
+			eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $$dir.m $$TS_TRAVERSAL; \
 		fi \
 	done; \
 	
@@ -66,6 +69,7 @@ regenall:
 		fulldir="$(shell pwd)/$$dir"; \
 		echo $$dir; \
 		eval npx ts-node $$TS_TRAVERSAL/index.ts $$fulldir/$$dir.m $$fulldir $$TS_TRAVERSAL 0 0; \
+		eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $$dir.m $$TS_TRAVERSAL; \
 	done; \
 
 

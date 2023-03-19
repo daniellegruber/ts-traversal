@@ -235,15 +235,16 @@ int main(void) {
 	free(input3);
 	
 	for (int i = 1; i <= 13; ++ i) {
-		printf("\n%s\n", "b\n");
+		printf("\n%s\n", 'b\n');
 		printM(matrices[i]);
 		for (int j = 1; j <= 13; ++ j) {
-			printf("\n%s\n", "\na\n");
+			printf("\n%s\n", '\na\n');
 			printM(matrices[j]);
 			for (int k = 1; k <= 13; ++ k) {
-				printf("\n%s\n", "\nx\n");
+				printf("\n%s\n", '\nx\n');
 				printM(matrices[k]);
-				printf("\n%s\n", "\n");
+				printf("\n%s\n", '\n');
+				//[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
 				int idx21 = convertSubscript(ndim1, dim1, i);
 				int idx22 = convertSubscript(ndim1, dim1, j);
 				int idx23 = convertSubscript(ndim1, dim1, k);
@@ -251,9 +252,9 @@ int main(void) {
 				Matrix * zero1 = zerosM(1, state_size1);
 				Matrix * tmp19 = filterM(matrices[idx21], matrices[idx22], matrices[idx23], &zero1);
 				Matrix * y = tmp19;
-				printM(tmp19);
-				printf("\n%s\n", "\n");
-				printf("\n%d\n", sf);
+				printM(y);
+				printf("\n%s\n", '\n');
+				//disp(sf);
 			
 			}
 		

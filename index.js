@@ -58,6 +58,10 @@ if (show_output == 1) {
 if (!fs.existsSync("".concat(out_folder, "/matlabToRun"))) {
     fs.mkdirSync("".concat(out_folder, "/matlabToRun"));
 }
+else {
+    fs.rmSync("".concat(out_folder, "/matlabToRun"), { recursive: true, force: true });
+    fs.mkdirSync("".concat(out_folder, "/matlabToRun"));
+}
 for (var i = 0; i < custom_functions.length; i++) {
     (0, helperFunctions_1.writeToFile)("".concat(out_folder, "/matlabToRun"), "".concat(custom_functions[i].name, ".m"), custom_functions[i].def_node.text);
 }

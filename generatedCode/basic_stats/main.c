@@ -441,22 +441,22 @@ void int_vec_stats(Matrix * a) {
 	Matrix * tmp34 = maxV(a, &index1);
 	Matrix * greatest = tmp34;
 	printM(tmp34);
-	printf("max index: %d\n", index1);
+	sprintf(str, "max index: %d\n", index1);
 	int index2;
 	Matrix * tmp35 = minV(a, &index2);
 	Matrix * least = tmp35;
 	printM(tmp35);
-	printf("min index: %d\n", index2);
+	sprintf(str, "min index: %d\n", index2);
 	Matrix * mu1 = NULL;
 	Matrix * sd1 = NULL;
 	normfit(a, &mu1, &sd1);
-	printM(mu1);
-	printM(sd1);
+	sprintf(str, "mean: %.3f\n", mu1);
+	sprintf(str, "sd: %.3f\n", sd1);
 	Matrix * ahat1 = NULL;
 	Matrix * bhat1 = NULL;
 	unifit(a, &ahat1, &bhat1);
-	printM(ahat1);
-	printM(bhat1);
+	sprintf(str, "a: %d\n", ahat1);
+	sprintf(str, "b: %d\n", bhat1);
 }
 
 void double_vec_stats(Matrix * a) {
@@ -464,22 +464,22 @@ void double_vec_stats(Matrix * a) {
 	Matrix * tmp36 = maxV(a, &index3);
 	Matrix * greatest = tmp36;
 	printM(tmp36);
-	printf("max index: %d\n", index3);
+	sprintf(str, "max index: %d\n", index3);
 	int index4;
 	Matrix * tmp37 = minV(a, &index4);
 	Matrix * least = tmp37;
 	printM(tmp37);
-	printf("min index: %d\n", index4);
+	sprintf(str, "min index: %d\n", index4);
 	Matrix * mu2 = NULL;
 	Matrix * sd2 = NULL;
 	normfit(a, &mu2, &sd2);
-	printM(mu2);
-	printM(sd2);
+	sprintf(str, "mean: %.3f\n", mu2);
+	sprintf(str, "sd: %.3f\n", sd2);
 	Matrix * ahat2 = NULL;
 	Matrix * bhat2 = NULL;
 	unifit(a, &ahat2, &bhat2);
-	printM(ahat2);
-	printM(bhat2);
+	sprintf(str, "a: %.3f\n", ahat2);
+	sprintf(str, "b: %.3f\n", bhat2);
 }
 
 void complex_vec_stats(Matrix * a) {
@@ -487,34 +487,34 @@ void complex_vec_stats(Matrix * a) {
 	Matrix * tmp38 = maxV(a, &index5);
 	Matrix * greatest = tmp38;
 	printM(tmp38);
-	printf("max index: %d\n", index5);
+	sprintf(str, "max index: %d\n", index5);
 	int index6;
 	Matrix * tmp39 = minV(a, &index6);
 	Matrix * least = tmp39;
 	printM(tmp39);
-	printf("min index: %d\n", index6);
+	sprintf(str, "min index: %d\n", index6);
 	Matrix * mu3 = NULL;
 	Matrix * sd3 = NULL;
 	normfit(a, &mu3, &sd3);
 	complex * tmp40 = c_to_c(mu3);
 	double tmp41 = creal(tmp40[0]);
 	double tmp42 = cimag(tmp40[0]);
-	printf("mean: %.3f + %.3fi\n", tmp41, tmp42);
+	sprintf(str, "mean: %.3f + %.3fi\n", tmp41, tmp42);
 	complex * tmp43 = c_to_c(sd3);
 	double tmp44 = creal(tmp43[0]);
 	double tmp45 = cimag(tmp43[0]);
-	printf("sd: %.3f + %.3fi\n", tmp44, tmp45);
+	sprintf(str, "sd: %.3f + %.3fi\n", tmp44, tmp45);
 	Matrix * ahat3 = NULL;
 	Matrix * bhat3 = NULL;
 	unifit(a, &ahat3, &bhat3);
 	complex * tmp46 = c_to_c(ahat3);
 	double tmp47 = creal(tmp46[0]);
 	double tmp48 = cimag(tmp46[0]);
-	printf("a: %.3f + %.3fi\n", tmp47, tmp48);
+	sprintf(str, "a: %.3f + %.3fi\n", tmp47, tmp48);
 	complex * tmp49 = c_to_c(bhat3);
 	double tmp50 = creal(tmp49[0]);
 	double tmp51 = cimag(tmp49[0]);
-	printf("b: %.3f + %.3fi\n", tmp50, tmp51);
+	sprintf(str, "b: %.3f + %.3fi\n", tmp50, tmp51);
 }
 
 void int_stats(Matrix * a) {

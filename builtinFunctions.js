@@ -3814,7 +3814,10 @@ exports.builtin_functions = [
     {
         fun_matlab: 'disp',
         fun_c: function (args, arg_types, outs, fun_matlab) {
-            if (arg_types[0].ismatrix) {
+            if (args[0] == null) {
+                return null; // occurs when calling disp(sprintf(...)) 
+            }
+            else if (arg_types[0].ismatrix) {
                 return 'printM';
             }
             else {
@@ -3924,33 +3927,40 @@ exports.builtin_functions = [
     {
         fun_matlab: 'sprintf',
         fun_c: function (args, arg_types, outs, fun_matlab) {
-            if (args.length == 1) {
+            if (args[0] == "disp") {
                 return 'printf';
-            }
-            if (arg_types[1].ismatrix) {
-                return 'printM';
             }
             else {
-                return 'printf';
+                return 'sprintf';
             }
         },
         args_transform: function (args, arg_types, outs) {
-            if (args.length == 1) {
-                return ['"\\n%s\\n"', args[0]];
-            }
-            if (arg_types[1].ismatrix) {
-                return [args[1]];
-            }
-            else {
+            if (args[0] == "disp") {
+                args.shift();
                 for (var i = 0; i < args.length; i++) {
                     args[i] = args[i].replace(/'/g, '"');
                 }
+                if (args.length == 1) {
+                    return ['"\\n%s\\n"', args[0]];
+                }
                 args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
-                //return [args[0], args[1]];
                 return args;
             }
+            var buffer = 'str';
+            if (outs.length > 0) {
+                buffer = outs[0];
+            }
+            for (var i = 0; i < args.length; i++) {
+                args[i] = args[i].replace(/'/g, '"');
+            }
+            if (args.length == 1) {
+                return [buffer, '"\\n%s\\n"', args[0]];
+            }
+            args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
+            args.unshift(buffer);
+            return args;
         },
-        outs_transform: function (args, arg_types, outs) { return outs; },
+        outs_transform: function (args, arg_types, outs) { return null; },
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -3958,7 +3968,23 @@ exports.builtin_functions = [
         return_type: function (args, arg_types, outs) { return null; },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            if (outs.length > 0) {
+                var init_var = [];
+                init_var.push({
+                    name: outs[0],
+                    val: null,
+                    type: 'char',
+                    ndim: 1,
+                    dim: [50],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+                return init_var;
+            }
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },

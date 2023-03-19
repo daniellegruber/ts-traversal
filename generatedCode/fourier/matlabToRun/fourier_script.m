@@ -1,4 +1,4 @@
-function fourier_script(a)
-	disp(fft(a));
-	disp(ifft(a));
+function fourier_script(fileID, a)
+	dispArr(fileID, fft(a));
+	dispArr(fileID, ifft(a));
 end

@@ -57,13 +57,13 @@ matrices{12} = [3,-2,0,   4,-1,0,   0,0,1, 2.5];
 
 
 for index=1:12
-	sprintf(stdout, 'i\n');
+	disp(sprintf('i\n'));
 	disp(matrices{index});
 
 	for j=1:12
-		sprintf(stdout, 'j\n');
+		disp(sprintf('j\n'));
 		disp(matrices{j});
-		sprintf(stdout, '\n\n');
+		disp(sprintf('\n\n'));
 		disp(xcorr(matrices{index}, matrices{j}, 'none'));
 		if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
 			disp(xcorr(matrices{index}, matrices{j}, 'unbiased'));

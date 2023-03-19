@@ -1,3 +1,3 @@
-function outstr = myfun2()
+function outstr = myfun2(fileID, )
     outstr = "hello world";
 end

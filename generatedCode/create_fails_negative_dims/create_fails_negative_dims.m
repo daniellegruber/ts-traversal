@@ -3,4 +3,4 @@
 
 %source octaveIncludes.m;
 
-sprintf(stdout, "Success\n");
+disp(sprintf("Success\n"));

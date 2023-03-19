@@ -63,7 +63,7 @@ int main(void) {
 		}
 	
 	}
-	printf("\n%s\n", "\n");
+	sprintf(str, "\n%s\n", "\n");
 	// Normal indexing in C and normal indexing in Octave are the same
 	for (int l = 1; l <= 5; ++ l) {
 		for (int k = 1; k <= 4; ++ k) {
@@ -80,7 +80,7 @@ int main(void) {
 		}
 	
 	}
-	printf("\n%s\n", "\n");
+	sprintf(str, "\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int i = 1; i <= 120; ++ i) {
 		int idx1 = convertSubscript(ndim1, dim1, i);
@@ -89,7 +89,7 @@ int main(void) {
 		printf("\n%f\n", tmp5);
 	
 	}
-	printf("\n%s\n", "\n");
+	sprintf(str, "\n%s\n", "\n");
 	// Method 2 to create 4D matrix
 	// Creates the matrix column-major to match Octave's implementation
 	int ndim2 = 4;
@@ -130,7 +130,7 @@ int main(void) {
 		}
 	
 	}
-	printf("\n%s\n", "\n");
+	sprintf(str, "\n%s\n", "\n");
 	// Normal indexing in C and normal indexing in Octave are the same
 	for (int l = 1; l <= 5; ++ l) {
 		for (int k = 1; k <= 4; ++ k) {
@@ -147,7 +147,7 @@ int main(void) {
 		}
 	
 	}
-	printf("\n%s\n", "\n");
+	sprintf(str, "\n%s\n", "\n");
 	// Flat indexing in Octave must be matched by normal indexing in C
 	for (int i = 1; i <= 120; ++ i) {
 		int idx3 = convertSubscript(ndim1, dim1, i);
@@ -156,6 +156,6 @@ int main(void) {
 		printf("\n%f\n", tmp10);
 	
 	}
-	printf("\n%s\n", "\n");
+	sprintf(str, "\n%s\n", "\n");
 	return 0;
 }

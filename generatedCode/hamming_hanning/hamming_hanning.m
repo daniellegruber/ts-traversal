@@ -4,7 +4,7 @@
 %source octaveIncludes.m;
 
 
-iterations = 100;
+iterations = 10;
 
 for i=1:iterations
 	disp(hamming(i));

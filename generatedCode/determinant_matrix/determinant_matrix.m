@@ -23,7 +23,7 @@ for i=1:3
 	end
 end
 disp(a);
-sprintf('%.5f\n',det(a));
+disp(sprintf('%.5f\n',det(a)));
 
 %testn
 a = zeros(5);
@@ -40,7 +40,7 @@ for i=0:4
 end
 a=a.';
 disp(a);
-sprintf('%.5f\n',det(a));
+disp(sprintf('%.5f\n',det(a)));
 
 %non_square
 a = zeros(3,2);

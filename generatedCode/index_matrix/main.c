@@ -48,14 +48,14 @@ int main(void) {
 			double tmp5 = creal(tmp2);
 			int idx3 = convertSubscript(ndim1, dim1, i);
 			double tmp7 = cimag(tmp2);
-			printf("%.5f  %.5fi  \n", tmp5, tmp7);
+			sprintf(str, "%.5f  %.5fi  \n", tmp5, tmp7);
 			
 			} else {
 			int idx4 = convertSubscript(ndim1, dim1, i);
 			double tmp9 = creal(tmp2);
 			int idx5 = convertSubscript(ndim1, dim1, i);
 			double tmp11 = cimag(tmp2);
-			printf("%.5f + %.5fi  \n", tmp9, tmp11);
+			sprintf(str, "%.5f + %.5fi  \n", tmp9, tmp11);
 			
 		
 		}
@@ -69,12 +69,12 @@ int main(void) {
 			if (tmp13 < 0) {
 				double tmp15 = creal(tmp12);
 				double tmp17 = cimag(tmp12);
-				printf("%.5f  %.5fi  \n", tmp15, tmp17);
+				sprintf(str, "%.5f  %.5fi  \n", tmp15, tmp17);
 				
 				} else {
 				double tmp19 = creal(tmp12);
 				double tmp21 = cimag(tmp12);
-				printf("%.5f + %.5fi  \n", tmp19, tmp21);
+				sprintf(str, "%.5f + %.5fi  \n", tmp19, tmp21);
 				
 			
 			}

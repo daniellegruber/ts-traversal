@@ -355,6 +355,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     for (var i = 0; i < outs.length; i++) {
                         lhs_flag = true;
                         outs[i] = transformNode(outs[i]);
+                        lhs_flag = false;
                     }
                     if (type == 'heterogeneous') {
                         numCellStruct += 1;
@@ -406,6 +407,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     for (var i = 0; i < outs.length; i++) {
                         lhs_flag = true;
                         outs[i] = transformNode(outs[i]);
+                        lhs_flag = false;
                     }
                     var obj = classes.find(function (x) { return x.name === node.rightNode.valueNode.text; });
                     // Is a class
@@ -424,7 +426,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             lhs = obj2.outs_transform(args, arg_types, outs);
                         }
                     }
-                    lhs_flag = false;
+                    //lhs_flag = false;
                     var rhs = transformNode(node.rightNode);
                     init_flag = true;
                 }
@@ -432,8 +434,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     for (var i = 0; i < outs.length; i++) {
                         lhs_flag = true;
                         outs[i] = transformNode(outs[i]);
+                        lhs_flag = false;
                     }
-                    lhs_flag = false;
                     var rhs = transformNode(node.rightNode);
                     init_flag = true;
                     lhs = outs[0];
@@ -617,9 +619,12 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                     }
                     else if (is_subscript[0]) {
                         // Convert to linear idx
-                        var obj4 = tmp_var_types.filter(function (x) { return x.name.includes("ndim") && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+                        var obj4 = tmp_var_types.filter(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
                         //lhs_flag = true;
                         var idx_3 = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
+                        console.log("HEY!");
+                        console.log(node.text);
+                        console.log(idx_3);
                         //lhs_flag = false;
                         var scope_2 = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
@@ -785,15 +790,16 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             case "cell_subscript" /* g.SyntaxType.CellSubscript */: {
                 // only use indexM if subscript is on rhs
                 var count = '';
-                var obj = tmp_var_types.find(function (x) { return x.name.includes("ndim") && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+                var obj = tmp_var_types.find(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
                 if (obj == null || obj == undefined) {
                     var _50 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_1 = _50[0], ndim_1 = _50[1], dim_1 = _50[2], ismatrix_3 = _50[3], ispointer_1 = _50[4], isstruct_1 = _50[5], c_5 = _50[6];
-                    var tmp_ndim = (0, helperFunctions_1.generateTmpVar)("tmp_ndim", tmp_tbl);
-                    var tmp_dim = (0, helperFunctions_1.generateTmpVar)("tmp_dim", tmp_tbl);
+                    var tmp_ndim = (0, helperFunctions_1.generateTmpVar)("ndim", tmp_tbl);
+                    var tmp_dim = (0, helperFunctions_1.generateTmpVar)("dim", tmp_tbl);
                     count = tmp_ndim.match(/\d+/)[0];
                     var scope = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                     var expression = [];
-                    expression.push("int ".concat(tmp_ndim, " = getnDimM(*").concat(transformNode(node.valueNode), ");"));
+                    //expression.push(`int ${tmp_ndim} = getnDimM(*${transformNode(node.valueNode)});`);
+                    expression.push("int ".concat(tmp_ndim, " = ").concat(ndim_1, ";"));
                     tmp_var_types.push({
                         name: tmp_ndim,
                         type: 'int',
@@ -807,7 +813,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         scope: scope,
                         propertyOf: node.valueNode.text
                     });
-                    expression.push("int *".concat(tmp_dim, " = getDimsM(*").concat(transformNode(node.valueNode), ");"));
+                    //expression.push(`int *${tmp_dim} = getDimsM(*${transformNode(node.valueNode)});`);
+                    expression.push("int ".concat(tmp_dim, "[").concat(ndim_1, "] = {").concat(dim_1, "};"));
                     tmp_var_types.push({
                         name: tmp_dim,
                         type: 'int',
@@ -870,6 +877,15 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         ispointer: ispointer_2,
                         isstruct: isstruct_2
                     });
+                }
+                if (node.valueNode.text == "sprintf") {
+                    console.log("SPRINTF");
+                    if (node.parent.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */) {
+                        if (node.parent.valueNode.text == "disp") {
+                            args.unshift('disp');
+                        }
+                    }
+                    console.log("-----------------------");
                 }
                 for (var i = 0; i < outs.length; i++) {
                     //outs[i] = transformNode(outs[i]);
@@ -1110,23 +1126,43 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                                 }
                                 //if (push_after != null || node.parent.type == g.SyntaxType.CallOrSubscript || tmp_out_transform != null) {
                                 var tmp_var_2 = (0, helperFunctions_1.generateTmpVar)("tmp", tmp_tbl);
+                                if (fun_c == "getDimsM") {
+                                    tmp_var_2 = (0, helperFunctions_1.generateTmpVar)("dim", tmp_tbl);
+                                }
                                 updateFunParams(0);
                                 _25 = (0, modifyCode_1.pushToMain)((0, helperFunctions_1.initVar)(tmp_var_2, var_val, return_type, node), fun_params), main_function = _25[0], function_definitions = _25[1];
                                 updateFunParams(0);
                                 _26 = (0, modifyCode_1.pushToMain)(push_after, fun_params), main_function = _26[0], function_definitions = _26[1];
                                 //alias_tbl = pushAliasTbl(node.text, tmp_var, node, fun_params);
-                                tmp_var_types.push({
-                                    name: tmp_var_2,
-                                    type: return_type.type,
-                                    ndim: return_type.ndim,
-                                    dim: return_type.dim,
-                                    ismatrix: return_type.ismatrix,
-                                    isvector: return_type.isvector,
-                                    ispointer: return_type.ispointer,
-                                    isstruct: false,
-                                    initialized: true,
-                                    scope: (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug)
-                                });
+                                if (fun_c == "getDimsM") {
+                                    tmp_var_types.push({
+                                        name: tmp_var_2,
+                                        type: return_type.type,
+                                        ndim: return_type.ndim,
+                                        dim: return_type.dim,
+                                        ismatrix: return_type.ismatrix,
+                                        isvector: return_type.isvector,
+                                        ispointer: return_type.ispointer,
+                                        isstruct: false,
+                                        initialized: true,
+                                        scope: (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug),
+                                        propertyOf: args[0]
+                                    });
+                                }
+                                else {
+                                    tmp_var_types.push({
+                                        name: tmp_var_2,
+                                        type: return_type.type,
+                                        ndim: return_type.ndim,
+                                        dim: return_type.dim,
+                                        ismatrix: return_type.ismatrix,
+                                        isvector: return_type.isvector,
+                                        ispointer: return_type.ispointer,
+                                        isstruct: false,
+                                        initialized: true,
+                                        scope: (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug)
+                                    });
+                                }
                                 if (tmp_out_transform != null) {
                                     tmp_out_transform = tmp_out_transform.replace('tmp_out', tmp_var_2);
                                     return tmp_out_transform;
@@ -1145,11 +1181,11 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         var index = [];
                         var tmp_var1_1 = (0, helperFunctions_1.generateTmpVar)("tmp_", tmp_tbl);
                         var count = '';
-                        var obj_4 = tmp_var_types.find(function (x) { return x.name.includes("ndim") && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+                        var obj_4 = tmp_var_types.find(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
                         if (obj_4 == null || obj_4 == undefined) {
                             var _54 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_4 = _54[0], ndim_3 = _54[1], dim_3 = _54[2], ismatrix_5 = _54[3], ispointer_3 = _54[4], isstruct_3 = _54[5], c_7 = _54[6];
-                            var tmp_ndim = (0, helperFunctions_1.generateTmpVar)("tmp_ndim", tmp_tbl);
-                            var tmp_dim = (0, helperFunctions_1.generateTmpVar)("tmp_dim", tmp_tbl);
+                            var tmp_ndim = (0, helperFunctions_1.generateTmpVar)("ndim", tmp_tbl);
+                            var tmp_dim = (0, helperFunctions_1.generateTmpVar)("dim", tmp_tbl);
                             count = tmp_ndim.match(/\d+/)[0];
                             var scope = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                             var expression = [];
@@ -1850,7 +1886,17 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             else {
                 //[fun_params, idx] = rowMajorFlatIdx(count, dim, transformNode(node.namedChildren[1]), fun_params);
                 //updateFunParams(1);
-                if (!lhs_flag) {
+                //console.log(node.text);
+                //console.log(node.nextSibling);
+                var good_flag = !lhs_flag || node.type == "cell_subscript" /* g.SyntaxType.CellSubscript */;
+                if (node.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
+                    if (node.nextSibling != null) {
+                        if (node.nextSibling.type == "(") {
+                            good_flag = false;
+                        }
+                    }
+                }
+                if (good_flag) {
                     updateFunParams(0);
                     var tmp_idx = (0, helperFunctions_1.generateTmpVar)("idx", tmp_tbl);
                     _a = (0, modifyCode_1.pushToMain)("int ".concat(tmp_idx, " = convertSubscript(ndim").concat(count, ", dim").concat(count, ", ").concat(transformNode(node.namedChildren[1]), ");"), fun_params), main_function = _a[0], function_definitions = _a[1];

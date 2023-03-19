@@ -6,4 +6,4 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/create_fails_nega
 
 %source octaveIncludes.m;
 
-sprintf(stdout, "Success\n");
+dispArr(fileID, sprintf("Success\n"));

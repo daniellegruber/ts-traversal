@@ -486,31 +486,35 @@ int main(void) {
 	free(input2);
 	
 	for (int index = 3; index <= 12; ++ index) {
-		printf("\n%s\n", "Original\n");
+		printf("\n%s\n", 'Original\n');
 		printM(matrices[index]);
-		printf("\n%s\n", "Integer exponents\n");
+		printf("\n%s\n", 'Integer exponents\n');
 		for (int i = -4; i <= 4; ++ i) {
 			Matrix * tmp71 = mpowerM(matrices[index], &i, 0);
 			printM(tmp71);
 		
 		}
-		printf("\n%s\n", "Double exponents\n");
+		printf("\n%s\n", 'Double exponents\n');
 		for (int i = -3; i <= 1.9; i += 0.2) {
 			printf("\n%s\n", "Exponent: %.4f\n", i);
 			Matrix * tmp72 = mpowerM(matrices[index], &i, 0);
 			printM(tmp72);
 		
 		}
-		printf("\n%s\n", "Complex exponents\n");
+		printf("\n%s\n", 'Complex exponents\n');
 		for (int i = -3; i <= 3; i += 0.2) {
 			for (int j = -3; j <= 3; j += 0.2) {
 				if (j == 0) {
 					
 				
 				}
-				printf("\n%s\n", "Exponent: %.4f + %.4fi\n", i, j);
+				char *mystr1 = NULL;
+				mystr1 = malloc(50*sizeof(*mystr1));
+				sprintf(mystr1, "Exponent: %.4f + %.4fi\n", i, j);
+				printf("\n%s\n", mystr1);
+				int idx29 = convertSubscript(ndim1, dim1, index);
 				complex exponent13 = (i + j * 1*I);
-				Matrix * tmp73 = mpowerM(matrices[index], &exponent13, 2);
+				Matrix * tmp73 = mpowerM(matrices[idx29], &exponent13, 2);
 				printM(tmp73);
 			
 			}

@@ -81,32 +81,32 @@ double_stats(a);
 
 function two_t_test(a, b)
 	[h, pval, ci, stats] = ttest(a, b);
-	sprintf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, stats.tstat, stats.df, stats.sd);
+	disp(sprintf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, stats.tstat, stats.df, stats.sd));
 end
 
 function int_vec_stats(a)
 	[greatest, index] = max(a);
 	disp(greatest);
-	sprintf("max index: %d\n\n", index);
+	disp(sprintf("max index: %d\n\n", index));
 
 	[least, index] = min(a);
 	disp(least);
-	sprintf("min index: %d\n\n", index);
+	disp(sprintf("min index: %d\n\n", index));
 
 	for i=least:0.5:greatest
-		sprintf("mu: %.3f\n", i);
+		disp(sprintf("mu: %.3f\n", i));
 		[h, pval, ci, stats] = ttest(a, i);
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd);
+		% disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd));
 
 		[h, pval, ci, z, zcrit] = ztest(a, i, std(a, 0, 1));
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit);
+		% disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit));
 	end
 
 	for i=(var(a, 0, 1)-5):1.0:(var(a, 0, 1)+5)
-		sprintf("v: %.3f\n", i);
+		disp(sprintf("v: %.3f\n", i));
 		[h, pval, ci, stats] = vartest(a, i);
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, ci(1), ci(2), stats.chisqstat, stats.df);
-		% sprintf("h: %d\npval: %.2f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, stats.chisqstat, stats.df);
+		% disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, ci(1), ci(2), stats.chisqstat, stats.df));
+		% disp(sprintf("h: %d\npval: %.2f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, stats.chisqstat, stats.df));
 	end
 
 end
@@ -114,26 +114,26 @@ end
 function double_vec_stats(a)
 	[greatest, index] = max(a);
 	disp(greatest);
-	sprintf("max index: %d\n", index);
+	disp(sprintf("max index: %d\n", index));
 
 	[least, index] = min(a);
 	disp(least);
-	sprintf("min index: %d\n", index);
+	disp(sprintf("min index: %d\n", index));
 
 	for i=least:0.5:greatest
-		sprintf("mu: %.3f\n", i);
+		disp(sprintf("mu: %.3f\n", i));
 		[h, pval, ci, stats] = ttest(a, i);
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd);
+		% disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd));
 
 		[h, pval, ci, z, zcrit] = ztest(a, i, std(a, 0, 1));
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit);
+		% disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit));
 	end
 
 	for i=(var(a, 0, 1)-5):1.0:(var(a, 0, 1)+5)
-		sprintf("v: %.3f\n", i);
+		disp(sprintf("v: %.3f\n", i));
 		[h, pval, ci, stats] = vartest(a, i);
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, ci(1), ci(2), stats.chisqstat, stats.df);
-		% sprintf("h: %d\npval: %.2f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, stats.chisqstat, stats.df);
+		% disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, ci(1), ci(2), stats.chisqstat, stats.df));
+		% disp(sprintf("h: %d\npval: %.2f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, stats.chisqstat, stats.df));
 	end
 end
 
@@ -154,7 +154,7 @@ function double_stats(a)
 
 	% Chi-square PDF
 	for n=0.05:0.05:4.95
-		sprintf("n = %.3f\n", n);
+		disp(sprintf("n = %.3f\n", n));
 		disp(chi2pdf(a, n));
 	end
 
@@ -181,7 +181,7 @@ function double_stats(a)
 
 	% Uniform discrete PDF
 	for n=1:9
-		sprintf("n = %d\n",n);
+		disp(sprintf("n = %d\n",n));
 		disp(unidpdf(a, n));
 	end
 

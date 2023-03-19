@@ -414,6 +414,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     for (let i = 0; i < outs.length; i ++) {
                         lhs_flag = true;
                         outs[i] = transformNode(outs[i]);
+                        lhs_flag = false;
                     }
                     
                     if (type == 'heterogeneous') {
@@ -494,6 +495,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     for (let i = 0; i < outs.length; i ++) {
                         lhs_flag = true;
                         outs[i] = transformNode(outs[i]);
+                        lhs_flag = false;
                     }
                     
                     let obj = classes.find(x => x.name === node.rightNode.valueNode.text);
@@ -512,15 +514,16 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             lhs = obj2.outs_transform(args, arg_types, outs);
                         }
                     }
-                    lhs_flag = false;
+                    //lhs_flag = false;
                     var rhs:string = transformNode(node.rightNode);
                     init_flag = true;
                 } else {
                     for (let i = 0; i < outs.length; i ++) {
                         lhs_flag = true;
                         outs[i] = transformNode(outs[i]);
+                        lhs_flag = false;
                     }
-                    lhs_flag = false;
+                    
                     var rhs:string = transformNode(node.rightNode);
                     init_flag = true;
                     lhs = outs[0];
@@ -714,9 +717,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                         
                     } else if (is_subscript[0]) {
                         // Convert to linear idx
-                        let obj4 = tmp_var_types.filter(x => x.name.includes("ndim") && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+                        let obj4 = tmp_var_types.filter(x => /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                         //lhs_flag = true;
                         let idx = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
+                        console.log("HEY!")
+                        console.log(node.text);
+                        console.log(idx);
                         //lhs_flag = false;
 
                         let scope = findVarScope(node, block_idxs, current_code, debug);
@@ -909,15 +915,16 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
                 // only use indexM if subscript is on rhs
                 let count = '';
-                let obj = tmp_var_types.find(x => x.name.includes("ndim") && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+                let obj = tmp_var_types.find(x => /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                 if (obj == null || obj == undefined) {
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                    let tmp_ndim = generateTmpVar("tmp_ndim", tmp_tbl);
-                    let tmp_dim = generateTmpVar("tmp_dim", tmp_tbl);
+                    let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
+                    let tmp_dim = generateTmpVar("dim", tmp_tbl);
                     count = tmp_ndim.match(/\d+/)[0];
                     let scope = findVarScope(node, block_idxs, current_code, debug);
                     let expression = [];
-                    expression.push(`int ${tmp_ndim} = getnDimM(*${transformNode(node.valueNode)});`);
+                    //expression.push(`int ${tmp_ndim} = getnDimM(*${transformNode(node.valueNode)});`);
+                    expression.push(`int ${tmp_ndim} = ${ndim};`);
                     tmp_var_types.push({
                         name: tmp_ndim,
                         type: 'int',
@@ -931,7 +938,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         scope: scope,
                         propertyOf: node.valueNode.text
                     });
-                    expression.push(`int *${tmp_dim} = getDimsM(*${transformNode(node.valueNode)});`);
+                    //expression.push(`int *${tmp_dim} = getDimsM(*${transformNode(node.valueNode)});`);
+                    expression.push(`int ${tmp_dim}[${ndim}] = {${dim}};`);
                     tmp_var_types.push({
                         name: tmp_dim,
                         type: 'int',
@@ -950,7 +958,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 } else {
                     count = obj.name.match(/\d+/)[0];
                 }
-                
                 let index = getSubscriptIdx(node, count);
                         
                 if (!lhs_flag) { // subscript is on rhs
@@ -998,6 +1005,17 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         ispointer: ispointer,
                         isstruct: isstruct
                     });
+                }
+                
+
+                if (node.valueNode.text == "sprintf") {
+                    console.log("SPRINTF");
+                    if (node.parent.type == g.SyntaxType.CallOrSubscript) {
+                        if (node.parent.valueNode.text == "disp") {
+                            args.unshift('disp');
+                        }
+                    }
+                    console.log("-----------------------");
                 }
                 
                 for (let i = 0; i < outs.length; i ++) {
@@ -1252,24 +1270,42 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 
                                 //if (push_after != null || node.parent.type == g.SyntaxType.CallOrSubscript || tmp_out_transform != null) {
                                     let tmp_var = generateTmpVar("tmp", tmp_tbl);
+                                    if (fun_c == "getDimsM") {
+                                        tmp_var = generateTmpVar("dim", tmp_tbl);
+                                    }
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(initVar(tmp_var, var_val, return_type, node), fun_params);
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(push_after, fun_params);
                                     //alias_tbl = pushAliasTbl(node.text, tmp_var, node, fun_params);
-                                    tmp_var_types.push({
-                                        name: tmp_var,
-                                        type: return_type.type,
-                                        ndim: return_type.ndim,
-                                        dim: return_type.dim,
-                                        ismatrix: return_type.ismatrix,
-                                        isvector: return_type.isvector,
-                                        ispointer: return_type.ispointer,
-                                        isstruct: false,
-                                        initialized: true,
-                                        scope: findVarScope(node, block_idxs, current_code, debug)
-                                    });
-                                    
+                                    if (fun_c == "getDimsM") {
+                                        tmp_var_types.push({
+                                            name: tmp_var,
+                                            type: return_type.type,
+                                            ndim: return_type.ndim,
+                                            dim: return_type.dim,
+                                            ismatrix: return_type.ismatrix,
+                                            isvector: return_type.isvector,
+                                            ispointer: return_type.ispointer,
+                                            isstruct: false,
+                                            initialized: true,
+                                            scope: findVarScope(node, block_idxs, current_code, debug),
+                                            propertyOf: args[0]
+                                        });
+                                    } else {
+                                        tmp_var_types.push({
+                                            name: tmp_var,
+                                            type: return_type.type,
+                                            ndim: return_type.ndim,
+                                            dim: return_type.dim,
+                                            ismatrix: return_type.ismatrix,
+                                            isvector: return_type.isvector,
+                                            ispointer: return_type.ispointer,
+                                            isstruct: false,
+                                            initialized: true,
+                                            scope: findVarScope(node, block_idxs, current_code, debug)
+                                        });
+                                    }
                                     if (tmp_out_transform != null) {
                                         tmp_out_transform = tmp_out_transform.replace('tmp_out', tmp_var);
                                         return tmp_out_transform;
@@ -1293,11 +1329,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let tmp_var1 = generateTmpVar("tmp_", tmp_tbl);
                         
                         let count = '';
-                        let obj = tmp_var_types.find(x => x.name.includes("ndim") && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+                        let obj = tmp_var_types.find(x => /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                         if (obj == null || obj == undefined) {
                             let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                            let tmp_ndim = generateTmpVar("tmp_ndim", tmp_tbl);
-                            let tmp_dim = generateTmpVar("tmp_dim", tmp_tbl);
+                            let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
+                            let tmp_dim = generateTmpVar("dim", tmp_tbl);
                             count = tmp_ndim.match(/\d+/)[0];
                             let scope = findVarScope(node, block_idxs, current_code, debug);
                             let expression = [];
@@ -1613,6 +1649,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
 
             let args = [];
             let arg_types: Type[] = [];
+            
             switch (right_node.type) {
                 case g.SyntaxType.FunctionDefinition:
                 case g.SyntaxType.CellSubscript:
@@ -2049,7 +2086,17 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             } else {
                 //[fun_params, idx] = rowMajorFlatIdx(count, dim, transformNode(node.namedChildren[1]), fun_params);
                 //updateFunParams(1);
-                if (!lhs_flag) {
+                //console.log(node.text);
+                //console.log(node.nextSibling);
+                let good_flag = !lhs_flag || node.type == g.SyntaxType.CellSubscript;
+                if (node.type == g.SyntaxType.CellSubscript) {
+                    if (node.nextSibling != null) {
+                        if (node.nextSibling.type == "(") {
+                            good_flag = false;
+                        }
+                    }
+                }
+                if (good_flag) {
                     updateFunParams(0);
                     let tmp_idx = generateTmpVar("idx", tmp_tbl);
                     [main_function, function_definitions] = pushToMain(`int ${tmp_idx} = convertSubscript(ndim${count}, dim${count}, ${transformNode(node.namedChildren[1])});`, fun_params);

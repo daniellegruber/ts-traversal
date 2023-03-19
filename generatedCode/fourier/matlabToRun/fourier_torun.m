@@ -10,8 +10,6 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/fourier/output.tx
 
 
 
-end
-
 %row_vectors_i
 a = [3,-5,0,1];
 dispArr(fileID, a);

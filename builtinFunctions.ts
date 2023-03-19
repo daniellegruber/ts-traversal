@@ -3872,7 +3872,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS https://www.tutorialspoint.com/c_standard_library/c_function_printf.htm
         fun_matlab: 'disp', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
-            if (arg_types[0].ismatrix) {
+            if (args[0] == null) {
+                return null; // occurs when calling disp(sprintf(...)) 
+            } else if (arg_types[0].ismatrix) {
                 return 'printM';
             } else {
                 return 'printf';
@@ -3978,31 +3980,42 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS
         fun_matlab: 'sprintf', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
-            if (args.length == 1) {
+            if (args[0] == "disp") {
                 return 'printf';
-            }
-            if (arg_types[1].ismatrix) {
-                return 'printM';
             } else {
-                return 'printf';
+                return 'sprintf';
             }
-        },  
+        },
         args_transform: (args, arg_types, outs) => {
-            if (args.length == 1) {
-                return ['"\\n%s\\n"', args[0]];
-            }
-            if (arg_types[1].ismatrix) {
-                return [args[1]];
-            } else {
+            if (args[0] == "disp") {
+                args.shift();
                 for (let i = 0; i < args.length; i++) {
                     args[i] = args[i].replace(/'/g, '"');
                 }
+                if (args.length == 1) {
+                    return ['"\\n%s\\n"', args[0]];
+                }
+                
                 args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
-                //return [args[0], args[1]];
                 return args;
             }
+            
+            let buffer = 'str';
+            if (outs.length > 0) {
+                buffer = outs[0];
+            }
+            for (let i = 0; i < args.length; i++) {
+                args[i] = args[i].replace(/'/g, '"');
+            }
+            if (args.length == 1) {
+                return [buffer, '"\\n%s\\n"', args[0]];
+            }
+            
+            args[0] = args[0].replace(/stdout/g, '"\\n%s\\n"');
+            args.unshift(buffer);
+            return args;
         },
-		outs_transform: (args, arg_types, outs) => outs,
+		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -4010,7 +4023,23 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         return_type: (args, arg_types, outs) => null,
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            if (outs.length > 0) {
+                let init_var: InitVar[] = [];
+                init_var.push({
+                    name: outs[0],
+                    val: null,
+                    type: 'char',
+                    ndim: 1,
+                    dim: [50],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                })
+                return init_var;
+            }
+        },
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
     },

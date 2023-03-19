@@ -1,3 +1,3 @@
-function b = myfun3(a)
+function b = myfun3(fileID, fileID, a)
     b = a^2;
 end

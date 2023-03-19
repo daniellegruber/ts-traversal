@@ -18,7 +18,7 @@ int main(void) {
 	int F1;
 	int G1;
 	myfun1(1, 2, &F1, &G1);
-	int b = myfun3(4);
+	unknown b = myfun3(4);
 	printf("\n%d\n", b);
 	return 0;
 }

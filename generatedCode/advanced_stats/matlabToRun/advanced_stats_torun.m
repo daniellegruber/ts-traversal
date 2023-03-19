@@ -86,64 +86,6 @@ double_stats(fileID, a);
 
 
 
-	for i=(var(a, 0, 1)-5):1.0:(var(a, 0, 1)+5)
-		sprintf("v: %.3f\n", i);
-		[h, pval, ci, stats] = vartest(a, i);
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, ci(1), ci(2), stats.chisqstat, stats.df);
-		% sprintf("h: %d\npval: %.2f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, stats.chisqstat, stats.df);
-	end
-
-end
 
 
 
-	for i=(var(a, 0, 1)-5):1.0:(var(a, 0, 1)+5)
-		sprintf("v: %.3f\n", i);
-		[h, pval, ci, stats] = vartest(a, i);
-		% sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, ci(1), ci(2), stats.chisqstat, stats.df);
-		% sprintf("h: %d\npval: %.2f\nchisqstat: %.3f\ndf: %.3f\n", h, pval, stats.chisqstat, stats.df);
-	end
-end
-
-
-	end
-
-	% Exponential PDF
-	for lambda=0.05:0.05:4.95
-		dispArr(fileID, exppdf(a, lambda));
-	end
-
-	% Chi-square PDF
-	for n=0.05:0.05:4.95
-		sprintf("n = %.3f\n", n);
-		dispArr(fileID, chi2pdf(a, n));
-	end
-
-	% Gamma PDF
-	for i=0.25:0.25:1.75
-		for j=0.25:0.25:1.75
-			dispArr(fileID, gampdf(a, i, j));
-		end
-	end
-
-	% Lognormal PDF
-	for mu = -2:0.5:5
-		for sd=0.5:0.5:5
-			dispArr(fileID, lognpdf(a, mu, sd));
-		end
-	end
-
-	% Normal PDF
-	for mu = -2:0.5:5
-		for sd=0.5:0.5:5
-			dispArr(fileID, normpdf(a, mu, sd));
-		end
-	end
-
-	% Uniform discrete PDF
-	for n=1:9
-		sprintf("n = %d\n",n);
-		dispArr(fileID, unidpdf(a, n));
-	end
-
-end

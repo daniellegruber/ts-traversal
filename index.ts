@@ -70,6 +70,9 @@ if (show_output==1) {
 
 if (!fs.existsSync(`${out_folder}/matlabToRun`)){
     fs.mkdirSync(`${out_folder}/matlabToRun`);
+} else {
+    fs.rmSync(`${out_folder}/matlabToRun`, { recursive: true, force: true });
+    fs.mkdirSync(`${out_folder}/matlabToRun`);
 }
 for (let i = 0; i < custom_functions.length; i ++) {
     writeToFile(`${out_folder}/matlabToRun`, `${custom_functions[i].name}.m`, custom_functions[i].def_node.text);

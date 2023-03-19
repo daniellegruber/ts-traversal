@@ -68,14 +68,14 @@ matrices{14} = [1,1,0;   0,1,0;   0,0,0];
 matrices{15} = [3,4,3;   -1,0,-1;   1,2,3]; % Returns slightly different eigenvectors compared to the C output
 
 for index=1:14
-	sprintf(stdout, 'Original\n');
+	dispArr(fileID, sprintf('Original\n'));
 	dispArr(fileID, matrices{index});
 
 	[V, lambda] = eig(matrices{index});
 
-	sprintf(stdout, 'Eigenvalues:\n');
+	dispArr(fileID, sprintf('Eigenvalues:\n'));
 	dispArr(fileID, lambda);
 
-	sprintf(stdout, 'Eigenvectors:\n');
+	dispArr(fileID, sprintf('Eigenvectors:\n'));
 	dispArr(fileID, V);
 end

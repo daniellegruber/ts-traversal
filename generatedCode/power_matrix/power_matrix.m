@@ -157,27 +157,28 @@ matrices{12} = [11.25, -7.525, -1.45;    11, -6.9, -2.2;    5.5, -5.45, 2.9];
 
 
 for index=3:12
-	sprintf(stdout, 'Original\n');
+	disp(sprintf('Original\n'));
 	disp(matrices{index});
 
-	sprintf(stdout, 'Integer exponents\n');
+	disp(sprintf('Integer exponents\n'));
 	for i=-4:4
 		disp(matrices{index}^i);
 	end
 
-	sprintf(stdout, 'Double exponents\n');
+	disp(sprintf('Double exponents\n'));
 	for i=-3:0.2:1.9
-		sprintf(stdout, 'Exponent: %.4f\n', i);
+		disp(sprintf(stdout, 'Exponent: %.4f\n', i));
 		disp(matrices{index}^i);
 	end
 
-	sprintf(stdout, 'Complex exponents\n');
+	disp(sprintf('Complex exponents\n'));
 	for i=-3:0.2:3
 		for j=-3:0.2:3
 			if j == 0
 				continue
 			end
-			sprintf(stdout, 'Exponent: %.4f + %.4fi\n', i, j);
+			mystr = sprintf('Exponent: %.4f + %.4fi\n', i, j);
+			disp(mystr);
 			disp(matrices{index}^(i+j*1i));
 		end
 	end

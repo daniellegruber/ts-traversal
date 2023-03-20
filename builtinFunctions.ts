@@ -3872,7 +3872,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS https://www.tutorialspoint.com/c_standard_library/c_function_printf.htm
         fun_matlab: 'disp', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
-            if (args[0] == null) {
+            if (arg_types[0].type == "dynamic" || args[0] == null) {
                 return null; // occurs when calling disp(sprintf(...)) 
             } else if (arg_types[0].ismatrix) {
                 return 'printM';
@@ -3905,7 +3905,31 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => null,
-        push_main_before: (args, arg_types, outs) => null,
+        //push_main_before: (args, arg_types, outs) => null,
+        push_main_before: (args, arg_types, outs) => {
+            if (arg_types[0].type == "dynamic") {
+return `switch(${args[0]}.type) {
+\tcase 0:
+\tprintf("\\n%d\\n", ${args[0]}.data.ival);
+\tbreak;
+        
+\tcase 1:
+\tprintf("\\n%f\\n", ${args[0]}.data.dval);
+\tbreak;
+        
+\tcase 2:
+\tprintf("\\n%f\\n", ${args[0]}.data.cval);
+\tbreak;
+        
+\tcase 3:
+\tprintf("\\n%s\\n", ${args[0]}.data.chval);
+\tbreak;
+}`;
+            }
+            else {
+                return null;
+            }
+        },
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null,

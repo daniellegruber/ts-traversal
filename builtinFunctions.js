@@ -3814,7 +3814,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'disp',
         fun_c: function (args, arg_types, outs, fun_matlab) {
-            if (args[0] == null) {
+            if (arg_types[0].type == "dynamic" || args[0] == null) {
                 return null; // occurs when calling disp(sprintf(...)) 
             }
             else if (arg_types[0].ismatrix) {
@@ -3852,7 +3852,15 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) { return null; },
-        push_main_before: function (args, arg_types, outs) { return null; },
+        //push_main_before: (args, arg_types, outs) => null,
+        push_main_before: function (args, arg_types, outs) {
+            if (arg_types[0].type == "dynamic") {
+                return "switch(".concat(args[0], ".type) {\n\tcase 0:\n\tprintf(\"\\n%d\\n\", ").concat(args[0], ".data.ival);\n\tbreak;\n        \n\tcase 1:\n\tprintf(\"\\n%f\\n\", ").concat(args[0], ".data.dval);\n\tbreak;\n        \n\tcase 2:\n\tprintf(\"\\n%f\\n\", ").concat(args[0], ".data.cval);\n\tbreak;\n        \n\tcase 3:\n\tprintf(\"\\n%s\\n\", ").concat(args[0], ".data.chval);\n\tbreak;\n}");
+            }
+            else {
+                return null;
+            }
+        },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; },
         tmp_out_transform: function (args, arg_types, outs) { return null; },

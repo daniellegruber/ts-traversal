@@ -421,16 +421,16 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     numCellStruct += 1;
                     if (numCellStruct == 1) {
 main_function.unshift(
-    `// Structure for cell arrays
-    struct cell {
-    \tint type;
-    \tunion {
-    \t\tint ival;
-    \t\tdouble dval;
-    \t\tcomplex double cval;
-    \t\tchar chval[${MAXCHAR}];
-    \t} data;
-    };`);
+`\t// Structure for cell arrays
+\tstruct cell {
+\t\tint type;
+\t\tunion {
+\t\t\tint ival;
+\t\t\tdouble dval;
+\t\t\tcomplex double cval;
+\t\t\tchar chval[${MAXCHAR}];
+\t\t} data;
+\t};`);
                         }
                         let expression = [];
                         expression.push(`struct cell ${outs[0]}[${node.rightNode.namedChildCount}];`);
@@ -457,7 +457,7 @@ main_function.unshift(
                         }
                         updateFunParams(0);
                         [main_function, function_definitions] = pushToMain(expression.join("\n") + "\n", fun_params);
-                        let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                        /*let tmp_iter = generateTmpVar("iter", tmp_tbl);
                         updateFunParams(0);
 [main_function, function_definitions] = pushToMain(`
 for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp_iter}++) {
@@ -479,7 +479,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
 \t\tbreak;
 \t}
 }
-`, fun_params);
+`, fun_params);*/
                     } else {
                         let obj = type_to_matrix_type.find(x => x.type === type);
                         if (obj != null) {
@@ -904,23 +904,14 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             }
             
             case g.SyntaxType.CellSubscript: {
-                
-                /*`// Structure for cell arrays
-                struct cell {
-                \tint type;
-                \tunion {
-                \t\tint ival;
-                \t\tdouble dval;
-                \t\tcomplex double cval;
-                \t\tchar chval[${MAXCHAR}];
-                \t} data;
-                };`*/
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 
                 // only use indexM if subscript is on rhs
                 let count = '';
                 let obj = tmp_var_types.find(x => /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+                
                 if (obj == null || obj == undefined) {
-                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    //let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
                     let tmp_dim = generateTmpVar("dim", tmp_tbl);
                     count = tmp_ndim.match(/\d+/)[0];
@@ -962,10 +953,29 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     count = obj.name.match(/\d+/)[0];
                 }
                 let index = getSubscriptIdx(node, count);
+                
+                if (type == "heterogeneous") {
+                    let tmp_var = generateTmpVar("tmp", tmp_tbl);
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(`struct cell ${tmp_var} = ${node.valueNode.text}[${index[0]}];`, fun_params);
+                    tmp_var_types.push({
+                        name: tmp_var,
+                        type: 'dynamic',
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: false,
+                        initialized: true,
+                        scope: findVarScope(node, block_idxs, current_code, debug)
+                    });
+                    return tmp_var;
+                }
                         
                 if (!lhs_flag) { // subscript is on rhs
                     let obj = filterByScope(alias_tbl, node.text, node, 0);
-                    let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    //let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
  
                     if (obj == null || obj == undefined) {
                         return `${transformNode(node.valueNode)}[${index[0]}]`;
@@ -992,6 +1002,14 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     args.push(transformNode(arg));
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     
+                    // If a tmp var, infer type by name
+                    let match = args[i].match(/([a-zA-Z_]+)(\d+)/);
+                    if (match != null) {
+                        let tmpvar_obj = tmp_tbl.find(x => x.name == match[1] && x.count == match[2]);
+                        if (tmpvar_obj != null && tmpvar_obj != undefined) {
+                            [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
+                        }
+                    }
                     if (/tmp.*\[0\]/.test(args[i])) {
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
                     }

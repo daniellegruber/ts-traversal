@@ -10,16 +10,16 @@
 // Entry-point function
 int main(void) {
 
-// Structure for cell arrays
-    struct cell {
-    	int type;
-    	union {
-    		int ival;
-    		double dval;
-    		complex double cval;
-    		char chval[20];
-    	} data;
-    };
+	// Structure for cell arrays
+	struct cell {
+		int type;
+		union {
+			int ival;
+			double dval;
+			complex double cval;
+			char chval[20];
+		} data;
+	};
 	int A = 1;
 	
 	int ndim1 = 2;
@@ -40,30 +40,30 @@ int main(void) {
 	C[2].type = 1;
 	C[2].data.dval = 2.0;
 	
-	
-	for (int iter1 = 0; iter1 < 3; iter1++) {
-		switch(C[iter1].type) {
+	for (int i = 1; i <= 3; ++ i) {
+		int ndim2 = 2;
+		int dim2[2] = {1,15};
+		int idx1 = convertSubscript(ndim2, dim2, i);
+		struct cell tmp1 = C[idx1];
+		switch(tmp1.type) {
 			case 0:
-			printf("%d\n", C[iter1].data.ival);
+			printf("\n%d\n", tmp1.data.ival);
 			break;
-	        
+		        
 			case 1:
-			printf("%f\n", C[iter1].data.dval);
+			printf("\n%f\n", tmp1.data.dval);
 			break;
-	        
+		        
 			case 2:
-			printf("%f\n", C[iter1].data.cval);
+			printf("\n%f\n", tmp1.data.cval);
 			break;
-	        
+		        
 			case 3:
-			printf("%s\n", C[iter1].data.chval);
+			printf("\n%s\n", tmp1.data.chval);
 			break;
 		}
-	}
 	
-	int ndim2 = 2;
-	int dim2[2] = {1,15};
-	int idx1 = convertSubscript(ndim2, dim2, 1);
-	printf("\n%d\n", C[idx1]);
+	}
+	//disp(C{1});
 	return 0;
 }

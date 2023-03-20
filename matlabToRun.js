@@ -16,7 +16,6 @@ var out_folder = "".concat(args[1], "/generatedCode/").concat(name);
 }*/
 if (!fs.existsSync("".concat(out_folder, "/matlabToRun/").concat(name, "_torun.m"))) {
     var custom_fun_1 = (0, helperFunctions_1.getFilesInPath)("".concat(out_folder, "/matlabToRun"));
-    console.log(custom_fun_1);
     //fs.copyFile(`${OCTAVEC}/tests/${mfile}`, `${out_folder}/${mfile}`, (err) => {
     fs.copyFile("".concat(out_folder, "/").concat(mfile), "".concat(out_folder, "/matlabToRun/").concat(name, "_torun.m"), function (err) {
         if (err)
@@ -38,15 +37,12 @@ if (!fs.existsSync("".concat(out_folder, "/matlabToRun/").concat(name, "_torun.m
         }
         // Replace disp with dispArr
         code = code.replace(/disp\(/g, 'dispArr(fileID, ');
-        //console.log(fun_defs);
-        if (custom_fun_1 != null) {
-            for (var i = 0; i < custom_fun_1.length; i++) {
-                var fun_name = path.parse(custom_fun_1[i]).name;
-                var re = new RegExp("".concat(fun_name, "\\("), 'g');
-                code = code.replace(re, "".concat(fun_name, "(fileID, "));
-                for (var j = 0; j < custom_fun_1.length; j++) {
-                    fun_defs[j] = fun_defs[j].replace(re, "".concat(fun_name, "(fileID, "));
-                }
+        for (var i = 0; i < custom_fun_1.length; i++) {
+            var fun_name = path.parse(custom_fun_1[i]).name;
+            var re = new RegExp("".concat(fun_name, "\\("), 'g');
+            code = code.replace(re, "".concat(fun_name, "(fileID, "));
+            for (var j = 0; j < custom_fun_1.length; j++) {
+                fun_defs[j] = fun_defs[j].replace(re, "".concat(fun_name, "(fileID, "));
             }
         }
         for (var i = 0; i < fun_defs.length; i++) {

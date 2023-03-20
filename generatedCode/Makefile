@@ -186,7 +186,7 @@ compareall:
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 			sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-			sed -z -E 's/\+0i//g') > $$fulldir/f1; \
+			sed -z -E 's/\+0i//g' | sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f1; \
 		timeout 120 matlab -nodisplay -nosplash < $$fulldir/matlabToRun/$${dir}_torun.m; \
 		(cat $$fulldir/output.txt 2>/dev/null | \
 			sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
@@ -234,7 +234,7 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/\+0i//g') > $$fulldir/f1; \
+		sed -z -E 's/\+0i//g' | sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f1; \
 	matlab -nodisplay -nosplash < $$fulldir/matlabToRun/$(ARGS)_torun.m; \
 	(cat $$fulldir/output.txt 2>/dev/null | \
 		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
@@ -246,8 +246,7 @@ compareone:
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
 		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
-		sed -z -E 's/\+0i//g' | \
-		sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f2; \
+		sed -z -E 's/\+0i//g' | sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f2; \
 	diff -wi $$fulldir/f1 $$fulldir/f2 && \
 		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
 		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\

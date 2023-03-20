@@ -1,6 +1,6 @@
 function dispArr(fileID, A)
     if ischar(A)
-       fprintf(fileID, "%s\t", A);
+       fprintf(fileID, "%s\n", A);
     else
         for l = 0:size(A, 4)-1
             for k = 0:size(A,3)-1

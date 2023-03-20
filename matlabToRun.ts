@@ -48,7 +48,6 @@ if (!fs.existsSync(`${out_folder}/matlabToRun/${name}_torun.m`)){
             let fun_name = path.parse(custom_fun[i]).name;
             let re = new RegExp(`${fun_name}\\(`, 'g');
             code = code.replace(re, `${fun_name}(fileID, `);
-            
             for (let j = 0; j < custom_fun.length; j++) {
                 fun_defs[j] = fun_defs[j].replace(re, `${fun_name}(fileID, `);
             }

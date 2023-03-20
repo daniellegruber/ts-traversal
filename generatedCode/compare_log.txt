@@ -7,9 +7,11 @@ areEqual_matrix
 cc_matrix_multiplication
 cd_matrix_multiplication
 ceil_matrix
+cell_test
 ci_matrix_multiplication
 create_1D_matrix
 create_2D_matrix
+create_fails_negative_dims
 create_identity_matrix
 create_one_matrix
 create_zero_matrix
@@ -22,6 +24,7 @@ elem_multiply_matrix
 elem_power_matrix
 elem_trig_matrix
 equal_matrix
+external_fun
 floor_matrix
 ic_matrix_multiplication
 id_matrix_multiplication
@@ -42,13 +45,10 @@ transpose_matrix
 ERROR
 advanced_stats
 basic_stats
-cell_test
 comparison_ops_matrix
-create_fails_negative_dims
 determinant_matrix
 eigen
 elem_scalarpower_matrix
-external_fun
 filterM
 fourier
 hamming_hanning

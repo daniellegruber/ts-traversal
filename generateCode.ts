@@ -970,6 +970,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         initialized: true,
                         scope: findVarScope(node, block_idxs, current_code, debug)
                     });
+                    alias_tbl = pushAliasTbl(node.text, tmp_var, node, fun_params);
                     return tmp_var;
                 }
                         
@@ -1002,14 +1003,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     args.push(transformNode(arg));
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     
-                    // If a tmp var, infer type by name
-                    let match = args[i].match(/([a-zA-Z_]+)(\d+)/);
-                    if (match != null) {
-                        let tmpvar_obj = tmp_tbl.find(x => x.name == match[1] && x.count == match[2]);
-                        if (tmpvar_obj != null && tmpvar_obj != undefined) {
-                            [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
-                        }
-                    }
                     if (/tmp.*\[0\]/.test(args[i])) {
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
                     }

@@ -57,6 +57,13 @@ if (show_output==1) {
     console.log("---------------------\n");
 }
 
+if (!fs.existsSync(`${out_folder}/matlabToRun`)){
+    fs.mkdirSync(`${out_folder}/matlabToRun`);
+} else {
+    fs.rmSync(`${out_folder}/matlabToRun`, { recursive: true, force: true });
+    fs.mkdirSync(`${out_folder}/matlabToRun`);
+}
+
 var files = getNonClassFilesInPath(search_folder);
 files = files.filter(function(e) { return path.parse(e).name !== path.parse(args[0]).name });
 
@@ -68,12 +75,6 @@ if (show_output==1) {
     console.log("---------------------\n");
 }
 
-if (!fs.existsSync(`${out_folder}/matlabToRun`)){
-    fs.mkdirSync(`${out_folder}/matlabToRun`);
-} else {
-    fs.rmSync(`${out_folder}/matlabToRun`, { recursive: true, force: true });
-    fs.mkdirSync(`${out_folder}/matlabToRun`);
-}
 for (let i = 0; i < custom_functions.length; i ++) {
     writeToFile(`${out_folder}/matlabToRun`, `${custom_functions[i].name}.m`, custom_functions[i].def_node.text);
 }

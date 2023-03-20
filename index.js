@@ -46,6 +46,13 @@ if (show_output == 1) {
     console.log("Source code:\n" + sourceCode);
     console.log("---------------------\n");
 }
+if (!fs.existsSync("".concat(out_folder, "/matlabToRun"))) {
+    fs.mkdirSync("".concat(out_folder, "/matlabToRun"));
+}
+else {
+    fs.rmSync("".concat(out_folder, "/matlabToRun"), { recursive: true, force: true });
+    fs.mkdirSync("".concat(out_folder, "/matlabToRun"));
+}
 var files = (0, helperFunctions_1.getNonClassFilesInPath)(search_folder);
 files = files.filter(function (e) { return path.parse(e).name !== path.parse(args[0]).name; });
 var var_types = [];
@@ -54,13 +61,6 @@ if (show_output == 1) {
     console.log("File traversal order");
     console.log(file_traversal_order);
     console.log("---------------------\n");
-}
-if (!fs.existsSync("".concat(out_folder, "/matlabToRun"))) {
-    fs.mkdirSync("".concat(out_folder, "/matlabToRun"));
-}
-else {
-    fs.rmSync("".concat(out_folder, "/matlabToRun"), { recursive: true, force: true });
-    fs.mkdirSync("".concat(out_folder, "/matlabToRun"));
 }
 for (var i = 0; i < custom_functions.length; i++) {
     (0, helperFunctions_1.writeToFile)("".concat(out_folder, "/matlabToRun"), "".concat(custom_functions[i].name, ".m"), custom_functions[i].def_node.text);

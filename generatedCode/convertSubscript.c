@@ -6,32 +6,6 @@
 #include <matrix.h>
 #include "./convertSubscript.h"
 
-/*int convertSubscript(int ndim, int dim[], int idx) {
-    int newidx;
-    int d0=1, d1=1, d2=1, d3=1;
-    
-    // Tmp variables
-    d3 = ceil((double) idx / (dim[0] * dim[1] * dim[2]));
-    d2 = ((int) ceil((double) idx / (dim[0] * dim[1]))) % dim[2];
-    if (d2 == 0) {
-        d2 = dim[2];
-    }
-    int tmp_var = idx % (dim[0] * dim[1]);
-    if (tmp_var == 0) {
-        tmp_var = dim[0] * dim[1];
-    }
-    d0 = tmp_var % dim[0];
-    if (d0 == 0) {
-        d0 = dim[0];
-    }
-    d1 = (tmp_var - d0)/dim[0] + 1;
-        
-    
-    // Calculate idx
-    newidx = (d1-1) + (d0-1) * dim[1] + (d2-1) * dim[0] * dim[1] + (d3-1) * dim[0] * dim[1] * dim[2];
-    return newidx;
-}*/
-
 int convertSubscript(int ndim, int dim[], int idx) {
     int newidx;
     int d0=1, d1=1, d2=1, d3=1;

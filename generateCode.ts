@@ -605,8 +605,8 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     }
                 //}
                
-                let [left_args, , ] = parseNode(node.leftNode, true);
-                let processed_args = [];
+                //let [left_args, , ] = parseNode(node.leftNode, true);
+                /*let processed_args = [];
                 
                 for (let i = 0; i < left_args.length; i ++) {
                     //left_args[i] = transformNode(left_args[i]);
@@ -617,8 +617,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     } else {
                         processed_args.push(transformNode(left_args[i]));
                     }
-                }
-                
+                }*/
                 if (node.leftNode.type == g.SyntaxType.Matrix) {
                     for (let j = 0; j < node.leftNode.namedChildCount; j++) {
                         let child = node.leftNode.namedChildren[j];
@@ -691,13 +690,15 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                     // If LHS is a subscript
                     if (node.leftNode.type == g.SyntaxType.CellSubscript) {
 
-                        let scope = findVarScope(node, block_idxs, current_code, debug);
+                        /*let scope = findVarScope(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
                             scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
                             scope = scope[scope.length - 1];
                         }
                         updateFunParams(0);
                         alias_tbl = pushAliasTbl(node.leftNode.text, rhs, node, fun_params);
+                        //console.log("HELLO!!");
+                        //console.log(alias_tbl[alias_tbl.length - 1]);
                         let obj = filterByScope(tmp_var_types, node.leftNode.valueNode.text, node, 0);
                         tmp_var_types.push({
                             name: rhs,
@@ -710,19 +711,18 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             isstruct: false,
                             initialized: true,
                             scope: obj.scope
-                        });
+                        });*/
                         
                     } else if (is_subscript[0]) {
                         // Convert to linear idx
                         let obj4 = tmp_var_types.filter(x => /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                         let idx = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
-
+                        
                         let scope = findVarScope(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
                             scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
                             scope = scope[scope.length - 1];
                         }
-                        
                         let obj6 = tmp_tbl.find(x => x.name == "lhs_data");
                         let new_flag = true;
                         let tmp_lhs = "lhs_data";
@@ -742,7 +742,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                                 tmp_lhs = obj7.tmp_var;
                             }
                         }
-                        
                         if (new_flag) {
                             let tmp_data = generateTmpVar("data", tmp_tbl);
                             tmp_lhs = generateTmpVar("lhs_data", tmp_tbl);
@@ -754,7 +753,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             if (obj8 != null && obj8 != undefined) {
                                 [ltype,,,,,,] = inferTypeByName(`${node.leftNode.valueNode.text}_init`, node, tmp_var_types, custom_functions, alias_tbl, debug);
                             }
-                            
                             let tmp_block_level = block_level;
                             let transformed_lhs_valueNode = transformNode(node.leftNode.valueNode);
                             updateFunParams(0);
@@ -859,11 +857,13 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 initialized: true,
                                 scope: lhs_scope
                             });
-                            
-                            /*main_queue.push({
-                                expression: `${transformNode(node.leftNode.valueNode)} = ${tmp_mat};`,
-                                condition: condition
-                            });*/
+                            // SPONGEBOB
+                            if (node.leftNode.valueNode.type == g.SyntaxType.CellSubscript) {
+                                main_queue.push({
+                                    expression: `${transformed_lhs_valueNode} = ${tmp_mat};`,
+                                    condition: condition
+                                });
+                            }
                             
                         } else {
                             if (idx.length == 1) {
@@ -909,7 +909,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 // only use indexM if subscript is on rhs
                 let count = '';
                 let obj = tmp_var_types.find(x => /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
-                
                 if (obj == null || obj == undefined) {
                     //let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
@@ -952,9 +951,9 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 } else {
                     count = obj.name.match(/\d+/)[0];
                 }
-                let index = getSubscriptIdx(node, count);
-                
+                //let index = getSubscriptIdx(node, count);
                 if (type == "heterogeneous") {
+                    let index = getSubscriptIdx(node, count);
                     let tmp_var = generateTmpVar("tmp", tmp_tbl);
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(`struct cell ${tmp_var} = ${node.valueNode.text}[${index[0]}];`, fun_params);
@@ -974,19 +973,19 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     return tmp_var;
                 }
                         
-                if (!lhs_flag) { // subscript is on rhs
-                    let obj = filterByScope(alias_tbl, node.text, node, 0);
-                    //let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
- 
-                    if (obj == null || obj == undefined) {
-                        return `${transformNode(node.valueNode)}[${index[0]}]`;
-                    } else {
-                        tmp_var = obj.tmp_var;
-                        return tmp_var;
-                    }
-                    
+                //if (!lhs_flag) {
+                let obj2 = filterByScope(alias_tbl, node.text, node, 0);
+                if (obj2 == null || obj2 == undefined) {
+                    let index = getSubscriptIdx(node, count);
+                    alias_tbl = pushAliasTbl(node.text, `${transformNode(node.valueNode)}[${index[0]}]`, node, fun_params);
+                    return `${transformNode(node.valueNode)}[${index[0]}]`;
+                } else {
+                    tmp_var = obj2.tmp_var;
+                    return tmp_var;
                 }
-                return `${node.valueNode.text}[${index[0]}]`;
+                //}
+                
+                //return `${node.valueNode.text}[${index[0]}]`;
                 break;
             }
                 
@@ -1486,18 +1485,19 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         }
                     }
                 }   
+
                 if (node.parent.type == g.SyntaxType.Assignment) {
                     if (node.parent.leftNode.text == node.text) {
                         return node.text;
                     }
                 }
-                
+
                 let obj = filterByScope(alias_tbl, node.text, node, 0);
-                
+
                 if (obj != null && obj != undefined) {
                     return obj.tmp_var;
                 } 
-                
+
                 return node.text;
                 
                 break;

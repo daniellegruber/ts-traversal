@@ -36,7 +36,7 @@ int main(void) {
 	int dim4[2] = {3,4};
 	int scalar1 = 10;
 	Matrix * tmp4 = scaleM(onesM(ndim4, dim4), &scalar1, 0);
-	Matrix * tmp5 = leM(a, tmp4);
+	Matrix * tmp5 = matlab_leM(a, tmp4);
 	printM(tmp5);
 	//randn_test
 	randomSeed();

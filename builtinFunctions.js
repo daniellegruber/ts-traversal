@@ -724,16 +724,16 @@ exports.operatorMapping = [
             var left_ismatrix = arg_types[0].ismatrix;
             if (left_ismatrix) {
                 if (fun_matlab == "<") {
-                    return 'ltM';
+                    return 'matlab_ltM';
                 }
                 else if (fun_matlab == "<=") {
-                    return 'leM';
+                    return 'matlab_leM';
                 }
                 else if (fun_matlab == ">") {
-                    return 'gtM';
+                    return 'matlab_gtM';
                 }
                 else if (fun_matlab == ">=") {
-                    return 'geM';
+                    return 'matlab_geM';
                 }
             }
             else {

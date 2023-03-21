@@ -207,21 +207,40 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                 //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
                     let name = node.leftNode.valueNode.text;
                     let v3 = filterByScope(var_types, name, node, 0);
-                    if (v3 != null && v3 != undefined) {
-                        var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v3)}); // replace if already in var_types
-                        
+                    if (node.leftNode.type == g.SyntaxType.CellSubscript) {
+                        var_types = var_types.filter(x => x.name != node.leftNode.text);
                         var_types.push({
-                            name: `${name}_init`,
-                            type: v3.type,
-                            ndim: v3.ndim,
-                            dim: v3.dim,
-                            ismatrix: v3.ismatrix,
-                            isvector: v3.isvector,
-                            ispointer: v3.ispointer,
+                            name: node.leftNode.text,
+                            type: type, 
+                            ndim: ndim,
+                            dim: dim,
+                            ismatrix: ismatrix,
+                            isvector: false,
+                            ispointer: false,
                             isstruct: false,
                             initialized: false,
-                            scope: v3.scope
+                            scope: scope
                         });
+                    }
+                            
+                    if (v3 != null && v3 != undefined) {
+                        var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v3)}); // replace if already in var_types
+                        //var_types = var_types.filter(x => x.name != `${name}_init`);
+                        let obj2 = var_types.find(x => x.name === `${name}_init`);
+                        if (obj2 == null || obj2 == undefined) {
+                            var_types.push({
+                                name: `${name}_init`,
+                                type: v3.type,
+                                ndim: v3.ndim,
+                                dim: v3.dim,
+                                ismatrix: v3.ismatrix,
+                                isvector: v3.isvector,
+                                ispointer: v3.ispointer,
+                                isstruct: false,
+                                initialized: false,
+                                scope: v3.scope
+                            });
+                        }
                         
                         v3.type = type;
                         
@@ -269,17 +288,17 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                         }
                     } else {
                             v3 = { 
-                            name: name, 
-                            type: type, 
-                            ndim: 2,
-                            dim: [1,1],
-                            ismatrix: true,
-                            isvector: false,
-                            ispointer: false,
-                            isstruct: false,
-                            initialized: false,
-                            scope: scope
-                        };
+                                name: name, 
+                                type: type, 
+                                ndim: 2,
+                                dim: [1,1],
+                                ismatrix: true,
+                                isvector: false,
+                                ispointer: false,
+                                isstruct: false,
+                                initialized: false,
+                                scope: scope
+                            };
                     }
                     
                     var_types.push(v3);

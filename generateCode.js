@@ -367,7 +367,7 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                         var types = [];
                         var _loop_1 = function (i) {
                             var child = node.rightNode.namedChildren[i];
-                            var _58 = (0, typeInference_1.inferType)(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _58[0], child_ndim = _58[1], child_dim = _58[2], child_ismatrix = _58[3], child_ispointer = _58[4], child_isstruct = _58[5], c_2 = _58[6];
+                            var _57 = (0, typeInference_1.inferType)(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _57[0], child_ndim = _57[1], child_dim = _57[2], child_ismatrix = _57[3], child_ispointer = _57[4], child_isstruct = _57[5], c_2 = _57[6];
                             custom_functions = c_2;
                             if (child.type == "matrix" /* g.SyntaxType.Matrix */) {
                                 //expression1.push(`Matrix f${i}[${numel}];`);
@@ -537,19 +537,19 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     }
                 }
                 //}
-                var _42 = parseNode(node.leftNode, true), left_args = _42[0];
-                var processed_args = [];
-                for (var i = 0; i < left_args.length; i++) {
+                //let [left_args, , ] = parseNode(node.leftNode, true);
+                /*let processed_args = [];
+                
+                for (let i = 0; i < left_args.length; i ++) {
                     //left_args[i] = transformNode(left_args[i]);
                     if (left_args[i].namedChildCount > 0) {
-                        for (var j = 0; j < left_args[i].namedChildCount; j++) {
+                        for (let j = 0; j < left_args[i].namedChildCount; j++) {
                             processed_args.push(transformNode(left_args[i].namedChildren[j]));
                         }
-                    }
-                    else {
+                    } else {
                         processed_args.push(transformNode(left_args[i]));
                     }
-                }
+                }*/
                 if (node.leftNode.type == "matrix" /* g.SyntaxType.Matrix */) {
                     for (var j = 0; j < node.leftNode.namedChildCount; j++) {
                         var child = node.leftNode.namedChildren[j];
@@ -561,10 +561,10 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             var tmp_data = (0, helperFunctions_1.generateTmpVar)("data", tmp_tbl);
                             var tmp_lhs = (0, helperFunctions_1.generateTmpVar)("lhs_data", tmp_tbl);
                             var tmp_rhs = (0, helperFunctions_1.generateTmpVar)("rhs_data", tmp_tbl);
-                            var _43 = (0, typeInference_1.inferType)(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ltype = _43[0];
+                            var _42 = (0, typeInference_1.inferType)(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ltype = _42[0];
                             updateFunParams(0);
                             _y = (0, modifyCode_1.pushToMain)("".concat(type, "* ").concat(tmp_lhs, " = ").concat(type.charAt(0), "_to_").concat(type.charAt(0), "(").concat(transformNode(child.valueNode), ");"), fun_params), main_function = _y[0], function_definitions = _y[1];
-                            var _44 = (0, typeInference_1.inferType)(outs[j], tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ismatrix_1 = _44[3], c_3 = _44[6];
+                            var _43 = (0, typeInference_1.inferType)(outs[j], tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ismatrix_1 = _43[3], c_3 = _43[6];
                             custom_functions = c_3;
                             // If RHS is matrix
                             if (ismatrix_1) {
@@ -614,14 +614,16 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 else {
                     // If LHS is a subscript
                     if (node.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
-                        var scope_1 = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
+                        /*let scope = findVarScope(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
-                            scope_1 = block_idxs.filter(function (e) { return e[2] == scope_1[2] - loop_iterators.length; });
-                            scope_1 = scope_1[scope_1.length - 1];
+                            scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
+                            scope = scope[scope.length - 1];
                         }
                         updateFunParams(0);
-                        alias_tbl = (0, helperFunctions_1.pushAliasTbl)(node.leftNode.text, rhs, node, fun_params);
-                        var obj = (0, helperFunctions_1.filterByScope)(tmp_var_types, node.leftNode.valueNode.text, node, 0);
+                        alias_tbl = pushAliasTbl(node.leftNode.text, rhs, node, fun_params);
+                        //console.log("HELLO!!");
+                        //console.log(alias_tbl[alias_tbl.length - 1]);
+                        let obj = filterByScope(tmp_var_types, node.leftNode.valueNode.text, node, 0);
                         tmp_var_types.push({
                             name: rhs,
                             type: type,
@@ -633,16 +635,16 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             isstruct: false,
                             initialized: true,
                             scope: obj.scope
-                        });
+                        });*/
                     }
                     else if (is_subscript[0]) {
                         // Convert to linear idx
                         var obj4 = tmp_var_types.filter(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
                         var idx_3 = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
-                        var scope_2 = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
+                        var scope_1 = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
-                            scope_2 = block_idxs.filter(function (e) { return e[2] == scope_2[2] - loop_iterators.length; });
-                            scope_2 = scope_2[scope_2.length - 1];
+                            scope_1 = block_idxs.filter(function (e) { return e[2] == scope_1[2] - loop_iterators.length; });
+                            scope_1 = scope_1[scope_1.length - 1];
                         }
                         var obj6_1 = tmp_tbl.find(function (x) { return x.name == "lhs_data"; });
                         var new_flag = true;
@@ -667,10 +669,10 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             var tmp_data = (0, helperFunctions_1.generateTmpVar)("data", tmp_tbl);
                             tmp_lhs = (0, helperFunctions_1.generateTmpVar)("lhs_data", tmp_tbl);
                             var tmp_rhs = (0, helperFunctions_1.generateTmpVar)("rhs_data", tmp_tbl);
-                            var _45 = (0, typeInference_1.inferType)(outs[0], tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ismatrix_2 = _45[3], c_4 = _45[6];
+                            var _44 = (0, typeInference_1.inferType)(outs[0], tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ismatrix_2 = _44[3], c_4 = _44[6];
                             custom_functions = c_4;
                             var obj8 = (0, helperFunctions_1.filterByScope)(tmp_var_types, "".concat(node.leftNode.valueNode.text, "_init"), node, 0);
-                            var _46 = (0, typeInference_1.inferType)(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ltype = _46[0];
+                            var _45 = (0, typeInference_1.inferType)(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ltype = _45[0];
                             if (obj8 != null && obj8 != undefined) {
                                 _3 = (0, typeInference_1.inferTypeByName)("".concat(node.leftNode.valueNode.text, "_init"), node, tmp_var_types, custom_functions, alias_tbl, debug), ltype = _3[0];
                             }
@@ -760,10 +762,13 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                 initialized: true,
                                 scope: lhs_scope
                             });
-                            /*main_queue.push({
-                                expression: `${transformNode(node.leftNode.valueNode)} = ${tmp_mat};`,
-                                condition: condition
-                            });*/
+                            // SPONGEBOB
+                            if (node.leftNode.valueNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
+                                main_queue.push({
+                                    expression: "".concat(transformed_lhs_valueNode, " = ").concat(tmp_mat, ";"),
+                                    condition: condition
+                                });
+                            }
                         }
                         else {
                             if (idx_3.length == 1) {
@@ -793,15 +798,15 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
             }
             case "block" /* g.SyntaxType.Block */: {
                 var expression = [];
-                for (var _47 = 0, _48 = node.namedChildren; _47 < _48.length; _47++) {
-                    var child = _48[_47];
+                for (var _46 = 0, _47 = node.namedChildren; _46 < _47.length; _46++) {
+                    var child = _47[_46];
                     expression.push(transformNode(child));
                 }
                 return expression.join("\n");
                 break;
             }
             case "cell_subscript" /* g.SyntaxType.CellSubscript */: {
-                var _49 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_1 = _49[0], ndim_1 = _49[1], dim_1 = _49[2], ismatrix_3 = _49[3], ispointer_1 = _49[4], isstruct_1 = _49[5], c_5 = _49[6];
+                var _48 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_1 = _48[0], ndim_1 = _48[1], dim_1 = _48[2], ismatrix_3 = _48[3], ispointer_1 = _48[4], isstruct_1 = _48[5], c_5 = _48[6];
                 // only use indexM if subscript is on rhs
                 var count = '';
                 var obj = tmp_var_types.find(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
@@ -848,8 +853,9 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 else {
                     count = obj.name.match(/\d+/)[0];
                 }
-                var index = getSubscriptIdx(node, count);
+                //let index = getSubscriptIdx(node, count);
                 if (type_1 == "heterogeneous") {
+                    var index = getSubscriptIdx(node, count);
                     var tmp_var_1 = (0, helperFunctions_1.generateTmpVar)("tmp", tmp_tbl);
                     updateFunParams(0);
                     _12 = (0, modifyCode_1.pushToMain)("struct cell ".concat(tmp_var_1, " = ").concat(node.valueNode.text, "[").concat(index[0], "];"), fun_params), main_function = _12[0], function_definitions = _12[1];
@@ -868,32 +874,33 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     alias_tbl = (0, helperFunctions_1.pushAliasTbl)(node.text, tmp_var_1, node, fun_params);
                     return tmp_var_1;
                 }
-                if (!lhs_flag) { // subscript is on rhs
-                    var obj_2 = (0, helperFunctions_1.filterByScope)(alias_tbl, node.text, node, 0);
-                    //let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
-                    if (obj_2 == null || obj_2 == undefined) {
-                        return "".concat(transformNode(node.valueNode), "[").concat(index[0], "]");
-                    }
-                    else {
-                        tmp_var = obj_2.tmp_var;
-                        return tmp_var;
-                    }
+                //if (!lhs_flag) {
+                var obj2 = (0, helperFunctions_1.filterByScope)(alias_tbl, node.text, node, 0);
+                if (obj2 == null || obj2 == undefined) {
+                    var index = getSubscriptIdx(node, count);
+                    alias_tbl = (0, helperFunctions_1.pushAliasTbl)(node.text, "".concat(transformNode(node.valueNode), "[").concat(index[0], "]"), node, fun_params);
+                    return "".concat(transformNode(node.valueNode), "[").concat(index[0], "]");
                 }
-                return "".concat(node.valueNode.text, "[").concat(index[0], "]");
+                else {
+                    tmp_var = obj2.tmp_var;
+                    return tmp_var;
+                }
+                //}
+                //return `${node.valueNode.text}[${index[0]}]`;
                 break;
             }
             case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: {
                 // Is a custom function call
                 //papaya
                 var obj = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
-                var _50 = parseNode(node, false), args1 = _50[0], outs = _50[1], is_subscript = _50[2];
+                var _49 = parseNode(node, false), args1 = _49[0], outs = _49[1], is_subscript = _49[2];
                 var arg_types = [];
                 var args = [];
                 //for (let arg of args1) {
                 for (var i = 0; i < args1.length; i++) {
                     var arg = args1[i];
                     args.push(transformNode(arg));
-                    var _51 = (0, typeInference_1.inferType)(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_2 = _51[0], ndim_2 = _51[1], dim_2 = _51[2], ismatrix_4 = _51[3], ispointer_2 = _51[4], isstruct_2 = _51[5], c_6 = _51[6];
+                    var _50 = (0, typeInference_1.inferType)(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_2 = _50[0], ndim_2 = _50[1], dim_2 = _50[2], ismatrix_4 = _50[3], ispointer_2 = _50[4], isstruct_2 = _50[5], c_6 = _50[6];
                     if (/tmp.*\[0\]/.test(args[i])) {
                         _13 = (0, typeInference_1.inferTypeByName)(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug), type_2 = _13[0], ndim_2 = _13[1], dim_2 = _13[2], ismatrix_4 = _13[3], ispointer_2 = _13[4], isstruct_2 = _13[5], c_6 = _13[6];
                     }
@@ -958,18 +965,18 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 }
                 else {
                     // Is a builtin function call
-                    var obj_3 = (0, helperFunctions_1.findBuiltin)(builtin_funs, node.valueNode.text);
-                    if (obj_3 != null && obj_3 != undefined) {
-                        var req_arg_types = obj_3.req_arg_types;
-                        var init_before_1 = obj_3.init_before(args, arg_types, outs);
-                        var push_before = obj_3.push_main_before(args, arg_types, outs);
-                        var push_after = obj_3.push_main_after(args, arg_types, outs);
-                        var return_type = obj_3.return_type(args, arg_types, outs);
-                        var fun_c = obj_3.fun_c(args, arg_types, outs, node.valueNode.text);
+                    var obj_2 = (0, helperFunctions_1.findBuiltin)(builtin_funs, node.valueNode.text);
+                    if (obj_2 != null && obj_2 != undefined) {
+                        var req_arg_types = obj_2.req_arg_types;
+                        var init_before_1 = obj_2.init_before(args, arg_types, outs);
+                        var push_before = obj_2.push_main_before(args, arg_types, outs);
+                        var push_after = obj_2.push_main_after(args, arg_types, outs);
+                        var return_type = obj_2.return_type(args, arg_types, outs);
+                        var fun_c = obj_2.fun_c(args, arg_types, outs, node.valueNode.text);
                         var scope = (0, typeInference_1.findVarScope)(node, block_idxs, current_code, debug);
-                        var tmp_out_transform = obj_3.tmp_out_transform(args, arg_types, outs);
-                        var push_alias_tbl = obj_3.push_alias_tbl(args, arg_types, outs);
-                        args = obj_3.args_transform(args, arg_types, outs);
+                        var tmp_out_transform = obj_2.tmp_out_transform(args, arg_types, outs);
+                        var push_alias_tbl = obj_2.push_alias_tbl(args, arg_types, outs);
+                        args = obj_2.args_transform(args, arg_types, outs);
                         if (req_arg_types != null) {
                             for (var i = 0; i < req_arg_types.length; i++) {
                                 if (!req_arg_types[i].ismatrix && arg_types[i].ismatrix) {
@@ -988,12 +995,12 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         }
                         if (init_before_1 != null && init_before_1 != undefined) {
                             var _loop_2 = function (i) {
-                                var _59, _60;
+                                var _58, _59;
                                 if (init_before_1[i].name == "complex_one") {
                                     var obj2 = tmp_var_types.find(function (x) { return x.name === init_before_1[i].name; });
                                     if (obj2 == null || obj2 == undefined) {
                                         updateFunParams(0);
-                                        _59 = (0, modifyCode_1.pushToMain)((0, helperFunctions_1.initVar)(init_before_1[i].name, init_before_1[i].val, init_before_1[i], node), fun_params), main_function = _59[0], function_definitions = _59[1];
+                                        _58 = (0, modifyCode_1.pushToMain)((0, helperFunctions_1.initVar)(init_before_1[i].name, init_before_1[i].val, init_before_1[i], node), fun_params), main_function = _58[0], function_definitions = _58[1];
                                         tmp_var_types.push({
                                             name: init_before_1[i].name,
                                             type: init_before_1[i].type,
@@ -1025,7 +1032,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                         init_before_1[j].val = "".concat(init_before_1[j].val).replace(re, tmp_var_2);
                                     }
                                     updateFunParams(0);
-                                    _60 = (0, modifyCode_1.pushToMain)((0, helperFunctions_1.initVar)(tmp_var_2, init_before_1[i].val, init_before_1[i], node), fun_params), main_function = _60[0], function_definitions = _60[1];
+                                    _59 = (0, modifyCode_1.pushToMain)((0, helperFunctions_1.initVar)(tmp_var_2, init_before_1[i].val, init_before_1[i], node), fun_params), main_function = _59[0], function_definitions = _59[1];
                                     if (outs.length > 0 && (init_before_1[i].name == "ndim" || init_before_1[i].name == "dim")) {
                                         tmp_var_types.push({
                                             name: tmp_var_2,
@@ -1064,10 +1071,10 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         updateFunParams(0);
                         _16 = (0, modifyCode_1.pushToMain)(push_before, fun_params), main_function = _16[0], function_definitions = _16[1];
                         var n_args = node.namedChildCount - 1;
-                        if (n_args < obj_3.n_req_args && obj_3.opt_arg_defaults != null) {
-                            args = args.concat(obj_3.opt_arg_defaults.slice(0, obj_3.n_req_args - n_args));
+                        if (n_args < obj_2.n_req_args && obj_2.opt_arg_defaults != null) {
+                            args = args.concat(obj_2.opt_arg_defaults.slice(0, obj_2.n_req_args - n_args));
                         }
-                        var ptr_args = obj_3.ptr_args(arg_types, outs);
+                        var ptr_args = obj_2.ptr_args(arg_types, outs);
                         if (ptr_args != null) {
                             var ptr_declaration = [];
                             var tmp_ptr = "tmp_ptr";
@@ -1212,9 +1219,9 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         var index = [];
                         var tmp_var1_1 = (0, helperFunctions_1.generateTmpVar)("tmp_", tmp_tbl);
                         var count = '';
-                        var obj_4 = tmp_var_types.find(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
-                        if (obj_4 == null || obj_4 == undefined) {
-                            var _52 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_3 = _52[0], ndim_3 = _52[1], dim_3 = _52[2], ismatrix_5 = _52[3], ispointer_3 = _52[4], isstruct_3 = _52[5], c_7 = _52[6];
+                        var obj_3 = tmp_var_types.find(function (x) { return /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+                        if (obj_3 == null || obj_3 == undefined) {
+                            var _51 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_3 = _51[0], ndim_3 = _51[1], dim_3 = _51[2], ismatrix_5 = _51[3], ispointer_3 = _51[4], isstruct_3 = _51[5], c_7 = _51[6];
                             var tmp_ndim = (0, helperFunctions_1.generateTmpVar)("ndim", tmp_tbl);
                             var tmp_dim = (0, helperFunctions_1.generateTmpVar)("dim", tmp_tbl);
                             count = tmp_ndim.match(/\d+/)[0];
@@ -1252,7 +1259,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             _26 = (0, modifyCode_1.pushToMain)(expression.join("\n"), fun_params), main_function = _26[0], function_definitions = _26[1];
                         }
                         else {
-                            count = obj_4.name.match(/\d+/)[0];
+                            count = obj_3.name.match(/\d+/)[0];
                         }
                         var flat_idx = getSubscriptIdx(node, count);
                         if (node.namedChildCount == 2) {
@@ -1268,9 +1275,9 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         }
                         if (!lhs_flag) { // subscript is on rhs
                             //let obj = alias_tbl.find(x => x.name === node.text);
-                            var obj_5 = (0, helperFunctions_1.filterByScope)(alias_tbl, node.text, node, 0);
-                            var _53 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_4 = _53[0];
-                            if (obj_5 == null || obj_5 == undefined) {
+                            var obj_4 = (0, helperFunctions_1.filterByScope)(alias_tbl, node.text, node, 0);
+                            var _52 = (0, typeInference_1.inferType)(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_4 = _52[0];
+                            if (obj_4 == null || obj_4 == undefined) {
                                 updateFunParams(0);
                                 _27 = (0, modifyCode_1.pushToMain)("".concat(type_4, " ").concat(tmp_var, ";"), fun_params), main_function = _27[0], function_definitions = _27[1];
                                 if (index.length == 1) {
@@ -1312,7 +1319,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                 });
                             }
                             else {
-                                tmp_var = obj_5.tmp_var;
+                                tmp_var = obj_4.tmp_var;
                             }
                         }
                         return tmp_var;
@@ -1386,10 +1393,10 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 var children_vals = [];
                 for (var i = 0; i < node.namedChildCount; i++) {
                     var child = node.namedChildren[i];
-                    var _54 = (0, typeInference_1.inferType)(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _54[0], c_8 = _54[6];
+                    var _53 = (0, typeInference_1.inferType)(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _53[0], c_8 = _53[6];
                     custom_functions = c_8;
                     if (child_type == "keyword") {
-                        var _55 = (0, typeInference_1.inferType)(node.parent.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ndim_4 = _55[1], dim_4 = _55[2], c_9 = _55[6];
+                        var _54 = (0, typeInference_1.inferType)(node.parent.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), ndim_4 = _54[1], dim_4 = _54[2], c_9 = _54[6];
                         custom_functions = c_9;
                         var firstNode = node.parent.namedChildren[1];
                         var current_dim = 0;
@@ -1411,7 +1418,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     stop_1 = children_vals[2];
                     step = children_vals[1];
                 }
-                var _56 = (0, typeInference_1.inferType)(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_5 = _56[0], ndim_5 = _56[1], dim_5 = _56[2];
+                var _55 = (0, typeInference_1.inferType)(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_5 = _55[0], ndim_5 = _55[1], dim_5 = _55[2];
                 var expression = [];
                 var tmp_vec = (0, helperFunctions_1.generateTmpVar)("vec", tmp_tbl);
                 var tmp_iter = (0, helperFunctions_1.generateTmpVar)("iter", tmp_tbl);
@@ -1422,7 +1429,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 return tmp_vec;
             }
             case "matrix" /* g.SyntaxType.Matrix */: {
-                var _57 = (0, typeInference_1.inferType)(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_6 = _57[0], ndim_6 = _57[1], dim_6 = _57[2];
+                var _56 = (0, typeInference_1.inferType)(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_6 = _56[0], ndim_6 = _56[1], dim_6 = _56[2];
                 /*if (ndim == 2 && dim.some(x => x === 1)) { // vector
                     let tmp_vec = generateTmpVar("vec", tmp_tbl);
                     let expression = [];

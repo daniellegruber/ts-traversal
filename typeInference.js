@@ -129,22 +129,22 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
         var c = cursor;
         switch (c.nodeType) {
             case "assignment" /* g.SyntaxType.Assignment */: {
-                var node = c.currentNode;
+                var node_2 = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
-                var _a = inferType(node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _a[0], ndim = _a[1], dim = _a[2], ismatrix = _a[3], ispointer = _a[4], isstruct = _a[5], cf = _a[6];
+                var _a = inferType(node_2.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _a[0], ndim = _a[1], dim = _a[2], ismatrix = _a[3], ispointer = _a[4], isstruct = _a[5], cf = _a[6];
                 custom_functions = cf;
-                var scope = findVarScope(node, block_idxs, "main", debug);
-                if (node.leftNode.type == "identifier" /* g.SyntaxType.Identifier */ || node.leftNode.type == "attribute" /* g.SyntaxType.Attribute */) {
-                    var name_1 = node.leftNode.text;
-                    var v1_1 = (0, helperFunctions_2.filterByScope)(var_types, name_1, node, 1);
+                var scope = findVarScope(node_2, block_idxs, "main", debug);
+                if (node_2.leftNode.type == "identifier" /* g.SyntaxType.Identifier */ || node_2.leftNode.type == "attribute" /* g.SyntaxType.Attribute */) {
+                    var name_1 = node_2.leftNode.text;
+                    var v1_1 = (0, helperFunctions_2.filterByScope)(var_types, name_1, node_2, 1);
                     if (v1_1.length > 0) {
                         count = count + 1;
                         v1_1 = v1_1[v1_1.length - 1];
                         if (scope[2] == v1_1.scope[2]) { // same block level
                             var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v1_1); }); // replace if already in var_types
                             var re = new RegExp("\\b".concat(v1_1.name, "\\b"));
-                            if (re.test(node.rightNode.text)) {
-                                v1_1.scope = [v1_1.scope[0], node.parent.nextNamedSibling.startIndex - 1, v1_1.scope[2]];
+                            if (re.test(node_2.rightNode.text)) {
+                                v1_1.scope = [v1_1.scope[0], node_2.parent.nextNamedSibling.startIndex - 1, v1_1.scope[2]];
                                 var_types.push(v1_1);
                                 var v2 = {
                                     name: v1_1.name,
@@ -155,13 +155,13 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix,
                                     ispointer: ispointer,
                                     isstruct: isstruct,
-                                    scope: [node.parent.nextNamedSibling.startIndex, scope[1], scope[2]],
+                                    scope: [node_2.parent.nextNamedSibling.startIndex, scope[1], scope[2]],
                                     initialized: true
                                 };
                                 var_types.push(v2);
                             }
                             else {
-                                v1_1.scope = [v1_1.scope[0], node.startIndex - 1, v1_1.scope[2]];
+                                v1_1.scope = [v1_1.scope[0], node_2.startIndex - 1, v1_1.scope[2]];
                                 var_types.push(v1_1);
                                 var v2 = {
                                     name: v1_1.name,
@@ -172,7 +172,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix,
                                     ispointer: ispointer,
                                     isstruct: isstruct,
-                                    scope: [node.startIndex, scope[1], scope[2]],
+                                    scope: [node_2.startIndex, scope[1], scope[2]],
                                     initialized: true
                                 };
                                 var_types.push(v2);
@@ -181,7 +181,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     }
                     else {
                         v1_1 = {
-                            name: node.leftNode.text,
+                            name: node_2.leftNode.text,
                             type: type,
                             ndim: ndim,
                             dim: dim,
@@ -196,24 +196,43 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                     }
                     // If LHS is subscript, type is matrix
                 }
-                else if (node.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */ || node.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
+                else if (node_2.leftNode.type == "call_or_subscript" /* g.SyntaxType.CallOrSubscript */ || node_2.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
                     //} else if (node.leftNode.type == g.SyntaxType.CallOrSubscript) {
-                    var name_2 = node.leftNode.valueNode.text;
-                    var v3_1 = (0, helperFunctions_2.filterByScope)(var_types, name_2, node, 0);
-                    if (v3_1 != null && v3_1 != undefined) {
-                        var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v3_1); }); // replace if already in var_types
+                    var name_2 = node_2.leftNode.valueNode.text;
+                    var v3_1 = (0, helperFunctions_2.filterByScope)(var_types, name_2, node_2, 0);
+                    if (node_2.leftNode.type == "cell_subscript" /* g.SyntaxType.CellSubscript */) {
+                        var_types = var_types.filter(function (x) { return x.name != node_2.leftNode.text; });
                         var_types.push({
-                            name: "".concat(name_2, "_init"),
-                            type: v3_1.type,
-                            ndim: v3_1.ndim,
-                            dim: v3_1.dim,
-                            ismatrix: v3_1.ismatrix,
-                            isvector: v3_1.isvector,
-                            ispointer: v3_1.ispointer,
+                            name: node_2.leftNode.text,
+                            type: type,
+                            ndim: ndim,
+                            dim: dim,
+                            ismatrix: ismatrix,
+                            isvector: false,
+                            ispointer: false,
                             isstruct: false,
                             initialized: false,
-                            scope: v3_1.scope
+                            scope: scope
                         });
+                    }
+                    if (v3_1 != null && v3_1 != undefined) {
+                        var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v3_1); }); // replace if already in var_types
+                        //var_types = var_types.filter(x => x.name != `${name}_init`);
+                        var obj2 = var_types.find(function (x) { return x.name === "".concat(name_2, "_init"); });
+                        if (obj2 == null || obj2 == undefined) {
+                            var_types.push({
+                                name: "".concat(name_2, "_init"),
+                                type: v3_1.type,
+                                ndim: v3_1.ndim,
+                                dim: v3_1.dim,
+                                ismatrix: v3_1.ismatrix,
+                                isvector: v3_1.isvector,
+                                ispointer: v3_1.ispointer,
+                                isstruct: false,
+                                initialized: false,
+                                scope: v3_1.scope
+                            });
+                        }
                         v3_1.type = type;
                         var obj = var_types.find(function (x) { return x.name === "".concat(name_2, "_childtype"); });
                         if (obj != null && obj != undefined) {

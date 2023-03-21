@@ -46,8 +46,8 @@ int main(void) {
 	int ndim6 = 2;
 	int dim6[2] = {1, 10};
 	Matrix * tmp6 = zerosM(ndim6, dim6);
-	int* lhs_data1 = i_to_i(tmp6);
 	matrices[idx5] = tmp6;
+	int* lhs_data1 = i_to_i(matrices[idx5]);
 	for (int i = 1; i <= 10; ++ i) {
 		int tmp7 = i * i;
 		int idx6 = convertSubscript(ndim6, dim6, i);
@@ -62,19 +62,18 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim6, dim6, 0);
 	writeM(mat1, size1, lhs_data1);
-	int idx7 = convertSubscript(ndim1, dim1, 5);
-	int idx8 = convertSubscript(ndim1, dim1, 5);
-	matrices[idx7] = tmp6;
-	int idx9 = convertSubscript(ndim1, dim1, 6);
+	matrices[idx5] = mat1;
+	matrices[idx5] = matrices[idx5];
+	int idx7 = convertSubscript(ndim1, dim1, 6);
 	int ndim7 = 2;
 	int dim7[2] = {1, 10};
 	Matrix * tmp8 = zerosM(ndim7, dim7);
-	double* lhs_data2 = i_to_d(tmp8);
-	matrices[idx9] = tmp8;
+	matrices[idx7] = tmp8;
+	double* lhs_data2 = i_to_d(matrices[idx7]);
 	for (int i = 1; i <= 10; ++ i) {
 		double tmp9 = i * i + 0.5;
-		int idx10 = convertSubscript(ndim7, dim7, i);
-		lhs_data2[idx10] = tmp9;
+		int idx8 = convertSubscript(ndim7, dim7, i);
+		lhs_data2[idx8] = tmp9;
 	
 	}
 	// Write matrix mat2
@@ -85,19 +84,18 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim7, dim7, 1);
 	writeM(mat2, size2, lhs_data2);
-	int idx11 = convertSubscript(ndim1, dim1, 6);
-	int idx12 = convertSubscript(ndim1, dim1, 6);
-	matrices[idx11] = tmp8;
-	int idx13 = convertSubscript(ndim1, dim1, 7);
+	matrices[idx7] = mat2;
+	matrices[idx7] = matrices[idx7];
+	int idx9 = convertSubscript(ndim1, dim1, 7);
 	int ndim8 = 2;
 	int dim8[2] = {20, 1};
 	Matrix * tmp10 = onesM(ndim8, dim8);
-	complex* lhs_data3 = i_to_c(tmp10);
-	matrices[idx13] = tmp10;
+	matrices[idx9] = tmp10;
+	complex* lhs_data3 = i_to_c(matrices[idx9]);
 	for (int i = 1; i <= 20; ++ i) {
 		complex tmp11 = i * i + 0.5*I;
-		int idx14 = convertSubscript(ndim8, dim8, i);
-		lhs_data3[idx14] = tmp11;
+		int idx10 = convertSubscript(ndim8, dim8, i);
+		lhs_data3[idx10] = tmp11;
 	
 	}
 	// Write matrix mat3
@@ -108,19 +106,18 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim8, dim8, 2);
 	writeM(mat3, size3, lhs_data3);
-	int idx15 = convertSubscript(ndim1, dim1, 7);
-	int idx16 = convertSubscript(ndim1, dim1, 7);
-	matrices[idx15] = tmp10;
-	int idx17 = convertSubscript(ndim1, dim1, 8);
+	matrices[idx9] = mat3;
+	matrices[idx9] = matrices[idx9];
+	int idx11 = convertSubscript(ndim1, dim1, 8);
 	int ndim9 = 2;
 	int dim9[2] = {20, 1};
 	Matrix * tmp12 = onesM(ndim9, dim9);
-	int* lhs_data4 = i_to_i(tmp12);
-	matrices[idx17] = tmp12;
+	matrices[idx11] = tmp12;
+	int* lhs_data4 = i_to_i(matrices[idx11]);
 	for (int i = 1; i <= 20; ++ i) {
 		int tmp13 = (i - 5) * i;
-		int idx18 = convertSubscript(ndim9, dim9, i);
-		lhs_data4[idx18] = tmp13;
+		int idx12 = convertSubscript(ndim9, dim9, i);
+		lhs_data4[idx12] = tmp13;
 	
 	}
 	// Write matrix mat4
@@ -131,19 +128,18 @@ int main(void) {
 	}
 	Matrix *mat4 = createM(ndim9, dim9, 0);
 	writeM(mat4, size4, lhs_data4);
-	int idx19 = convertSubscript(ndim1, dim1, 8);
-	int idx20 = convertSubscript(ndim1, dim1, 8);
-	matrices[idx19] = tmp12;
-	int idx21 = convertSubscript(ndim1, dim1, 9);
+	matrices[idx11] = mat4;
+	matrices[idx11] = matrices[idx11];
+	int idx13 = convertSubscript(ndim1, dim1, 9);
 	int ndim10 = 2;
 	int dim10[2] = {20, 1};
 	Matrix * tmp14 = onesM(ndim10, dim10);
-	double* lhs_data5 = i_to_d(tmp14);
-	matrices[idx21] = tmp14;
+	matrices[idx13] = tmp14;
+	double* lhs_data5 = i_to_d(matrices[idx13]);
 	for (int i = 1; i <= 20; ++ i) {
 		double tmp15 = (i - 8.5) * i + 0.5;
-		int idx22 = convertSubscript(ndim10, dim10, i);
-		lhs_data5[idx22] = tmp15;
+		int idx14 = convertSubscript(ndim10, dim10, i);
+		lhs_data5[idx14] = tmp15;
 	
 	}
 	// Write matrix mat5
@@ -154,19 +150,18 @@ int main(void) {
 	}
 	Matrix *mat5 = createM(ndim10, dim10, 1);
 	writeM(mat5, size5, lhs_data5);
-	int idx23 = convertSubscript(ndim1, dim1, 9);
-	int idx24 = convertSubscript(ndim1, dim1, 9);
-	matrices[idx23] = tmp14;
-	int idx25 = convertSubscript(ndim1, dim1, 10);
+	matrices[idx13] = mat5;
+	matrices[idx13] = matrices[idx13];
+	int idx15 = convertSubscript(ndim1, dim1, 10);
 	int ndim11 = 2;
 	int dim11[2] = {1, 10};
 	Matrix * tmp16 = zerosM(ndim11, dim11);
-	complex* lhs_data6 = i_to_c(tmp16);
-	matrices[idx25] = tmp16;
+	matrices[idx15] = tmp16;
+	complex* lhs_data6 = i_to_c(matrices[idx15]);
 	for (int i = 1; i <= 10; ++ i) {
 		complex tmp17 = (i - 5.5) * (i) + ((0.5) * (4 - i)) * 1*I;
-		int idx26 = convertSubscript(ndim11, dim11, i);
-		lhs_data6[idx26] = tmp17;
+		int idx16 = convertSubscript(ndim11, dim11, i);
+		lhs_data6[idx16] = tmp17;
 	
 	}
 	// Write matrix mat6
@@ -177,14 +172,13 @@ int main(void) {
 	}
 	Matrix *mat6 = createM(ndim11, dim11, 2);
 	writeM(mat6, size6, lhs_data6);
-	int idx27 = convertSubscript(ndim1, dim1, 10);
-	int idx28 = convertSubscript(ndim1, dim1, 10);
-	matrices[idx27] = tmp16;
-	int idx29 = convertSubscript(ndim1, dim1, 11);
+	matrices[idx15] = mat6;
+	matrices[idx15] = matrices[idx15];
+	int idx17 = convertSubscript(ndim1, dim1, 11);
 	
 	int ndim12 = 2;
 	int dim12[2] = {1,10};
-	matrices[idx29] = createM(ndim12, dim12, 1);
+	matrices[idx17] = createM(ndim12, dim12, 1);
 	double *input1 = NULL;
 	input1 = malloc( 10*sizeof(*input1));
 	input1[0] = 3;
@@ -197,14 +191,14 @@ int main(void) {
 	input1[7] = 0;
 	input1[8] = 1;
 	input1[9] = 2.5;
-	writeM( matrices[idx29], 10, input1);
+	writeM( matrices[idx17], 10, input1);
 	free(input1);
 	
-	int idx30 = convertSubscript(ndim1, dim1, 12);
+	int idx18 = convertSubscript(ndim1, dim1, 12);
 	
 	int ndim13 = 2;
 	int dim13[2] = {1,10};
-	matrices[idx30] = createM(ndim13, dim13, 1);
+	matrices[idx18] = createM(ndim13, dim13, 1);
 	double *input2 = NULL;
 	input2 = malloc( 10*sizeof(*input2));
 	input2[0] = 3;
@@ -217,42 +211,30 @@ int main(void) {
 	input2[7] = 0;
 	input2[8] = 1;
 	input2[9] = 2.5;
-	writeM( matrices[idx30], 10, input2);
+	writeM( matrices[idx18], 10, input2);
 	free(input2);
 	
 	for (int index = 1; index <= 12; ++ index) {
 		printf("\n%s\n", "i\n");
-		int idx31 = convertSubscript(ndim1, dim1, index);
-		printM(matrices[idx31]);
+		int idx19 = convertSubscript(ndim1, dim1, index);
+		printM(matrices[idx19]);
 		for (int j = 1; j <= 12; ++ j) {
 			printf("\n%s\n", "j\n");
-			int idx32 = convertSubscript(ndim1, dim1, j);
-			printM(matrices[idx32]);
+			int idx20 = convertSubscript(ndim1, dim1, j);
+			printM(matrices[idx20]);
 			printf("\n%s\n", "\n\n");
-			int idx33 = convertSubscript(ndim1, dim1, index);
-			int idx34 = convertSubscript(ndim1, dim1, j);
-			Matrix * tmp18 = xcorrM(matrices[idx33], matrices[idx34], 0, "none");
+			Matrix * tmp18 = xcorrM(matrices[idx19], matrices[idx20], 0, "none");
 			printM(tmp18);
-			int idx35 = convertSubscript(ndim1, dim1, index);
-			int * dim14 = getDimsM(matrices[idx35]);
-			int idx36 = convertSubscript(ndim1, dim1, index);
-			int * dim15 = getDimsM(matrices[idx36]);
-			int idx37 = convertSubscript(ndim1, dim1, j);
-			int * dim16 = getDimsM(matrices[idx37]);
-			int idx38 = convertSubscript(ndim1, dim1, j);
-			int * dim17 = getDimsM(matrices[idx38]);
+			int * dim14 = getDimsM(matrices[idx19]);
+			int * dim15 = getDimsM(matrices[idx19]);
+			int * dim16 = getDimsM(matrices[idx20]);
+			int * dim17 = getDimsM(matrices[idx20]);
 			if ((index > 1 && j > 1 && dim14[0] * dim15[1] == dim16[0] * dim17[1])) {
-				int idx39 = convertSubscript(ndim1, dim1, index);
-				int idx40 = convertSubscript(ndim1, dim1, j);
-				Matrix * tmp23 = xcorrM(matrices[idx39], matrices[idx40], 0, "unbiased");
+				Matrix * tmp23 = xcorrM(matrices[idx19], matrices[idx20], 0, "unbiased");
 				printM(tmp23);
-				int idx41 = convertSubscript(ndim1, dim1, index);
-				int idx42 = convertSubscript(ndim1, dim1, j);
-				Matrix * tmp24 = xcorrM(matrices[idx41], matrices[idx42], 0, "biased");
+				Matrix * tmp24 = xcorrM(matrices[idx19], matrices[idx20], 0, "biased");
 				printM(tmp24);
-				int idx43 = convertSubscript(ndim1, dim1, index);
-				int idx44 = convertSubscript(ndim1, dim1, j);
-				Matrix * tmp25 = xcorrM(matrices[idx43], matrices[idx44], 0, "coeff");
+				Matrix * tmp25 = xcorrM(matrices[idx19], matrices[idx20], 0, "coeff");
 				printM(tmp25);
 				
 				
@@ -260,30 +242,18 @@ int main(void) {
 			
 			}
 			for (int k = 9; k <= 21; ++ k) {
-				int idx45 = convertSubscript(ndim1, dim1, index);
-				int idx46 = convertSubscript(ndim1, dim1, j);
-				Matrix * tmp26 = xcorrM(matrices[idx45], matrices[idx46], k, "none");
+				Matrix * tmp26 = xcorrM(matrices[idx19], matrices[idx20], k, "none");
 				printM(tmp26);
-				int idx47 = convertSubscript(ndim1, dim1, index);
-				int * dim18 = getDimsM(matrices[idx47]);
-				int idx48 = convertSubscript(ndim1, dim1, index);
-				int * dim19 = getDimsM(matrices[idx48]);
-				int idx49 = convertSubscript(ndim1, dim1, j);
-				int * dim20 = getDimsM(matrices[idx49]);
-				int idx50 = convertSubscript(ndim1, dim1, j);
-				int * dim21 = getDimsM(matrices[idx50]);
+				int * dim18 = getDimsM(matrices[idx19]);
+				int * dim19 = getDimsM(matrices[idx19]);
+				int * dim20 = getDimsM(matrices[idx20]);
+				int * dim21 = getDimsM(matrices[idx20]);
 				if ((index > 1 && j > 1 && dim18[0] * dim19[1] == dim20[0] * dim21[1])) {
-					int idx51 = convertSubscript(ndim1, dim1, index);
-					int idx52 = convertSubscript(ndim1, dim1, j);
-					Matrix * tmp31 = xcorrM(matrices[idx51], matrices[idx52], k, "unbiased");
+					Matrix * tmp31 = xcorrM(matrices[idx19], matrices[idx20], k, "unbiased");
 					printM(tmp31);
-					int idx53 = convertSubscript(ndim1, dim1, index);
-					int idx54 = convertSubscript(ndim1, dim1, j);
-					Matrix * tmp32 = xcorrM(matrices[idx53], matrices[idx54], k, "biased");
+					Matrix * tmp32 = xcorrM(matrices[idx19], matrices[idx20], k, "biased");
 					printM(tmp32);
-					int idx55 = convertSubscript(ndim1, dim1, index);
-					int idx56 = convertSubscript(ndim1, dim1, j);
-					Matrix * tmp33 = xcorrM(matrices[idx55], matrices[idx56], k, "coeff");
+					Matrix * tmp33 = xcorrM(matrices[idx19], matrices[idx20], k, "coeff");
 					printM(tmp33);
 					
 					

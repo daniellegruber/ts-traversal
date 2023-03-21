@@ -9,6 +9,7 @@ cd_matrix_multiplication
 ceil_matrix
 cell_test
 ci_matrix_multiplication
+comparison_ops_matrix
 create_1D_matrix
 create_2D_matrix
 create_fails_negative_dims
@@ -19,6 +20,7 @@ dc_matrix_multiplication
 dd_matrix_multiplication
 di_matrix_multiplication
 duplicate_matrix
+eigen
 elem_divide_matrix
 elem_multiply_matrix
 elem_power_matrix
@@ -45,9 +47,7 @@ transpose_matrix
 ERROR
 advanced_stats
 basic_stats
-comparison_ops_matrix
 determinant_matrix
-eigen
 elem_scalarpower_matrix
 filterM
 fourier

@@ -32,7 +32,7 @@ int main(void) {
 	Matrix * tmp1 = mpowerM(b, &exponent, 2);
 	Matrix * c = tmp1;
 	printM(c);
-	for (int i = 1; i <= iterations; ++ i) {
+	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
 		Matrix * tmp2 = mpowerM(b, &exponent, 2);
 		c = tmp2;
 		//disp(c);

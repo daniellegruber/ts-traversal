@@ -29,8 +29,8 @@ int main(void) {
 void myfun1(int f, int g, int* p_F, int* p_G) {
 	int F = f + g;
 	int G = f - g;
-	for (int i = 1; i <= 5; i += 2) {
-		printf("\n%d\n", i);
+	for (int iter1 = 1; iter1 <= 5; iter1 += 2) {
+		printf("\n%d\n", iter1);
 	
 	}
 	*p_F = F;

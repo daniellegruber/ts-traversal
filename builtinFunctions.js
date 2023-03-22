@@ -414,7 +414,11 @@ exports.operatorMapping = [
             var right_ismatrix = arg_types[1].ismatrix;
             var right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                var type_4 = (0, customTypes_1.binaryOpType)(left_type, right_type);
+                var type_4 = left_type;
+                if (right_type != 'int') {
+                    //type = 'double';
+                    type_4 = 'complex';
+                }
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_4; });
                 /*let isnum = /^[\d.]+[\+\-][\d.]+\*I$/.test(args[1]);
                 if (!isnum) {
@@ -444,8 +448,13 @@ exports.operatorMapping = [
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
             var right_ismatrix = arg_types[1].ismatrix;
-            var type = (0, customTypes_1.binaryOpType)(left_type, right_type);
+            /*let type = binaryOpType(left_type, right_type);
             if (left_type == 'complex' || right_type != 'int') {
+                type = 'complex';
+            }*/
+            var type = left_type;
+            if (right_type != 'int') {
+                //type = 'double';
                 type = 'complex';
             }
             return {
@@ -646,7 +655,12 @@ exports.operatorMapping = [
             var left_type = arg_types[0].type;
             var right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                var type_5 = (0, customTypes_1.binaryOpType)(left_type, right_type);
+                /*let type = left_type;
+                if (right_type != 'int') {
+                    type = 'complex';
+                }*/
+                var type_5 = right_type;
+                //let type = binaryOpType(left_type, right_type);
                 var obj = type_to_matrix_type.find(function (x) { return x.type === type_5; });
                 var isnum = /^\d+$/.test(args[1]);
                 if (isnum) {
@@ -672,8 +686,13 @@ exports.operatorMapping = [
             var right_type = arg_types[1].type;
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
+            var type = left_type;
+            if (right_type != 'int') {
+                type = 'complex';
+            }
             return {
-                type: (0, customTypes_1.binaryOpType)(left_type, right_type),
+                //type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
+                type: type,
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,

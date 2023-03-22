@@ -447,7 +447,11 @@ export const operatorMapping = [
             let right_ismatrix = arg_types[1].ismatrix;
             let right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                let type = binaryOpType(left_type, right_type);
+                let type = left_type;
+                if (right_type != 'int') {
+                    //type = 'double';
+                    type = 'complex';
+                }
                 let obj = type_to_matrix_type.find(x => x.type === type);
                 
                 /*let isnum = /^[\d.]+[\+\-][\d.]+\*I$/.test(args[1]);
@@ -479,8 +483,13 @@ export const operatorMapping = [
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
             let right_ismatrix = arg_types[1].ismatrix;
-            let type = binaryOpType(left_type, right_type);
+            /*let type = binaryOpType(left_type, right_type);
             if (left_type == 'complex' || right_type != 'int') {
+                type = 'complex';
+            }*/
+            let type = left_type;
+            if (right_type != 'int') {
+                //type = 'double';
                 type = 'complex';
             }
             
@@ -684,7 +693,13 @@ export const operatorMapping = [
             let left_type = arg_types[0].type;
             let right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                let type = binaryOpType(left_type, right_type);
+                /*let type = left_type;
+                if (right_type != 'int') {
+                    type = 'complex';
+                }*/
+                let type = right_type; 
+                
+                //let type = binaryOpType(left_type, right_type);
                 let obj = type_to_matrix_type.find(x => x.type === type);
                 let isnum = /^\d+$/.test(args[1]);
                 if (isnum) {
@@ -709,9 +724,13 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
-            
+            let type = left_type;
+            if (right_type != 'int') {
+                type = 'complex';
+            }
             return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
+                //type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
+                type: type,
                 ndim: left_ndim,
                 dim: left_dim,
                 ismatrix: true,

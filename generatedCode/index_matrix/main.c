@@ -34,26 +34,26 @@ int main(void) {
 	Matrix * tmp1 = transposeM(a);
 	Matrix * a_trans = tmp1;
 	printM(a);
-	for (int i = 1; i <= 9; ++ i) {
+	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
 		// Octave is natively column-major matrix storage, but C is row-major
 		// So when iterating over a matrix flatly (i.e., not calling dimensions), you must transpose
 		int ndim2 = getnDimM(a_trans);
 		int *dim2 = getDimsM(a_trans);
-		int idx1 = convertSubscript(ndim2, dim2, i);
+		int idx1 = convertSubscript(ndim2, dim2, iter1);
 		complex tmp2;
 		indexM(a_trans, &tmp2, 1, idx1+1);
 		double tmp3 = cimag(tmp2);
 		if (tmp3 < 0) {
-			int idx2 = convertSubscript(ndim2, dim2, i);
+			int idx2 = convertSubscript(ndim2, dim2, iter1);
 			double tmp5 = creal(tmp2);
-			int idx3 = convertSubscript(ndim2, dim2, i);
+			int idx3 = convertSubscript(ndim2, dim2, iter1);
 			double tmp7 = cimag(tmp2);
 			printf("%.5f  %.5fi  \n", tmp5, tmp7);
 			
 			} else {
-			int idx4 = convertSubscript(ndim2, dim2, i);
+			int idx4 = convertSubscript(ndim2, dim2, iter1);
 			double tmp9 = creal(tmp2);
-			int idx5 = convertSubscript(ndim2, dim2, i);
+			int idx5 = convertSubscript(ndim2, dim2, iter1);
 			double tmp11 = cimag(tmp2);
 			printf("%.5f + %.5fi  \n", tmp9, tmp11);
 			
@@ -61,10 +61,10 @@ int main(void) {
 		}
 	
 	}
-	for (int i = 1; i <= 3; ++ i) {
-		for (int j = 1; j <= 3; ++ j) {
+	for (int iter2 = 1; iter2 <= 3; ++ iter2) {
+		for (int iter3 = 1; iter3 <= 3; ++ iter3) {
 			complex tmp12;
-			indexM(a, &tmp12, 2, i, j);
+			indexM(a, &tmp12, 2, iter2, iter3);
 			double tmp13 = cimag(tmp12);
 			if (tmp13 < 0) {
 				double tmp15 = creal(tmp12);

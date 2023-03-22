@@ -13,8 +13,8 @@ int main(void) {
 	//more off
 	//format short
 	tic;
-	for (int j = 1; j <= 5; ++ j) {
-		printf("\n%d\n", j);
+	for (int iter1 = 1; iter1 <= 5; ++ iter1) {
+		printf("\n%d\n", iter1);
 	
 	}
 	unknown a = toc;

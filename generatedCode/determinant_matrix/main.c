@@ -53,10 +53,10 @@ int main(void) {
 	a = tmp1;
 	int* lhs_data1 = i_to_i(a);
 	int counter = 1;
-	for (int i = 1; i <= 3; ++ i) {
-		for (int j = 1; j <= 3; ++ j) {
+	for (int iter1 = 1; iter1 <= 3; ++ iter1) {
+		for (int iter2 = 1; iter2 <= 3; ++ iter2) {
 			int tmp2 = counter * counter;
-			lhs_data1[(j-1) + (i-1)*3 + (1-1)*3*3 + (1-1)*3*3*1] = tmp2;
+			lhs_data1[(iter2-1) + (iter1-1)*3 + (1-1)*3*3 + (1-1)*3*3*1] = tmp2;
 			counter = counter + 1;
 		
 		}
@@ -64,9 +64,9 @@ int main(void) {
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim3; iter1++)
+	for (int iter3 = 0 ; iter3 < ndim3; iter3++)
 	{
-		size1 *= dim3[iter1];
+		size1 *= dim3[iter3];
 	}
 	Matrix *mat1 = createM(ndim3, dim3, 0);
 	writeM(mat1, size1, lhs_data1);
@@ -81,19 +81,19 @@ int main(void) {
 	a = tmp3;
 	int* lhs_data2 = i_to_i(a);
 	counter = 0;
-	for (int i = 0; i <= 4; ++ i) {
-		for (int j = 0; j <= 4; ++ j) {
+	for (int iter4 = 0; iter4 <= 4; ++ iter4) {
+		for (int iter5 = 0; iter5 <= 4; ++ iter5) {
 			counter = counter + 1;
 			int tmp4 = (counter - 1) % 2;
 			if ((tmp4 == 0)) {
-				int tmp6 = (counter + i) % 7;
+				int tmp6 = (counter + iter4) % 7;
 				int tmp5 = tmp6;
 				int idx1 = convertSubscript(ndim4, dim4, counter);
 				lhs_data2[idx1] = tmp5;
 				
 				} else {
-				int tmp7 = (counter + j) % 7;
-				int tmp9 = (counter + j) % 7;
+				int tmp7 = (counter + iter5) % 7;
+				int tmp9 = (counter + iter5) % 7;
 				int tmp8 = -1 * tmp9;
 				int idx2 = convertSubscript(ndim4, dim4, counter);
 				lhs_data2[idx2] = tmp8;
@@ -106,9 +106,9 @@ int main(void) {
 	}
 	// Write matrix mat2
 	int size2 = 1;
-	for (int iter2 = 0 ; iter2 < ndim4; iter2++)
+	for (int iter6 = 0 ; iter6 < ndim4; iter6++)
 	{
-		size2 *= dim4[iter2];
+		size2 *= dim4[iter6];
 	}
 	Matrix *mat2 = createM(ndim4, dim4, 0);
 	writeM(mat2, size2, lhs_data2);
@@ -144,9 +144,9 @@ int main(void) {
 	lhs_data3[idx8] = tmp17;
 	// Write matrix mat3
 	int size3 = 1;
-	for (int iter3 = 0 ; iter3 < ndim5; iter3++)
+	for (int iter7 = 0 ; iter7 < ndim5; iter7++)
 	{
-		size3 *= dim5[iter3];
+		size3 *= dim5[iter7];
 	}
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);

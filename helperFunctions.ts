@@ -107,9 +107,7 @@ export function pushAliasTbl(lhs, rhs, node, fun_params) {
         tmp_var: rhs,
         scope: scope
     });
-    if (lhs == "n") {
-        console.log(fun_params.alias_tbl.filter(x => x.name == "n"));
-    }
+    
     return fun_params.alias_tbl;
 }
 

@@ -255,21 +255,21 @@ int main(void) {
 	Matrix * tmp1 = zerosM(ndim13, dim13);
 	a = tmp1;
 	int* lhs_data1 = i_to_i(a);
-	for (int i = 1; i <= 63; ++ i) {
-		int tmp2 = pow((-1), i);
-		int tmp3 = pow(i, 2);
-		int tmp5 = pow((-1), i);
-		int tmp6 = pow(i, 2);
+	for (int iter1 = 1; iter1 <= 63; ++ iter1) {
+		int tmp2 = pow((-1), iter1);
+		int tmp3 = pow(iter1, 2);
+		int tmp5 = pow((-1), iter1);
+		int tmp6 = pow(iter1, 2);
 		int tmp4 = tmp5 * tmp6;
-		int idx1 = convertSubscript(ndim13, dim13, i);
+		int idx1 = convertSubscript(ndim13, dim13, iter1);
 		lhs_data1[idx1] = tmp4;
 	
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim13; iter1++)
+	for (int iter2 = 0 ; iter2 < ndim13; iter2++)
 	{
-		size1 *= dim13[iter1];
+		size1 *= dim13[iter2];
 	}
 	Matrix *mat1 = createM(ndim13, dim13, 0);
 	writeM(mat1, size1, lhs_data1);
@@ -284,21 +284,21 @@ int main(void) {
 	Matrix * tmp8 = zerosM(ndim14, dim14);
 	a = tmp8;
 	int* lhs_data2 = i_to_i(a);
-	for (int i = 1; i <= 63; ++ i) {
-		int tmp9 = pow((-1), i);
-		int tmp10 = pow(i, 2);
-		int tmp12 = pow((-1), i);
-		int tmp13 = pow(i, 2);
+	for (int iter3 = 1; iter3 <= 63; ++ iter3) {
+		int tmp9 = pow((-1), iter3);
+		int tmp10 = pow(iter3, 2);
+		int tmp12 = pow((-1), iter3);
+		int tmp13 = pow(iter3, 2);
 		int tmp11 = (double) tmp12 * tmp13 / 17;
-		int idx2 = convertSubscript(ndim14, dim14, i);
+		int idx2 = convertSubscript(ndim14, dim14, iter3);
 		lhs_data2[idx2] = tmp11;
 	
 	}
 	// Write matrix mat2
 	int size2 = 1;
-	for (int iter2 = 0 ; iter2 < ndim14; iter2++)
+	for (int iter4 = 0 ; iter4 < ndim14; iter4++)
 	{
-		size2 *= dim14[iter2];
+		size2 *= dim14[iter4];
 	}
 	Matrix *mat2 = createM(ndim14, dim14, 0);
 	writeM(mat2, size2, lhs_data2);
@@ -313,19 +313,19 @@ int main(void) {
 	Matrix * tmp15 = zerosM(ndim15, dim15);
 	a = tmp15;
 	complex* lhs_data3 = i_to_c(a);
-	for (int i = 1; i <= 63; ++ i) {
-		int tmp16 = pow((-1), i);
-		int tmp18 = pow((-1), i);
-		complex tmp17 = tmp18 * i - ((complex) i) / (17*I);
-		int idx3 = convertSubscript(ndim15, dim15, i);
+	for (int iter5 = 1; iter5 <= 63; ++ iter5) {
+		int tmp16 = pow((-1), iter5);
+		int tmp18 = pow((-1), iter5);
+		complex tmp17 = tmp18 * iter5 - ((complex) iter5) / (17*I);
+		int idx3 = convertSubscript(ndim15, dim15, iter5);
 		lhs_data3[idx3] = tmp17;
 	
 	}
 	// Write matrix mat3
 	int size3 = 1;
-	for (int iter3 = 0 ; iter3 < ndim15; iter3++)
+	for (int iter6 = 0 ; iter6 < ndim15; iter6++)
 	{
-		size3 *= dim15[iter3];
+		size3 *= dim15[iter6];
 	}
 	Matrix *mat3 = createM(ndim15, dim15, 2);
 	writeM(mat3, size3, lhs_data3);
@@ -337,8 +337,8 @@ int main(void) {
 	
 	int vec1[100];
 	
-	for (int iter4 = 0; 1 + 1*iter4 <= 100; iter4++) {
-		vec1[iter4] = 1 + 1*iter4;
+	for (int iter7 = 0; 1 + 1*iter7 <= 100; iter7++) {
+		vec1[iter7] = 1 + 1*iter7;
 	}
 	
 	int ndim16 = 2;
@@ -346,16 +346,16 @@ int main(void) {
 	a = createM(ndim16, dim16, 0);
 	int *input13 = NULL;
 	input13 = malloc( 100*sizeof(*input13));
-	for (int iter5 = 0; iter5 < 100; iter5++) {
-	   input13[0 + iter5] = vec1[iter5];
+	for (int iter8 = 0; iter8 < 100; iter8++) {
+	   input13[0 + iter8] = vec1[iter8];
 	}
 	writeM( a, 100, input13);
 	free(input13);
 	
 	double vec2[101];
 	
-	for (int iter6 = 0; 0 + 0.01*iter6 <= 1; iter6++) {
-		vec2[iter6] = 0 + 0.01*iter6;
+	for (int iter9 = 0; 0 + 0.01*iter9 <= 1; iter9++) {
+		vec2[iter9] = 0 + 0.01*iter9;
 	}
 	Matrix * tmp20 = quantileM_vec(a, 101, vec2);
 	Matrix * tmp21 = transposeM(tmp20);
@@ -365,17 +365,17 @@ int main(void) {
 	Matrix * tmp22 = zerosM(ndim17, dim17);
 	Matrix * b = tmp22;
 	int* lhs_data4 = i_to_i(b);
-	for (int i = 1; i <= 1004; ++ i) {
-		int tmp23 = (double) i * i / 17;
-		int idx4 = convertSubscript(ndim17, dim17, i);
+	for (int iter10 = 1; iter10 <= 1004; ++ iter10) {
+		int tmp23 = (double) iter10 * iter10 / 17;
+		int idx4 = convertSubscript(ndim17, dim17, iter10);
 		lhs_data4[idx4] = tmp23;
 	
 	}
 	// Write matrix mat4
 	int size4 = 1;
-	for (int iter7 = 0 ; iter7 < ndim17; iter7++)
+	for (int iter11 = 0 ; iter11 < ndim17; iter11++)
 	{
-		size4 *= dim17[iter7];
+		size4 *= dim17[iter11];
 	}
 	Matrix *mat4 = createM(ndim17, dim17, 0);
 	writeM(mat4, size4, lhs_data4);
@@ -383,8 +383,8 @@ int main(void) {
 	b = tmp24;
 	double vec3[101];
 	
-	for (int iter8 = 0; 0 + 0.01*iter8 <= 1; iter8++) {
-		vec3[iter8] = 0 + 0.01*iter8;
+	for (int iter12 = 0; 0 + 0.01*iter12 <= 1; iter12++) {
+		vec3[iter12] = 0 + 0.01*iter12;
 	}
 	Matrix * tmp25 = quantileM_vec(b, 101, vec3);
 	Matrix * tmp26 = transposeM(tmp25);
@@ -394,17 +394,17 @@ int main(void) {
 	Matrix * tmp27 = zerosM(ndim18, dim18);
 	Matrix * c = tmp27;
 	complex* lhs_data5 = i_to_c(c);
-	for (int i = 1; i <= 57; ++ i) {
-		complex tmp28 = i - ((complex) i) / (17*I);
-		int idx5 = convertSubscript(ndim18, dim18, i);
+	for (int iter13 = 1; iter13 <= 57; ++ iter13) {
+		complex tmp28 = iter13 - ((complex) iter13) / (17*I);
+		int idx5 = convertSubscript(ndim18, dim18, iter13);
 		lhs_data5[idx5] = tmp28;
 	
 	}
 	// Write matrix mat5
 	int size5 = 1;
-	for (int iter9 = 0 ; iter9 < ndim18; iter9++)
+	for (int iter14 = 0 ; iter14 < ndim18; iter14++)
 	{
-		size5 *= dim18[iter9];
+		size5 *= dim18[iter14];
 	}
 	Matrix *mat5 = createM(ndim18, dim18, 2);
 	writeM(mat5, size5, lhs_data5);

@@ -19,17 +19,17 @@ int main(void) {
 	Matrix * tmp1 = zerosM(ndim1, dim1);
 	Matrix * a = tmp1;
 	int* lhs_data1 = i_to_i(a);
-	for (int i = 1; i <= 9; ++ i) {
-		int tmp2 = i * i;
-		int idx1 = convertSubscript(ndim1, dim1, i);
+	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
+		int tmp2 = iter1 * iter1;
+		int idx1 = convertSubscript(ndim1, dim1, iter1);
 		lhs_data1[idx1] = tmp2;
 	
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim1; iter1++)
+	for (int iter2 = 0 ; iter2 < ndim1; iter2++)
 	{
-		size1 *= dim1[iter1];
+		size1 *= dim1[iter2];
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 0);
 	writeM(mat1, size1, lhs_data1);
@@ -56,9 +56,9 @@ int main(void) {
 	Matrix * tmp9 = zerosM(ndim2, dim2);
 	c = tmp9;
 	int* lhs_data2 = i_to_i(c);
-	for (int i = 1; i <= 9; ++ i) {
-		int tmp10 = i * i;
-		int idx2 = convertSubscript(ndim2, dim2, i);
+	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
+		int tmp10 = iter3 * iter3;
+		int idx2 = convertSubscript(ndim2, dim2, iter3);
 		lhs_data2[idx2] = tmp10;
 	
 	}
@@ -73,9 +73,9 @@ int main(void) {
 	lhs_data2[idx5] = tmp13;
 	// Write matrix mat2
 	int size2 = 1;
-	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
+	for (int iter4 = 0 ; iter4 < ndim2; iter4++)
 	{
-		size2 *= dim2[iter2];
+		size2 *= dim2[iter4];
 	}
 	Matrix *mat2 = createM(ndim2, dim2, 0);
 	writeM(mat2, size2, lhs_data2);
@@ -87,9 +87,9 @@ int main(void) {
 	Matrix * tmp15 = zerosM(ndim3, dim3);
 	d = tmp15;
 	int* lhs_data3 = i_to_i(d);
-	for (int i = 1; i <= 9; ++ i) {
-		int tmp16 = i * i;
-		int idx6 = convertSubscript(ndim3, dim3, i);
+	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
+		int tmp16 = iter5 * iter5;
+		int idx6 = convertSubscript(ndim3, dim3, iter5);
 		lhs_data3[idx6] = tmp16;
 	
 	}
@@ -104,9 +104,9 @@ int main(void) {
 	lhs_data3[idx9] = tmp19;
 	// Write matrix mat3
 	int size3 = 1;
-	for (int iter3 = 0 ; iter3 < ndim3; iter3++)
+	for (int iter6 = 0 ; iter6 < ndim3; iter6++)
 	{
-		size3 *= dim3[iter3];
+		size3 *= dim3[iter6];
 	}
 	Matrix *mat3 = createM(ndim3, dim3, 0);
 	writeM(mat3, size3, lhs_data3);

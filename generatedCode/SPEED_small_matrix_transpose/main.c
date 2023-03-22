@@ -28,7 +28,7 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	for (int i = 1; i <= iterations; ++ i) {
+	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
 		Matrix * tmp1 = transposeM(a);
 		Matrix * b = tmp1;
 	

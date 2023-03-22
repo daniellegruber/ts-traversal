@@ -25,11 +25,11 @@ int main(void) {
 	Matrix * tmp2 = onesM(ndim2, dim2);
 	Matrix * b = tmp2;
 	complex* lhs_data2 = i_to_c(b);
-	for (int n = 1; n <= size; ++ n) {
-		int tmp3 = pow(n, 2);
-		int tmp5 = pow(n, 2);
+	for (int iter1 = 1; iter1 <= size; ++ iter1) {
+		int tmp3 = pow(iter1, 2);
+		int tmp5 = pow(iter1, 2);
 		double tmp4 = tmp5 + 0.5;
-		int idx1 = convertSubscript(ndim1, dim1, n);
+		int idx1 = convertSubscript(ndim1, dim1, iter1);
 		lhs_data1[idx1] = tmp4;
 		int tmp6 = pow(n, 2);
 		int tmp8 = pow(n, 2);
@@ -40,21 +40,21 @@ int main(void) {
 	}
 	// Write matrix mat1
 	int size1 = 1;
-	for (int iter1 = 0 ; iter1 < ndim2; iter1++)
+	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
 	{
-		size1 *= dim2[iter1];
+		size1 *= dim2[iter2];
 	}
 	Matrix *mat1 = createM(ndim2, dim2, 1);
 	writeM(mat1, size1, lhs_data1);
 	// Write matrix mat2
 	int size2 = 1;
-	for (int iter2 = 0 ; iter2 < ndim2; iter2++)
+	for (int iter3 = 0 ; iter3 < ndim2; iter3++)
 	{
-		size2 *= dim2[iter2];
+		size2 *= dim2[iter3];
 	}
 	Matrix *mat2 = createM(ndim2, dim2, 2);
 	writeM(mat2, size2, lhs_data2);
-	for (int i = 1; i <= iterations; ++ i) {
+	for (int iter4 = 1; iter4 <= iterations; ++ iter4) {
 		Matrix * tmp9 = mtimesM(mat2, mat1);
 		Matrix * c = tmp9;
 		//disp(c);

@@ -281,8 +281,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 
             case g.SyntaxType.ForStatement: {
                 let expression = [];
-                //let tmp_iter = generateTmpVar("iter", tmp_tbl);
-                let tmp_iter = node.leftNode.text;
+                let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                //let tmp_iter = node.leftNode.text;
                 if (node.rightNode.type == g.SyntaxType.Slice) {
                     let children = [];
                     for (let i = 0; i < node.rightNode.namedChildCount; i ++) {
@@ -295,8 +295,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     
                     expression.push(`for (int ${tmp_iter} = ${children[0]};`);
                     loop_iterators.push(tmp_iter);
-                    //updateFunParams(0);
-                    //alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
+                    updateFunParams(0);
+                    alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
                     
                     tmp_var_types.push({
                         name: tmp_iter,
@@ -535,12 +535,16 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             updateFunParams(0);
                             [main_function, function_definitions] = pushToMain(`${lhs} = ${rhs};`, fun_params);
                         } else {
+                            let scope = findVarScope(node, block_idxs, current_code, debug);
                             let var_type = filterByScope(tmp_var_types, lhs, node, 0);
+                            let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2] && x.propertyOf != node.text);
                             if (var_type != null && var_type != undefined) { 
                                 if (var_type.initialized && (var_type.ismatrix || var_type.type == type)) {
+                                //if (var_type.initialized && var_type.ismatrix) {
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(`${lhs} = ${rhs};`, fun_params);
-                                } else if (var_type.initialized && (var_type.type != type)) {
+                                //} else if (var_type.initialized && (var_type.type != type)) {
+                                } else if (var_type.initialized && all_var_type.length > 1) {
                                     let tmp = generateTmpVar(var_type.name, tmp_tbl);
                                     tmp_var_types.push({
                                         name: tmp,
@@ -555,7 +559,12 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                         scope: var_type.scope
                                     });
                                     updateFunParams(0);
-                                    alias_tbl = pushAliasTbl(lhs, tmp, node, fun_params);
+                                    //alias_tbl = pushAliasTbl(lhs, tmp, node, fun_params);
+                                    alias_tbl.push({
+                                        name: lhs,
+                                        tmp_var: tmp,
+                                        scope: var_type.scope
+                                    });
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(initVar(tmp, rhs, tmp_var_types[tmp_var_types.length - 1], node), fun_params);
                                     
@@ -572,11 +581,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                 }
                                 tmp_var_types.push(var_type);
                                 // if rhs is a tmp var, i.e. lhs = tmp, then push to alias tbl
-                                /*let obj = tmp_tbl.find(x => `${x.name}${x.count}` === rhs);
-                                if (obj != null && obj != undefined) {
-                                    updateFunParams(0);
-                                    alias_tbl = pushAliasTbl(lhs, rhs, node, fun_params);
-                                }*/
+                        
                                     
                             } else {
                                 let scope = findVarScope(node, block_idxs, current_code, debug);
@@ -727,9 +732,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                         let new_flag = true;
                         let tmp_lhs = "lhs_data";
                         if (obj6 != null && obj6 != undefined) {
-                            let obj5 = tmp_var_types.find(x => x.name == `lhs_data${obj6.count}`);
+                            //let obj5 = tmp_var_types.find(x => x.name == `lhs_data${obj6.count}`);
+                            let obj5 = filterByScope(tmp_var_types, `lhs_data${obj6.count}`, node, 0);
                             if (obj5 != null && obj5 != undefined) {
-                                if (obj5.type == loop_iterators.join("")) {
+                                if (obj5.loop == loop_iterators.join("")) {
                                     new_flag = false;
                                     tmp_lhs = obj5.name;
                                 }
@@ -855,7 +861,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 ispointer: false,
                                 isstruct: false,
                                 initialized: true,
-                                scope: lhs_scope
+                                scope: lhs_scope,
+                                loop: loop_iterators.join("")
                             });
                             // SPONGEBOB
                             if (node.leftNode.valueNode.type == g.SyntaxType.CellSubscript) {
@@ -1822,7 +1829,6 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
         
         for (let arg of args1) {
             args.push(transformNode(arg));
-            //console.log(transformNode(arg));
             let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
             custom_functions = c;
             arg_types.push({

@@ -40,10 +40,10 @@ int main(void) {
 	C[2].type = 1;
 	C[2].data.dval = 2.0;
 	
-	for (int i = 1; i <= 3; ++ i) {
+	for (int iter1 = 1; iter1 <= 3; ++ iter1) {
 		int ndim2 = 2;
 		int dim2[2] = {1,15};
-		int idx1 = convertSubscript(ndim2, dim2, i);
+		int idx1 = convertSubscript(ndim2, dim2, iter1);
 		struct cell tmp1 = C[idx1];
 		switch(tmp1.type) {
 			case 0:

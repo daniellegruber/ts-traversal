@@ -204,8 +204,10 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
  - (Current solution, which works, is in builtinFunctions.ts for `quantileM_vec`: if second argument has been initialized as matrix, extract data as vector and pass to function.)
  - However, in other cases, we want to preserve the matrix structure despite one dimension being "flat."
 
-# Current limitations/works in progess (03/11/23)
-- cell_test — problem with new addition to modifyCode.ts
+# Current limitations/works in progess (03/23/23)
+- In power_matrix, in i_negative test fails
+  - However, matlab output for this test in different when running in Grace vs running on my PC - the former yields a "matrix is close to singular" error whereas the latter yields the same result as the C code
+  - Why is this? Is it because of different MATLAB versions?
 
 # Under the hood
 ### cleanOctaveC.ts 

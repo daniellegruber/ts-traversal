@@ -32,7 +32,7 @@ int main(void) {
 	
 	int ndim2 = 2;
 	int dim2[2] = {2,2};
-	a = createM(ndim2, dim2, 2);
+	Matrix * a = createM(ndim2, dim2, 2);
 	complex *input2 = NULL;
 	input2 = malloc( 4*sizeof(*input2));
 	input2[0] = 26 + 1*I;
@@ -151,7 +151,7 @@ int main(void) {
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
 	Matrix * tmp18 = transposeM(mat3);
-	a = tmp18;
+	lhs_data3 = tmp18;
 	printM(a);
 	return 0;
 }

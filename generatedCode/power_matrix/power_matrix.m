@@ -4,11 +4,13 @@
 %source octaveIncludes.m;
 
 % i_zero
+disp("i_zero");
 a = eye(3);
 disp(a);
 disp(a^0);
 
 % d_zero
+disp("d_zero");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -18,6 +20,7 @@ disp(a);
 disp(a^0);
 
 % c_zero
+disp("c_zero");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i+0.5i;
@@ -27,11 +30,13 @@ disp(a);
 disp(a^0);
 
 % i_one
+disp("i_one");
 a = eye(3);
 disp(a);
 disp(a^1);
 
 % d_one
+disp("d_one");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -41,6 +46,7 @@ disp(a);
 disp(a^1);
 
 % c_one
+disp("c_one");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i+0.5i;
@@ -50,6 +56,7 @@ disp(a);
 disp(a^1);
 
 % i_large
+disp("i_large");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -59,6 +66,7 @@ disp(a);
 disp(a^20);
 
 % i_negative
+disp("i_neg");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -68,6 +76,7 @@ disp(a);
 disp(floor(a^-20));
 
 % d_small
+disp("d_small");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -77,6 +86,7 @@ disp(a);
 disp(a^0.05);
 
 % d_negative
+disp("d_neg");
 a = zeros(3,3);
 for i=1:9
 	a(i) = ((-1)^i)*i*i;
@@ -167,19 +177,18 @@ for index=3:12
 
 	disp(sprintf('Double exponents\n'));
 	for i=-3:0.2:1.9
-		disp(sprintf(stdout, 'Exponent: %.4f\n', i));
+		disp(sprintf('Exponent: %.4f\n', i));
 		disp(matrices{index}^i);
 	end
 
 	disp(sprintf('Complex exponents\n'));
 	for i=-3:0.2:3
 		for j=-3:0.2:3
-			if j == 0
-				continue
+			if j ~= 0
+   			mystr = sprintf('Exponent: %.4f + %.4fi\n', i, j);
+   			disp(mystr);
+   			disp(matrices{index}^(i+j*1i));
 			end
-			mystr = sprintf('Exponent: %.4f + %.4fi\n', i, j);
-			disp(mystr);
-			disp(matrices{index}^(i+j*1i));
 		end
 	end
 end

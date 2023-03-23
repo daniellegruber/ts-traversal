@@ -11,9 +11,14 @@
 int main(void) {
 
 	//more off
+	
 	//format short
+	
 	//source octaveIncludes.m;
+	
 	// i_zero
+	
+	printf("\n%s\n", "i_zero");
 	Matrix * tmp1 = identityM(3);
 	Matrix * a = tmp1;
 	printM(a);
@@ -21,6 +26,8 @@ int main(void) {
 	Matrix * tmp2 = mpowerM(a, &exponent1, 0);
 	printM(tmp2);
 	// d_zero
+	
+	printf("\n%s\n", "d_zero");
 	int ndim1 = 2;
 	int dim1[2] = {3, 3};
 	Matrix * tmp3 = zerosM(ndim1, dim1);
@@ -47,6 +54,8 @@ int main(void) {
 	Matrix * tmp6 = mpowerM(a, &exponent2, 0);
 	printM(tmp6);
 	// c_zero
+	
+	printf("\n%s\n", "c_zero");
 	int ndim2 = 2;
 	int dim2[2] = {3, 3};
 	Matrix * tmp7 = zerosM(ndim2, dim2);
@@ -70,9 +79,11 @@ int main(void) {
 	a = tmp9;
 	printM(a);
 	int exponent3 = 0;
-	Matrix * tmp10 = mpowerM(a, &exponent3, 2);
+	Matrix * tmp10 = mpowerM(a, &exponent3, 0);
 	printM(tmp10);
 	// i_one
+	
+	printf("\n%s\n", "i_one");
 	Matrix * tmp11 = identityM(3);
 	a = tmp11;
 	printM(a);
@@ -80,6 +91,8 @@ int main(void) {
 	Matrix * tmp12 = mpowerM(a, &exponent4, 0);
 	printM(tmp12);
 	// d_one
+	
+	printf("\n%s\n", "d_one");
 	int ndim3 = 2;
 	int dim3[2] = {3, 3};
 	Matrix * tmp13 = zerosM(ndim3, dim3);
@@ -106,6 +119,8 @@ int main(void) {
 	Matrix * tmp16 = mpowerM(a, &exponent5, 0);
 	printM(tmp16);
 	// c_one
+	
+	printf("\n%s\n", "c_one");
 	int ndim4 = 2;
 	int dim4[2] = {3, 3};
 	Matrix * tmp17 = zerosM(ndim4, dim4);
@@ -129,9 +144,11 @@ int main(void) {
 	a = tmp19;
 	printM(a);
 	int exponent6 = 1;
-	Matrix * tmp20 = mpowerM(a, &exponent6, 2);
+	Matrix * tmp20 = mpowerM(a, &exponent6, 0);
 	printM(tmp20);
 	// i_large
+	
+	printf("\n%s\n", "i_large");
 	int ndim5 = 2;
 	int dim5[2] = {3, 3};
 	Matrix * tmp21 = zerosM(ndim5, dim5);
@@ -158,6 +175,8 @@ int main(void) {
 	Matrix * tmp24 = mpowerM(a, &exponent7, 0);
 	printM(tmp24);
 	// i_negative
+	
+	printf("\n%s\n", "i_neg");
 	int ndim6 = 2;
 	int dim6[2] = {3, 3};
 	Matrix * tmp25 = zerosM(ndim6, dim6);
@@ -185,6 +204,8 @@ int main(void) {
 	Matrix * tmp29 = floorM(tmp28);
 	printM(tmp29);
 	// d_small
+	
+	printf("\n%s\n", "d_small");
 	int ndim7 = 2;
 	int dim7[2] = {3, 3};
 	Matrix * tmp30 = zerosM(ndim7, dim7);
@@ -208,9 +229,11 @@ int main(void) {
 	a = tmp32;
 	printM(a);
 	double exponent9 = 0.05;
-	Matrix * tmp33 = mpowerM(a, &exponent9, 2);
+	Matrix * tmp33 = mpowerM(a, &exponent9, 1);
 	printM(tmp33);
 	// d_negative
+	
+	printf("\n%s\n", "d_neg");
 	int ndim8 = 2;
 	int dim8[2] = {3, 3};
 	Matrix * tmp34 = zerosM(ndim8, dim8);
@@ -236,9 +259,10 @@ int main(void) {
 	a = tmp38;
 	printM(a);
 	double exponent10 = -1.1;
-	Matrix * tmp39 = mpowerM(a, &exponent10, 2);
+	Matrix * tmp39 = mpowerM(a, &exponent10, 1);
 	printM(tmp39);
 	// c_large
+	
 	int ndim9 = 2;
 	int dim9[2] = {3, 3};
 	Matrix * tmp40 = zerosM(ndim9, dim9);
@@ -265,6 +289,7 @@ int main(void) {
 	Matrix * tmp43 = mpowerM(a, &exponent11, 2);
 	printM(tmp43);
 	// c_small
+	
 	int ndim10 = 2;
 	int dim10[2] = {3, 3};
 	Matrix * tmp44 = zerosM(ndim10, dim10);
@@ -291,6 +316,7 @@ int main(void) {
 	Matrix * tmp47 = mpowerM(a, &exponent12, 2);
 	printM(tmp47);
 	// brutal_test
+	
 	
 	Matrix **matrices = NULL;
 	matrices = malloc(11*sizeof(*matrices));
@@ -502,26 +528,29 @@ int main(void) {
 		
 		}
 		printf("\n%s\n", "Double exponents\n");
-		for (int iter35 = -3; iter35 <= 1.9; iter35 += 0.2) {
-			printf("\n%s\n", "Exponent: %.4f\n", iter35);
+		for (double iter35 = -3; iter35 <= 1.9; iter35 += 0.2) {
+			printf("Exponent: %.4f\n", iter35);
 			Matrix * tmp72 = mpowerM(matrices[idx29], &iter35, 0);
 			printM(tmp72);
 		
 		}
 		printf("\n%s\n", "Complex exponents\n");
-		for (int iter36 = -3; iter36 <= 3; iter36 += 0.2) {
-			for (int iter37 = -3; iter37 <= 3; iter37 += 0.2) {
-				if (iter37 == 0) {
+		for (double iter36 = -3; iter36 <= 3; iter36 += 0.2) {
+			for (double iter37 = -3; iter37 <= 3; iter37 += 0.2) {
+				bool tmp73 = iter37 != 0;
+				if (tmp73) {
+					char *mystr1 = NULL;
+					mystr1 = malloc(50*sizeof(*mystr1));
+					sprintf(mystr1, "Exponent: %.4f + %.4fi\n", iter36, iter37);
+					printf("\n%s\n", mystr1);
+					complex exponent13 = (iter36 + iter37 * 1*I);
+					Matrix * tmp74 = mpowerM(matrices[idx29], &exponent13, 2);
+					printM(tmp74);
+					
+					
 					
 				
 				}
-				char *mystr1 = NULL;
-				mystr1 = malloc(50*sizeof(*mystr1));
-				sprintf(mystr1, "Exponent: %.4f + %.4fi\n", iter36, iter37);
-				printf("\n%s\n", mystr1);
-				complex exponent13 = (iter36 + iter37 * 1*I);
-				Matrix * tmp73 = mpowerM(matrices[idx29], &exponent13, 2);
-				printM(tmp73);
 			
 			}
 		
@@ -529,12 +558,19 @@ int main(void) {
 	
 	}
 	// % non_diag1
+	
 	// a = [1,1;0,1];
+	
 	// disp(a);
+	
 	// disp(a^1.5);
+	
 	// % non_diag2
+	
 	// a = [3,4,3;-1,0,-1;1,2,3];
+	
 	// disp(a);
+	
 	// disp(a^-4.25);
 	return 0;
 }

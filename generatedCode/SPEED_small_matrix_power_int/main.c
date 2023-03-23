@@ -29,11 +29,11 @@ int main(void) {
 	free(input1);
 	
 	printM(b);
-	Matrix * tmp1 = mpowerM(b, &exponent, 2);
+	Matrix * tmp1 = mpowerM(b, &exponent, 0);
 	Matrix * c = tmp1;
 	printM(c);
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		Matrix * tmp2 = mpowerM(b, &exponent, 2);
+		Matrix * tmp2 = mpowerM(b, &exponent, 0);
 		c = tmp2;
 		//disp(c);
 	

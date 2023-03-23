@@ -182,7 +182,7 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     ispointer: ispointer, //type == 'char' || ismatrix,
                                     isstruct: isstruct,
                                     scope: [node.startIndex, scope[1], scope[2]],
-                                    initialized: true
+                                    initialized: false //true
                                 }
                                 var_types.push(v2);
                             }

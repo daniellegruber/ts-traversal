@@ -38,7 +38,7 @@ int main(void) {
 	
 	int ndim2 = 2;
 	int dim2[2] = {1,4};
-	a = createM(ndim2, dim2, 1);
+	Matrix * a = createM(ndim2, dim2, 1);
 	double *input2 = NULL;
 	input2 = malloc( 4*sizeof(*input2));
 	input2[0] = 3.25;
@@ -55,7 +55,7 @@ int main(void) {
 	
 	int ndim3 = 2;
 	int dim3[2] = {1,4};
-	a = createM(ndim3, dim3, 2);
+	Matrix * a = createM(ndim3, dim3, 2);
 	complex *input3 = NULL;
 	input3 = malloc( 4*sizeof(*input3));
 	input3[0] = 3.25;
@@ -72,7 +72,7 @@ int main(void) {
 	
 	int ndim4 = 2;
 	int dim4[2] = {4,1};
-	a = createM(ndim4, dim4, 0);
+	Matrix * a = createM(ndim4, dim4, 0);
 	int *input4 = NULL;
 	input4 = malloc( 4*sizeof(*input4));
 	input4[0] = 3;
@@ -89,7 +89,7 @@ int main(void) {
 	
 	int ndim5 = 2;
 	int dim5[2] = {4,1};
-	a = createM(ndim5, dim5, 1);
+	Matrix * a = createM(ndim5, dim5, 1);
 	double *input5 = NULL;
 	input5 = malloc( 4*sizeof(*input5));
 	input5[0] = 3.25;
@@ -106,7 +106,7 @@ int main(void) {
 	
 	int ndim6 = 2;
 	int dim6[2] = {4,1};
-	a = createM(ndim6, dim6, 2);
+	Matrix * a = createM(ndim6, dim6, 2);
 	complex *input6 = NULL;
 	input6 = malloc( 4*sizeof(*input6));
 	input6[0] = 3.25;
@@ -123,7 +123,7 @@ int main(void) {
 	
 	int ndim7 = 2;
 	int dim7[2] = {2,3};
-	a = createM(ndim7, dim7, 0);
+	Matrix * a = createM(ndim7, dim7, 0);
 	int *input7 = NULL;
 	input7 = malloc( 6*sizeof(*input7));
 	input7[0] = 3;
@@ -141,7 +141,7 @@ int main(void) {
 	
 	int ndim8 = 2;
 	int dim8[2] = {2,3};
-	a = createM(ndim8, dim8, 1);
+	Matrix * a = createM(ndim8, dim8, 1);
 	double *input8 = NULL;
 	input8 = malloc( 6*sizeof(*input8));
 	input8[0] = 3.25;
@@ -159,7 +159,7 @@ int main(void) {
 	
 	int ndim9 = 2;
 	int dim9[2] = {2,3};
-	a = createM(ndim9, dim9, 2);
+	Matrix * a = createM(ndim9, dim9, 2);
 	complex *input9 = NULL;
 	input9 = malloc( 6*sizeof(*input9));
 	input9[0] = 3.25;
@@ -177,7 +177,7 @@ int main(void) {
 	
 	int ndim10 = 2;
 	int dim10[2] = {3,2};
-	a = createM(ndim10, dim10, 0);
+	Matrix * a = createM(ndim10, dim10, 0);
 	int *input10 = NULL;
 	input10 = malloc( 6*sizeof(*input10));
 	input10[0] = 3;
@@ -195,7 +195,7 @@ int main(void) {
 	
 	int ndim11 = 2;
 	int dim11[2] = {3,2};
-	a = createM(ndim11, dim11, 1);
+	Matrix * a = createM(ndim11, dim11, 1);
 	double *input11 = NULL;
 	input11 = malloc( 6*sizeof(*input11));
 	input11[0] = 3.25;
@@ -213,7 +213,7 @@ int main(void) {
 	
 	int ndim12 = 2;
 	int dim12[2] = {3,2};
-	a = createM(ndim12, dim12, 2);
+	Matrix * a = createM(ndim12, dim12, 2);
 	complex *input12 = NULL;
 	input12 = malloc( 6*sizeof(*input12));
 	input12[0] = 3.25;
@@ -252,7 +252,7 @@ int main(void) {
 	Matrix *mat1 = createM(ndim13, dim13, 0);
 	writeM(mat1, size1, lhs_data1);
 	Matrix * tmp11 = transposeM(mat1);
-	a = tmp11;
+	lhs_data1 = tmp11;
 	printM(a);
 	fourier_script(a);
 	//matrices_97_d
@@ -280,7 +280,7 @@ int main(void) {
 	Matrix *mat2 = createM(ndim14, dim14, 0);
 	writeM(mat2, size2, lhs_data2);
 	Matrix * tmp18 = transposeM(mat2);
-	a = tmp18;
+	lhs_data2 = tmp18;
 	printM(a);
 	fourier_script(a);
 	//matrices_97_c
@@ -306,7 +306,7 @@ int main(void) {
 	Matrix *mat3 = createM(ndim15, dim15, 2);
 	writeM(mat3, size3, lhs_data3);
 	Matrix * tmp23 = transposeM(mat3);
-	a = tmp23;
+	lhs_data3 = tmp23;
 	printM(a);
 	fourier_script(a);
 	return 0;

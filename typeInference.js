@@ -159,6 +159,13 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     initialized: true
                                 };
                                 var_types.push(v2);
+                                /*if (node.leftNode.text == "a") {
+                                    console.log("HELLO1");
+                                    console.log(node.text);
+                                    console.log(v1);
+                                    console.log(v2);
+                                    console.log("-------------------------------");
+                                }*/
                             }
                             else {
                                 v1_1.scope = [v1_1.scope[0], node_2.startIndex - 1, v1_1.scope[2]];
@@ -173,9 +180,16 @@ function inferTypeFromAssignment(tree, var_types, custom_functions, classes, fil
                                     ispointer: ispointer,
                                     isstruct: isstruct,
                                     scope: [node_2.startIndex, scope[1], scope[2]],
-                                    initialized: true
+                                    initialized: false //true
                                 };
                                 var_types.push(v2);
+                                /*if (node.leftNode.text == "a") {
+                                    console.log("HELLO2");
+                                    console.log(node.text);
+                                    console.log(v1);
+                                    console.log(v2);
+                                    console.log("-------------------------------");
+                                }*/
                             }
                         }
                     }

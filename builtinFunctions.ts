@@ -202,17 +202,14 @@ export const operatorMapping = [
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
-            
-            if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
-                let left_type = arg_types[0].type;
-                let right_type = arg_types[1].type;
-                let type = binaryOpType(left_type, right_type);
-                let obj = type_to_matrix_type.find(x => x.type === type);
-                if (left_ismatrix) {
-                    return [args[0], "&scalar", obj.matrix_type.toString()];
-                } else {
-                    return [args[1], "&scalar", obj.matrix_type.toString()];
-                }
+
+            if (left_ismatrix && !right_ismatrix) {
+                let obj = type_to_matrix_type.find(x => x.type === arg_types[1].type);
+                return [args[0], "&scalar", obj.matrix_type.toString()];
+                
+            } else if (!left_ismatrix && right_ismatrix) {
+                let obj = type_to_matrix_type.find(x => x.type === arg_types[0].type);
+                return [args[1], "&scalar", obj.matrix_type.toString()];
                 
             } else {
                 return args;
@@ -447,11 +444,15 @@ export const operatorMapping = [
             let right_ismatrix = arg_types[1].ismatrix;
             let right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                let type = left_type;
+                /*let type = left_type;
                 if (right_type != 'int') {
-                    //type = 'double';
                     type = 'complex';
-                }
+                } else {
+                    if (args[1][0] == "-") {
+                        type = 'complex';
+                    }
+                }*/
+                let type = right_type;
                 let obj = type_to_matrix_type.find(x => x.type === type);
                 
                 /*let isnum = /^[\d.]+[\+\-][\d.]+\*I$/.test(args[1]);
@@ -489,7 +490,6 @@ export const operatorMapping = [
             }*/
             let type = left_type;
             if (right_type != 'int') {
-                //type = 'double';
                 type = 'complex';
             }
             
@@ -937,11 +937,20 @@ export const operatorMapping = [
             if (left_ismatrix && right_ismatrix) {
                 return 'neM';
             } else {
-                return null;
+                //return null;
+                return `${args[0]} != ${args[1]}`;
             }
         },  
         req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
+        args_transform: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && right_ismatrix) {
+                return args;
+            } else {
+                return ['void'];
+            }
+        },
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -955,16 +964,30 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
-            return {
-                type: 'bool', // create function to get types giving precedence to complex, double, then int
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false, //true,
-                isstruct: false 
-            };
+            if (left_ismatrix && right_ismatrix) {
+                return {
+                    type: 'bool', // create function to get types giving precedence to complex, double, then int
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
+            } else {
+                return {
+                    type: 'bool', // create function to get types giving precedence to complex, double, then int
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false, //true,
+                    isstruct: false 
+                };
+            }
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         

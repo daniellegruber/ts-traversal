@@ -49,7 +49,7 @@ int main(void) {
 	
 	int ndim2 = 2;
 	int dim2[2] = {1,4};
-	a = createM(ndim2, dim2, 1);
+	Matrix * a = createM(ndim2, dim2, 1);
 	double *input2 = NULL;
 	input2 = malloc( 4*sizeof(*input2));
 	input2[0] = 3.25;
@@ -67,7 +67,7 @@ int main(void) {
 	
 	int ndim3 = 2;
 	int dim3[2] = {1,4};
-	a = createM(ndim3, dim3, 2);
+	Matrix * a = createM(ndim3, dim3, 2);
 	complex *input3 = NULL;
 	input3 = malloc( 4*sizeof(*input3));
 	input3[0] = 3.25;
@@ -85,7 +85,7 @@ int main(void) {
 	
 	int ndim4 = 2;
 	int dim4[2] = {4,1};
-	a = createM(ndim4, dim4, 0);
+	Matrix * a = createM(ndim4, dim4, 0);
 	int *input4 = NULL;
 	input4 = malloc( 4*sizeof(*input4));
 	input4[0] = 3;
@@ -103,7 +103,7 @@ int main(void) {
 	
 	int ndim5 = 2;
 	int dim5[2] = {4,1};
-	a = createM(ndim5, dim5, 1);
+	Matrix * a = createM(ndim5, dim5, 1);
 	double *input5 = NULL;
 	input5 = malloc( 4*sizeof(*input5));
 	input5[0] = 3.25;
@@ -121,7 +121,7 @@ int main(void) {
 	
 	int ndim6 = 2;
 	int dim6[2] = {4,1};
-	a = createM(ndim6, dim6, 2);
+	Matrix * a = createM(ndim6, dim6, 2);
 	complex *input6 = NULL;
 	input6 = malloc( 4*sizeof(*input6));
 	input6[0] = 3.25;
@@ -139,7 +139,7 @@ int main(void) {
 	
 	int ndim7 = 2;
 	int dim7[2] = {2,3};
-	a = createM(ndim7, dim7, 0);
+	Matrix * a = createM(ndim7, dim7, 0);
 	int *input7 = NULL;
 	input7 = malloc( 6*sizeof(*input7));
 	input7[0] = 3;
@@ -158,7 +158,7 @@ int main(void) {
 	
 	int ndim8 = 2;
 	int dim8[2] = {2,3};
-	a = createM(ndim8, dim8, 1);
+	Matrix * a = createM(ndim8, dim8, 1);
 	double *input8 = NULL;
 	input8 = malloc( 6*sizeof(*input8));
 	input8[0] = 3.25;
@@ -177,7 +177,7 @@ int main(void) {
 	
 	int ndim9 = 2;
 	int dim9[2] = {2,3};
-	a = createM(ndim9, dim9, 2);
+	Matrix * a = createM(ndim9, dim9, 2);
 	complex *input9 = NULL;
 	input9 = malloc( 6*sizeof(*input9));
 	input9[0] = 3.25;
@@ -196,7 +196,7 @@ int main(void) {
 	
 	int ndim10 = 2;
 	int dim10[2] = {3,2};
-	a = createM(ndim10, dim10, 0);
+	Matrix * a = createM(ndim10, dim10, 0);
 	int *input10 = NULL;
 	input10 = malloc( 6*sizeof(*input10));
 	input10[0] = 3;
@@ -215,7 +215,7 @@ int main(void) {
 	
 	int ndim11 = 2;
 	int dim11[2] = {3,2};
-	a = createM(ndim11, dim11, 1);
+	Matrix * a = createM(ndim11, dim11, 1);
 	double *input11 = NULL;
 	input11 = malloc( 6*sizeof(*input11));
 	input11[0] = 3.25;
@@ -234,7 +234,7 @@ int main(void) {
 	
 	int ndim12 = 2;
 	int dim12[2] = {3,2};
-	a = createM(ndim12, dim12, 2);
+	Matrix * a = createM(ndim12, dim12, 2);
 	complex *input12 = NULL;
 	input12 = malloc( 6*sizeof(*input12));
 	input12[0] = 3.25;
@@ -343,7 +343,7 @@ int main(void) {
 	
 	int ndim16 = 2;
 	int dim16[2] = {1,100};
-	a = createM(ndim16, dim16, 0);
+	Matrix * a = createM(ndim16, dim16, 0);
 	int *input13 = NULL;
 	input13 = malloc( 100*sizeof(*input13));
 	for (int iter8 = 0; iter8 < 100; iter8++) {

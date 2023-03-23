@@ -24,6 +24,7 @@ eigen
 elem_divide_matrix
 elem_multiply_matrix
 elem_power_matrix
+elem_scalarpower_matrix
 elem_trig_matrix
 equal_matrix
 external_fun
@@ -39,6 +40,7 @@ matrix_division
 octaveIncludes
 randomness
 round_matrix
+scale_matrix
 subtract_matrix
 testing
 transpose_matrix
@@ -48,7 +50,6 @@ ERROR
 advanced_stats
 basic_stats
 determinant_matrix
-elem_scalarpower_matrix
 filterM
 fourier
 hamming_hanning
@@ -56,7 +57,6 @@ octaveTimer
 power_matrix
 reindex
 reshape_matrix
-scale_matrix
 stftM
 xcorrM
 

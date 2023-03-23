@@ -7,11 +7,13 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/power_matrix/outp
 %source octaveIncludes.m;
 
 % i_zero
+dispArr(fileID, "i_zero");
 a = eye(3);
 dispArr(fileID, a);
 dispArr(fileID, a^0);
 
 % d_zero
+dispArr(fileID, "d_zero");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -21,6 +23,7 @@ dispArr(fileID, a);
 dispArr(fileID, a^0);
 
 % c_zero
+dispArr(fileID, "c_zero");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i+0.5i;
@@ -30,11 +33,13 @@ dispArr(fileID, a);
 dispArr(fileID, a^0);
 
 % i_one
+dispArr(fileID, "i_one");
 a = eye(3);
 dispArr(fileID, a);
 dispArr(fileID, a^1);
 
 % d_one
+dispArr(fileID, "d_one");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -44,6 +49,7 @@ dispArr(fileID, a);
 dispArr(fileID, a^1);
 
 % c_one
+dispArr(fileID, "c_one");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i+0.5i;
@@ -53,6 +59,7 @@ dispArr(fileID, a);
 dispArr(fileID, a^1);
 
 % i_large
+dispArr(fileID, "i_large");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -62,6 +69,7 @@ dispArr(fileID, a);
 dispArr(fileID, a^20);
 
 % i_negative
+dispArr(fileID, "i_neg");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -71,6 +79,7 @@ dispArr(fileID, a);
 dispArr(fileID, floor(a^-20));
 
 % d_small
+dispArr(fileID, "d_small");
 a = zeros(3,3);
 for i=1:9
 	a(i) = i*i;
@@ -80,6 +89,7 @@ dispArr(fileID, a);
 dispArr(fileID, a^0.05);
 
 % d_negative
+dispArr(fileID, "d_neg");
 a = zeros(3,3);
 for i=1:9
 	a(i) = ((-1)^i)*i*i;
@@ -170,19 +180,18 @@ for index=3:12
 
 	dispArr(fileID, sprintf('Double exponents\n'));
 	for i=-3:0.2:1.9
-		dispArr(fileID, sprintf(stdout, 'Exponent: %.4f\n', i));
+		dispArr(fileID, sprintf('Exponent: %.4f\n', i));
 		dispArr(fileID, matrices{index}^i);
 	end
 
 	dispArr(fileID, sprintf('Complex exponents\n'));
 	for i=-3:0.2:3
 		for j=-3:0.2:3
-			if j == 0
-				continue
+			if j ~= 0
+   			mystr = sprintf('Exponent: %.4f + %.4fi\n', i, j);
+   			dispArr(fileID, mystr);
+   			dispArr(fileID, matrices{index}^(i+j*1i));
 			end
-			mystr = sprintf('Exponent: %.4f + %.4fi\n', i, j);
-			dispArr(fileID, mystr);
-			dispArr(fileID, matrices{index}^(i+j*1i));
 		end
 	end
 end

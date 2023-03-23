@@ -136,7 +136,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
         if (debug == 1) {
             console.log("main");
         }
-    
+            
         let cursor = tree.walk();
         do {
             const c = cursor as g.TypedTreeCursor;
@@ -292,8 +292,12 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         
                     }
                     let obj = tmp_var_types.find(x => x.name === node.leftNode.text);
+                    let type = 'int';
+                    if (node.rightNode.namedChildCount == 3) {
+                        [type,,,,,,] = inferType(node.rightNode.namedChildren[1], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    }
                     
-                    expression.push(`for (int ${tmp_iter} = ${children[0]};`);
+                    expression.push(`for (${type} ${tmp_iter} = ${children[0]};`);
                     loop_iterators.push(tmp_iter);
                     updateFunParams(0);
                     alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
@@ -324,7 +328,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 } else if (node.rightNode.type == g.SyntaxType.Matrix) {
                     var tmp_var1 = generateTmpVar("mat", tmp_tbl); // the matrix
                     var tmp_var2 = generateTmpVar("tmp", tmp_tbl); // the iterating variable
-                    var [type, ndim, dim,,,, c] = inferType(node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [type, ndim, dim,,,, c] = inferType(node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
@@ -537,14 +541,37 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         } else {
                             let scope = findVarScope(node, block_idxs, current_code, debug);
                             let var_type = filterByScope(tmp_var_types, lhs, node, 0);
-                            let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2] && x.propertyOf != node.text);
+                            //let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2] && x.propertyOf != node.text);
+                            let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2]);
+                            
                             if (var_type != null && var_type != undefined) { 
-                                if (var_type.initialized && (var_type.ismatrix || var_type.type == type)) {
+                                let idx = all_var_type.findIndex(x=> JSON.stringify(x) == JSON.stringify(var_type));
+                                let flag1 = (var_type.initialized && (var_type.ismatrix || var_type.type == type));
+                                let flag2 = false;
+                                if (idx > 0) {
+                                    if (all_var_type[idx-1].initialized && (var_type.ismatrix || var_type.type == all_var_type[idx-1].type)) {
+                                        flag1 = true;
+                                        let alias_obj = alias_tbl.find(x=>x.name == lhs && all_var_type[idx-1].scope[0] >= x.scope[0] && all_var_type[idx-1].scope[1] <= x.scope[1]);
+                                        if (alias_obj != null && alias_obj != undefined) {
+                                            alias_tbl.push({
+                                                name: lhs,
+                                                tmp_var: alias_obj.tmp_var,
+                                                scope: var_type.scope
+                                            });
+                                            lhs = alias_obj.tmp_var;
+                                        }
+                                    }
+                                    if (all_var_type[idx-1].initialized && all_var_type.length > 1) {
+                                        flag2 = true;
+                                    }
+                                }
+                                if (flag1) {
+                                //if (var_type.initialized && (var_type.ismatrix || var_type.type == type)) {
                                 //if (var_type.initialized && var_type.ismatrix) {
                                     updateFunParams(0);
                                     [main_function, function_definitions] = pushToMain(`${lhs} = ${rhs};`, fun_params);
                                 //} else if (var_type.initialized && (var_type.type != type)) {
-                                } else if (var_type.initialized && all_var_type.length > 1) {
+                                } else if (flag2) {
                                     let tmp = generateTmpVar(var_type.name, tmp_tbl);
                                     tmp_var_types.push({
                                         name: tmp,
@@ -1853,7 +1880,6 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
         if (obj.args_transform(args, arg_types, outs) != null) {
             args = obj.args_transform(args, arg_types, outs);
         }
-        
         if (init_before != null && init_before != undefined) {
                             
             for (let i = 0; i < init_before.length; i++) {
@@ -1919,7 +1945,9 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             });
             
             let var_val = `${fun_c}()`;
-            if (args != null) {
+            if (args[0] == "void") {
+                var_val = `${fun_c}`;
+            } else if (args != null) {
                 var_val = `${fun_c}(${args.join(", ")})`;
             }
             updateFunParams(0);

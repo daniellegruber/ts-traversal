@@ -89,10 +89,10 @@ int main(void) {
 	Matrix * tmp16 = scaleM(a, &scalar6, 2);
 	printM(tmp16);
 	int scalar7 = 2;
-	Matrix * tmp17 = scaleM(b, &scalar7, 2);
+	Matrix * tmp17 = scaleM(b, &scalar7, 0);
 	printM(tmp17);
 	double scalar8 = 2.1;
-	Matrix * tmp18 = scaleM(b, &scalar8, 2);
+	Matrix * tmp18 = scaleM(b, &scalar8, 1);
 	printM(tmp18);
 	complex scalar9 = (2.1 + 1*I);
 	Matrix * tmp19 = scaleM(b, &scalar9, 2);

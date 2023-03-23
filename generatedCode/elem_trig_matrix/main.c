@@ -89,7 +89,7 @@ int main(void) {
 	Matrix * tmp22 = tandM(a);
 	printM(tmp22);
 	//complex_test
-	exponent = 1.2;
+	double exponent1 = 1.2;
 	int ndim3 = 2;
 	int dim3[2] = {3,3};
 	Matrix * tmp23 = zerosM(ndim3, dim3);

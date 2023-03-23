@@ -165,17 +165,13 @@ exports.operatorMapping = [
         args_transform: function (args, arg_types, outs) {
             var left_ismatrix = arg_types[0].ismatrix;
             var right_ismatrix = arg_types[1].ismatrix;
-            if ((left_ismatrix && !right_ismatrix) || (!left_ismatrix && right_ismatrix)) {
-                var left_type = arg_types[0].type;
-                var right_type = arg_types[1].type;
-                var type_1 = (0, customTypes_1.binaryOpType)(left_type, right_type);
-                var obj = type_to_matrix_type.find(function (x) { return x.type === type_1; });
-                if (left_ismatrix) {
-                    return [args[0], "&scalar", obj.matrix_type.toString()];
-                }
-                else {
-                    return [args[1], "&scalar", obj.matrix_type.toString()];
-                }
+            if (left_ismatrix && !right_ismatrix) {
+                var obj = type_to_matrix_type.find(function (x) { return x.type === arg_types[1].type; });
+                return [args[0], "&scalar", obj.matrix_type.toString()];
+            }
+            else if (!left_ismatrix && right_ismatrix) {
+                var obj = type_to_matrix_type.find(function (x) { return x.type === arg_types[0].type; });
+                return [args[1], "&scalar", obj.matrix_type.toString()];
             }
             else {
                 return args;
@@ -278,8 +274,8 @@ exports.operatorMapping = [
             else if (left_ismatrix && !right_ismatrix) {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
-                var type_2 = (0, customTypes_1.binaryOpType)(left_type, right_type);
-                var obj = type_to_matrix_type.find(function (x) { return x.type === type_2; });
+                var type_1 = (0, customTypes_1.binaryOpType)(left_type, right_type);
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_1; });
                 return [args[0], "1/(".concat(args[1], ")"), obj.matrix_type.toString()];
             }
             else {
@@ -355,8 +351,8 @@ exports.operatorMapping = [
             else {
                 var left_type = arg_types[0].type;
                 var right_type = arg_types[1].type;
-                var type_3 = (0, customTypes_1.binaryOpType)(left_type, right_type);
-                var obj = type_to_matrix_type.find(function (x) { return x.type === type_3; });
+                var type_2 = (0, customTypes_1.binaryOpType)(left_type, right_type);
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_2; });
                 return ["1/(".concat(args[0], ")"), args[1], obj.matrix_type.toString()];
             }
         },
@@ -414,12 +410,16 @@ exports.operatorMapping = [
             var right_ismatrix = arg_types[1].ismatrix;
             var right_type = arg_types[1].type;
             if (left_ismatrix && !right_ismatrix) {
-                var type_4 = left_type;
+                /*let type = left_type;
                 if (right_type != 'int') {
-                    //type = 'double';
-                    type_4 = 'complex';
-                }
-                var obj = type_to_matrix_type.find(function (x) { return x.type === type_4; });
+                    type = 'complex';
+                } else {
+                    if (args[1][0] == "-") {
+                        type = 'complex';
+                    }
+                }*/
+                var type_3 = right_type;
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_3; });
                 /*let isnum = /^[\d.]+[\+\-][\d.]+\*I$/.test(args[1]);
                 if (!isnum) {
                     isnum = /^[\d.]+$/.test(args[1]);
@@ -454,7 +454,6 @@ exports.operatorMapping = [
             }*/
             var type = left_type;
             if (right_type != 'int') {
-                //type = 'double';
                 type = 'complex';
             }
             return {
@@ -659,9 +658,9 @@ exports.operatorMapping = [
                 if (right_type != 'int') {
                     type = 'complex';
                 }*/
-                var type_5 = right_type;
+                var type_4 = right_type;
                 //let type = binaryOpType(left_type, right_type);
-                var obj = type_to_matrix_type.find(function (x) { return x.type === type_5; });
+                var obj = type_to_matrix_type.find(function (x) { return x.type === type_4; });
                 var isnum = /^\d+$/.test(args[1]);
                 if (isnum) {
                     return [args[0], 'scalar', "".concat(obj.matrix_type)];
@@ -902,11 +901,21 @@ exports.operatorMapping = [
                 return 'neM';
             }
             else {
-                return null;
+                //return null;
+                return "".concat(args[0], " != ").concat(args[1]);
             }
         },
         req_arg_types: null,
-        args_transform: function (args, arg_types, outs) { return args; },
+        args_transform: function (args, arg_types, outs) {
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && right_ismatrix) {
+                return args;
+            }
+            else {
+                return ['void'];
+            }
+        },
         outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
@@ -919,15 +928,30 @@ exports.operatorMapping = [
             var right_type = arg_types[1].type;
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
-            return {
-                type: 'bool',
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            };
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && right_ismatrix) {
+                return {
+                    type: 'bool',
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: 'bool',
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },

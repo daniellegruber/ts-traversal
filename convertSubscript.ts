@@ -12,10 +12,10 @@ export function slice2list(node, fun_params) {
             
     for (let i=0; i<node.namedChildCount; i++) {
         let child = node.namedChildren[i];
-        let [child_type,,,,,,] = inferType(child, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug);
+        let [child_type,,,,,,] = inferType(fun_params.filename, child, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug);
         
         if (child_type == "keyword") {
-            let [,ndim,dim,,,,] = inferType(node.parent.valueNode, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug);
+            let [,ndim,dim,,,,] = inferType(fun_params.filename, node.parent.valueNode, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug);
             if (node.parent.namedChildCount == 2) {
                 children_vals.push(numel(dim));
             } else {

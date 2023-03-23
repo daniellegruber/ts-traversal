@@ -83,12 +83,12 @@ for (let file of file_traversal_order.reverse()) {
     const sourceCode = fs.readFileSync(file, "utf8");
     let tree = parser.parse(sourceCode);
     let block_idxs = [];
-    [var_types, custom_functions, block_idxs] = typeInference(file, custom_functions, classes, debug);
     if (file == args[0]) {
         var filename = "main";
     } else {
         var filename:string = path.parse(file).name;
     }
+    [var_types, custom_functions, block_idxs] = typeInference(filename, file, custom_functions, classes, debug);
     let [generated_code, header, vt, cf] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file, debug);
     var_types = vt;
     custom_functions = cf;

@@ -70,13 +70,13 @@ for (var _i = 0, _c = file_traversal_order.reverse(); _i < _c.length; _i++) {
     var sourceCode_1 = fs.readFileSync(file, "utf8");
     var tree_1 = parser.parse(sourceCode_1);
     var block_idxs = [];
-    _a = (0, typeInference_1.typeInference)(file, custom_functions, classes, debug), var_types = _a[0], custom_functions = _a[1], block_idxs = _a[2];
     if (file == args[0]) {
         var filename = "main";
     }
     else {
         var filename = path.parse(file).name;
     }
+    _a = (0, typeInference_1.typeInference)(filename, file, custom_functions, classes, debug), var_types = _a[0], custom_functions = _a[1], block_idxs = _a[2];
     var _d = (0, generateCode_1.generateCode)(filename, tree_1, out_folder, custom_functions, classes, var_types, block_idxs, file, debug), generated_code = _d[0], header = _d[1], vt = _d[2], cf = _d[3];
     var_types = vt;
     custom_functions = cf;

@@ -16,6 +16,38 @@ import Matlab = require("tree-sitter-matlab");
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
 
+export function isInitialized(name, node, type, fun_params) {
+    let scope = findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
+    let var_type = filterByScope(fun_params.var_types, name, node, 0);
+    let all_var_type = fun_params.var_types.filter(x=>x.name == name && x.scope[2]==scope[2]);
+
+    let flag1 = false;
+    let flag2 = false;
+    if (var_type != null && var_type != undefined) { 
+        let idx = all_var_type.findIndex(x=> JSON.stringify(x) == JSON.stringify(var_type));
+        flag1 = (var_type.initialized && (var_type.ismatrix || var_type.type == type));
+        if (idx > 0) {
+            if (all_var_type[idx-1].initialized && (var_type.ismatrix || var_type.type == all_var_type[idx-1].type)) {
+                flag1 = true;
+                let alias_obj = fun_params.alias_tbl.find(x=>x.name == name && all_var_type[idx-1].scope[0] >= x.scope[0] && all_var_type[idx-1].scope[1] <= x.scope[1]);
+                if (alias_obj != null && alias_obj != undefined) {
+                    fun_params.alias_tbl.push({
+                        name: name,
+                        tmp_var: alias_obj.tmp_var,
+                        scope: var_type.scope
+                    });
+                    name = alias_obj.tmp_var;
+                }
+            }
+            if (all_var_type[idx-1].initialized && all_var_type.length > 1) {
+                flag2 = true;
+            }
+        }
+    }
+    
+    return [name, var_type, flag1, flag2, fun_params];
+}
+
 export function findBuiltin(builtin_funs, name) {
     return builtin_funs.find(x => {
         let found = -1;
@@ -44,7 +76,7 @@ export function extractSingularMat(mat, var_type, node, fun_params) {
             ispointer: true,
             isstruct: false,
             initialized: true,
-            scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+            scope: findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
         });
         fun_params.var_types.push({
             name: `${tmp_var}[0]`,
@@ -56,7 +88,7 @@ export function extractSingularMat(mat, var_type, node, fun_params) {
             ispointer: false,
             isstruct: false,
             initialized: true,
-            scope: findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+            scope: findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
         });
         fun_params.alias_tbl = pushAliasTbl(mat, `${tmp_var}[0]`, node, fun_params);
         let [main_function, function_definitions] = pushToMain(`${var_type.type} * ${tmp_var} = ${var_type.type.charAt(0)}_to_${var_type.type.charAt(0)}(${mat});`, fun_params);
@@ -93,7 +125,7 @@ export function filterByScope(obj, name, node, find_or_filter) {
 }
 
 export function pushAliasTbl(lhs, rhs, node, fun_params) {
-    let scope = findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
+    let scope = findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     let obj = filterByScope(fun_params.var_types, lhs, node, 0);
     /*if (obj !== null && obj !== undefined) {
         scope = obj.scope;
@@ -119,7 +151,7 @@ export function findLastSubscript(node, fun_params) {
     let subscript_text = null;
     let subscript_idx = null;
     let re = new RegExp(`${node.text}\\(([\\s\\w+\\-\\*]*)\\)(=| =)`);
-    let scope = findVarScope(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
+    let scope = findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     let obj = filterByScope(fun_params.var_types, node.text, node, 0);
     if (obj !== null && obj !== undefined) {
         scope = obj.scope;
@@ -248,7 +280,7 @@ export function getClasses(src, debug) {
         let methods = c1.methods;
         for (let file of files) {
             // Update placeholders
-            [, methods] = typeInference(file, methods, classes, debug);
+            [, methods] = typeInference(path.parse(file).name, file, methods, classes, debug);
         }
         const c: Class = {
             name: c1.name,

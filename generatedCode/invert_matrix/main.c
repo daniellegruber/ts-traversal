@@ -37,7 +37,7 @@ int main(void) {
 	
 	int ndim2 = 2;
 	int dim2[2] = {2,2};
-	Matrix * a = createM(ndim2, dim2, 1);
+	a = createM(ndim2, dim2, 1);
 	double *input2 = NULL;
 	input2 = malloc( 4*sizeof(*input2));
 	input2[0] = 1.5;
@@ -57,7 +57,7 @@ int main(void) {
 	
 	int ndim3 = 2;
 	int dim3[2] = {2,2};
-	Matrix * a = createM(ndim3, dim3, 2);
+	a = createM(ndim3, dim3, 2);
 	complex *input3 = NULL;
 	input3 = malloc( 4*sizeof(*input3));
 	input3[0] = 1.5 + 1*I;

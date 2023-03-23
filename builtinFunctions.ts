@@ -2202,7 +2202,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'unifitM', 
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (args, arg_types, outs) => outs,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2218,7 +2218,7 @@ export const builtin_functions = [
 			return [
 			    {
 			        name: arg_a,
-			        type: 'void',
+			        type: 'double', //'void',
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
@@ -2228,7 +2228,7 @@ export const builtin_functions = [
 			    },
 			    {
 			        name: arg_b,
-			        type: 'void',
+			        type: 'double', //'void',
 			        ndim: 2,
 			        dim: [1,1],
 			        ismatrix: false,
@@ -3061,7 +3061,8 @@ for (int i = 0; ${step}*i < 1; i ++) {
 			return [
 			    {
 			        name: arg_d,
-			        type: "double",
+			        //type: "double",
+			        type: arg_types[0].type,
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
@@ -3928,17 +3929,26 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 return args;
             } else {
                 let format = '"\\n%d\\n"';
-                if (arg_types[0].type == 'double' || arg_types[0].type == 'complex') {
+                //if (arg_types[0].type == 'double' || arg_types[0].type == 'complex') {
+                if (arg_types[0].type == 'double') {
                     format = '"\\n%f\\n"';
+                } else if (arg_types[0].type == 'complex') {
+                    format = '"\\n%f + %fi\\n"';
                 } else if (arg_types[0].type == 'int') {
                     format = '"\\n%d\\n"';
                 } else if (arg_types[0].type == 'char') {
                     format = '"\\n%s\\n"';
                     args[0] = args[0].replace(/'/g, '"');
                 }
+                
+                if (arg_types[0].type == 'complex') {
+                    return [format, `creal(${args[0]})`, `cimag(${args[0]})`];
+                } else {
+                    return [format, args[0]];
+                }
                 //return [format, args[0]];
-                args.unshift(format);
-                return args;
+                //args.unshift(format);
+                //return args;
             }
         },
 		outs_transform: (args, arg_types, outs) => outs,
@@ -4081,6 +4091,26 @@ return `switch(${args[0]}.type) {
             args.unshift(buffer);
             return args;
         },
+        req_arg_types: [
+            {
+                type: 'char', 
+                ndim: null,
+                dim: null,
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: null, 
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            }
+        ],
 		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 1,
         n_opt_args: 0,

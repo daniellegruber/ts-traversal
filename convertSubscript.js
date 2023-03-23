@@ -10,9 +10,9 @@ function slice2list(node, fun_params) {
     var children_vals = [];
     for (var i = 0; i < node.namedChildCount; i++) {
         var child = node.namedChildren[i];
-        var _a = (0, typeInference_1.inferType)(child, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug), child_type = _a[0];
+        var _a = (0, typeInference_1.inferType)(fun_params.filename, child, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug), child_type = _a[0];
         if (child_type == "keyword") {
-            var _b = (0, typeInference_1.inferType)(node.parent.valueNode, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug), ndim = _b[1], dim = _b[2];
+            var _b = (0, typeInference_1.inferType)(fun_params.filename, node.parent.valueNode, fun_params.var_types, fun_params.custom_functions, fun_params.classes, fun_params.file, fun_params.alias_tbl, fun_params.debug), ndim = _b[1], dim = _b[2];
             if (node.parent.namedChildCount == 2) {
                 children_vals.push((0, helperFunctions_1.numel)(dim));
             }

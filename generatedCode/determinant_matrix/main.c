@@ -25,14 +25,14 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	double d1;
+	int d1;
 	detM(a, &d1);
-	printf("\n%f\n", d1);
+	printf("\n%d\n", d1);
 	//test2
 	
 	int ndim2 = 2;
 	int dim2[2] = {2,2};
-	Matrix * a = createM(ndim2, dim2, 2);
+	a = createM(ndim2, dim2, 2);
 	complex *input2 = NULL;
 	input2 = malloc( 4*sizeof(*input2));
 	input2[0] = 26 + 1*I;
@@ -43,9 +43,9 @@ int main(void) {
 	free(input2);
 	
 	printM(a);
-	double d2;
+	complex d2;
 	detM(a, &d2);
-	printf("\n%f\n", d2);
+	printf("\n%f + %fi\n", creal(d2), cimag(d2));
 	//test3
 	int ndim3 = 2;
 	int dim3[2] = {3,3};
@@ -71,9 +71,9 @@ int main(void) {
 	Matrix *mat1 = createM(ndim3, dim3, 0);
 	writeM(mat1, size1, lhs_data1);
 	printM(mat1);
-	double d3;
+	int d3;
 	detM(mat1, &d3);
-	printf("%.5f\n", d3);
+	printf("%d\n", d3);
 	//testn
 	int ndim4 = 2;
 	int dim4[2] = {5,5};
@@ -115,9 +115,9 @@ int main(void) {
 	Matrix * tmp10 = transposeM(mat2);
 	a = tmp10;
 	printM(a);
-	double d4;
+	int d4;
 	detM(a, &d4);
-	printf("%.5f\n", d4);
+	printf("%d\n", d4);
 	//non_square
 	int ndim5 = 2;
 	int dim5[2] = {3, 2};
@@ -151,7 +151,7 @@ int main(void) {
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
 	Matrix * tmp18 = transposeM(mat3);
-	lhs_data3 = tmp18;
+	a = tmp18;
 	printM(a);
 	return 0;
 }

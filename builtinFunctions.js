@@ -2158,7 +2158,7 @@ exports.builtin_functions = [
             return [
                 {
                     name: arg_a,
-                    type: 'void',
+                    type: 'double',
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
@@ -2168,7 +2168,7 @@ exports.builtin_functions = [
                 },
                 {
                     name: arg_b,
-                    type: 'void',
+                    type: 'double',
                     ndim: 2,
                     dim: [1, 1],
                     ismatrix: false,
@@ -2992,7 +2992,8 @@ exports.builtin_functions = [
             return [
                 {
                     name: arg_d,
-                    type: "double",
+                    //type: "double",
+                    type: arg_types[0].type,
                     ndim: 1,
                     dim: [1],
                     ismatrix: false,
@@ -3874,8 +3875,12 @@ exports.builtin_functions = [
             }
             else {
                 var format = '"\\n%d\\n"';
-                if (arg_types[0].type == 'double' || arg_types[0].type == 'complex') {
+                //if (arg_types[0].type == 'double' || arg_types[0].type == 'complex') {
+                if (arg_types[0].type == 'double') {
                     format = '"\\n%f\\n"';
+                }
+                else if (arg_types[0].type == 'complex') {
+                    format = '"\\n%f + %fi\\n"';
                 }
                 else if (arg_types[0].type == 'int') {
                     format = '"\\n%d\\n"';
@@ -3884,9 +3889,15 @@ exports.builtin_functions = [
                     format = '"\\n%s\\n"';
                     args[0] = args[0].replace(/'/g, '"');
                 }
+                if (arg_types[0].type == 'complex') {
+                    return [format, "creal(".concat(args[0], ")"), "cimag(".concat(args[0], ")")];
+                }
+                else {
+                    return [format, args[0]];
+                }
                 //return [format, args[0]];
-                args.unshift(format);
-                return args;
+                //args.unshift(format);
+                //return args;
             }
         },
         outs_transform: function (args, arg_types, outs) { return outs; },
@@ -4011,6 +4022,26 @@ exports.builtin_functions = [
             args.unshift(buffer);
             return args;
         },
+        req_arg_types: [
+            {
+                type: 'char',
+                ndim: null,
+                dim: null,
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            },
+            {
+                type: null,
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            }
+        ],
         outs_transform: function (args, arg_types, outs) { return null; },
         n_req_args: 1,
         n_opt_args: 0,

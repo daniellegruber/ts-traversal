@@ -15,7 +15,8 @@ import {
     transformNodeByName,
     initVar,
     extractSingularMat,
-    findBuiltin
+    findBuiltin,
+    isInitialized
 } from "./helperFunctions";
 import { inferType, inferTypeByName, findVarScope } from "./typeInference";
 //import { sub2idx, rowMajorFlatIdx, slice2list, matrix2list } from "./convertSubscript";
@@ -33,6 +34,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     if (debug == 1) {
         console.log("generateCode");
     }
+    
     let tmp_var_types = var_types;
     let entry_fun_node = findEntryFunction(tree, debug);
     
@@ -147,6 +149,9 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             switch (node.type) {
                 case g.SyntaxType.FunctionDefinition: {
                     current_code = node.nameNode.text;
+                    /*if (entry_fun_node != null && current_code == filename) {
+                        current_code = "main";
+                    }*/
                     let obj = custom_functions.find(x => x.name === current_code);
                     if (obj != null && obj != undefined) {
                         tmp_var_types = obj.var_types;
@@ -294,7 +299,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     let obj = tmp_var_types.find(x => x.name === node.leftNode.text);
                     let type = 'int';
                     if (node.rightNode.namedChildCount == 3) {
-                        [type,,,,,,] = inferType(node.rightNode.namedChildren[1], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                        [type,,,,,,] = inferType(filename, node.rightNode.namedChildren[1], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     }
                     
                     expression.push(`for (${type} ${tmp_iter} = ${children[0]};`);
@@ -312,7 +317,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         ispointer: false,
                         isstruct: false,
                         initialized: true,
-                        scope: findVarScope(node, block_idxs, current_code, debug)
+                        scope: findVarScope(filename, node, block_idxs, current_code, debug)
                     });
                     
                     if (children.length == 3) {
@@ -328,7 +333,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 } else if (node.rightNode.type == g.SyntaxType.Matrix) {
                     var tmp_var1 = generateTmpVar("mat", tmp_tbl); // the matrix
                     var tmp_var2 = generateTmpVar("tmp", tmp_tbl); // the iterating variable
-                    let [type, ndim, dim,,,, c] = inferType(node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [type, ndim, dim,,,, c] = inferType(filename, node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
                     let obj = type_to_matrix_type.find(x => x.type === type);
                     if (obj != null) {
@@ -393,7 +398,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 let [args1, outs, is_subscript] = parseNode(node, false);
                 let arg_types = [];
                 let args = [];
-                var [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                var [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 custom_functions = c;
                 var init_flag = false;
                 var lhs = null;
@@ -403,7 +408,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     for (let arg of args1) {
                         lhs_flag = false;
                         args.push(transformNode(arg));
-                        let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                        let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(filename, arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
                         arg_types.push({
                             type: child_type, 
@@ -441,7 +446,7 @@ main_function.unshift(
                         let types = [];
                         for (let i=0; i<node.rightNode.namedChildCount; i++) {
                             let child = node.rightNode.namedChildren[i];
-                            let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(filename, child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             custom_functions = c;
                             if (child.type == g.SyntaxType.Matrix) {
                                 
@@ -539,13 +544,17 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             updateFunParams(0);
                             [main_function, function_definitions] = pushToMain(`${lhs} = ${rhs};`, fun_params);
                         } else {
-                            let scope = findVarScope(node, block_idxs, current_code, debug);
-                            let var_type = filterByScope(tmp_var_types, lhs, node, 0);
-                            //let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2] && x.propertyOf != node.text);
-                            let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2]);
-                            
+                            updateFunParams(0);
+                            let [lhs2, var_type, flag1, flag2, fp] = isInitialized(lhs, node, type, fun_params);
+                            lhs = lhs2;
+                            fun_params = fp;
+                            updateFunParams(1);
+                            //let scope = findVarScope(filename, node, block_idxs, current_code, debug);
+                            //let var_type = filterByScope(tmp_var_types, lhs, node, 0);
+                            //let all_var_type = tmp_var_types.filter(x=>x.name == lhs && x.scope[2]==scope[2]);
+
                             if (var_type != null && var_type != undefined) { 
-                                let idx = all_var_type.findIndex(x=> JSON.stringify(x) == JSON.stringify(var_type));
+                                /*let idx = all_var_type.findIndex(x=> JSON.stringify(x) == JSON.stringify(var_type));
                                 let flag1 = (var_type.initialized && (var_type.ismatrix || var_type.type == type));
                                 let flag2 = false;
                                 if (idx > 0) {
@@ -564,12 +573,18 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                     if (all_var_type[idx-1].initialized && all_var_type.length > 1) {
                                         flag2 = true;
                                     }
-                                }
+                                }*/
+                                
                                 if (flag1) {
                                 //if (var_type.initialized && (var_type.ismatrix || var_type.type == type)) {
                                 //if (var_type.initialized && var_type.ismatrix) {
                                     updateFunParams(0);
-                                    [main_function, function_definitions] = pushToMain(`${lhs} = ${rhs};`, fun_params);
+                                    if (lhs.includes("lhs_data")) {
+                                        let alias_obj = alias_tbl.find(x => x.tmp_var == lhs);
+                                        [main_function, function_definitions] = pushToMain(`${alias_obj.name} = ${rhs};`, fun_params);
+                                    } else {
+                                        [main_function, function_definitions] = pushToMain(`${lhs} = ${rhs};`, fun_params);
+                                    }
                                 //} else if (var_type.initialized && (var_type.type != type)) {
                                 } else if (flag2) {
                                     let tmp = generateTmpVar(var_type.name, tmp_tbl);
@@ -607,11 +622,10 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                     var_type.type = type;
                                 }
                                 tmp_var_types.push(var_type);
-                                // if rhs is a tmp var, i.e. lhs = tmp, then push to alias tbl
                         
                                     
                             } else {
-                                let scope = findVarScope(node, block_idxs, current_code, debug);
+                                let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                                 tmp_var_types.push({
                                     name: lhs,
                                     type: type,
@@ -662,10 +676,10 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                             let tmp_data = generateTmpVar("data", tmp_tbl);
                             let tmp_lhs = generateTmpVar("lhs_data", tmp_tbl);
                             let tmp_rhs = generateTmpVar("rhs_data", tmp_tbl);
-                            let [ltype,,,,,,] = inferType(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [ltype,,,,,,] = inferType(filename, node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             updateFunParams(0);
                             [main_function, function_definitions] = pushToMain(`${type}* ${tmp_lhs} = ${type.charAt(0)}_to_${type.charAt(0)}(${transformNode(child.valueNode)});`, fun_params);
-                            let [,,, ismatrix,,, c] = inferType(outs[j], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [,,, ismatrix,,, c] = inferType(filename, outs[j], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             custom_functions = c;
                             
                             // If RHS is matrix
@@ -722,7 +736,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                     // If LHS is a subscript
                     if (node.leftNode.type == g.SyntaxType.CellSubscript) {
 
-                        /*let scope = findVarScope(node, block_idxs, current_code, debug);
+                        /*let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
                             scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
                             scope = scope[scope.length - 1];
@@ -750,7 +764,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                         let obj4 = tmp_var_types.filter(x => /ndim/.test(x.name) && x.propertyOf == node.leftNode.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                         let idx = getSubscriptIdx(node.leftNode, obj4[obj4.length - 1].name.match(/\d+/)[0]);
                         
-                        let scope = findVarScope(node, block_idxs, current_code, debug);
+                        let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                         if (loop_iterators.length > 0) {
                             scope = block_idxs.filter(function(e) { return e[2] == scope[2] - loop_iterators.length })
                             scope = scope[scope.length - 1];
@@ -779,10 +793,10 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             let tmp_data = generateTmpVar("data", tmp_tbl);
                             tmp_lhs = generateTmpVar("lhs_data", tmp_tbl);
                             let tmp_rhs = generateTmpVar("rhs_data", tmp_tbl);
-                            let [,,, ismatrix,,, c] = inferType(outs[0], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [,,, ismatrix,,, c] = inferType(filename, outs[0], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             custom_functions = c;
                             let obj8 = filterByScope(tmp_var_types, `${node.leftNode.valueNode.text}_init`, node, 0);
-                            let [ltype,,,,,,] = inferType(node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [ltype,,,,,,] = inferType(filename, node.leftNode.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             if (obj8 != null && obj8 != undefined) {
                                 [ltype,,,,,,] = inferTypeByName(`${node.leftNode.valueNode.text}_init`, node, tmp_var_types, custom_functions, alias_tbl, debug);
                             }
@@ -825,7 +839,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                             updateFunParams(0);
                             let lastSubscript = findLastSubscript(node.leftNode.valueNode, fun_params);
                             let condition = `(block_level == ${tmp_block_level});`;
-                            let lhs_scope = findVarScope(node, block_idxs, current_code, debug);
+                            let lhs_scope = findVarScope(filename, node, block_idxs, current_code, debug);
                             if (lastSubscript[0] != null) {
                                 lhs_scope[1] = lastSubscript[1];
                                 alias_tbl.push({
@@ -938,17 +952,17 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             }
             
             case g.SyntaxType.CellSubscript: {
-                let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 
                 // only use indexM if subscript is on rhs
                 let count = '';
                 let obj = tmp_var_types.find(x => /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                 if (obj == null || obj == undefined) {
-                    //let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    //let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
                     let tmp_dim = generateTmpVar("dim", tmp_tbl);
                     count = tmp_ndim.match(/\d+/)[0];
-                    let scope = findVarScope(node, block_idxs, current_code, debug);
+                    let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                     let expression = [];
                     //expression.push(`int ${tmp_ndim} = getnDimM(*${transformNode(node.valueNode)});`);
                     expression.push(`int ${tmp_ndim} = ${ndim};`);
@@ -1001,7 +1015,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         ispointer: false,
                         isstruct: false,
                         initialized: true,
-                        scope: findVarScope(node, block_idxs, current_code, debug)
+                        scope: findVarScope(filename, node, block_idxs, current_code, debug)
                     });
                     alias_tbl = pushAliasTbl(node.text, tmp_var, node, fun_params);
                     return tmp_var;
@@ -1034,10 +1048,34 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 for (let i = 0; i < args1.length; i ++) {
                     let arg = args1[i];
                     args.push(transformNode(arg));
-                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     
                     if (/tmp.*\[0\]/.test(args[i])) {
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
+                    }
+                    
+                    // If a tmp var, infer type by name
+                    if (args[i] != null) {
+                        let match = args[i].match(/^([a-zA-Z_]+)(\d+)$/);
+                        if (match != null) {
+                            let tmpvar_obj = tmp_tbl.find(x => x.name == match[1] && x.count == match[2]);
+                            if (tmpvar_obj != null && tmpvar_obj != undefined) {
+                                /*if (args[i] == "mu1") {
+                                    console.log(tmp_var_types.find(x => x.name == "mu1"));
+                                }*/
+                                let [type2, ndim2, dim2, ismatrix2, ispointer2, isstruct2, c2] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
+                                if (type2 != null) {
+                                    type = type2;
+                                    ndim = ndim2;
+                                    dim = dim2;
+                                    ismatrix = ismatrix2;
+                                    ispointer = ispointer2;
+                                    isstruct = isstruct2;
+                                    c = c2;
+                                }
+                                //[type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
+                            }
+                        }
                     }
                     /*if (arg.type != g.SyntaxType.CellSubscript && ismatrix) { // if a matrix, could actually be a vector so check var name to see if initialized as vector
                         [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
@@ -1089,8 +1127,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 ispointer: false, //ptr_args[i].ispointer,
                                 isstruct: ptr_args[i].isstruct,
                                 initialized: true,
-                                scope: findVarScope(node, block_idxs, current_code, debug)
+                                scope: findVarScope(filename, node, block_idxs, current_code, debug)
                             });
+                            /*if (tmp_ptr == "mu1") {
+                                console.log(node.text);
+                                console.log(tmp_var_types[tmp_var_types.length - 1]);
+                            }*/
                             
                         }
                         updateFunParams(0);
@@ -1116,13 +1158,13 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let push_after = obj.push_main_after(args, arg_types, outs);
                         let return_type = obj.return_type(args, arg_types, outs);
                         let fun_c = obj.fun_c(args, arg_types, outs, node.valueNode.text);
-                        let scope = findVarScope(node, block_idxs, current_code, debug);
+                        let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                         let tmp_out_transform = obj.tmp_out_transform(args, arg_types, outs);
                         let push_alias_tbl = obj.push_alias_tbl(args, arg_types, outs);
                         args = obj.args_transform(args, arg_types, outs);
                         
                         if (req_arg_types != null) {
-                            for (let i = 0; i < req_arg_types.length; i ++) {
+                            for (let i = 0; i < Math.min(req_arg_types.length, arg_types.length); i ++) {
                                 if (!req_arg_types[i].ismatrix && arg_types[i].ismatrix) {
                                     if (arg_types[i].dim.every(x => x === 1)) {
                                         let expression = "";
@@ -1262,7 +1304,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                             if (push_alias_tbl != null) {
                                 for (let i = 0; i < push_alias_tbl.length; i ++) {
                                     if (push_alias_tbl[i].scope == null) {
-                                        push_alias_tbl[i].scope = findVarScope(node, block_idxs, current_code, debug);
+                                        push_alias_tbl[i].scope = findVarScope(filename, node, block_idxs, current_code, debug);
                                     }
                                     alias_tbl.push(push_alias_tbl[i]);
                                 }
@@ -1275,7 +1317,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 alias_tbl.push({
                                     name: node.text,//`${fun_c}(${args.join(", ")})`,
                                     tmp_var: tmp_ptr,
-                                    scope: findVarScope(node, block_idxs, current_code, debug)
+                                    scope: findVarScope(filename, node, block_idxs, current_code, debug)
                                 })
                                 if (fun_c != null) {
                                     updateFunParams(0);
@@ -1334,7 +1376,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                             ispointer: return_type.ispointer,
                                             isstruct: false,
                                             initialized: true,
-                                            scope: findVarScope(node, block_idxs, current_code, debug),
+                                            scope: findVarScope(filename, node, block_idxs, current_code, debug),
                                             propertyOf: args[0]
                                         });
                                     } else {
@@ -1348,7 +1390,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                             ispointer: return_type.ispointer,
                                             isstruct: false,
                                             initialized: true,
-                                            scope: findVarScope(node, block_idxs, current_code, debug)
+                                            scope: findVarScope(filename, node, block_idxs, current_code, debug)
                                         });
                                     }
                                     if (tmp_out_transform != null) {
@@ -1376,11 +1418,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         let count = '';
                         let obj = tmp_var_types.find(x => /ndim/.test(x.name) && x.propertyOf == node.valueNode.text && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
                         if (obj == null || obj == undefined) {
-                            let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
                             let tmp_dim = generateTmpVar("dim", tmp_tbl);
                             count = tmp_ndim.match(/\d+/)[0];
-                            let scope = findVarScope(node, block_idxs, current_code, debug);
+                            let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                             let expression = [];
                             expression.push(`int ${tmp_ndim} = getnDimM(${transformNode(node.valueNode)});`);
                             tmp_var_types.push({
@@ -1432,7 +1474,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         if (!lhs_flag) { // subscript is on rhs
                             //let obj = alias_tbl.find(x => x.name === node.text);
                             let obj = filterByScope(alias_tbl, node.text, node, 0);
-                            let [type, , , , , , ] = inferType(node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                            let [type, , , , , , ] = inferType(filename, node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                             if (obj == null || obj == undefined) {
                                 updateFunParams(0);
                                 [main_function, function_definitions] = pushToMain(`${type} ${tmp_var};`, fun_params);
@@ -1456,7 +1498,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 }
                                 //[main_function, function_definitions] = pushToMain(`indexM(${transformNode(node.valueNode)}, &${tmp_var}, ${index.length}, ${index.join(", ")});`, fun_params);
                                 //pushToMain(`indexM(${node.valueNode.text}, &${tmp_var}, ${index.length}, ${index.join(", ")});`);
-                                let scope = findVarScope(node, block_idxs, current_code, debug);
+                                let scope = findVarScope(filename, node, block_idxs, current_code, debug);
                                 updateFunParams(0);
                                 alias_tbl = pushAliasTbl(node.text, tmp_var, node, fun_params);
                                 
@@ -1559,12 +1601,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 
                 for (let i=0; i<node.namedChildCount; i++) {
                     let child = node.namedChildren[i];
-                    let [child_type,,,,,, c] = inferType(child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [child_type,,,,,, c] = inferType(filename, child, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
                     
                     if (child_type == "keyword") {
                         
-                        let [,ndim,dim,,,, c] = inferType(node.parent.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                        let [,ndim,dim,,,, c] = inferType(filename, node.parent.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
                         let firstNode = node.parent.namedChildren[1];
                         let current_dim = 0;
@@ -1591,7 +1633,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     step = children_vals[1];
                 }
         
-                let [type, ndim, dim, , , ,] = inferType(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                let [type, ndim, dim, , , ,] = inferType(filename, node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 
                 let expression = [];
                 let tmp_vec = generateTmpVar("vec", tmp_tbl);
@@ -1607,7 +1649,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             }
             
             case g.SyntaxType.Matrix: {
-                let [type, ndim, dim, , , ,] = inferType(node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                let [type, ndim, dim, , , ,] = inferType(filename, node, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 
                 /*if (ndim == 2 && dim.some(x => x === 1)) { // vector
                     let tmp_vec = generateTmpVar("vec", tmp_tbl);
@@ -1628,7 +1670,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                         ispointer: false,
                         isstruct: false,
                         initialized: true,
-                        scope: findVarScope(node, block_idxs, current_code, debug)
+                        scope: findVarScope(filename, node, block_idxs, current_code, debug)
                     });
                     
                     return tmp_vec;
@@ -1648,7 +1690,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                         ispointer: false,
                         isstruct: false,
                         initialized: true,
-                        scope: findVarScope(node, block_idxs, current_code, debug)
+                        scope: findVarScope(filename, node, block_idxs, current_code, debug)
                     });
             
                     return tmp_mat;
@@ -1709,9 +1751,9 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                 case g.SyntaxType.ComparisonOperator:
                 case g.SyntaxType.BooleanOperator:
                 case g.SyntaxType.BinaryOperator: {
-                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer, l_isstruct, c1] = inferType(right_node.leftNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer, l_isstruct, c1] = inferType(filename, right_node.leftNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c1;
-                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer, r_isstruct, c2] = inferType(right_node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [r_type, r_ndim, r_dim, r_ismatrix, r_ispointer, r_isstruct, c2] = inferType(filename, right_node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c2;
 
                     args.push(right_node.leftNode);
@@ -1721,7 +1763,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                 }
                 case g.SyntaxType.UnaryOperator:
                 case g.SyntaxType.TransposeOperator: {
-                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(right_node.argumentNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, right_node.argumentNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
                     
                     args.push(right_node.argumentNode);
@@ -1761,7 +1803,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
         let expression = [];
         let tmp_ndim = generateTmpVar("ndim", tmp_tbl);
         let tmp_dim = generateTmpVar("dim", tmp_tbl);
-        let scope = findVarScope(node, block_idxs, current_code, debug);
+        let scope = findVarScope(filename, node, block_idxs, current_code, debug);
         
         expression.push(`int ${tmp_ndim} = ${ndim};`);
         tmp_var_types.push({
@@ -1792,18 +1834,22 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             propertyOf: name
         });
         
-        
+        updateFunParams(0);
+        let [name2, , flag1, flag2, fp] = isInitialized(name, node, type, fun_params);
+        fun_params = fp;
+        updateFunParams(1);
         let obj2 = filterByScope(tmp_var_types, name, node, 0);
         if (obj2 != null && obj2 != undefined) {
-            if (obj2.initialized || name.indexOf("[")>-1) {
+            //if (obj2.initialized || name.indexOf("[")>-1) {
+            if (flag1 || name.indexOf("[")>-1) {
                 expression.push(`${name} = createM(${tmp_ndim}, ${tmp_dim}, ${obj.matrix_type});`)    
             } else {
                 expression.push(`Matrix * ${name} = createM(${tmp_ndim}, ${tmp_dim}, ${obj.matrix_type});`)
                 //tmp_var_types = tmp_var_types.filter(function(e) { return e.name !== name });
-                tmp_var_types = tmp_var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(obj2) });
-                obj2.initialized = true;
-                tmp_var_types.push(obj2);
             }
+            tmp_var_types = tmp_var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(obj2) });
+            obj2.initialized = true;
+            tmp_var_types.push(obj2);
         } else {
             if (name.indexOf("[")>-1) {
                 expression.push(`${name} = createM(${tmp_ndim}, ${tmp_dim}, ${obj.matrix_type});`)
@@ -1820,7 +1866,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             if (node.children[i].isNamed) {
                 //let transform_child = node.children[i].text;
                 let transform_child = transformNode(node.children[i]);
-                let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(node.children[i], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                let [child_type, child_ndim, child_dim, child_ismatrix, child_ispointer, child_isstruct, c] = inferType(filename, node.children[i], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                 if (obj.matrix_type == 3) {
                     expression.push(`${tmp_input}[${j}][] = ${transform_child.replace(/'/g, '"')};`);
                     j++;
@@ -1856,7 +1902,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
         
         for (let arg of args1) {
             args.push(transformNode(arg));
-            let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+            let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
             custom_functions = c;
             arg_types.push({
                 type: type, 
@@ -1903,7 +1949,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                     ispointer: init_before[i].ispointer,
                     isstruct: init_before[i].isstruct,
                     initialized: true,
-                    scope: findVarScope(node, block_idxs, current_code, debug)
+                    scope: findVarScope(filename, node, block_idxs, current_code, debug)
                 });
             }
         }
@@ -1941,7 +1987,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                 ispointer: return_type.ispointer,
                 isstruct: false,
                 initialized: true,
-                scope: findVarScope(node, block_idxs, current_code, debug)
+                scope: findVarScope(filename, node, block_idxs, current_code, debug)
             });
             
             let var_val = `${fun_c}()`;

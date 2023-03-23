@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.parseFunctionDefNode = exports.getClasses = exports.getClassFolders = exports.getNonClassFilesInPath = exports.getFilesInPath = exports.writeToFile = exports.initVar = exports.numel = exports.transformNodeByName = exports.findLastSubscript = exports.pushAliasTbl = exports.filterByScope = exports.generateTmpVar = exports.extractSingularMat = exports.findBuiltin = void 0;
+exports.parseFunctionDefNode = exports.getClasses = exports.getClassFolders = exports.getNonClassFilesInPath = exports.getFilesInPath = exports.writeToFile = exports.initVar = exports.numel = exports.transformNodeByName = exports.findLastSubscript = exports.pushAliasTbl = exports.filterByScope = exports.generateTmpVar = exports.extractSingularMat = exports.findBuiltin = exports.isInitialized = void 0;
 //const fs = require("graceful-fs");
 var fs = require('fs');
 var gracefulFs = require('graceful-fs');
@@ -15,6 +15,36 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+function isInitialized(name, node, type, fun_params) {
+    var scope = (0, typeInference_1.findVarScope)(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
+    var var_type = filterByScope(fun_params.var_types, name, node, 0);
+    var all_var_type = fun_params.var_types.filter(function (x) { return x.name == name && x.scope[2] == scope[2]; });
+    var flag1 = false;
+    var flag2 = false;
+    if (var_type != null && var_type != undefined) {
+        var idx_1 = all_var_type.findIndex(function (x) { return JSON.stringify(x) == JSON.stringify(var_type); });
+        flag1 = (var_type.initialized && (var_type.ismatrix || var_type.type == type));
+        if (idx_1 > 0) {
+            if (all_var_type[idx_1 - 1].initialized && (var_type.ismatrix || var_type.type == all_var_type[idx_1 - 1].type)) {
+                flag1 = true;
+                var alias_obj = fun_params.alias_tbl.find(function (x) { return x.name == name && all_var_type[idx_1 - 1].scope[0] >= x.scope[0] && all_var_type[idx_1 - 1].scope[1] <= x.scope[1]; });
+                if (alias_obj != null && alias_obj != undefined) {
+                    fun_params.alias_tbl.push({
+                        name: name,
+                        tmp_var: alias_obj.tmp_var,
+                        scope: var_type.scope
+                    });
+                    name = alias_obj.tmp_var;
+                }
+            }
+            if (all_var_type[idx_1 - 1].initialized && all_var_type.length > 1) {
+                flag2 = true;
+            }
+        }
+    }
+    return [name, var_type, flag1, flag2, fun_params];
+}
+exports.isInitialized = isInitialized;
 function findBuiltin(builtin_funs, name) {
     return builtin_funs.find(function (x) {
         var found = -1;
@@ -45,7 +75,7 @@ function extractSingularMat(mat, var_type, node, fun_params) {
             ispointer: true,
             isstruct: false,
             initialized: true,
-            scope: (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+            scope: (0, typeInference_1.findVarScope)(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
         });
         fun_params.var_types.push({
             name: "".concat(tmp_var, "[0]"),
@@ -57,7 +87,7 @@ function extractSingularMat(mat, var_type, node, fun_params) {
             ispointer: false,
             isstruct: false,
             initialized: true,
-            scope: (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
+            scope: (0, typeInference_1.findVarScope)(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug)
         });
         fun_params.alias_tbl = pushAliasTbl(mat, "".concat(tmp_var, "[0]"), node, fun_params);
         var _a = (0, modifyCode_1.pushToMain)("".concat(var_type.type, " * ").concat(tmp_var, " = ").concat(var_type.type.charAt(0), "_to_").concat(var_type.type.charAt(0), "(").concat(mat, ");"), fun_params), main_function = _a[0], function_definitions = _a[1];
@@ -96,7 +126,7 @@ function filterByScope(obj, name, node, find_or_filter) {
 }
 exports.filterByScope = filterByScope;
 function pushAliasTbl(lhs, rhs, node, fun_params) {
-    var scope = (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
+    var scope = (0, typeInference_1.findVarScope)(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     var obj = filterByScope(fun_params.var_types, lhs, node, 0);
     /*if (obj !== null && obj !== undefined) {
         scope = obj.scope;
@@ -121,7 +151,7 @@ function findLastSubscript(node, fun_params) {
     var subscript_text = null;
     var subscript_idx = null;
     var re = new RegExp("".concat(node.text, "\\(([\\s\\w+\\-\\*]*)\\)(=| =)"));
-    var scope = (0, typeInference_1.findVarScope)(node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
+    var scope = (0, typeInference_1.findVarScope)(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     var obj = filterByScope(fun_params.var_types, node.text, node, 0);
     if (obj !== null && obj !== undefined) {
         scope = obj.scope;
@@ -258,7 +288,7 @@ function getClasses(src, debug) {
         for (var _d = 0, files_2 = files; _d < files_2.length; _d++) {
             var file = files_2[_d];
             // Update placeholders
-            _a = (0, typeInference_1.typeInference)(file, methods, classes, debug), methods = _a[1];
+            _a = (0, typeInference_1.typeInference)(path.parse(file).name, file, methods, classes, debug), methods = _a[1];
         }
         var c = {
             name: c1.name,

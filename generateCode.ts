@@ -149,9 +149,6 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             switch (node.type) {
                 case g.SyntaxType.FunctionDefinition: {
                     current_code = node.nameNode.text;
-                    /*if (entry_fun_node != null && current_code == filename) {
-                        current_code = "main";
-                    }*/
                     let obj = custom_functions.find(x => x.name === current_code);
                     if (obj != null && obj != undefined) {
                         tmp_var_types = obj.var_types;
@@ -159,7 +156,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                             tmp_var_types = [];
                         }
                     }
-                    printFunctionDefDeclare(node);
+                    //printFunctionDefDeclare(node);
+                    printFunctionDefDeclare2(node);
                     break;
                 }
                 case g.SyntaxType.Comment:
@@ -1107,6 +1105,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 }
                 if (obj != null && obj != undefined) {
                     // Is a custom function
+                    
                     let ptr_args = obj.ptr_args(arg_types, outs);
                     if (ptr_args != null) {
                         let ptr_declaration = [];
@@ -1145,7 +1144,17 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         link.push(`#include "./${path.parse(obj.file).name}.h"`);
                     }
                     
-                    return `${obj.name}(${args.join(", ")})`;
+                    if (obj.arg_type_dic.length == 1) {
+                        return `${obj.name}(${args.join(", ")})`;
+                    } else {
+                        let typestr = '';
+                        for  (let i = 0; i < arg_types.length; i++) { 
+                            typestr = typestr.concat(arg_types[i].type);
+                        }
+                        return `${obj.name}_${typestr}(${args.join(", ")})`;
+                    }
+                    
+                    
                     
                 } else {
                     // Is a builtin function call
@@ -2116,6 +2125,138 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             [main_function, function_definitions] = pushToMain("}", fun_params);
             block_level += 1;
         }
+    }
+    
+    // TESTING
+    function printFunctionDefDeclare2(node) {
+        if (debug == 1) {
+            console.log("printFunctionDefDeclare2");
+        }
+    
+        let obj = custom_functions.find(x => x.name === node.nameNode.text);
+        if (obj != null) {
+            for (let i = 0; i < obj.arg_type_dic.length; i ++) {
+                let fun_name = `${node.nameNode.text}_${obj.arg_type_dic[i].arg_type_id}`;
+                if (obj.arg_type_dic.length == 1) {
+                    fun_name = node.nameNode.text;
+                }
+                
+                updateFunParams(0);
+                [main_function, function_definitions] = pushToMain(`${fun_name}_placeholder`, fun_params);
+
+                tmp_var_types = obj.arg_type_dic[i].var_types;
+                if (tmp_var_types == null) {
+                    tmp_var_types = [];
+                }
+
+                for (let child of node.bodyNode.namedChildren) {
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(transformNode(child), fun_params);
+                }
+
+                let [, outs, ] = parseNode(node, false);
+
+                for (let j = 0; j < outs.length; j ++) {
+                    outs[j] = transformNode(outs[j]);
+                }
+
+                let ptr_args = obj.ptr_args(obj.arg_type_dic[i].arg_types, outs);
+                var param_list = [];
+
+                for (let j = 0; j < node.parametersNode.namedChildCount; j++) {
+                    let param = node.parametersNode.namedChildren[j];
+                    if (obj.arg_type_dic[i].arg_types[j].ismatrix) {
+                        param_list.push(`Matrix * ${param.text}`);
+                    } else {
+                        param_list.push(`${obj.arg_type_dic[i].arg_types[j].type} ${param.text}`);
+                    }
+                }
+
+                
+                let return_node = node.children[1].firstChild;
+                //if (obj.return_type.ismatrix) {
+                if (ptr_args != null) {
+                    var ptr_declaration = [];
+                    for (let i = 0; i < return_node.namedChildCount; i++) {
+                        let return_var = return_node.namedChildren[i];
+                        let tmp = transformNodeByName(return_var.text, return_var, alias_tbl);
+                        ptr_declaration.push(`*p_${return_var.text} = ${tmp};`);
+                        
+                        if (tmp !== return_var.text) {
+                            let [type, ndim, dim, ismatrix, , , ] = inferTypeByName(tmp, node, tmp_var_types, custom_functions, alias_tbl, debug);
+                            ptr_args[i].type = type;
+                            ptr_args[i].ndim = ndim;
+                            ptr_args[i].dim = dim;
+                            ptr_args[i].ismatrix = ismatrix;
+                        }
+                        
+                        // come back here
+                        if (ptr_args[i].ismatrix) {
+                            param_list.push(`Matrix ** p_${return_var.text}`);
+                        } else {
+                            param_list.push(`${ptr_args[i].type}* p_${return_var.text}`);
+                        }
+                    }
+                    
+                    var ptr_declaration_joined = ptr_declaration.join("\n");
+                    //grapes
+                    if (param_list.length == 0) {
+                        var param_list_joined = "void";
+                    } else {
+                        var param_list_joined = param_list.join(", ");
+                    }
+    
+                    function_declarations.push(`void ${fun_name}(${param_list_joined});`);
+                    //pushToMain(`\nvoid ${node.nameNode.text}(${param_list_joined}) {`);
+                    block_level -= 1;
+                    updateFunParams(0);
+                    [main_function, function_definitions] = replaceMain(`\nvoid ${fun_name}(${param_list_joined}) {`, `${fun_name}_placeholder`, 1, fun_params);
+                    block_level += 1;
+                   
+                } else {
+                    if (param_list.length == 0) {
+                        var param_list_joined = "void";
+                    } else {
+                        var param_list_joined = param_list.join(", ");
+                    }
+                    
+                    var return_statement = null
+                    if (obj.arg_type_dic[i].return_type == null) {
+                        var return_type = "void";
+                    } else {
+                        if (obj.arg_type_dic[i].return_type.ismatrix) {
+                            var return_type = "Matrix *";
+                        } else if (obj.arg_type_dic[i].return_type.ispointer) {
+                            var return_type = `${obj.arg_type_dic[i].return_type.type} *`;
+                        } else {
+                            var return_type = `${obj.arg_type_dic[i].return_type.type}`;
+                        }
+                        return_statement = `return ${outs[0]};`;
+                    }
+    
+                    function_declarations.push(`${return_type} ${fun_name}(${param_list_joined});`);
+                    //pushToMain(`\n${return_type} ${node.nameNode.text}(${param_list_joined}) {`);
+                    block_level -= 1;
+                    updateFunParams(0);
+                    [main_function, function_definitions] = replaceMain(`\n${return_type} ${fun_name}(${param_list_joined}) {`, `${fun_name}_placeholder`, 1, fun_params);
+                    block_level += 1;
+                }
+                
+                if (ptr_declaration != undefined) {
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(ptr_declaration.join("\n"), fun_params);
+                }
+    
+                updateFunParams(0);
+                [main_function, function_definitions] = pushToMain(return_statement, fun_params);
+                block_level -= 1;
+                updateFunParams(0);
+                [main_function, function_definitions] = pushToMain("}", fun_params);
+                block_level += 1;
+            }
+                
+        }
+    
     }
     
     

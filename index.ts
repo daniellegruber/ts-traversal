@@ -89,6 +89,11 @@ for (let file of file_traversal_order.reverse()) {
         var filename:string = path.parse(file).name;
     }
     [var_types, custom_functions, block_idxs] = typeInference(filename, file, custom_functions, classes, debug);
+    /*for (let i = 0; i < custom_functions.length; i ++) {
+        console.log(custom_functions[i].name);
+        console.log(custom_functions[i].arg_type_dic);
+        console.log("---------------------------------")
+    }*/
     let [generated_code, header, vt, cf] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file, debug);
     var_types = vt;
     custom_functions = cf;

@@ -47,6 +47,24 @@ export type VarType = {
     bodyNode: g.SyntaxNode
 };*/
 
+/*export type ReturnTypeDic = {
+    arg_types: string;
+    return_type: Type;
+};
+
+export type VarTypeDic = {
+    arg_types: string;
+    var_types: Array<VarType>;
+};*/
+
+export type ArgTypeDic = {
+    arg_type_id: string;
+    arg_types: Array<VarType>;
+    ptr_arg_types: Array<VarType>;
+    var_types: Array<VarType>;
+    return_type: Type;
+};
+
 export type CustomFunction = {
     name: string;
     arg_types: Array<VarType>;
@@ -59,6 +77,7 @@ export type CustomFunction = {
     def_node: g.SyntaxNode;
     //def_node: DefNode;
     var_types: Array<VarType>;
+    arg_type_dic: Array<ArgTypeDic>
 };
 
 export type Class = {

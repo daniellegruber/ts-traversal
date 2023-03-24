@@ -44,7 +44,8 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                 external: filename !== file_traversal_order.slice(-1),
                 file: filename,
                 def_node: node,
-                var_types: null
+                var_types: null,
+                arg_type_dic: []
             };
             custom_functions.push(v1);
         }

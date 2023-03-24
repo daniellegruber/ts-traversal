@@ -108,9 +108,6 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
             switch (node.type) {
                 case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
                     current_code = node.nameNode.text;
-                    /*if (entry_fun_node != null && current_code == filename) {
-                        current_code = "main";
-                    }*/
                     var obj = custom_functions.find(function (x) { return x.name === current_code; });
                     if (obj != null && obj != undefined) {
                         tmp_var_types = obj.var_types;
@@ -118,7 +115,8 @@ function generateCode(filename, tree, out_folder, custom_functions, classes, var
                             tmp_var_types = [];
                         }
                     }
-                    printFunctionDefDeclare(node);
+                    //printFunctionDefDeclare(node);
+                    printFunctionDefDeclare2(node);
                     break;
                 }
                 case "comment" /* g.SyntaxType.Comment */:
@@ -1036,7 +1034,16 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         //link.push(`#include <${path.parse(obj.file).name}.h>`);
                         link.push("#include \"./".concat(path.parse(obj.file).name, ".h\""));
                     }
-                    return "".concat(obj.name, "(").concat(args.join(", "), ")");
+                    if (obj.arg_type_dic.length == 1) {
+                        return "".concat(obj.name, "(").concat(args.join(", "), ")");
+                    }
+                    else {
+                        var typestr = '';
+                        for (var i = 0; i < arg_types.length; i++) {
+                            typestr = typestr.concat(arg_types[i].type);
+                        }
+                        return "".concat(obj.name, "_").concat(typestr, "(").concat(args.join(", "), ")");
+                    }
                 }
                 else {
                     // Is a builtin function call
@@ -1947,6 +1954,131 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
             updateFunParams(0);
             _g = (0, modifyCode_1.pushToMain)("}", fun_params), main_function = _g[0], function_definitions = _g[1];
             block_level += 1;
+        }
+    }
+    // TESTING
+    function printFunctionDefDeclare2(node) {
+        var _a, _b, _c, _d, _e, _f, _g;
+        if (debug == 1) {
+            console.log("printFunctionDefDeclare2");
+        }
+        var obj = custom_functions.find(function (x) { return x.name === node.nameNode.text; });
+        if (obj != null) {
+            for (var i = 0; i < obj.arg_type_dic.length; i++) {
+                var fun_name = "".concat(node.nameNode.text, "_").concat(obj.arg_type_dic[i].arg_type_id);
+                if (obj.arg_type_dic.length == 1) {
+                    fun_name = node.nameNode.text;
+                }
+                if (node.nameNode.text == "int_vec_stats") {
+                    console.log(fun_name);
+                    console.log(obj.arg_type_dic[i].arg_type_id);
+                    console.log(obj.arg_type_dic.length);
+                }
+                updateFunParams(0);
+                _a = (0, modifyCode_1.pushToMain)("".concat(fun_name, "_placeholder"), fun_params), main_function = _a[0], function_definitions = _a[1];
+                tmp_var_types = obj.arg_type_dic[i].var_types;
+                if (tmp_var_types == null) {
+                    tmp_var_types = [];
+                }
+                for (var _i = 0, _h = node.bodyNode.namedChildren; _i < _h.length; _i++) {
+                    var child = _h[_i];
+                    updateFunParams(0);
+                    _b = (0, modifyCode_1.pushToMain)(transformNode(child), fun_params), main_function = _b[0], function_definitions = _b[1];
+                }
+                var _j = parseNode(node, false), outs = _j[1];
+                for (var j = 0; j < outs.length; j++) {
+                    outs[j] = transformNode(outs[j]);
+                }
+                var ptr_args = obj.ptr_args(obj.arg_type_dic[i].arg_types, outs);
+                var param_list = [];
+                for (var j = 0; j < node.parametersNode.namedChildCount; j++) {
+                    var param = node.parametersNode.namedChildren[j];
+                    if (obj.arg_type_dic[i].arg_types[j].ismatrix) {
+                        param_list.push("Matrix * ".concat(param.text));
+                    }
+                    else {
+                        param_list.push("".concat(obj.arg_type_dic[i].arg_types[j].type, " ").concat(param.text));
+                    }
+                }
+                var return_node = node.children[1].firstChild;
+                //if (obj.return_type.ismatrix) {
+                if (ptr_args != null) {
+                    var ptr_declaration = [];
+                    for (var i_1 = 0; i_1 < return_node.namedChildCount; i_1++) {
+                        var return_var = return_node.namedChildren[i_1];
+                        var tmp = (0, helperFunctions_1.transformNodeByName)(return_var.text, return_var, alias_tbl);
+                        ptr_declaration.push("*p_".concat(return_var.text, " = ").concat(tmp, ";"));
+                        if (tmp !== return_var.text) {
+                            var _k = (0, typeInference_1.inferTypeByName)(tmp, node, tmp_var_types, custom_functions, alias_tbl, debug), type = _k[0], ndim = _k[1], dim = _k[2], ismatrix = _k[3];
+                            ptr_args[i_1].type = type;
+                            ptr_args[i_1].ndim = ndim;
+                            ptr_args[i_1].dim = dim;
+                            ptr_args[i_1].ismatrix = ismatrix;
+                        }
+                        // come back here
+                        if (ptr_args[i_1].ismatrix) {
+                            param_list.push("Matrix ** p_".concat(return_var.text));
+                        }
+                        else {
+                            param_list.push("".concat(ptr_args[i_1].type, "* p_").concat(return_var.text));
+                        }
+                    }
+                    var ptr_declaration_joined = ptr_declaration.join("\n");
+                    //grapes
+                    if (param_list.length == 0) {
+                        var param_list_joined = "void";
+                    }
+                    else {
+                        var param_list_joined = param_list.join(", ");
+                    }
+                    function_declarations.push("void ".concat(fun_name, "(").concat(param_list_joined, ");"));
+                    //pushToMain(`\nvoid ${node.nameNode.text}(${param_list_joined}) {`);
+                    block_level -= 1;
+                    updateFunParams(0);
+                    _c = (0, modifyCode_1.replaceMain)("\nvoid ".concat(fun_name, "(").concat(param_list_joined, ") {"), "".concat(fun_name, "_placeholder"), 1, fun_params), main_function = _c[0], function_definitions = _c[1];
+                    block_level += 1;
+                }
+                else {
+                    if (param_list.length == 0) {
+                        var param_list_joined = "void";
+                    }
+                    else {
+                        var param_list_joined = param_list.join(", ");
+                    }
+                    var return_statement = null;
+                    if (obj.arg_type_dic[i].return_type == null) {
+                        var return_type = "void";
+                    }
+                    else {
+                        if (obj.arg_type_dic[i].return_type.ismatrix) {
+                            var return_type = "Matrix *";
+                        }
+                        else if (obj.arg_type_dic[i].return_type.ispointer) {
+                            var return_type = "".concat(obj.arg_type_dic[i].return_type.type, " *");
+                        }
+                        else {
+                            var return_type = "".concat(obj.arg_type_dic[i].return_type.type);
+                        }
+                        return_statement = "return ".concat(outs[0], ";");
+                    }
+                    function_declarations.push("".concat(return_type, " ").concat(fun_name, "(").concat(param_list_joined, ");"));
+                    //pushToMain(`\n${return_type} ${node.nameNode.text}(${param_list_joined}) {`);
+                    block_level -= 1;
+                    updateFunParams(0);
+                    _d = (0, modifyCode_1.replaceMain)("\n".concat(return_type, " ").concat(fun_name, "(").concat(param_list_joined, ") {"), "".concat(fun_name, "_placeholder"), 1, fun_params), main_function = _d[0], function_definitions = _d[1];
+                    block_level += 1;
+                }
+                if (ptr_declaration != undefined) {
+                    updateFunParams(0);
+                    _e = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _e[0], function_definitions = _e[1];
+                }
+                updateFunParams(0);
+                _f = (0, modifyCode_1.pushToMain)(return_statement, fun_params), main_function = _f[0], function_definitions = _f[1];
+                block_level -= 1;
+                updateFunParams(0);
+                _g = (0, modifyCode_1.pushToMain)("}", fun_params), main_function = _g[0], function_definitions = _g[1];
+                block_level += 1;
+            }
         }
     }
     // Generate header files

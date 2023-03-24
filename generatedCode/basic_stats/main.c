@@ -8,8 +8,12 @@
 #include "./main.h"
 
 // Function declarations
-void normfit(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);
-void unifit(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat);
+void normfit_int(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);
+void normfit_double(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);
+void normfit_complex(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);
+void unifit_int(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat);
+void unifit_double(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat);
+void unifit_complex(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat);
 void int_vec_stats(Matrix * a);
 void double_vec_stats(Matrix * a);
 void complex_vec_stats(Matrix * a);
@@ -283,13 +287,13 @@ int main(void) {
 	int dim14[2] = {7, 9};
 	Matrix * tmp8 = zerosM(ndim14, dim14);
 	a = tmp8;
-	int* lhs_data2 = i_to_i(a);
+	double* lhs_data2 = i_to_d(a);
 	for (int iter3 = 1; iter3 <= 63; ++ iter3) {
 		int tmp9 = pow((-1), iter3);
 		int tmp10 = pow(iter3, 2);
 		int tmp12 = pow((-1), iter3);
 		int tmp13 = pow(iter3, 2);
-		int tmp11 = (double) tmp12 * tmp13 / 17;
+		double tmp11 = (double) tmp12 * tmp13 / 17;
 		int idx2 = convertSubscript(ndim14, dim14, iter3);
 		lhs_data2[idx2] = tmp11;
 	
@@ -300,7 +304,7 @@ int main(void) {
 	{
 		size2 *= dim14[iter4];
 	}
-	Matrix *mat2 = createM(ndim14, dim14, 0);
+	Matrix *mat2 = createM(ndim14, dim14, 1);
 	writeM(mat2, size2, lhs_data2);
 	Matrix * tmp14 = transposeM(mat2);
 	a = tmp14;
@@ -364,9 +368,9 @@ int main(void) {
 	int dim17[2] = {1, 1004};
 	Matrix * tmp22 = zerosM(ndim17, dim17);
 	Matrix * b = tmp22;
-	int* lhs_data4 = i_to_i(b);
+	double* lhs_data4 = i_to_d(b);
 	for (int iter10 = 1; iter10 <= 1004; ++ iter10) {
-		int tmp23 = (double) iter10 * iter10 / 17;
+		double tmp23 = (double) iter10 * iter10 / 17;
 		int idx4 = convertSubscript(ndim17, dim17, iter10);
 		lhs_data4[idx4] = tmp23;
 	
@@ -377,7 +381,7 @@ int main(void) {
 	{
 		size4 *= dim17[iter11];
 	}
-	Matrix *mat4 = createM(ndim17, dim17, 0);
+	Matrix *mat4 = createM(ndim17, dim17, 1);
 	writeM(mat4, size4, lhs_data4);
 	Matrix * tmp24 = transposeM(mat4);
 	b = tmp24;
@@ -418,7 +422,7 @@ int main(void) {
 
 // Subprograms
 
-void normfit(Matrix * a, Matrix ** p_mu, Matrix ** p_sd) {
+void normfit_int(Matrix * a, Matrix ** p_mu, Matrix ** p_sd) {
 	Matrix * tmp30 = meanM(a);
 	Matrix * mu = tmp30;
 	Matrix * tmp31 = stdM(a);
@@ -427,102 +431,138 @@ void normfit(Matrix * a, Matrix ** p_mu, Matrix ** p_sd) {
 	*p_sd = sd;
 }
 
-void unifit(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat) {
-	Matrix * tmp32 = minM(a);
-	Matrix * ahat = tmp32;
-	Matrix * tmp33 = maxM(a);
-	Matrix * bhat = tmp33;
+void normfit_double(Matrix * a, Matrix ** p_mu, Matrix ** p_sd) {
+	Matrix * tmp32 = meanM(a);
+	Matrix * mu = tmp32;
+	Matrix * tmp33 = stdM(a);
+	Matrix * sd = tmp33;
+	*p_mu = mu;
+	*p_sd = sd;
+}
+
+void normfit_complex(Matrix * a, Matrix ** p_mu, Matrix ** p_sd) {
+	Matrix * tmp34 = meanM(a);
+	Matrix * mu = tmp34;
+	Matrix * tmp35 = stdM(a);
+	Matrix * sd = tmp35;
+	*p_mu = mu;
+	*p_sd = sd;
+}
+
+void unifit_int(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat) {
+	Matrix * tmp36 = minM(a);
+	Matrix * ahat = tmp36;
+	Matrix * tmp37 = maxM(a);
+	Matrix * bhat = tmp37;
+	*p_ahat = ahat;
+	*p_bhat = bhat;
+}
+
+void unifit_double(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat) {
+	Matrix * tmp38 = minM(a);
+	Matrix * ahat = tmp38;
+	Matrix * tmp39 = maxM(a);
+	Matrix * bhat = tmp39;
+	*p_ahat = ahat;
+	*p_bhat = bhat;
+}
+
+void unifit_complex(Matrix * a, Matrix ** p_ahat, Matrix ** p_bhat) {
+	Matrix * tmp40 = minM(a);
+	Matrix * ahat = tmp40;
+	Matrix * tmp41 = maxM(a);
+	Matrix * bhat = tmp41;
 	*p_ahat = ahat;
 	*p_bhat = bhat;
 }
 
 void int_vec_stats(Matrix * a) {
 	int index1;
-	Matrix * tmp34 = maxV(a, &index1);
-	Matrix * greatest = tmp34;
-	printM(tmp34);
+	Matrix * tmp42 = maxV(a, &index1);
+	Matrix * greatest = tmp42;
+	printM(tmp42);
 	printf("max index: %d\n", index1);
 	int index2;
-	Matrix * tmp35 = minV(a, &index2);
-	Matrix * least = tmp35;
-	printM(tmp35);
+	Matrix * tmp43 = minV(a, &index2);
+	Matrix * least = tmp43;
+	printM(tmp43);
 	printf("min index: %d\n", index2);
 	Matrix * mu1 = NULL;
 	Matrix * sd1 = NULL;
-	normfit(a, &mu1, &sd1);
-	complex * tmp36 = c_to_c(mu1);
-	printf("mean: %.3f\n", tmp36[0]);
-	complex * tmp37 = c_to_c(sd1);
-	printf("sd: %.3f\n", tmp37[0]);
+	normfit_int(a, &mu1, &sd1);
+	double * tmp44 = d_to_d(mu1);
+	printf("mean: %.3f\n", tmp44[0]);
+	double * tmp45 = d_to_d(sd1);
+	printf("sd: %.3f\n", tmp45[0]);
 	Matrix * ahat1 = NULL;
 	Matrix * bhat1 = NULL;
-	unifit(a, &ahat1, &bhat1);
-	complex * tmp38 = c_to_c(ahat1);
-	printf("a: %d\n", tmp38[0]);
-	complex * tmp39 = c_to_c(bhat1);
-	printf("b: %d\n", tmp39[0]);
+	unifit_int(a, &ahat1, &bhat1);
+	int * tmp46 = i_to_i(ahat1);
+	printf("a: %d\n", tmp46[0]);
+	int * tmp47 = i_to_i(bhat1);
+	printf("b: %d\n", tmp47[0]);
 }
 
 void double_vec_stats(Matrix * a) {
 	int index3;
-	Matrix * tmp40 = maxV(a, &index3);
-	Matrix * greatest = tmp40;
-	printM(tmp40);
+	Matrix * tmp48 = maxV(a, &index3);
+	Matrix * greatest = tmp48;
+	printM(tmp48);
 	printf("max index: %d\n", index3);
 	int index4;
-	Matrix * tmp41 = minV(a, &index4);
-	Matrix * least = tmp41;
-	printM(tmp41);
+	Matrix * tmp49 = minV(a, &index4);
+	Matrix * least = tmp49;
+	printM(tmp49);
 	printf("min index: %d\n", index4);
 	Matrix * mu2 = NULL;
 	Matrix * sd2 = NULL;
-	normfit(a, &mu2, &sd2);
-	complex * tmp42 = c_to_c(mu2);
-	printf("mean: %.3f\n", tmp42[0]);
-	complex * tmp43 = c_to_c(sd2);
-	printf("sd: %.3f\n", tmp43[0]);
+	normfit_double(a, &mu2, &sd2);
+	double * tmp50 = d_to_d(mu2);
+	printf("mean: %.3f\n", tmp50[0]);
+	double * tmp51 = d_to_d(sd2);
+	printf("sd: %.3f\n", tmp51[0]);
 	Matrix * ahat2 = NULL;
 	Matrix * bhat2 = NULL;
-	unifit(a, &ahat2, &bhat2);
-	complex * tmp44 = c_to_c(ahat2);
-	printf("a: %.3f\n", tmp44[0]);
-	complex * tmp45 = c_to_c(bhat2);
-	printf("b: %.3f\n", tmp45[0]);
+	unifit_double(a, &ahat2, &bhat2);
+	double * tmp52 = d_to_d(ahat2);
+	printf("a: %.3f\n", tmp52[0]);
+	double * tmp53 = d_to_d(bhat2);
+	printf("b: %.3f\n", tmp53[0]);
 }
 
 void complex_vec_stats(Matrix * a) {
 	int index5;
-	Matrix * tmp46 = maxV(a, &index5);
-	Matrix * greatest = tmp46;
-	printM(tmp46);
+	Matrix * tmp54 = maxV(a, &index5);
+	Matrix * greatest = tmp54;
+	printM(tmp54);
 	printf("max index: %d\n", index5);
 	int index6;
-	Matrix * tmp47 = minV(a, &index6);
-	Matrix * least = tmp47;
-	printM(tmp47);
+	Matrix * tmp55 = minV(a, &index6);
+	Matrix * least = tmp55;
+	printM(tmp55);
 	printf("min index: %d\n", index6);
 	Matrix * mu3 = NULL;
 	Matrix * sd3 = NULL;
-	normfit(a, &mu3, &sd3);
-	complex * tmp48 = c_to_c(mu3);
-	double tmp49 = creal(tmp48[0]);
-	double tmp50 = cimag(tmp48[0]);
-	printf("mean: %.3f + %.3fi\n", tmp49, tmp50);
-	complex * tmp51 = c_to_c(sd3);
-	double tmp52 = creal(tmp51[0]);
-	double tmp53 = cimag(tmp51[0]);
-	printf("sd: %.3f + %.3fi\n", tmp52, tmp53);
+	normfit_complex(a, &mu3, &sd3);
+	complex * tmp56 = c_to_c(mu3);
+	double tmp57 = creal(tmp56[0]);
+	double tmp58 = cimag(tmp56[0]);
+	printf("mean: %.3f + %.3fi\n", tmp57, tmp58);
+	complex * tmp59 = c_to_c(sd3);
+	double tmp60 = creal(tmp59[0]);
+	double tmp61 = cimag(tmp59[0]);
+	printf("sd: %.3f + %.3fi\n", tmp60, tmp61);
 	Matrix * ahat3 = NULL;
 	Matrix * bhat3 = NULL;
-	unifit(a, &ahat3, &bhat3);
-	complex * tmp54 = c_to_c(ahat3);
-	double tmp55 = creal(tmp54[0]);
-	double tmp56 = cimag(tmp54[0]);
-	printf("a: %.3f + %.3fi\n", tmp55, tmp56);
-	complex * tmp57 = c_to_c(bhat3);
-	double tmp58 = creal(tmp57[0]);
-	double tmp59 = cimag(tmp57[0]);
-	printf("b: %.3f + %.3fi\n", tmp58, tmp59);
+	unifit_complex(a, &ahat3, &bhat3);
+	complex * tmp62 = c_to_c(ahat3);
+	double tmp63 = creal(tmp62[0]);
+	double tmp64 = cimag(tmp62[0]);
+	printf("a: %.3f + %.3fi\n", tmp63, tmp64);
+	complex * tmp65 = c_to_c(bhat3);
+	double tmp66 = creal(tmp65[0]);
+	double tmp67 = cimag(tmp65[0]);
+	printf("b: %.3f + %.3fi\n", tmp66, tmp67);
 }
 
 void int_stats(Matrix * a) {
@@ -543,37 +583,37 @@ void int_stats(Matrix * a) {
 	writeM( fun_qs, 8, input14);
 	free(input14);
 	
-	Matrix * tmp60 = meanM(a);
-	printM(tmp60);
-	Matrix * tmp61 = varM(a);
-	printM(tmp61);
-	Matrix * tmp62 = varM(a);
-	printM(tmp62);
-	Matrix * tmp63 = stdM(a);
-	printM(tmp63);
-	Matrix * tmp64 = stdM(a);
-	printM(tmp64);
-	Matrix * tmp65 = sortM(a, 0);
-	printM(tmp65);
-	Matrix * tmp66 = sortM(a, 1);
-	printM(tmp66);
-	Matrix * tmp67 = medianM(a);
-	printM(tmp67);
-	Matrix * tmp68 = minM(a);
+	Matrix * tmp68 = meanM(a);
 	printM(tmp68);
-	Matrix * tmp69 = maxM(a);
+	Matrix * tmp69 = varM(a);
 	printM(tmp69);
+	Matrix * tmp70 = varM(a);
+	printM(tmp70);
+	Matrix * tmp71 = stdM(a);
+	printM(tmp71);
+	Matrix * tmp72 = stdM(a);
+	printM(tmp72);
+	Matrix * tmp73 = sortM(a, 0);
+	printM(tmp73);
+	Matrix * tmp74 = sortM(a, 1);
+	printM(tmp74);
+	Matrix * tmp75 = medianM(a);
+	printM(tmp75);
+	Matrix * tmp76 = minM(a);
+	printM(tmp76);
+	Matrix * tmp77 = maxM(a);
+	printM(tmp77);
 	double vec4[4] = {};
 	
 	for (int i = 0; 0.2*i < 1; i ++) {
 	    vec4[i] = 0.2*i;
 	}
 	                
-	Matrix * tmp70 = quantileM_vec(a, 4, vec4);
-	printM(tmp70);
+	Matrix * tmp78 = quantileM_vec(a, 4, vec4);
+	printM(tmp78);
 	double * vec5 = d_to_d(fun_qs);
-	Matrix * tmp71 = quantileM_vec(a, 8, vec5);
-	printM(tmp71);
+	Matrix * tmp79 = quantileM_vec(a, 8, vec5);
+	printM(tmp79);
 }
 
 void double_stats(Matrix * a) {
@@ -594,37 +634,37 @@ void double_stats(Matrix * a) {
 	writeM( fun_qs, 8, input15);
 	free(input15);
 	
-	Matrix * tmp72 = meanM(a);
-	printM(tmp72);
-	Matrix * tmp73 = varM(a);
-	printM(tmp73);
-	Matrix * tmp74 = varM(a);
-	printM(tmp74);
-	Matrix * tmp75 = stdM(a);
-	printM(tmp75);
-	Matrix * tmp76 = stdM(a);
-	printM(tmp76);
-	Matrix * tmp77 = sortM(a, 0);
-	printM(tmp77);
-	Matrix * tmp78 = sortM(a, 1);
-	printM(tmp78);
-	Matrix * tmp79 = medianM(a);
-	printM(tmp79);
-	Matrix * tmp80 = minM(a);
+	Matrix * tmp80 = meanM(a);
 	printM(tmp80);
-	Matrix * tmp81 = maxM(a);
+	Matrix * tmp81 = varM(a);
 	printM(tmp81);
+	Matrix * tmp82 = varM(a);
+	printM(tmp82);
+	Matrix * tmp83 = stdM(a);
+	printM(tmp83);
+	Matrix * tmp84 = stdM(a);
+	printM(tmp84);
+	Matrix * tmp85 = sortM(a, 0);
+	printM(tmp85);
+	Matrix * tmp86 = sortM(a, 1);
+	printM(tmp86);
+	Matrix * tmp87 = medianM(a);
+	printM(tmp87);
+	Matrix * tmp88 = minM(a);
+	printM(tmp88);
+	Matrix * tmp89 = maxM(a);
+	printM(tmp89);
 	double vec6[4] = {};
 	
 	for (int i = 0; 0.2*i < 1; i ++) {
 	    vec6[i] = 0.2*i;
 	}
 	                
-	Matrix * tmp82 = quantileM_vec(a, 4, vec6);
-	printM(tmp82);
+	Matrix * tmp90 = quantileM_vec(a, 4, vec6);
+	printM(tmp90);
 	double * vec7 = d_to_d(fun_qs);
-	Matrix * tmp83 = quantileM_vec(a, 8, vec7);
-	printM(tmp83);
+	Matrix * tmp91 = quantileM_vec(a, 8, vec7);
+	printM(tmp91);
 }
 
 void complex_stats(Matrix * a) {
@@ -645,26 +685,26 @@ void complex_stats(Matrix * a) {
 	writeM( fun_qs, 8, input16);
 	free(input16);
 	
-	Matrix * tmp84 = meanM(a);
-	printM(tmp84);
-	Matrix * tmp85 = varM(a);
-	printM(tmp85);
-	Matrix * tmp86 = varM(a);
-	printM(tmp86);
-	Matrix * tmp87 = stdM(a);
-	printM(tmp87);
-	Matrix * tmp88 = stdM(a);
-	printM(tmp88);
-	Matrix * tmp89 = sortM(a, 0);
-	printM(tmp89);
-	Matrix * tmp90 = sortM(a, 1);
-	printM(tmp90);
-	Matrix * tmp91 = medianM(a);
-	printM(tmp91);
-	Matrix * tmp92 = minM(a);
+	Matrix * tmp92 = meanM(a);
 	printM(tmp92);
-	Matrix * tmp93 = maxM(a);
+	Matrix * tmp93 = varM(a);
 	printM(tmp93);
+	Matrix * tmp94 = varM(a);
+	printM(tmp94);
+	Matrix * tmp95 = stdM(a);
+	printM(tmp95);
+	Matrix * tmp96 = stdM(a);
+	printM(tmp96);
+	Matrix * tmp97 = sortM(a, 0);
+	printM(tmp97);
+	Matrix * tmp98 = sortM(a, 1);
+	printM(tmp98);
+	Matrix * tmp99 = medianM(a);
+	printM(tmp99);
+	Matrix * tmp100 = minM(a);
+	printM(tmp100);
+	Matrix * tmp101 = maxM(a);
+	printM(tmp101);
 	//disp(quantile(a, 4));
 	
 	//disp(quantile(a, fun_qs));

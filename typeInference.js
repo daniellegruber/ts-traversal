@@ -345,6 +345,10 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         }
         // for some reason calling inferTypeFromAssignment modifies the value of arg_types
         var tmp_arg_types = JSON.parse(JSON.stringify(arg_types));
+        var typestr_1 = '';
+        for (var i = 0; i < tmp_arg_types.length; i++) {
+            typestr_1 = typestr_1.concat(tmp_arg_types[i].type);
+        }
         var block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
         var _a = inferTypeFromAssignment(filename, tree2, arg_types, custom_functions, classes, file, alias_tbl, debug, block_idxs), var_types2 = _a[0], c_1 = _a[1];
         for (var i = 0; i < var_types2.length; i++) {
@@ -368,6 +372,14 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
             fun_dictionary = c_1; // may need to change for classes
         }
         custom_functions = c_1;
+        var obj2 = obj.arg_type_dic.find(function (x) { return x.arg_type_id == typestr_1; });
+        if (fun_name == "normfit") {
+            //console.log(obj);
+            //console.log(obj.arg_type_dic);
+            //console.log(typestr);
+            //console.log(obj2);
+            //console.log("-----------------------");
+        }
         var return_node_1 = obj.def_node.return_variableNode;
         if (return_node_1 != undefined) {
             return_node_1 = return_node_1.firstChild;
@@ -379,14 +391,9 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                     var return_var = return_node_1.namedChildren[i];
                     var _b = inferType(filename, return_var, var_types2, custom_functions, classes, file, alias_tbl, debug), return_type = _b[0], return_ndim = _b[1], return_dim = _b[2], return_ismatrix = _b[3], return_ispointer = _b[4], return_isstruct = _b[5], c_2 = _b[6];
                     custom_functions = c_2;
-                    /*if (return_ismatrix && numel(return_dim) == 1) {
-                        return_ismatrix = false;
-                        return_ndim = 1;
-                        return_dim = [1];
+                    /*if (obj.ptr_arg_types != null) {
+                        return_type = binaryOpType(return_type, obj.ptr_arg_types[i].type);
                     }*/
-                    if (obj.ptr_arg_types != null) {
-                        return_type = (0, customTypes_1.binaryOpType)(return_type, obj.ptr_arg_types[i].type);
-                    }
                     ptr_arg_types_1.push({
                         type: return_type,
                         ndim: return_ndim,
@@ -396,6 +403,22 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                         ispointer: true,
                         isstruct: return_isstruct
                     });
+                }
+                if (obj2 == null || obj2 == undefined) {
+                    obj.arg_type_dic = obj.arg_type_dic.filter(function (x) { return x.arg_type_id != typestr_1; });
+                    obj.arg_type_dic.push({
+                        arg_type_id: typestr_1,
+                        arg_types: tmp_arg_types,
+                        ptr_arg_types: ptr_arg_types_1,
+                        return_type: null,
+                        var_types: var_types2
+                    });
+                    /*if (fun_name == "normfit") {
+                        console.log("HELLO1");
+                        console.log(typestr);
+                        console.log(obj.arg_type_dic);
+                        //console.log(obj2);
+                    }*/
                 }
                 var v1 = {
                     name: obj.name,
@@ -431,7 +454,8 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                         }
                         return ptr_args;
                     },
-                    var_types: var_types2
+                    var_types: var_types2,
+                    arg_type_dic: obj.arg_type_dic
                 };
                 if (!all_types_1.includes("unknown")) {
                     fun_dictionary = fun_dictionary.filter(function (e) { return e.name !== fun_name; });
@@ -443,9 +467,33 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
             else {
                 var _c = inferType(filename, return_node_1, var_types2, custom_functions, classes, file, alias_tbl, debug), type = _c[0], ndim = _c[1], dim = _c[2], ismatrix = _c[3], ispointer = _c[4], isstruct = _c[5], c_3 = _c[6];
                 custom_functions = c_3;
+                var return_type = {
+                    type: type,
+                    ndim: ndim,
+                    dim: dim,
+                    ismatrix: ismatrix,
+                    isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix,
+                    ispointer: ispointer,
+                    isstruct: isstruct
+                };
+                if (obj2 == null || obj2 == undefined) {
+                    /*if (fun_name == "normfit") {
+                        console.log("HELLO2");
+                        console.log(typestr);
+                    }*/
+                    obj.arg_type_dic = obj.arg_type_dic.filter(function (x) { return x.arg_type_id != typestr_1; });
+                    obj.arg_type_dic.push({
+                        arg_type_id: typestr_1,
+                        arg_types: tmp_arg_types,
+                        ptr_arg_types: null,
+                        return_type: return_type,
+                        var_types: var_types2
+                    });
+                }
                 var v1 = {
                     name: obj.name,
                     arg_types: tmp_arg_types,
+                    // arg_types.push(tmp_arg_types)
                     outs_transform: function (outs) { return outs; },
                     return_type: {
                         type: type,
@@ -461,7 +509,8 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                     external: obj.external,
                     file: obj.file,
                     def_node: obj.def_node,
-                    var_types: var_types2
+                    var_types: var_types2,
+                    arg_type_dic: obj.arg_type_dic
                 };
                 if (type !== "unknown") {
                     fun_dictionary = fun_dictionary.filter(function (e) { return e.name !== fun_name; });
@@ -471,6 +520,20 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
             }
         }
         else {
+            if (obj2 == null || obj2 == undefined) {
+                /*if (fun_name == "normfit") {
+                    console.log("HELLO3");
+                    console.log(typestr);
+                }*/
+                obj.arg_type_dic = obj.arg_type_dic.filter(function (x) { return x.arg_type_id != typestr_1; });
+                obj.arg_type_dic.push({
+                    arg_type_id: typestr_1,
+                    arg_types: tmp_arg_types,
+                    ptr_arg_types: null,
+                    return_type: null,
+                    var_types: var_types2
+                });
+            }
             var v1 = {
                 name: obj.name,
                 arg_types: tmp_arg_types,
@@ -483,7 +546,8 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                 external: obj.external,
                 file: obj.file,
                 def_node: obj.def_node,
-                var_types: var_types2
+                var_types: var_types2,
+                arg_type_dic: obj.arg_type_dic
             };
             if (arg_types[0].type !== "unknown") {
                 fun_dictionary = fun_dictionary.filter(function (e) { return e.name !== fun_name; });
@@ -773,6 +837,11 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                     type_5 = 'complex';
                 }
             }
+            else if (node.operatorNode.type == "/") {
+                if (type_5 != 'complex') {
+                    type_5 = 'double';
+                }
+            }
             //return [type, ndim, dim, ismatrix, ismatrix, false, custom_functions];
             return [type_5, ndim, dim, ismatrix, false, false, custom_functions];
             break;
@@ -958,6 +1027,13 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                                 }
                                 var return_type = null;
                                 _c = getFunctionReturnType(filename, node.valueNode.text, obj2.arg_types, var_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0), return_type = _c[0], custom_functions = _c[1];
+                                /*obj2 = custom_functions.find(x => x.name === node.valueNode.text);
+                                let typestr = '';
+                                for  (let i = 0; i < arg_types.length; i++) {
+                                    typestr = typestr.concat(arg_types[i].type);
+                                }
+                                let obj4 = obj2.arg_type_dic.find(x => x.arg_type_id = typestr);
+                                return_type = obj4.return_type;*/
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                                 }

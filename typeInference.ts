@@ -359,9 +359,9 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         
         // for some reason calling inferTypeFromAssignment modifies the value of arg_types
         const tmp_arg_types = JSON.parse(JSON.stringify(arg_types));
-        let type_str = '';
+        let typestr = '';
         for  (let i = 0; i < tmp_arg_types.length; i++) { 
-            type_str = type_str.concat(tmp_arg_types[i].type);
+            typestr = typestr.concat(tmp_arg_types[i].type);
         }
         
         let block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
@@ -387,7 +387,9 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
             fun_dictionary = c; // may need to change for classes
         }
         custom_functions = c;
-
+	    
+	    let obj2 = obj.arg_type_dic.find(x=>x.arg_type_id == typestr);
+        
         let return_node = obj.def_node.return_variableNode;
         if (return_node != undefined) {
             return_node = return_node.firstChild;
@@ -399,14 +401,9 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                     let return_var = return_node.namedChildren[i];
                     let [return_type, return_ndim, return_dim, return_ismatrix, return_ispointer, return_isstruct, c] = inferType(filename, return_var, var_types2, custom_functions, classes, file, alias_tbl, debug);
                     custom_functions = c;
-                    /*if (return_ismatrix && numel(return_dim) == 1) {
-                        return_ismatrix = false;
-                        return_ndim = 1;
-                        return_dim = [1];
-                    }*/
-                    if (obj.ptr_arg_types != null) {
+                    /*if (obj.ptr_arg_types != null) {
                         return_type = binaryOpType(return_type, obj.ptr_arg_types[i].type);
-                    }
+                    }*/
                     ptr_arg_types.push({
         		        type: return_type,
         		        ndim: return_ndim,
@@ -417,6 +414,18 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                         isstruct: return_isstruct
         		    });
                 }
+                
+                if (obj2 == null || obj2 == undefined) {
+                    obj.arg_type_dic = obj.arg_type_dic.filter(x=>x.arg_type_id != typestr);
+        	        obj.arg_type_dic.push({
+            		    arg_type_id: typestr,
+            		    arg_types: tmp_arg_types,
+            		    ptr_arg_types: ptr_arg_types,
+            		    return_type: null,
+            		    var_types: var_types2
+            		})
+            		
+        	    }
                 const v1: CustomFunction = { 
                     name: obj.name,
                     arg_types: tmp_arg_types,
@@ -451,12 +460,8 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                         }
             			return ptr_args;
             		},
-            		var_types: var_types2
-            		/* var_type_dic: {
-            		    arg_types: tmp_arg_types
-            		    var_types: var_types2
-            		    
-            		}*/
+            		var_types: var_types2,
+            		arg_type_dic: obj.arg_type_dic
                 };
                 if (!all_types.includes("unknown")) {
                     fun_dictionary = fun_dictionary.filter(function(e) { return e.name !== fun_name });
@@ -468,6 +473,26 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
             } else {
                 let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, return_node, var_types2, custom_functions, classes, file, alias_tbl, debug);
                 custom_functions = c;
+                let return_type = {
+                    type: type,
+                    ndim: ndim,
+                    dim: dim,
+                    ismatrix: ismatrix,
+                    isvector: numel(dim) > 1 && !ismatrix,
+                    ispointer: ispointer,
+                    isstruct: isstruct
+                };
+                
+                if (obj2 == null || obj2 == undefined) {
+                    obj.arg_type_dic = obj.arg_type_dic.filter(x=>x.arg_type_id != typestr);
+        	        obj.arg_type_dic.push({
+            		    arg_type_id: typestr,
+            		    arg_types: tmp_arg_types,
+            		    ptr_arg_types: null,
+            		    return_type: return_type,
+            		    var_types: var_types2
+            		})
+        	    }
                 const v1: CustomFunction = { 
                     name: obj.name, 
                     arg_types: tmp_arg_types,
@@ -482,31 +507,13 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                         ispointer: ispointer,
                         isstruct: isstruct
                     },
-                    /* return_type_dic: obj.return_type_dic.push({
-            		    arg_types: type_str
-            		    return_type: return_type
-            		})*/
-            		/*return_type_dic: {
-            		    if (obj.return_type_dic.includes(type_str)) {
-            		        return obj.return_type_dic;
-            		    } else {
-                    		return obj.return_type_dic.push({
-                    		    arg_types: type_str
-                    		    return_type: return_type
-                    		})
-            		    }
-            		},*/
                     ptr_args: (arg_types, outs) => null,
                     ptr_arg_types: null,
                     external: obj.external,
                     file: obj.file,
                     def_node: obj.def_node,
-                    var_types: var_types2
-                    /* var_type_dic: {
-            		    arg_types: tmp_arg_types
-            		    var_types: var_types2
-            		    
-            		}*/
+                    var_types: var_types2,
+            		arg_type_dic: obj.arg_type_dic
                 };
                 if (type !== "unknown") {
                     fun_dictionary = fun_dictionary.filter(function(e) { return e.name !== fun_name });
@@ -516,6 +523,17 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                 
             }
         } else {
+            
+            if (obj2 == null || obj2 == undefined) {
+                obj.arg_type_dic = obj.arg_type_dic.filter(x=>x.arg_type_id != typestr);
+    	        obj.arg_type_dic.push({
+        		    arg_type_id: typestr,
+        		    arg_types: tmp_arg_types,
+        		    ptr_arg_types: null,
+        		    return_type: null,
+        		    var_types: var_types2
+        		})
+    	    }
             const v1: CustomFunction = { 
                 name: obj.name,
                 arg_types: tmp_arg_types,
@@ -528,7 +546,8 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                 external: obj.external,
                 file: obj.file,
                 def_node: obj.def_node,
-                var_types: var_types2
+                var_types: var_types2,
+                arg_type_dic: obj.arg_type_dic
             };
             if (arg_types[0].type !== "unknown") {
                 fun_dictionary = fun_dictionary.filter(function(e) { return e.name !== fun_name });
@@ -832,6 +851,10 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                 if (left_type == 'complex' || right_type != 'int') {
                     type = 'complex';
                 }
+            } else if (node.operatorNode.type == "/") {
+                if (type != 'complex') {
+                    type = 'double';
+                }
             }
 
             //return [type, ndim, dim, ismatrix, ismatrix, false, custom_functions];
@@ -1024,6 +1047,14 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                                 let return_type = null;
                                 
                                 [return_type, custom_functions] = getFunctionReturnType(filename, node.valueNode.text, obj2.arg_types, var_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0);
+                                /*obj2 = custom_functions.find(x => x.name === node.valueNode.text);
+                                let typestr = '';
+                                for  (let i = 0; i < arg_types.length; i++) { 
+                                    typestr = typestr.concat(arg_types[i].type);
+                                }
+                                let obj4 = obj2.arg_type_dic.find(x => x.arg_type_id = typestr);
+                                return_type = obj4.return_type;*/
+                                
                                 if (return_type == null) {
                                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                                 } else {

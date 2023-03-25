@@ -15,10 +15,10 @@ int main(void) {
 	//source octaveIncludes.m;
 	int iterations = 10;
 	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
-		double * tmp1 = hamming(iter1);
-		printf("\n%f\n", tmp1);
-		double * tmp2 = periodichamming(iter1);
-		printf("\n%f\n", tmp2);
+		Matrix * tmp1 = hammingM(iter1);
+		printM(tmp1);
+		Matrix * tmp2 = hammingM(iter1, "periodic");
+		printM(tmp2);
 		double * tmp3 = hanning(iter1);
 		printf("\n%f\n", tmp3);
 		double * tmp4 = periodichanning(iter1);

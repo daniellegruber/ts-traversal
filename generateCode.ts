@@ -741,8 +741,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`, fun_params);
                         }
                         updateFunParams(0);
                         alias_tbl = pushAliasTbl(node.leftNode.text, rhs, node, fun_params);
-                        //console.log("HELLO!!");
-                        //console.log(alias_tbl[alias_tbl.length - 1]);
                         let obj = filterByScope(tmp_var_types, node.leftNode.valueNode.text, node, 0);
                         tmp_var_types.push({
                             name: rhs,
@@ -1058,9 +1056,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                         if (match != null) {
                             let tmpvar_obj = tmp_tbl.find(x => x.name == match[1] && x.count == match[2]);
                             if (tmpvar_obj != null && tmpvar_obj != undefined) {
-                                /*if (args[i] == "mu1") {
-                                    console.log(tmp_var_types.find(x => x.name == "mu1"));
-                                }*/
                                 let [type2, ndim2, dim2, ismatrix2, ispointer2, isstruct2, c2] = inferTypeByName(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug);
                                 if (type2 != null) {
                                     type = type2;
@@ -1090,7 +1085,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     });
                 }
                 
-
+                
                 if (node.valueNode.text == "sprintf") {
                     if (node.parent.type == g.SyntaxType.CallOrSubscript) {
                         if (node.parent.valueNode.text == "disp") {
@@ -1128,10 +1123,6 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                 initialized: true,
                                 scope: findVarScope(filename, node, block_idxs, current_code, debug)
                             });
-                            /*if (tmp_ptr == "mu1") {
-                                console.log(node.text);
-                                console.log(tmp_var_types[tmp_var_types.length - 1]);
-                            }*/
                             
                         }
                         updateFunParams(0);
@@ -1281,6 +1272,8 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     let idx = push_alias_tbl.map(function(e) { return e.tmp_var; }).indexOf(ptr_args[i].name);
                                     if (idx > -1) {
                                         push_alias_tbl[idx].tmp_var = tmp_ptr;
+                                        let re = new RegExp(`${ptr_args[i].name}\\d+`);
+                                        alias_tbl = alias_tbl.filter(x => !re.test(x.tmp_var));
                                     }
                                 }
                                 args.push(`&${tmp_ptr}`);
@@ -1315,6 +1308,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                                     if (push_alias_tbl[i].scope == null) {
                                         push_alias_tbl[i].scope = findVarScope(filename, node, block_idxs, current_code, debug);
                                     }
+                                    
                                     alias_tbl.push(push_alias_tbl[i]);
                                 }
                             }
@@ -1935,6 +1929,7 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
         if (obj.args_transform(args, arg_types, outs) != null) {
             args = obj.args_transform(args, arg_types, outs);
         }
+        
         if (init_before != null && init_before != undefined) {
                             
             for (let i = 0; i < init_before.length; i++) {
@@ -1984,7 +1979,6 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
                 }
             }
         } else {
-            
             let tmp_var = generateTmpVar("tmp", tmp_tbl);
             tmp_var_types.push({
                 name: tmp_var,
@@ -2007,7 +2001,6 @@ for (int ${tmp_iter} = 0; ${start} + ${step}*${tmp_iter} <= ${stop}; ${tmp_iter}
             }
             updateFunParams(0);
             [main_function, function_definitions] = pushToMain(initVar(tmp_var, var_val, tmp_var_types[tmp_var_types.length - 1], node), fun_params);
-            
             return tmp_var;
             
         }

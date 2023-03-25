@@ -389,7 +389,7 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         custom_functions = c;
 	    
 	    let obj2 = obj.arg_type_dic.find(x=>x.arg_type_id == typestr);
-        
+        //let obj3 = obj.arg_type_dic.filter(x=>JSON.stringify(x.var_types) == JSON.stringify(var_types2));
         let return_node = obj.def_node.return_variableNode;
         if (return_node != undefined) {
             return_node = return_node.firstChild;

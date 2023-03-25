@@ -268,7 +268,7 @@ void two_t_test_doubleint(Matrix * a, Matrix * b) {
 	double df2;
 	double sd2;
 	ttestM_xy(a, b, &h2, &pval2, &ci2, &tstat2, &df2, &sd2);
-	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h2, pval2, tstat1, df1, sd1);
+	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h2, pval2, tstat2, df2, sd2);
 }
 
 void int_vec_stats(Matrix * a) {

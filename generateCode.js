@@ -661,8 +661,6 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         }
                         updateFunParams(0);
                         alias_tbl = pushAliasTbl(node.leftNode.text, rhs, node, fun_params);
-                        //console.log("HELLO!!");
-                        //console.log(alias_tbl[alias_tbl.length - 1]);
                         let obj = filterByScope(tmp_var_types, node.leftNode.valueNode.text, node, 0);
                         tmp_var_types.push({
                             name: rhs,
@@ -952,9 +950,6 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         if (match_1 != null) {
                             var tmpvar_obj = tmp_tbl.find(function (x) { return x.name == match_1[1] && x.count == match_1[2]; });
                             if (tmpvar_obj != null && tmpvar_obj != undefined) {
-                                /*if (args[i] == "mu1") {
-                                    console.log(tmp_var_types.find(x => x.name == "mu1"));
-                                }*/
                                 var _61 = (0, typeInference_1.inferTypeByName)(args[i], node, tmp_var_types, custom_functions, alias_tbl, debug), type2 = _61[0], ndim2 = _61[1], dim2 = _61[2], ismatrix2 = _61[3], ispointer2 = _61[4], isstruct2 = _61[5], c2 = _61[6];
                                 if (type2 != null) {
                                     type_4 = type2;
@@ -1022,10 +1017,6 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                 initialized: true,
                                 scope: (0, typeInference_1.findVarScope)(filename, node, block_idxs, current_code, debug)
                             });
-                            /*if (tmp_ptr == "mu1") {
-                                console.log(node.text);
-                                console.log(tmp_var_types[tmp_var_types.length - 1]);
-                            }*/
                         }
                         updateFunParams(0);
                         _15 = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _15[0], function_definitions = _15[1];
@@ -1160,12 +1151,14 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                         if (ptr_args != null) {
                             var ptr_declaration = [];
                             var tmp_ptr = "tmp_ptr";
-                            for (var i = 0; i < ptr_args.length; i++) {
+                            var _loop_4 = function (i) {
                                 tmp_ptr = (0, helperFunctions_1.generateTmpVar)(ptr_args[i].name, tmp_tbl);
                                 if (push_alias_tbl != null) {
                                     var idx_4 = push_alias_tbl.map(function (e) { return e.tmp_var; }).indexOf(ptr_args[i].name);
                                     if (idx_4 > -1) {
                                         push_alias_tbl[idx_4].tmp_var = tmp_ptr;
+                                        var re_1 = new RegExp("".concat(ptr_args[i].name, "\\d+"));
+                                        alias_tbl = alias_tbl.filter(function (x) { return !re_1.test(x.tmp_var); });
                                     }
                                 }
                                 args.push("&".concat(tmp_ptr));
@@ -1189,6 +1182,9 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                                 });
                                 updateFunParams(0);
                                 alias_tbl = (0, helperFunctions_1.pushAliasTbl)(ptr_args[i].name, tmp_ptr, node, fun_params);
+                            };
+                            for (var i = 0; i < ptr_args.length; i++) {
+                                _loop_4(i);
                             }
                             updateFunParams(0);
                             _18 = (0, modifyCode_1.pushToMain)(ptr_declaration.join("\n"), fun_params), main_function = _18[0], function_definitions = _18[1];

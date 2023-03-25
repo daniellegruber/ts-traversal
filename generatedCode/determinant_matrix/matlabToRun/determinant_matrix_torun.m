@@ -26,7 +26,7 @@ for i=1:3
 	end
 end
 dispArr(fileID, a);
-dispArr(fileID, sprintf('%d\n',det(a)));
+dispArr(fileID, det(a));
 
 %testn
 a = zeros(5);
@@ -43,7 +43,7 @@ for i=0:4
 end
 a=a.';
 dispArr(fileID, a);
-dispArr(fileID, sprintf('%d\n',det(a)));
+dispArr(fileID, det(a));
 
 %non_square
 a = zeros(3,2);

@@ -73,7 +73,7 @@ int main(void) {
 	printM(mat1);
 	int d3;
 	detM(mat1, &d3);
-	printf("%d\n", d3);
+	printf("\n%d\n", d3);
 	//testn
 	int ndim4 = 2;
 	int dim4[2] = {5,5};
@@ -117,7 +117,7 @@ int main(void) {
 	printM(a);
 	int d4;
 	detM(a, &d4);
-	printf("%d\n", d4);
+	printf("\n%d\n", d4);
 	//non_square
 	int ndim5 = 2;
 	int dim5[2] = {3, 2};

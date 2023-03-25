@@ -10,7 +10,6 @@
 
 // Function declarations
 void myfun1(int f, int g, int* p_F, int* p_G);
-void myfun2(void);
 
 // Entry-point function
 int main(void) {
@@ -35,8 +34,4 @@ void myfun1(int f, int g, int* p_F, int* p_G) {
 	}
 	*p_F = F;
 	*p_G = G;
-}
-
-void myfun2(void) {
-	char outstr[13] = "hello world";
 }

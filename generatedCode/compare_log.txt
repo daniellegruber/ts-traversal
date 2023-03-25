@@ -4,6 +4,7 @@ SUCCESS
 abs_matrix
 add_matrix
 areEqual_matrix
+basic_stats
 cc_matrix_multiplication
 cd_matrix_multiplication
 ceil_matrix
@@ -39,6 +40,7 @@ logic_ops_matrix
 matrix_division
 octaveIncludes
 randomness
+reindex
 round_matrix
 scale_matrix
 subtract_matrix
@@ -48,14 +50,12 @@ transpose_matrix
 
 ERROR
 advanced_stats
-basic_stats
 determinant_matrix
 filterM
 fourier
 hamming_hanning
 octaveTimer
 power_matrix
-reindex
 reshape_matrix
 stftM
 xcorrM

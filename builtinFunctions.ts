@@ -2645,7 +2645,15 @@ export const builtin_functions = [
     },
     { // Matrix * varM(Matrix* restrict m)
         fun_matlab: 'var', 
-        fun_c: (args, arg_types, outs, fun_matlab) => 'varM', 
+        //fun_c: (args, arg_types, outs, fun_matlab) => 'varM', 
+        fun_c: (args, arg_types, outs, fun_matlab) => {
+            if (args.length == 2) {
+                if (args[1] == "1") {
+                    return "popvarM";
+                }
+            }
+            return "varM";
+        },
         args_transform: (args, arg_types, outs) => {
             if (args.length == 3) {
                 if (args[2] == "2") {
@@ -2776,8 +2784,8 @@ export const builtin_functions = [
                 //expression.push(`double arr[${n_quantiles}];`);
                 let step = 1/(quantile_specifier + 1);
                 let expression = `
-for (int i = 0; ${step}*i < 1; i ++) {
-    vec[i] = ${step}*i;
+for (int i = 1; ${step}*i < 1; i ++) {
+    vec[i-1] = ${step}*i;
 }
                 `;
                 return expression;
@@ -3786,7 +3794,15 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     },
     { // Matrix * stdM(Matrix* restrict m)
         fun_matlab: 'std', // S = std(A,w,dim)
-        fun_c: (args, arg_types, outs, fun_matlab) => 'stdM', 
+        //fun_c: (args, arg_types, outs, fun_matlab) => 'stdM',
+        fun_c: (args, arg_types, outs, fun_matlab) => {
+            if (args.length == 2) {
+                if (args[1] == "1") {
+                    return "popstdM";
+                }
+            }
+            return "stdM";
+        },
         req_arg_types: null,
         args_transform: (args, arg_types, outs) => {
             if (args.length == 3) {

@@ -18,6 +18,10 @@ setup:
 	module load GCC; \
 	module load ScaLAPACK/2.1.0-gompi-2020b; \
 	module load FFTW; \
+	
+# Copy mfiles from tests_C_Octave folder into generatedCode and "clean"
+compmatrix:
+	eval $(CC) -c -o matrix.o $$OCTAVEC/matrix.c $(CFLAGS) $(LIB) $(INC); \
 
 # Copy mfiles from tests_C_Octave folder into generatedCode and "clean"
 copyall:

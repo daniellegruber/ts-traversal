@@ -587,11 +587,11 @@ void int_stats(Matrix * a) {
 	printM(tmp68);
 	Matrix * tmp69 = varM(a);
 	printM(tmp69);
-	Matrix * tmp70 = varM(a);
+	Matrix * tmp70 = popvarM(a);
 	printM(tmp70);
 	Matrix * tmp71 = stdM(a);
 	printM(tmp71);
-	Matrix * tmp72 = stdM(a);
+	Matrix * tmp72 = popstdM(a);
 	printM(tmp72);
 	Matrix * tmp73 = sortM(a, 0);
 	printM(tmp73);
@@ -605,8 +605,8 @@ void int_stats(Matrix * a) {
 	printM(tmp77);
 	double vec4[4] = {};
 	
-	for (int i = 0; 0.2*i < 1; i ++) {
-	    vec4[i] = 0.2*i;
+	for (int i = 1; 0.2*i < 1; i ++) {
+	    vec4[i-1] = 0.2*i;
 	}
 	                
 	Matrix * tmp78 = quantileM_vec(a, 4, vec4);
@@ -638,11 +638,11 @@ void double_stats(Matrix * a) {
 	printM(tmp80);
 	Matrix * tmp81 = varM(a);
 	printM(tmp81);
-	Matrix * tmp82 = varM(a);
+	Matrix * tmp82 = popvarM(a);
 	printM(tmp82);
 	Matrix * tmp83 = stdM(a);
 	printM(tmp83);
-	Matrix * tmp84 = stdM(a);
+	Matrix * tmp84 = popstdM(a);
 	printM(tmp84);
 	Matrix * tmp85 = sortM(a, 0);
 	printM(tmp85);
@@ -656,8 +656,8 @@ void double_stats(Matrix * a) {
 	printM(tmp89);
 	double vec6[4] = {};
 	
-	for (int i = 0; 0.2*i < 1; i ++) {
-	    vec6[i] = 0.2*i;
+	for (int i = 1; 0.2*i < 1; i ++) {
+	    vec6[i-1] = 0.2*i;
 	}
 	                
 	Matrix * tmp90 = quantileM_vec(a, 4, vec6);
@@ -689,11 +689,11 @@ void complex_stats(Matrix * a) {
 	printM(tmp92);
 	Matrix * tmp93 = varM(a);
 	printM(tmp93);
-	Matrix * tmp94 = varM(a);
+	Matrix * tmp94 = popvarM(a);
 	printM(tmp94);
 	Matrix * tmp95 = stdM(a);
 	printM(tmp95);
-	Matrix * tmp96 = stdM(a);
+	Matrix * tmp96 = popstdM(a);
 	printM(tmp96);
 	Matrix * tmp97 = sortM(a, 0);
 	printM(tmp97);

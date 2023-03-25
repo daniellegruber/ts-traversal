@@ -373,13 +373,6 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         }
         custom_functions = c_1;
         var obj2 = obj.arg_type_dic.find(function (x) { return x.arg_type_id == typestr_1; });
-        if (fun_name == "normfit") {
-            //console.log(obj);
-            //console.log(obj.arg_type_dic);
-            //console.log(typestr);
-            //console.log(obj2);
-            //console.log("-----------------------");
-        }
         var return_node_1 = obj.def_node.return_variableNode;
         if (return_node_1 != undefined) {
             return_node_1 = return_node_1.firstChild;
@@ -413,12 +406,6 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                         return_type: null,
                         var_types: var_types2
                     });
-                    /*if (fun_name == "normfit") {
-                        console.log("HELLO1");
-                        console.log(typestr);
-                        console.log(obj.arg_type_dic);
-                        //console.log(obj2);
-                    }*/
                 }
                 var v1 = {
                     name: obj.name,
@@ -477,10 +464,6 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                     isstruct: isstruct
                 };
                 if (obj2 == null || obj2 == undefined) {
-                    /*if (fun_name == "normfit") {
-                        console.log("HELLO2");
-                        console.log(typestr);
-                    }*/
                     obj.arg_type_dic = obj.arg_type_dic.filter(function (x) { return x.arg_type_id != typestr_1; });
                     obj.arg_type_dic.push({
                         arg_type_id: typestr_1,
@@ -521,10 +504,6 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         }
         else {
             if (obj2 == null || obj2 == undefined) {
-                /*if (fun_name == "normfit") {
-                    console.log("HELLO3");
-                    console.log(typestr);
-                }*/
                 obj.arg_type_dic = obj.arg_type_dic.filter(function (x) { return x.arg_type_id != typestr_1; });
                 obj.arg_type_dic.push({
                     arg_type_id: typestr_1,

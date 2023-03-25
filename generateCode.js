@@ -1969,11 +1969,6 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 if (obj.arg_type_dic.length == 1) {
                     fun_name = node.nameNode.text;
                 }
-                if (node.nameNode.text == "int_vec_stats") {
-                    console.log(fun_name);
-                    console.log(obj.arg_type_dic[i].arg_type_id);
-                    console.log(obj.arg_type_dic.length);
-                }
                 updateFunParams(0);
                 _a = (0, modifyCode_1.pushToMain)("".concat(fun_name, "_placeholder"), fun_params), main_function = _a[0], function_definitions = _a[1];
                 tmp_var_types = obj.arg_type_dic[i].var_types;

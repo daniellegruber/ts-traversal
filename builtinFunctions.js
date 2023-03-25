@@ -2581,7 +2581,15 @@ exports.builtin_functions = [
     },
     {
         fun_matlab: 'var',
-        fun_c: function (args, arg_types, outs, fun_matlab) { return 'varM'; },
+        //fun_c: (args, arg_types, outs, fun_matlab) => 'varM', 
+        fun_c: function (args, arg_types, outs, fun_matlab) {
+            if (args.length == 2) {
+                if (args[1] == "1") {
+                    return "popvarM";
+                }
+            }
+            return "varM";
+        },
         args_transform: function (args, arg_types, outs) {
             if (args.length == 3) {
                 if (args[2] == "2") {
@@ -2712,7 +2720,7 @@ exports.builtin_functions = [
                 //let expression = [];
                 //expression.push(`double arr[${n_quantiles}];`);
                 var step = 1 / (quantile_specifier + 1);
-                var expression = "\nfor (int i = 0; ".concat(step, "*i < 1; i ++) {\n    vec[i] = ").concat(step, "*i;\n}\n                ");
+                var expression = "\nfor (int i = 1; ".concat(step, "*i < 1; i ++) {\n    vec[i-1] = ").concat(step, "*i;\n}\n                ");
                 return expression;
             }
             else {
@@ -3729,7 +3737,15 @@ exports.builtin_functions = [
     },
     {
         fun_matlab: 'std',
-        fun_c: function (args, arg_types, outs, fun_matlab) { return 'stdM'; },
+        //fun_c: (args, arg_types, outs, fun_matlab) => 'stdM',
+        fun_c: function (args, arg_types, outs, fun_matlab) {
+            if (args.length == 2) {
+                if (args[1] == "1") {
+                    return "popstdM";
+                }
+            }
+            return "stdM";
+        },
         req_arg_types: null,
         args_transform: function (args, arg_types, outs) {
             if (args.length == 3) {

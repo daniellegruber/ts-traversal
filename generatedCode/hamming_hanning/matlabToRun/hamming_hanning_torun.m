@@ -7,7 +7,7 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/hamming_hanning/o
 %source octaveIncludes.m;
 
 
-iterations = 10;
+iterations = 3;
 
 for i=1:iterations
 	dispArr(fileID, hamming(i));

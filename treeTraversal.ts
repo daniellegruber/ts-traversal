@@ -31,11 +31,12 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor, debug): bo
     }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
-        //case g.SyntaxType.BinaryOperator:
-        //case g.SyntaxType.BooleanOperator:
-        //case g.SyntaxType.ComparisonOperator:
-        //case g.SyntaxType.TransposeOperator:
-        //case g.SyntaxType.UnaryOperator:
+        case g.SyntaxType.BinaryOperator:
+        case g.SyntaxType.BooleanOperator:
+        case g.SyntaxType.ComparisonOperator:
+        case g.SyntaxType.TransposeOperator:
+        case g.SyntaxType.UnaryOperator:
+        case g.SyntaxType.Assignment:
         case g.SyntaxType.CallOrSubscript:
         case g.SyntaxType.Comment:
         case g.SyntaxType.ExpressionStatement:
@@ -48,6 +49,7 @@ export function gotoPreorderSucc_OnlyMajorTypes(cursor: g.TreeCursor, debug): bo
                     return false;
                 }
             }
+            
             if (debug == 1) {
                 console.log("generateCode.ts");
                 console.log(cursor.currentNode);

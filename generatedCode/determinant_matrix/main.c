@@ -92,11 +92,10 @@ int main(void) {
 				lhs_data2[idx1] = tmp5;
 				
 				} else {
-				int tmp7 = (counter + iter5) % 7;
-				int tmp9 = (counter + iter5) % 7;
-				int tmp8 = -1 * tmp9;
+				int tmp8 = (counter + iter5) % 7;
+				int tmp7 = -1 * tmp8;
 				int idx2 = convertSubscript(ndim4, dim4, counter);
-				lhs_data2[idx2] = tmp8;
+				lhs_data2[idx2] = tmp7;
 				
 			
 			}
@@ -112,8 +111,8 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim4, dim4, 0);
 	writeM(mat2, size2, lhs_data2);
-	Matrix * tmp10 = transposeM(mat2);
-	a = tmp10;
+	Matrix * tmp9 = transposeM(mat2);
+	a = tmp9;
 	printM(a);
 	int d4;
 	detM(a, &d4);
@@ -121,27 +120,27 @@ int main(void) {
 	//non_square
 	int ndim5 = 2;
 	int dim5[2] = {3, 2};
-	Matrix * tmp11 = zerosM(ndim5, dim5);
-	a = tmp11;
+	Matrix * tmp10 = zerosM(ndim5, dim5);
+	a = tmp10;
 	complex* lhs_data3 = i_to_c(a);
-	complex tmp12 = 26 + 1*I;
+	complex tmp11 = 26 + 1*I;
 	int idx3 = convertSubscript(ndim5, dim5, 1);
-	lhs_data3[idx3] = tmp12;
-	complex tmp13 = 3 - 8*I;
+	lhs_data3[idx3] = tmp11;
+	complex tmp12 = 3 - 8*I;
 	int idx4 = convertSubscript(ndim5, dim5, 2);
-	lhs_data3[idx4] = tmp13;
-	complex tmp14 = 20*I;
+	lhs_data3[idx4] = tmp12;
+	complex tmp13 = 20*I;
 	int idx5 = convertSubscript(ndim5, dim5, 3);
-	lhs_data3[idx5] = tmp14;
-	complex tmp15 = 1 + 25*I;
+	lhs_data3[idx5] = tmp13;
+	complex tmp14 = 1 + 25*I;
 	int idx6 = convertSubscript(ndim5, dim5, 4);
-	lhs_data3[idx6] = tmp15;
-	int tmp16 = 0;
+	lhs_data3[idx6] = tmp14;
+	int tmp15 = 0;
 	int idx7 = convertSubscript(ndim5, dim5, 5);
-	lhs_data3[idx7] = tmp16;
-	int tmp17 = 1;
+	lhs_data3[idx7] = tmp15;
+	int tmp16 = 1;
 	int idx8 = convertSubscript(ndim5, dim5, 6);
-	lhs_data3[idx8] = tmp17;
+	lhs_data3[idx8] = tmp16;
 	// Write matrix mat3
 	int size3 = 1;
 	for (int iter7 = 0 ; iter7 < ndim5; iter7++)
@@ -150,8 +149,8 @@ int main(void) {
 	}
 	Matrix *mat3 = createM(ndim5, dim5, 2);
 	writeM(mat3, size3, lhs_data3);
-	Matrix * tmp18 = transposeM(mat3);
-	a = tmp18;
+	Matrix * tmp17 = transposeM(mat3);
+	a = tmp17;
 	printM(a);
 	return 0;
 }

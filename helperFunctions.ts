@@ -139,7 +139,6 @@ export function pushAliasTbl(lhs, rhs, node, fun_params) {
         tmp_var: rhs,
         scope: scope
     });
-    
     return fun_params.alias_tbl;
 }
 

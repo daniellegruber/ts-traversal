@@ -24,7 +24,7 @@ int main(void) {
 
 
 // Subprograms
-
+	
 void myfun1(int f, int g, int* p_F, int* p_G) {
 	int F = f + g;
 	int G = f - g;

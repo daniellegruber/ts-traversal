@@ -220,11 +220,10 @@ int main(void) {
 	matrices[idx19] = tmp25;
 	int* lhs_data7 = i_to_i(matrices[idx19]);
 	for (int iter13 = 1; iter13 <= 9; ++ iter13) {
-		int tmp26 = pow((-1), iter13);
-		int tmp28 = pow((-1), iter13);
-		int tmp27 = tmp28 * iter13 * iter13;
+		int tmp27 = pow((-1), iter13);
+		int tmp26 = tmp27 * iter13 * iter13;
 		int idx20 = convertSubscript(ndim11, dim11, iter13);
-		lhs_data7[idx20] = tmp27;
+		lhs_data7[idx20] = tmp26;
 	
 	}
 	// Write matrix mat7
@@ -236,8 +235,8 @@ int main(void) {
 	Matrix *mat7 = createM(ndim11, dim11, 0);
 	writeM(mat7, size7, lhs_data7);
 	matrices[idx19] = mat7;
-	Matrix * tmp29 = transposeM(matrices[idx19]);
-	matrices[idx19] = tmp29;
+	Matrix * tmp28 = transposeM(matrices[idx19]);
+	matrices[idx19] = tmp28;
 	// Non-diagonalizeable matrices
 	int idx21 = convertSubscript(ndim1, dim1, 14);
 	

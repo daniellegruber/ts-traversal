@@ -67,7 +67,7 @@ int main(void) {
 
 
 // Subprograms
-
+	
 void fourier_vec_script(Matrix * a) {
 	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
 		for (int iter2 = 1; iter2 <= 9; ++ iter2) {

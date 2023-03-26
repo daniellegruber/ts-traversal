@@ -22,12 +22,10 @@ int main(void) {
 	complex* lhs_data1 = i_to_c(a);
 	for (int iter1 = 1; iter1 <= size; ++ iter1) {
 		for (int iter2 = 1; iter2 <= size; ++ iter2) {
-			complex tmp2 = cpow(((iter1 - 1) * size + iter2), 2.1);
-			int tmp3 = ((iter1 - 1) * size + iter2) % 7;
-			complex tmp5 = cpow(((iter1 - 1) * size + iter2), 2.1);
-			int tmp6 = ((iter1 - 1) * size + iter2) % 7;
-			complex tmp4 = tmp5 + 0.5 + tmp6;
-			lhs_data1[(iter2-1) + (iter1-1)*100 + (1-1)*100*100 + (1-1)*100*100*1] = tmp4;
+			complex tmp3 = cpow(((iter1 - 1) * size + iter2), 2.1);
+			int tmp4 = ((iter1 - 1) * size + iter2) % 7;
+			complex tmp2 = tmp3 + 0.5 + tmp4;
+			lhs_data1[(iter2-1) + (iter1-1)*100 + (1-1)*100*100 + (1-1)*100*100*1] = tmp2;
 		
 		}
 	
@@ -41,8 +39,8 @@ int main(void) {
 	Matrix *mat1 = createM(ndim1, dim1, 2);
 	writeM(mat1, size1, lhs_data1);
 	for (int iter4 = 1; iter4 <= iterations; ++ iter4) {
-		Matrix * tmp7 = transposeM(mat1);
-		Matrix * b = tmp7;
+		Matrix * tmp5 = transposeM(mat1);
+		Matrix * b = tmp5;
 	
 	}
 	return 0;

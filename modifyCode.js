@@ -92,16 +92,17 @@ function insertMain(expression, search_exp, before_after, fun_params) {
     return [fun_params.main_function, fun_params.function_definitions, block_level];
 }
 exports.insertMain = insertMain;
-function replaceMain(expression, search_exp, num_back, fun_params) {
+//export function replaceMain(expression, search_exp, num_back, fun_params) {
+function replaceMain(expression, search_exp, replace_all, fun_params) {
     if (fun_params.debug == 1) {
         console.log("replaceMain");
     }
     // Indent expression
-    var indent = '\t'.repeat(fun_params.block_level);
+    /*let indent = '\t'.repeat(fun_params.block_level);
     if (expression.slice(0, 2) != '\n') {
         expression = indent.concat(expression);
     }
-    expression = expression.replace(/\n|\r/gm, "\n".concat(indent));
+    expression = expression.replace(/\n|\r/gm, `\n${indent}`);*/
     // Push expression
     // num_back: if more than one instance of search_exp is found, which instance to choose as formatted as
     // matches[matches.length - num_back]
@@ -110,17 +111,27 @@ function replaceMain(expression, search_exp, num_back, fun_params) {
             a.push(i);
         return a;
     }, []);
-    if (idx.length > 1) {
+    /*if (idx.length > 1) {
         idx = idx[idx.length - num_back];
+    }*/
+    var re = new RegExp("\\b".concat(search_exp, "\\b"), 'g');
+    if (!replace_all) {
+        idx = [idx[idx.length - 1]];
     }
     if (expression != null) {
         if (fun_params.current_code == "main") {
-            fun_params.main_function[idx] = expression;
+            //fun_params.main_function[idx] = expression;
+            for (var i = 0; i < idx.length; i++) {
+                fun_params.main_function[idx[i]] = fun_params.main_function[idx[i]].replace(re, expression);
+            }
         }
         else if (fun_params.entry_fun_node != null) {
             if (fun_params.entry_fun_node.nameNode.text == fun_params.current_code) {
                 //main_function.splice(idx, 0, expression);
-                fun_params.main_function[idx] = expression;
+                //fun_params.main_function[idx] = expression;
+                for (var i = 0; i < idx.length; i++) {
+                    fun_params.main_function[idx[i]] = fun_params.main_function[idx[i]].replace(re, expression);
+                }
             }
         }
         else {
@@ -129,10 +140,17 @@ function replaceMain(expression, search_exp, num_back, fun_params) {
                     a.push(i);
                 return a;
             }, []);
-            if (idx_2.length > 1) {
-                idx_2 = idx_2[idx_2.length - num_back];
+            /*if (idx.length > 1) {
+                idx = idx[idx.length - num_back];
             }
-            fun_params.function_definitions[idx_2] = expression;
+            fun_params.function_definitions[idx] = expression;*/
+            if (!replace_all) {
+                idx_2 = [idx_2[idx_2.length - 1]];
+            }
+            for (var i = 0; i < idx_2.length; i++) {
+                fun_params.function_definitions[idx_2[i]] = fun_params.function_definitions[idx_2[i]].replace(re, expression);
+            }
+            //console.log(fun_params.function_definitions);
         }
     }
     return [fun_params.main_function, fun_params.function_definitions];

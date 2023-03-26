@@ -2209,7 +2209,7 @@ export const builtin_functions = [
         push_alias_tbl: (args, arg_types, outs) => null
     },
     { // Matrix * maxM(Matrix* restrict m)
-        fun_matlab: /max|min/,
+        fun_matlab: /\bmax\b|\bmin\b/,
         fun_c: (args, arg_types, outs, fun_matlab) => {
             if (outs.length > 1) {
                 return 'fun_matlabV';
@@ -3477,8 +3477,10 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS https://www.tutorialspoint.com/c_standard_library/c_function_printf.htm
         fun_matlab: 'disp', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
-            if (arg_types[0].type == "dynamic" || args[0] == null) {
-                return null; // occurs when calling disp(sprintf(...)) 
+            //console.log(args);
+            //console.log(arg_types);
+            if (arg_types[0].isvector || arg_types[0].type == "dynamic" || args[0] == null) {
+                return null; // args[0] == null occurs when calling disp(sprintf(...)) 
             } else if (arg_types[0].ismatrix) {
                 return 'printM';
             } else {
@@ -3539,8 +3541,19 @@ return `switch(${args[0]}.type) {
 \tprintf("\\n%s\\n", ${args[0]}.data.chval);
 \tbreak;
 }`;
-            }
-            else {
+            } else if (arg_types[0].type != 'char' && arg_types[0].isvector) {
+                let format = '"\\n%d\\n"';
+                if (arg_types[0].type == 'double') {
+                    format = '"\\n%f\\n"';
+                } else if (arg_types[0].type == 'complex') {
+                    format = '"\\n%f + %fi\\n"';
+                } else if (arg_types[0].type == 'int') {
+                    format = '"\\n%d\\n"';
+                }
+return `for (int i = 0 ; i < ${arg_types[0].dim[0]} ; i++) {
+printf(${format}, ${args[0]}[i]);
+}`;     // to do: move free to generatecode.ts  free(${args[0]});`;       
+            } else {
                 return null;
             }
         },
@@ -3851,8 +3864,8 @@ return `switch(${args[0]}.type) {
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
-                isvector: false,
-                ispointer: true,
+                isvector: true,
+                ispointer: false,
                 isstruct: false 
             };
             
@@ -3868,7 +3881,37 @@ return `switch(${args[0]}.type) {
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        //init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let init_var: InitVar[] = [];
+            
+            if (outs.length > 0) {
+                init_var.push({
+                    name: outs[0],
+                    val: null,
+                    type: 'double',
+                    ndim: 1,
+                    dim: [args[0]],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+            } else {
+                init_var.push({
+                    name: 'tmp_out',
+                    val: null,
+                    type: 'double',
+                    ndim: 1,
+                    dim: [args[0]],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            return init_var;
+        },
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
     },

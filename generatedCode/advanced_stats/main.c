@@ -177,13 +177,11 @@ int main(void) {
 	a = tmp5;
 	int* lhs_data1 = i_to_i(a);
 	for (int iter1 = 1; iter1 <= 63; ++ iter1) {
-		int tmp6 = pow((-1), iter1);
-		int tmp7 = pow(iter1, 2);
-		int tmp9 = pow((-1), iter1);
-		int tmp10 = pow(iter1, 2);
-		int tmp8 = tmp9 * tmp10;
+		int tmp7 = pow((-1), iter1);
+		int tmp8 = pow(iter1, 2);
+		int tmp6 = tmp7 * tmp8;
 		int idx1 = convertSubscript(ndim11, dim11, iter1);
-		lhs_data1[idx1] = tmp8;
+		lhs_data1[idx1] = tmp6;
 	
 	}
 	// Write matrix mat1
@@ -194,24 +192,22 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim11, dim11, 0);
 	writeM(mat1, size1, lhs_data1);
-	Matrix * tmp11 = transposeM(mat1);
-	a = tmp11;
+	Matrix * tmp9 = transposeM(mat1);
+	a = tmp9;
 	printM(a);
 	double_stats_int(a);
 	//matrices_97_d
 	int ndim12 = 2;
 	int dim12[2] = {7, 9};
-	Matrix * tmp12 = zerosM(ndim12, dim12);
-	a = tmp12;
+	Matrix * tmp10 = zerosM(ndim12, dim12);
+	a = tmp10;
 	double* lhs_data2 = i_to_d(a);
 	for (int iter3 = 1; iter3 <= 63; ++ iter3) {
-		int tmp13 = pow((-1), iter3);
-		int tmp14 = pow(iter3, 2);
-		int tmp16 = pow((-1), iter3);
-		int tmp17 = pow(iter3, 2);
-		double tmp15 = (double) tmp16 * tmp17 / 17;
+		int tmp12 = pow((-1), iter3);
+		int tmp13 = pow(iter3, 2);
+		double tmp11 = (double) tmp12 * tmp13 / 17;
 		int idx2 = convertSubscript(ndim12, dim12, iter3);
-		lhs_data2[idx2] = tmp15;
+		lhs_data2[idx2] = tmp11;
 	
 	}
 	// Write matrix mat2
@@ -222,22 +218,22 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim12, dim12, 1);
 	writeM(mat2, size2, lhs_data2);
-	Matrix * tmp18 = transposeM(mat2);
-	a = tmp18;
+	Matrix * tmp14 = transposeM(mat2);
+	a = tmp14;
 	printM(a);
 	double_stats_double(a);
 	//big_matrix
 	int ndim13 = 2;
 	int dim13[2] = {32, 32};
-	Matrix * tmp19 = onesM(ndim13, dim13);
-	a = tmp19;
+	Matrix * tmp15 = onesM(ndim13, dim13);
+	a = tmp15;
 	printM(a);
 	double_stats_int(a);
 	//big_vector
 	int ndim14 = 2;
 	int dim14[2] = {1010, 1};
-	Matrix * tmp20 = onesM(ndim14, dim14);
-	a = tmp20;
+	Matrix * tmp16 = onesM(ndim14, dim14);
+	a = tmp16;
 	printM(a);
 	int_vec_stats(a);
 	double_stats_int(a);
@@ -246,7 +242,7 @@ int main(void) {
 
 
 // Subprograms
-
+	
 void two_t_test_intint(Matrix * a, Matrix * b) {
 	bool h1;
 	double pval1;
@@ -258,7 +254,7 @@ void two_t_test_intint(Matrix * a, Matrix * b) {
 	ttestM_xy(a, b, &h1, &pval1, &ci1, &tstat1, &df1, &sd1);
 	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h1, pval1, tstat1, df1, sd1);
 }
-
+	
 void two_t_test_doubleint(Matrix * a, Matrix * b) {
 	bool h2;
 	double pval2;
@@ -270,21 +266,21 @@ void two_t_test_doubleint(Matrix * a, Matrix * b) {
 	ttestM_xy(a, b, &h2, &pval2, &ci2, &tstat2, &df2, &sd2);
 	printf("h: %d\npval: %.2f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h2, pval2, tstat2, df2, sd2);
 }
-
+	
 void int_vec_stats(Matrix * a) {
 	int index1;
-	Matrix * tmp21 = maxV(a, &index1);
-	Matrix * greatest = tmp21;
-	printM(tmp21);
+	Matrix * tmp17 = maxV(a, &index1);
+	Matrix * greatest = tmp17;
+	printM(tmp17);
 	printf("max index: %d\n\n", index1);
 	int index2;
-	Matrix * tmp22 = minV(a, &index2);
-	Matrix * least = tmp22;
-	printM(tmp22);
+	Matrix * tmp18 = minV(a, &index2);
+	Matrix * least = tmp18;
+	printM(tmp18);
 	printf("min index: %d\n\n", index2);
-	int * tmp23 = i_to_i(tmp22);
-	int * tmp24 = i_to_i(tmp21);
-	for (double iter5 = tmp23[0]; iter5 <= tmp24[0]; iter5 += 0.5) {
+	int * tmp19 = i_to_i(tmp18);
+	int * tmp20 = i_to_i(tmp17);
+	for (double iter5 = tmp19[0]; iter5 <= tmp20[0]; iter5 += 0.5) {
 		printf("mu: %.3f\n", iter5);
 		bool h3;
 		double pval3;
@@ -295,23 +291,23 @@ void int_vec_stats(Matrix * a) {
 		double sd3;
 		ttestM(a, iter5, &h3, &pval3, &ci3, &tstat3, &df3, &sd3);
 		// disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd));
-		Matrix * tmp25 = stdM(a);
-		double * tmp26 = d_to_d(tmp25);
+		Matrix * tmp21 = stdM(a);
+		double * tmp22 = d_to_d(tmp21);
 		bool h4;
 		double pval4;
 		double *z1 = NULL;
 		z1 = malloc(2*sizeof(*z1));
 		double z2;
 		double zcrit1;
-		ztestM(a, iter5, tmp26[0], &h4, &pval4, &z1, &z2, &zcrit1);
+		ztestM(a, iter5, tmp22[0], &h4, &pval4, &z1, &z2, &zcrit1);
 		// disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit));
 	
 	}
-	Matrix * tmp27 = varM(a);
-	double * tmp28 = d_to_d(tmp27);
-	Matrix * tmp29 = varM(a);
-	double * tmp30 = d_to_d(tmp29);
-	for (double iter6 = (tmp28[0] - 5); iter6 <= (tmp30[0] + 5); iter6 += 1.0) {
+	Matrix * tmp23 = varM(a);
+	double * tmp24 = d_to_d(tmp23);
+	Matrix * tmp25 = varM(a);
+	double * tmp26 = d_to_d(tmp25);
+	for (double iter6 = (tmp24[0] - 5); iter6 <= (tmp26[0] + 5); iter6 += 1.0) {
 		printf("v: %.3f\n", iter6);
 		bool h5;
 		double pval5;
@@ -325,21 +321,21 @@ void int_vec_stats(Matrix * a) {
 	
 	}
 }
-
+	
 void double_vec_stats(Matrix * a) {
 	int index3;
-	Matrix * tmp31 = maxV(a, &index3);
-	Matrix * greatest = tmp31;
-	printM(tmp31);
+	Matrix * tmp27 = maxV(a, &index3);
+	Matrix * greatest = tmp27;
+	printM(tmp27);
 	printf("max index: %d\n", index3);
 	int index4;
-	Matrix * tmp32 = minV(a, &index4);
-	Matrix * least = tmp32;
-	printM(tmp32);
+	Matrix * tmp28 = minV(a, &index4);
+	Matrix * least = tmp28;
+	printM(tmp28);
 	printf("min index: %d\n", index4);
-	double * tmp33 = d_to_d(tmp32);
-	double * tmp34 = d_to_d(tmp31);
-	for (double iter7 = tmp33[0]; iter7 <= tmp34[0]; iter7 += 0.5) {
+	double * tmp29 = d_to_d(tmp28);
+	double * tmp30 = d_to_d(tmp27);
+	for (double iter7 = tmp29[0]; iter7 <= tmp30[0]; iter7 += 0.5) {
 		printf("mu: %.3f\n", iter7);
 		bool h6;
 		double pval6;
@@ -350,23 +346,23 @@ void double_vec_stats(Matrix * a) {
 		double sd4;
 		ttestM(a, iter7, &h6, &pval6, &ci5, &tstat4, &df5, &sd4);
 		// disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd));
-		Matrix * tmp35 = stdM(a);
-		double * tmp36 = d_to_d(tmp35);
+		Matrix * tmp31 = stdM(a);
+		double * tmp32 = d_to_d(tmp31);
 		bool h7;
 		double pval7;
 		double *z3 = NULL;
 		z3 = malloc(2*sizeof(*z3));
 		double z4;
 		double zcrit2;
-		ztestM(a, iter7, tmp36[0], &h7, &pval7, &z3, &z4, &zcrit2);
+		ztestM(a, iter7, tmp32[0], &h7, &pval7, &z3, &z4, &zcrit2);
 		// disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit));
 	
 	}
-	Matrix * tmp37 = varM(a);
-	double * tmp38 = d_to_d(tmp37);
-	Matrix * tmp39 = varM(a);
-	double * tmp40 = d_to_d(tmp39);
-	for (double iter8 = (tmp38[0] - 5); iter8 <= (tmp40[0] + 5); iter8 += 1.0) {
+	Matrix * tmp33 = varM(a);
+	double * tmp34 = d_to_d(tmp33);
+	Matrix * tmp35 = varM(a);
+	double * tmp36 = d_to_d(tmp35);
+	for (double iter8 = (tmp34[0] - 5); iter8 <= (tmp36[0] + 5); iter8 += 1.0) {
 		printf("v: %.3f\n", iter8);
 		bool h8;
 		double pval8;
@@ -380,7 +376,7 @@ void double_vec_stats(Matrix * a) {
 	
 	}
 }
-
+	
 void double_stats_int(Matrix * a) {
 	
 	int ndim15 = 2;
@@ -404,30 +400,30 @@ void double_stats_int(Matrix * a) {
 	// Beta PDF
 	for (double iter9 = 0; iter9 <= 0.95; iter9 += 0.05) {
 		for (double iter10 = 0; iter10 <= 0.95; iter10 += 0.05) {
-			Matrix * tmp41 = betapdfM(a, iter9, iter10);
-			printM(tmp41);
+			Matrix * tmp37 = betapdfM(a, iter9, iter10);
+			printM(tmp37);
 		
 		}
 	
 	}
 	// Exponential PDF
 	for (double iter11 = 0.05; iter11 <= 4.95; iter11 += 0.05) {
-		Matrix * tmp42 = exppdfM(a, iter11);
-		printM(tmp42);
+		Matrix * tmp38 = exppdfM(a, iter11);
+		printM(tmp38);
 	
 	}
 	// Chi-square PDF
 	for (double iter12 = 0.05; iter12 <= 4.95; iter12 += 0.05) {
 		printf("n = %.3f\n", iter12);
-		Matrix * tmp43 = chi2pdfM(a, iter12);
-		printM(tmp43);
+		Matrix * tmp39 = chi2pdfM(a, iter12);
+		printM(tmp39);
 	
 	}
 	// Gamma PDF
 	for (double iter13 = 0.25; iter13 <= 1.75; iter13 += 0.25) {
 		for (double iter14 = 0.25; iter14 <= 1.75; iter14 += 0.25) {
-			Matrix * tmp44 = gampdfM(a, iter13, iter14);
-			printM(tmp44);
+			Matrix * tmp40 = gampdfM(a, iter13, iter14);
+			printM(tmp40);
 		
 		}
 	
@@ -435,8 +431,8 @@ void double_stats_int(Matrix * a) {
 	// Lognormal PDF
 	for (double iter15 = -2; iter15 <= 5; iter15 += 0.5) {
 		for (double iter16 = 0.5; iter16 <= 5; iter16 += 0.5) {
-			Matrix * tmp45 = lognpdfM(a, iter15, iter16);
-			printM(tmp45);
+			Matrix * tmp41 = lognpdfM(a, iter15, iter16);
+			printM(tmp41);
 		
 		}
 	
@@ -444,8 +440,8 @@ void double_stats_int(Matrix * a) {
 	// Normal PDF
 	for (double iter17 = -2; iter17 <= 5; iter17 += 0.5) {
 		for (double iter18 = 0.5; iter18 <= 5; iter18 += 0.5) {
-			Matrix * tmp46 = normpdfM(a, iter17, iter18);
-			printM(tmp46);
+			Matrix * tmp42 = normpdfM(a, iter17, iter18);
+			printM(tmp42);
 		
 		}
 	
@@ -453,12 +449,12 @@ void double_stats_int(Matrix * a) {
 	// Uniform discrete PDF
 	for (int iter19 = 1; iter19 <= 9; ++ iter19) {
 		printf("n = %d\n", iter19);
-		Matrix * tmp47 = unidpdfM(a, iter19);
-		printM(tmp47);
+		Matrix * tmp43 = unidpdfM(a, iter19);
+		printM(tmp43);
 	
 	}
 }
-
+	
 void double_stats_double(Matrix * a) {
 	
 	int ndim16 = 2;
@@ -482,30 +478,30 @@ void double_stats_double(Matrix * a) {
 	// Beta PDF
 	for (double iter20 = 0; iter20 <= 0.95; iter20 += 0.05) {
 		for (double iter21 = 0; iter21 <= 0.95; iter21 += 0.05) {
-			Matrix * tmp48 = betapdfM(a, iter20, iter21);
-			printM(tmp48);
+			Matrix * tmp44 = betapdfM(a, iter20, iter21);
+			printM(tmp44);
 		
 		}
 	
 	}
 	// Exponential PDF
 	for (double iter22 = 0.05; iter22 <= 4.95; iter22 += 0.05) {
-		Matrix * tmp49 = exppdfM(a, iter22);
-		printM(tmp49);
+		Matrix * tmp45 = exppdfM(a, iter22);
+		printM(tmp45);
 	
 	}
 	// Chi-square PDF
 	for (double iter23 = 0.05; iter23 <= 4.95; iter23 += 0.05) {
 		printf("n = %.3f\n", iter23);
-		Matrix * tmp50 = chi2pdfM(a, iter23);
-		printM(tmp50);
+		Matrix * tmp46 = chi2pdfM(a, iter23);
+		printM(tmp46);
 	
 	}
 	// Gamma PDF
 	for (double iter24 = 0.25; iter24 <= 1.75; iter24 += 0.25) {
 		for (double iter25 = 0.25; iter25 <= 1.75; iter25 += 0.25) {
-			Matrix * tmp51 = gampdfM(a, iter24, iter25);
-			printM(tmp51);
+			Matrix * tmp47 = gampdfM(a, iter24, iter25);
+			printM(tmp47);
 		
 		}
 	
@@ -513,8 +509,8 @@ void double_stats_double(Matrix * a) {
 	// Lognormal PDF
 	for (double iter26 = -2; iter26 <= 5; iter26 += 0.5) {
 		for (double iter27 = 0.5; iter27 <= 5; iter27 += 0.5) {
-			Matrix * tmp52 = lognpdfM(a, iter26, iter27);
-			printM(tmp52);
+			Matrix * tmp48 = lognpdfM(a, iter26, iter27);
+			printM(tmp48);
 		
 		}
 	
@@ -522,8 +518,8 @@ void double_stats_double(Matrix * a) {
 	// Normal PDF
 	for (double iter28 = -2; iter28 <= 5; iter28 += 0.5) {
 		for (double iter29 = 0.5; iter29 <= 5; iter29 += 0.5) {
-			Matrix * tmp53 = normpdfM(a, iter28, iter29);
-			printM(tmp53);
+			Matrix * tmp49 = normpdfM(a, iter28, iter29);
+			printM(tmp49);
 		
 		}
 	
@@ -531,8 +527,8 @@ void double_stats_double(Matrix * a) {
 	// Uniform discrete PDF
 	for (int iter30 = 1; iter30 <= 9; ++ iter30) {
 		printf("n = %d\n", iter30);
-		Matrix * tmp54 = unidpdfM(a, iter30);
-		printM(tmp54);
+		Matrix * tmp50 = unidpdfM(a, iter30);
+		printM(tmp50);
 	
 	}
 }

@@ -31,11 +31,12 @@ function gotoPreorderSucc_OnlyMajorTypes(cursor, debug) {
     }*/
     switch (cursor.currentNode.type) {
         // Don't iterate through children nodes
-        //case g.SyntaxType.BinaryOperator:
-        //case g.SyntaxType.BooleanOperator:
-        //case g.SyntaxType.ComparisonOperator:
-        //case g.SyntaxType.TransposeOperator:
-        //case g.SyntaxType.UnaryOperator:
+        case "binary_operator" /* g.SyntaxType.BinaryOperator */:
+        case "boolean_operator" /* g.SyntaxType.BooleanOperator */:
+        case "comparison_operator" /* g.SyntaxType.ComparisonOperator */:
+        case "transpose_operator" /* g.SyntaxType.TransposeOperator */:
+        case "unary_operator" /* g.SyntaxType.UnaryOperator */:
+        case "assignment" /* g.SyntaxType.Assignment */:
         case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */:
         case "comment" /* g.SyntaxType.Comment */:
         case "expression_statement" /* g.SyntaxType.ExpressionStatement */:

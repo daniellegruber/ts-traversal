@@ -566,22 +566,22 @@ function inferTypeByName(name, node, var_types, custom_functions, alias_tbl, deb
     
     let obj1 = filterByScope(var_types, name, node, 0);
     if (obj1 != null) {
-        return [obj1.type, obj1.ndim, obj1.dim, obj1.ismatrix, obj1.ispointer, obj1.isstruct, custom_functions];
+        return [obj1.type, obj1.ndim, obj1.dim, obj1.ismatrix, obj1.isvector, obj1.ispointer, obj1.isstruct, custom_functions];
     }
     
     let obj2 = filterByScope(alias_tbl, name, node, 0);
     if (obj2 != null && obj2 != undefined) {
         let obj3 = var_types.find(x => x.name === obj2.tmp_var);
         if (obj3 != null && obj3 != undefined) {
-            return [obj3.type, obj3.ndim, obj3.dim, obj3.ismatrix, obj3.ispointer, obj3.isstruct, custom_functions];
+            return [obj3.type, obj3.ndim, obj3.dim, obj3.ismatrix, obj3.isvector, obj3.ispointer, obj3.isstruct, custom_functions];
         }
     }
     
     if (name == "INT_MAX" || name == "INT_MIN") {
-        return ['int', 1, [1], false, false, false, custom_functions];
+        return ['int', 1, [1], false, false, false, false, custom_functions];
     }
     
-    return [null, null, null, null, null, null, null];
+    return [null, null, null, null, null, null, null, null];
     /*let obj1 = filterByScope(alias_tbl, name, node, 0);
     if (obj1 != null && obj1 != undefined) {
         let obj2 = var_types.find(x => x.name === obj1.tmp_var);

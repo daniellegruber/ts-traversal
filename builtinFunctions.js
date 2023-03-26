@@ -94,67 +94,6 @@ exports.operatorMapping = [
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
-    /*{ // Matrix * minusM(Matrix *m, Matrix *n)
-        fun_matlab: '-',
-        fun_c: (args, arg_types, outs, fun_matlab) => {
-            
-            if (arg_types.length == 1) {
-                return null;
-            } else {
-                let left_ismatrix = arg_types[0].ismatrix;
-                let right_ismatrix = arg_types[1].ismatrix;
-                if (left_ismatrix && right_ismatrix) {
-                    return 'minusM';
-                } else {
-                    return null;
-                }
-            }
-            
-        },
-        req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
-        outs_transform: (args, arg_types, outs) => outs,
-        n_req_args: 2,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: (arg_types, outs) => null,
-        
-        return_type: (args, arg_types, outs) => {
-            if (arg_types.length == 1) {
-                return {
-                    type: arg_types[0].type,
-                    ndim: arg_types[0].ndim,
-                    dim: arg_types[0].dim,
-                    ismatrix: arg_types[0].ismatrix,
-                    isvector: false,
-                    ispointer: false, //arg_types[0].ispointer,
-                    isstruct: false
-                };
-            } else {
-                let left_type = arg_types[0].type;
-                let left_ndim = arg_types[0].ndim;
-                let left_dim = arg_types[0].dim;
-                let right_type = arg_types[1].type;
-                let right_ndim = arg_types[1].ndim;
-                let right_dim = arg_types[1].dim;
-                
-                return {
-                    type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
-                    ndim: left_ndim,
-                    dim: left_dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false
-                };
-            }
-        },
-        push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,
-        init_before: (args, arg_types, outs) => null,
-        tmp_out_transform: (args, arg_types, outs) => null,
-        push_alias_tbl: (args, arg_types, outs) => null
-    },*/
     {
         // Matrix * mtimesM(Matrix *m, Matrix *n)
         fun_matlab: '*',
@@ -970,7 +909,6 @@ exports.operatorMapping = [
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
     {
-        //fun_matlab: '&',
         fun_matlab: /\&|\|/,
         fun_c: function (args, arg_types, outs, fun_matlab) {
             var left_ismatrix = arg_types[0].ismatrix;
@@ -1017,51 +955,7 @@ exports.operatorMapping = [
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
-    /*{ // Matrix * orM(Matrix *m, Matrix *n)
-        fun_matlab: '|',
-        fun_c: (args, arg_types, outs, fun_matlab) => {
-            let left_ismatrix = arg_types[0].ismatrix;
-            let right_ismatrix = arg_types[1].ismatrix;
-            if (left_ismatrix && right_ismatrix) {
-                return 'orM';
-            } else {
-                return null;
-            }
-        },
-        req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
-        outs_transform: (args, arg_types, outs) => outs,
-        n_req_args: 2,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: (arg_types, outs) => null,
-        
-        return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
-            return {
-                type: 'bool', // create function to get types giving precedence to complex, double, then int
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false, //true,
-                isstruct: false
-            };
-        },
-        push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,
-        init_before: (args, arg_types, outs) => null,
-        tmp_out_transform: (args, arg_types, outs) => null,
-        push_alias_tbl: (args, arg_types, outs) => null
-    },*/
     {
-        //fun_matlab: '&&', 
         fun_matlab: /\&\&|\|\|/,
         fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
         req_arg_types: null,
@@ -1092,41 +986,6 @@ exports.operatorMapping = [
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
-    /*{
-        fun_matlab: '||',
-        fun_c: (args, arg_types, outs, fun_matlab) => null,
-        req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
-        outs_transform: (args, arg_types, outs) => outs,
-        n_req_args: 2,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: (arg_types, outs) => null,
-        
-        return_type: (args, arg_types, outs) => {
-            let left_type = arg_types[0].type;
-            let left_ndim = arg_types[0].ndim;
-            let left_dim = arg_types[0].dim;
-            let right_type = arg_types[1].type;
-            let right_ndim = arg_types[1].ndim;
-            let right_dim = arg_types[1].dim;
-            
-            return {
-                type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false, //true,
-                isstruct: false
-            };
-        },
-        push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,
-        init_before: (args, arg_types, outs) => null,
-        tmp_out_transform: (args, arg_types, outs) => null,
-        push_alias_tbl: (args, arg_types, outs) => null
-    },*/
     {
         fun_matlab: '~',
         fun_c: function (args, arg_types, outs, fun_matlab) {
@@ -1166,7 +1025,6 @@ exports.operatorMapping = [
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
     {
-        //fun_matlab: "'", 
         fun_matlab: /'|\.'/,
         fun_c: function (args, arg_types, outs, fun_matlab) {
             var ismatrix = arg_types[0].ismatrix;
@@ -1208,46 +1066,7 @@ exports.operatorMapping = [
         init_before: function (args, arg_types, outs) { return null; },
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
-    },
-    /*{ // Matrix * transposeM(Matrix* restrict m)
-        fun_matlab: ".'",
-        fun_c: (args, arg_types, outs, fun_matlab) => {
-            let ismatrix = arg_types[0].ismatrix;
-            if (ismatrix) {
-                return 'transposeM';
-            } else {
-                return null;
-            }
-        },
-        req_arg_types: null,
-        args_transform: (args, arg_types, outs) => args,
-        outs_transform: (args, arg_types, outs) => outs,
-        n_req_args: 2,
-        n_opt_args: 0,
-        opt_arg_defaults: null,
-        ptr_args: (arg_types, outs) => null,
-        
-        return_type: (args, arg_types, outs) => {
-            let type = arg_types[0].type;
-            let ndim = arg_types[0].ndim;
-            let dim = arg_types[0].dim;
-            
-            return {
-                type: type,
-                ndim: ndim,
-                dim: [dim[1], dim[0]],
-                ismatrix: true,
-                isvector: false,
-                ispointer: false, //true,
-                isstruct: false
-            };
-        },
-        push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,
-        init_before: (args, arg_types, outs) => null,
-        tmp_out_transform: (args, arg_types, outs) => null,
-        push_alias_tbl: (args, arg_types, outs) => null
-    }*/
+    }
 ];
 exports.builtin_functions = [
     {
@@ -2338,7 +2157,7 @@ exports.builtin_functions = [
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: /max|min/,
+        fun_matlab: /\bmax\b|\bmin\b/,
         fun_c: function (args, arg_types, outs, fun_matlab) {
             if (outs.length > 1) {
                 return 'fun_matlabV';
@@ -3614,8 +3433,10 @@ exports.builtin_functions = [
     {
         fun_matlab: 'disp',
         fun_c: function (args, arg_types, outs, fun_matlab) {
-            if (arg_types[0].type == "dynamic" || args[0] == null) {
-                return null; // occurs when calling disp(sprintf(...)) 
+            //console.log(args);
+            //console.log(arg_types);
+            if (arg_types[0].isvector || arg_types[0].type == "dynamic" || args[0] == null) {
+                return null; // args[0] == null occurs when calling disp(sprintf(...)) 
             }
             else if (arg_types[0].ismatrix) {
                 return 'printM';
@@ -3666,6 +3487,19 @@ exports.builtin_functions = [
         push_main_before: function (args, arg_types, outs) {
             if (arg_types[0].type == "dynamic") {
                 return "switch(".concat(args[0], ".type) {\n\tcase 0:\n\tprintf(\"\\n%d\\n\", ").concat(args[0], ".data.ival);\n\tbreak;\n        \n\tcase 1:\n\tprintf(\"\\n%f\\n\", ").concat(args[0], ".data.dval);\n\tbreak;\n        \n\tcase 2:\n\tprintf(\"\\n%f\\n\", ").concat(args[0], ".data.cval);\n\tbreak;\n        \n\tcase 3:\n\tprintf(\"\\n%s\\n\", ").concat(args[0], ".data.chval);\n\tbreak;\n}");
+            }
+            else if (arg_types[0].type != 'char' && arg_types[0].isvector) {
+                var format = '"\\n%d\\n"';
+                if (arg_types[0].type == 'double') {
+                    format = '"\\n%f\\n"';
+                }
+                else if (arg_types[0].type == 'complex') {
+                    format = '"\\n%f + %fi\\n"';
+                }
+                else if (arg_types[0].type == 'int') {
+                    format = '"\\n%d\\n"';
+                }
+                return "for (int i = 0 ; i < ".concat(arg_types[0].dim[0], " ; i++) {\nprintf(").concat(format, ", ").concat(args[0], "[i]);\n}"); // to do: move free to generatecode.ts  free(${args[0]});`;       
             }
             else {
                 return null;
@@ -3965,8 +3799,8 @@ exports.builtin_functions = [
                 ndim: 1,
                 dim: [1],
                 ismatrix: false,
-                isvector: false,
-                ispointer: true,
+                isvector: true,
+                ispointer: false,
                 isstruct: false
             };
             /*return {
@@ -3981,7 +3815,37 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        //init_before: (args, arg_types, outs) => null,
+        init_before: function (args, arg_types, outs) {
+            var init_var = [];
+            if (outs.length > 0) {
+                init_var.push({
+                    name: outs[0],
+                    val: null,
+                    type: 'double',
+                    ndim: 1,
+                    dim: [args[0]],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            else {
+                init_var.push({
+                    name: 'tmp_out',
+                    val: null,
+                    type: 'double',
+                    ndim: 1,
+                    dim: [args[0]],
+                    ismatrix: false,
+                    isvector: true,
+                    ispointer: false,
+                    isstruct: false
+                });
+            }
+            return init_var;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },

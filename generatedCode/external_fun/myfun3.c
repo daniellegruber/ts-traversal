@@ -7,7 +7,7 @@
 #include "../convertSubscript.h"
 #include "./myfun3.h"
 
-
+	
 int myfun3(int a) {
 	int tmp1 = pow(a, 2);
 	int b = tmp1;

@@ -192,22 +192,14 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 # Updates (03/18/23)
 - Removed rowMajorFlatIdx function to remove clutter when converting subcripts/indices; now indices converted with help of C function convertSubscript.c in generatedCode folder
 
-# Current limitations/works in progress (OLD)
-- Initializing cell matrices containing strings
- - In generateCode.ts, initalizeMatrix (lines 659 - 686)
-- Input/output types for a custom function are unknown unless a call to that function is issued at some point in the source code
-- Currently, assume the type of first input argument to class method is an instance of that class. Holds true most of the time but doesn't always, e.g., @mmo\bsxfun.m
-- Matrices vs vectors
- - Recently decided to distinguish between matrix and vector types in specifying variable type.
- - Should (1 x n) and (n x 1) matrices always be initialized as matrices or vectors? Or should it depend on the context of use?
- - For example, the C function `Matrix * quantileM_vec(Matrix* restrict m, int N, double* restrict quantiles)` requires the third argument to be a vector, so if the MATLAB code `quantile(A, [0.25 0.5 0.75])` initializes `[0.25 0.5 0.75]` as a matrix this would be incorrect. 
- - (Current solution, which works, is in builtinFunctions.ts for `quantileM_vec`: if second argument has been initialized as matrix, extract data as vector and pass to function.)
- - However, in other cases, we want to preserve the matrix structure despite one dimension being "flat."
-
-# Current limitations/works in progess (03/23/23)
+# Current limitations/works in progess (03/26/23)
 - In power_matrix, in i_negative test fails
   - However, matlab output for this test in different when running in Grace vs running on my PC - the former yields a "matrix is close to singular" error whereas the latter yields the same result as the C code
   - Why is this? Is it because of different MATLAB versions?
+- In stftM, order of output C matrix does not match order of MATLAB matrix, but values seem to match
+  - Changed matrix.c stftV function so that it would output regular Fourier coeff, not absolute values
+- In hamming_hanning, C-defined hanning doesnt work as expected
+- In determinant_matrix, C-defined detM doesnt work as expected
 
 # Under the hood
 ### cleanOctaveC.ts 

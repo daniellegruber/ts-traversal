@@ -942,11 +942,14 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                 var _loop_2 = function (i) {
                     var _61;
                     var arg = args1[i];
-                    if (!lhs_flag) {
-                        args.push(transformNode(arg));
+                    if (lhs_flag) {
+                        args.push(arg.text);
+                    }
+                    else if (arg.text.includes("hamming") && node.valueNode.text == "stft") {
+                        args.push("".concat(arg.namedChildren[0].text, "(").concat(transformNode(arg.namedChildren[1]), ")"));
                     }
                     else {
-                        args.push(arg.text);
+                        args.push(transformNode(arg));
                     }
                     var _62 = (0, typeInference_1.inferType)(filename, arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug), type_4 = _62[0], ndim_3 = _62[1], dim_3 = _62[2], ismatrix_4 = _62[3], ispointer_2 = _62[4], isstruct_2 = _62[5], c_7 = _62[6];
                     if (/tmp.*\[0\]/.test(args[i])) {

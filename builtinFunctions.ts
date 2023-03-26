@@ -3787,21 +3787,24 @@ printf(${format}, ${args[0]}[i]);
         fun_c: (args, arg_types, outs, fun_matlab) => 'stftV', 
         args_transform: (args, arg_types, outs) => {
             let win_type = 1;
-            let num_coef = 64;
-            let inc = 24;
-            let win_size = 80;
+            let num_coef = '128';
+            let inc = '24';
+            let win_size = '80';
             
             let match = args.find(x => x.includes('Window'));
-            
             if (match != null && match != undefined) {
                 let tmp = args[args.indexOf(match) + 1];
-                win_size = tmp.match(/\d+/gm);
+                let match11 = tmp.match(/(\S+)\(/);
+                let tmp2 = match11[1];
+                let re = new RegExp(`${tmp2}\\((.*)[,\)]`);
+                let match12 = tmp.match(re);
+                win_size = match12[1];
                 
-                if (tmp === "hanning") {
+                if (tmp2 === "hanning") {
                     win_type = 1;
-                } else if (tmp === "hamming") {
+                } else if (tmp2 === "hamming") {
                     win_type = 2;
-                } else if (tmp === "rectangle") {
+                } else if (tmp2 === "rectangle") {
                     win_type = 3;
                 }
             }
@@ -3809,8 +3812,14 @@ printf(${format}, ${args[0]}[i]);
             let match2 = args.find(x => x.includes('OverlapLength'));
             
             if (match2 != null && match2 != undefined) {
-                let overlap = args[args.indexOf(match2) + 1];
-                inc = Number(win_size) - Number(overlap);
+                inc = 'inc';
+                
+            }
+            
+            let match3 = args.find(x => x.includes('FFTLength'));
+            
+            if (match3 != null && match3 != undefined) {
+                num_coef = 'num_coef';
                 
             }
             
@@ -3837,7 +3846,61 @@ printf(${format}, ${args[0]}[i]);
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => {
+            let init_var: InitVar[] = [];
+            
+            let num_coef = '128';
+            let inc = '24';
+            let win_size = '80';
+            
+            let match = args.find(x => x.includes('Window'));
+            if (match != null && match != undefined) {
+                let tmp = args[args.indexOf(match) + 1];
+                let match11 = tmp.match(/(\S+)\(/);
+                let tmp2 = match11[1];
+                let re = new RegExp(`${tmp2}\\((.*)[,\)]`);
+                let match12 = tmp.match(re);
+                win_size = match12[1];
+            }
+            
+            let match2 = args.find(x => x.includes('OverlapLength'));
+            let overlap = '0';
+            if (match2 != null && match2 != undefined) {
+                overlap = args[args.indexOf(match2) + 1];
+            }
+            
+            let match3 = args.find(x => x.includes('FFTLength'));
+            
+            if (match3 != null && match3 != undefined) {
+                num_coef = args[args.indexOf(match3) + 1];
+                num_coef = num_coef.concat("/2");
+                
+            }
+            
+            init_var.push({
+                name: 'inc',
+                val: `${win_size} - ${overlap}`,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'num_coef',
+                val: num_coef,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        },
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
     },

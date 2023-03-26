@@ -3,16 +3,29 @@
 
 %source octaveIncludes.m;
 
+%function fourier_vec_script(a)
+%
+%	for win_size=1:9
+%		for inc=1:9
+%			for num_coef=2:9
+%				for win_type=1:3
+%					disp(sprintf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", win_size, inc, num_coef, win_type));
+%					y = stft(a, win_size, inc, num_coef, win_type);
+%					disp(y);
+%				end
+%			end
+%		end
+%	end
+%end
+
 function fourier_vec_script(a)
 
-	for win_size=1:9
-		for inc=1:9
-			for num_coef=2:9
-				for win_type=1:3
-					disp(sprintf("win_size: %d, inc: %d, num_coef: %d, win_type: %d\n", win_size, inc, num_coef, win_type));
-					y = stft(a, win_size, inc, num_coef, win_type);
-					disp(y);
-				end
+	for win_size=4:4
+		for num_coef=8:8
+            for overlap=2:2
+				disp(sprintf("win_size: %d, overlap: %d, num_coef: %d\n", win_size, overlap, num_coef));
+                y = stft(a, 'Window', hamming(win_size),'OverlapLength', overlap, 'FFTLength', num_coef);
+                disp(y);
 			end
 		end
 	end

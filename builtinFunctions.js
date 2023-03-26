@@ -3727,27 +3727,34 @@ exports.builtin_functions = [
         fun_c: function (args, arg_types, outs, fun_matlab) { return 'stftV'; },
         args_transform: function (args, arg_types, outs) {
             var win_type = 1;
-            var num_coef = 64;
-            var inc = 24;
-            var win_size = 80;
+            var num_coef = '128';
+            var inc = '24';
+            var win_size = '80';
             var match = args.find(function (x) { return x.includes('Window'); });
             if (match != null && match != undefined) {
                 var tmp = args[args.indexOf(match) + 1];
-                win_size = tmp.match(/\d+/gm);
-                if (tmp === "hanning") {
+                var match11 = tmp.match(/(\S+)\(/);
+                var tmp2 = match11[1];
+                var re = new RegExp("".concat(tmp2, "\\((.*)[,)]"));
+                var match12 = tmp.match(re);
+                win_size = match12[1];
+                if (tmp2 === "hanning") {
                     win_type = 1;
                 }
-                else if (tmp === "hamming") {
+                else if (tmp2 === "hamming") {
                     win_type = 2;
                 }
-                else if (tmp === "rectangle") {
+                else if (tmp2 === "rectangle") {
                     win_type = 3;
                 }
             }
             var match2 = args.find(function (x) { return x.includes('OverlapLength'); });
             if (match2 != null && match2 != undefined) {
-                var overlap = args[args.indexOf(match2) + 1];
-                inc = Number(win_size) - Number(overlap);
+                inc = 'inc';
+            }
+            var match3 = args.find(function (x) { return x.includes('FFTLength'); });
+            if (match3 != null && match3 != undefined) {
+                num_coef = 'num_coef';
             }
             return [args[0], win_size, inc, num_coef, win_type];
         },
@@ -3771,7 +3778,54 @@ exports.builtin_functions = [
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            var init_var = [];
+            var num_coef = '128';
+            var inc = '24';
+            var win_size = '80';
+            var match = args.find(function (x) { return x.includes('Window'); });
+            if (match != null && match != undefined) {
+                var tmp = args[args.indexOf(match) + 1];
+                var match11 = tmp.match(/(\S+)\(/);
+                var tmp2 = match11[1];
+                var re = new RegExp("".concat(tmp2, "\\((.*)[,)]"));
+                var match12 = tmp.match(re);
+                win_size = match12[1];
+            }
+            var match2 = args.find(function (x) { return x.includes('OverlapLength'); });
+            var overlap = '0';
+            if (match2 != null && match2 != undefined) {
+                overlap = args[args.indexOf(match2) + 1];
+            }
+            var match3 = args.find(function (x) { return x.includes('FFTLength'); });
+            if (match3 != null && match3 != undefined) {
+                num_coef = args[args.indexOf(match3) + 1];
+                num_coef = num_coef.concat("/2");
+            }
+            init_var.push({
+                name: 'inc',
+                val: "".concat(win_size, " - ").concat(overlap),
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            init_var.push({
+                name: 'num_coef',
+                val: num_coef,
+                type: 'int',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            });
+            return init_var;
+        },
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },

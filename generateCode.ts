@@ -1047,10 +1047,12 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 //for (let arg of args1) {
                 for (let i = 0; i < args1.length; i ++) {
                     let arg = args1[i];
-                    if (!lhs_flag) {
-                        args.push(transformNode(arg));
-                    } else {
+                    if (lhs_flag) {
                         args.push(arg.text);
+                    } else if (arg.text.includes("hamming") && node.valueNode.text == "stft") {
+                        args.push(`${arg.namedChildren[0].text}(${transformNode(arg.namedChildren[1])})`);
+                    } else {
+                        args.push(transformNode(arg));
                     }
                     let [type, ndim, dim, ismatrix, ispointer, isstruct, c] = inferType(filename, arg, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     

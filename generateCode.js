@@ -945,7 +945,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${node.rightNode.namedChildCount}; ${tmp
                     if (lhs_flag) {
                         args.push(arg.text);
                     }
-                    else if (arg.text.includes("hamming") && node.valueNode.text == "stft") {
+                    else if ((arg.text.includes("hamming") || arg.text.includes("hanning")) && node.valueNode.text == "stft") {
                         args.push("".concat(arg.namedChildren[0].text, "(").concat(transformNode(arg.namedChildren[1]), ")"));
                     }
                     else {

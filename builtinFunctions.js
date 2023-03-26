@@ -2534,19 +2534,30 @@ exports.builtin_functions = [
         args_transform: function (args, arg_types, outs) {
             return [args[0], 'ndim', 'dim'];
         },
-        outs_transform: function (args, arg_types, outs) { return null; },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) {
-            return "".concat(outs[0], " = ").concat(args[0], ";");
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: arg_types[0],
+                ndim: 2,
+                dim: [1, 1],
+                ismatrix: true,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
         },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        /*push_main_after: (args, arg_types, outs) => {
+            return `${outs[0]} = ${args[0]};`
+        },*/
         init_before: function (args, arg_types, outs) {
             var init_var = [];
-            init_var.push({
+            /*init_var.push({
                 name: outs[0],
                 val: args[0],
                 type: arg_types[0].type,
@@ -2556,7 +2567,7 @@ exports.builtin_functions = [
                 isvector: false,
                 ispointer: false,
                 isstruct: false
-            });
+            })*/
             if (arg_types[1].ismatrix) {
                 var type = arg_types[1].type;
                 init_var.push({

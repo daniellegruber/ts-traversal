@@ -9,5 +9,5 @@ a = [0, 10, 10i;
 
 disp(a);
 
-b = reshape(a.', [9,1]);
+b = reshape(a, [9,1]);
 disp(b);

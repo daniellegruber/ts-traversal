@@ -12,5 +12,5 @@ a = [0, 10, 10i;
 
 dispArr(fileID, a);
 
-b = reshape(a.', [9,1]);
+b = reshape(a, [9,1]);
 dispArr(fileID, b);

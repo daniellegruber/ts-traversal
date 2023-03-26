@@ -1049,7 +1049,7 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                     let arg = args1[i];
                     if (lhs_flag) {
                         args.push(arg.text);
-                    } else if (arg.text.includes("hamming") && node.valueNode.text == "stft") {
+                    } else if ((arg.text.includes("hamming") || arg.text.includes("hanning")) && node.valueNode.text == "stft") {
                         args.push(`${arg.namedChildren[0].text}(${transformNode(arg.namedChildren[1])})`);
                     } else {
                         args.push(transformNode(arg));

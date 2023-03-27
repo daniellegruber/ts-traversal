@@ -32,7 +32,7 @@ type InitVar = {
 type functionMapping = {
     fun_matlab: string;
     fun_c: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>, fun_matlab: string): string; };
-    req_arg_types: Array<Type>;
+    req_arg_types: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<Type>; };
     args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
     outs_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
     n_req_args: number; // # required args
@@ -98,7 +98,33 @@ export const operatorMapping = [
                 return null;
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => {
+            if (args.length == 1) {
+                return null;
+            }
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            if ((left_ismatrix && !right_ismatrix) ||  (!left_ismatrix && right_ismatrix)) {
+                return [
+                    {
+        		        type: null,
+        		        ismatrix: false,
+        		        isvector: false,
+        		        ispointer: false,
+                        isstruct: false
+		            },
+                    {
+        		        type: null,
+        		        ismatrix: false,
+        		        isvector: false,
+        		        ispointer: false,
+                        isstruct: false
+		            }
+                ];
+            } else {
+                return null;
+            }
+        },
         args_transform: (args, arg_types, outs) => args,
         outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -146,7 +172,7 @@ export const operatorMapping = [
                 return null;
             }
         },
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
@@ -249,7 +275,7 @@ export const operatorMapping = [
                 return null;
             }
         },
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
@@ -323,7 +349,7 @@ export const operatorMapping = [
                 return null;
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
@@ -385,7 +411,7 @@ export const operatorMapping = [
                 }
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let left_type = arg_types[0].type;
@@ -497,7 +523,7 @@ export const operatorMapping = [
                 return null;
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -540,7 +566,7 @@ export const operatorMapping = [
                 return null;
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -583,7 +609,7 @@ export const operatorMapping = [
                 return null;
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -634,7 +660,7 @@ export const operatorMapping = [
                 return null;
             }
         },   
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
@@ -742,7 +768,33 @@ export const operatorMapping = [
                 return null;
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => {
+            if (args.length == 1) {
+                return null;
+            }
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            if ((left_ismatrix && !right_ismatrix) ||  (!left_ismatrix && right_ismatrix)) {
+                return [
+                    {
+        		        type: null,
+        		        ismatrix: false,
+        		        isvector: false,
+        		        ispointer: false,
+                        isstruct: false
+		            },
+                    {
+        		        type: null,
+        		        ismatrix: false,
+        		        isvector: false,
+        		        ispointer: false,
+                        isstruct: false
+		            }
+                ];
+            } else {
+                return null;
+            }
+        },
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
@@ -845,7 +897,23 @@ export const operatorMapping = [
                 return null;
             }
         },   
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => {
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && !right_ismatrix) {
+                return [
+                    {
+        		        type: null,
+        		        ismatrix: false,
+        		        isvector: false,
+        		        ispointer: false,
+                        isstruct: false
+		            }
+                ];
+            } else {
+                return null;
+            }
+        },
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -889,7 +957,7 @@ export const operatorMapping = [
                 return `${args[0]} != ${args[1]}`;
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
@@ -958,7 +1026,7 @@ export const operatorMapping = [
                 return null;
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -993,7 +1061,7 @@ export const operatorMapping = [
     { 
         fun_matlab: /\&\&|\|\|/,
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -1032,7 +1100,7 @@ export const operatorMapping = [
                 return null;
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -1075,7 +1143,7 @@ export const operatorMapping = [
                 return null;
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -1111,7 +1179,7 @@ export const builtin_functions = [
     { // bool isEqualM(Matrix *m, Matrix *n)
         fun_matlab: 'isequal', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'isEqualM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -1144,7 +1212,7 @@ export const builtin_functions = [
                 return 'fun_matlab';
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -1189,7 +1257,7 @@ export const builtin_functions = [
                 return 'fun_matlab';
             }
         },  
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             if (arg_types[0].ismatrix) {
                 return args;
@@ -1234,7 +1302,7 @@ export const builtin_functions = [
     { // TO DO: Matrix * xcorrM(Matrix *x, Matrix *y, int maxlag, char *scale)
         fun_matlab: 'xcorr', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'xcorrM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let x = args[0];
             let y = null;
@@ -1299,7 +1367,7 @@ export const builtin_functions = [
     { // Matrix * sortM(Matrix* restrict m, int direction)
         fun_matlab: 'sort', // sort(m, dim, direction)
         fun_c: (args, arg_types, outs, fun_matlab) => 'sortM', // sortM(m, direction) -> update c function to accept dim
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: args => {
             let args_transformed = [];
             for (let i=0; i < args.length; i++) {
@@ -1353,7 +1421,7 @@ export const builtin_functions = [
             }
             return 'ttestM';
         },
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 2,
@@ -1455,7 +1523,7 @@ export const builtin_functions = [
     { // void ztestM(Matrix* restrict m, double mu, double s, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict z, double* restrict zcrit)
         fun_matlab: 'ztest', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'ztestM', 
-        req_arg_types: [   
+        req_arg_types: (args, arg_types, outs) => [   
             {
 		        type: null,
 		        ismatrix: true,
@@ -1498,8 +1566,9 @@ export const builtin_functions = [
 				arg_ci = outs[2];
 			} 
 			if (outs.length >= 4) {
-				arg_ci = outs[3];
+				arg_z = outs[3];
 			} 
+			
 			return [
 			    {
 			        name: arg_h,
@@ -1563,7 +1632,7 @@ export const builtin_functions = [
     { // void vartestM(Matrix* restrict m, double v, bool* restrict h, double* restrict pval, double* restrict *ci, double* restrict chisqstat, double* restrict df)
         fun_matlab: 'vartest', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'vartestM', 
-        req_arg_types: [   
+        req_arg_types: (args, arg_types, outs) => [   
             {
 		        type: null,
 		        ismatrix: true,
@@ -1660,7 +1729,7 @@ export const builtin_functions = [
     { // Matrix * betapdfM(Matrix* restrict m, double a, double b)
         fun_matlab: 'betapdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'betapdfM', 
-        req_arg_types: [   
+        req_arg_types: (args, arg_types, outs) => [   
             {
 		        type: null,
 		        ismatrix: true,
@@ -1716,7 +1785,7 @@ export const builtin_functions = [
     { // Matrix * exppdfM(Matrix* restrict m, double lambda)
         fun_matlab: 'exppdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'exppdfM',
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -1751,7 +1820,7 @@ export const builtin_functions = [
     { // Matrix * chi2pdfM(Matrix* restrict m, double n)
         fun_matlab: 'chi2pdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'chi2pdfM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -1785,7 +1854,7 @@ export const builtin_functions = [
     { // Matrix * gampdfM(Matrix* restrict m, double a, double b)
         fun_matlab: 'gampdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'gampdfM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
@@ -1820,7 +1889,7 @@ export const builtin_functions = [
     { // Matrix * lognpdfM(Matrix* restrict m, double mu, double sigma)
         fun_matlab: 'lognpdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'lognpdfM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
@@ -1855,7 +1924,7 @@ export const builtin_functions = [
     { // Matrix * normpdfM(Matrix* restrict m, double mu, double sigma)
         fun_matlab: 'normpdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'normpdfM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
@@ -1890,7 +1959,7 @@ export const builtin_functions = [
     { // Matrix * unidpdfM(Matrix* restrict m, int n)
         fun_matlab: 'unidpdf', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'unidpdfM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 				outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -1925,7 +1994,7 @@ export const builtin_functions = [
     { // void normfitM(Matrix* restrict m, void* restrict mu, void* restrict sigma)
         fun_matlab: 'normfit', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'normfitM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -1973,7 +2042,7 @@ export const builtin_functions = [
     { // void unifitM(Matrix* restrict m, void* restrict a, void* restrict b)
         fun_matlab: 'unifit', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'unifitM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -2021,7 +2090,7 @@ export const builtin_functions = [
     { // Matrix * filterM(Matrix *b, Matrix *a, Matrix *x, Matrix **state);
 		fun_matlab: 'filter', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'filterM',
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             if (args.length == 3) {
                 args.push("&zero");
@@ -2089,7 +2158,7 @@ export const builtin_functions = [
     { // void eigM(Matrix* restrict m, Matrix* restrict *evals, Matrix* restrict *evecs)
         fun_matlab: 'eig', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'eigM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 1,
@@ -2180,7 +2249,7 @@ export const builtin_functions = [
         fun_matlab: /abs|round|floor|ceil/,
         fun_c: (args, arg_types, outs, fun_matlab) => 'fun_matlabM',
         //fun_c: (args, arg_types, outs, fun_matlab) => 'floorM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -2220,7 +2289,7 @@ export const builtin_functions = [
             }
             return 'fun_matlabM';
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => {
 			return outs[0];
@@ -2283,7 +2352,7 @@ export const builtin_functions = [
             }
             return [args[0]];
         },
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
@@ -2342,7 +2411,7 @@ export const builtin_functions = [
     { // Matrix * quantileM_vec(Matrix* restrict m, int N, double* restrict quantiles)
         fun_matlab: 'quantile', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'quantileM_vec', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let quantile_specifier = Number(args[1]);
             let quantiles = "vec"
@@ -2461,7 +2530,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
     { // Matrix * zerosM(int ndim, int dim[ndim])
         fun_matlab: /zeros|ones/, 
         fun_c: (args, arg_types, outs, fun_matlab) => 'fun_matlabM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             if (arg_types[0].ispointer) {
                 return ['ndim', args[0]]
@@ -2554,7 +2623,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
     { // Matrix * identityM(int size)
         fun_matlab: 'eye', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'identityM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]],
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
@@ -2584,7 +2653,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
     { // bool reshapeM (Matrix* m, int ndim, int dim[ndim]);
         fun_matlab: 'reshape', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'reshapeM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             return [args[0], 'ndim', 'dim'];
         },
@@ -2686,7 +2755,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
     { // void determinantM(Matrix* restrict m, void* restrict output)
         fun_matlab: 'det', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'detM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
@@ -2722,7 +2791,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
     {  // Matrix * invertM(Matrix* restrict m)
         fun_matlab: 'inv', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'invertM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
@@ -2749,7 +2818,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
     { 
         fun_matlab: 'cell', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
@@ -2803,7 +2872,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // int strcmp(const char* str1, const char* str2)
         fun_matlab: 'strcmp', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'strcmp', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -2830,7 +2899,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // int strcmpi(const char * str1, const char * str2 )
         fun_matlab: 'strcmpi', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'strcmpi', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
@@ -2858,7 +2927,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'struct', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
@@ -2875,7 +2944,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { //int getsizeM(Matrix* restrict m)
         fun_matlab: 'numel', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'getsizeM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -2902,7 +2971,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // int * getDimsM(Matrix* restrict m)
         fun_matlab: 'size', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'getDimsM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]],
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -2933,7 +3002,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'length', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
@@ -2950,7 +3019,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'sum', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -2967,7 +3036,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'prod', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -2984,7 +3053,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'error', 
         fun_c: (args, arg_types, outs, fun_matlab) => null,
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -3001,7 +3070,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'permute', 
         fun_c: (args, arg_types, outs, fun_matlab) => null,
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -3026,7 +3095,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 return 'randM'; 
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let match = args.find(x => x.includes('seed'));
             if (match != null && match != undefined) {
@@ -3141,7 +3210,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // Matrix * randiM(int ndim, int dim[ndim], int type, int imax)
         fun_matlab: 'randi', // X = randi(imax,sz1,...,szN)
         fun_c: (args, arg_types, outs, fun_matlab) => 'randiM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             return ['ndim', 'dim', 0, args[0]];
         },
@@ -3228,7 +3297,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // Matrix * randnM(int ndim, int dim[ndim])
         fun_matlab: 'randn', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'randnM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             if (arg_types[0].ispointer) {
                 return ['ndim', args[0]]
@@ -3316,7 +3385,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'memmapfile', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -3333,7 +3402,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // Matrix * medianM(Matrix* restrict m)
         fun_matlab: 'median', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'medianM',
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
@@ -3360,7 +3429,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // Matrix * meanM(Matrix* restrict m)
         fun_matlab: 'mean', // M = mean(A,dim)
         fun_c: (args, arg_types, outs, fun_matlab) => 'meanM', 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             if (args.length == 2) {
                 if (args[1] == "2") {
@@ -3427,7 +3496,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'isa', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -3444,7 +3513,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     {
         fun_matlab: 'fieldnames', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -3461,7 +3530,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: fix this
         fun_matlab: 'struct', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
@@ -3488,9 +3557,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS https://www.tutorialspoint.com/c_standard_library/c_function_printf.htm
         fun_matlab: 'disp', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
-            //console.log(args);
-            //console.log(arg_types);
-            if (arg_types[0].isvector || arg_types[0].type == "dynamic" || args[0] == null) {
+            if ((arg_types[0].type != 'char' && arg_types[0].isvector) || arg_types[0].type == "dynamic" || args[0] == null) {
                 return null; // args[0] == null occurs when calling disp(sprintf(...)) 
             } else if (arg_types[0].ismatrix) {
                 return 'printM';
@@ -3498,7 +3565,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 return 'printf';
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             if (arg_types[0].ismatrix) {
                 return args;
@@ -3576,7 +3643,7 @@ printf(${format}, ${args[0]}[i]);
     { // TO DO: FIX THIS
         fun_matlab: 'mod', 
         fun_c: (args, arg_types, outs, fun_matlab) => `${args[0]} % ${args[1]}`,
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
@@ -3605,7 +3672,7 @@ printf(${format}, ${args[0]}[i]);
         fun_c: (args, arg_types, outs, fun_matlab) => {
             return 'cfun_matlab';
         },  
-        req_arg_types: [
+        req_arg_types: (args, arg_types, outs) => [
             {
                 type: 'complex', 
                 ndim: 1,
@@ -3677,7 +3744,7 @@ printf(${format}, ${args[0]}[i]);
             args.unshift(buffer);
             return args;
         },
-        req_arg_types: [
+        req_arg_types: (args, arg_types, outs) => [
             {
                 type: 'char', 
                 ndim: null,
@@ -3728,6 +3795,7 @@ printf(${format}, ${args[0]}[i]);
     { // Matrix * fftM(Matrix* restrict m)
         fun_matlab: 'fft', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'fftM', 
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]],
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
@@ -3762,6 +3830,7 @@ printf(${format}, ${args[0]}[i]);
     { // Matrix * ifftM(Matrix* restrict m)
         fun_matlab: 'ifft', 
         fun_c: (args, arg_types, outs, fun_matlab) => 'ifftM', 
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]],
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
@@ -3795,7 +3864,8 @@ printf(${format}, ${args[0]}[i]);
     },
     { //TO DO: Matrix * stftV(Matrix* restrict m, int win_size, int inc, int num_coef, int win_type)
         fun_matlab: 'stft', 
-        fun_c: (args, arg_types, outs, fun_matlab) => 'stftV', 
+        fun_c: (args, arg_types, outs, fun_matlab) => 'stftV',
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => {
             let win_type = 1;
             let num_coef = '128';
@@ -3925,7 +3995,7 @@ printf(${format}, ${args[0]}[i]);
                 return 'fun_matlab';
             }
         }, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]], 
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
@@ -3992,7 +4062,7 @@ printf(${format}, ${args[0]}[i]);
     { 
         fun_matlab: 'tic', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
@@ -4054,7 +4124,7 @@ printf(${format}, ${args[0]}[i]);
     { 
         fun_matlab: 'toc', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
-        req_arg_types: null,
+        req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,

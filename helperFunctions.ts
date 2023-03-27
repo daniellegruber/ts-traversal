@@ -16,11 +16,22 @@ import Matlab = require("tree-sitter-matlab");
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
 
+function compare( a, b ) {
+  if ( a.scope[0] < b.scope[0] ){
+    return -1;
+  }
+  if ( a.scope[0] > b.scope[0] ){
+    return 1;
+  }
+  return 0;
+}
+
 export function isInitialized(name, node, type, fun_params) {
     let scope = findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     let var_type = filterByScope(fun_params.var_types, name, node, 0);
     let all_var_type = fun_params.var_types.filter(x=>x.name == name && x.scope[2]==scope[2]);
-
+    all_var_type.sort(compare);
+    
     let flag1 = false;
     let flag2 = false;
     if (var_type != null && var_type != undefined) { 
@@ -44,7 +55,6 @@ export function isInitialized(name, node, type, fun_params) {
             }
         }
     }
-    
     return [name, var_type, flag1, flag2, fun_params];
 }
 
@@ -181,7 +191,16 @@ export function transformNodeByName(var_name, node, alias_tbl) {
 }
 
 export function numel(x) {
-    return x.reduce(function(a, b) {return a * b;});
+    let ans = x.reduce(function(a, b) {return a * b;});
+    if (!x.some(x=>isNaN(x))) {
+        //return `${ans}`;
+        return ans;
+    }
+    let ans2 = `(${x[0]})`;
+    for (let i = 1; i < x.length; i ++) {
+        ans2 = ans2.concat(`*(${x[i]})`);
+    }
+    return ans2;
 }
 
 export function initVar(var_name, var_val, var_type, node) {

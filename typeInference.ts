@@ -1,6 +1,7 @@
 var fs = require('fs');
 import * as g from "./generated";
 import { 
+    gotoPreorderSucc, 
     gotoPreorderSucc_SkipFunctionDef, 
     findEntryFunction
 } from "./treeTraversal";
@@ -22,6 +23,7 @@ export function findVarScope(filename, node, block_idxs, current_code, debug) {
         console.log("findVarScope");
     }
 
+    
     let entire_scope = block_idxs.find(x => x[2] == 0);
     let good_blocks = [];
     if (current_code == filename) {
@@ -92,6 +94,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
 
     //let block_idxs = [];
     let fun_flag = false;
+    let fun_def_flag = false;
     let scaler = 0;
     if (block_idxs.length > 0) {
         // examining a function definition
@@ -105,6 +108,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
        
         switch (c.nodeType) {
             case g.SyntaxType.Module: {
+                fun_def_flag = false;
                 let node = c.currentNode;
                 block_idxs.push([node.startIndex, node.endIndex, 0]); // 0 indicates entire program
                 break;
@@ -120,16 +124,21 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                         block_level = prev_block[2];
                     } 
                 }
+                if (fun_def_flag) {
+                    block_level = -1;
+                }
                 block_idxs.push([node.startIndex, node.endIndex, block_level]); // 1 for regular blocks
                 break;
             }
             case g.SyntaxType.FunctionDefinition: {
+                fun_def_flag = true;
                 let node = c.currentNode;
                 block_idxs.push([node.startIndex, node.endIndex, -1]); // 2 for function def blocks 
                 break;
             }
         }
-    } while(gotoPreorderSucc_SkipFunctionDef(cursor, debug));
+    //} while(gotoPreorderSucc_SkipFunctionDef(cursor, debug));
+    } while(gotoPreorderSucc(cursor, debug));
     let count = 0;
     cursor = tree.walk();
     do {
@@ -565,7 +574,7 @@ function inferTypeByName(name, node, var_types, custom_functions, alias_tbl, deb
     }
     
     let obj1 = filterByScope(var_types, name, node, 0);
-    if (obj1 != null) {
+    if (obj1 != null && obj1 != undefined) {
         return [obj1.type, obj1.ndim, obj1.dim, obj1.ismatrix, obj1.isvector, obj1.ispointer, obj1.isstruct, custom_functions];
     }
     
@@ -615,6 +624,7 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
     
     //let obj1 = alias_tbl.find(x => x.name === node.text);
     let obj1 = filterByScope(alias_tbl, node.text, node, 0);
+    
     if (obj1 != null && obj1 != undefined) {
         let obj2 = var_types.find(x => x.name === obj1.tmp_var);
         if (obj2 != null && obj2 != undefined) {
@@ -665,8 +675,10 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
         case g.SyntaxType.Matrix: {
             let row = 0;
             let col = 0;
-            let nrows = 0;
-            let ncols = 0;
+            //let nrows = 0;
+            //let ncols = 0;
+            let nrows = '0';
+            let ncols = '0';
             
             for (let i=0; i<node.childCount; i++) {
                 if (node.children[i].type === ";") {
@@ -679,21 +691,30 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                         let [type, ndim, dim,,,, c] = inferType(filename, node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
                         if (ndim > 1) {
-                            ncols += dim[1];
+                            //ncols += dim[1];
+                            ncols += `+${dim[1]}`;
                         } else {
-                            ncols += dim[0];
+                            //ncols += dim[0];
+                            ncols += `+${dim[0]}`;
                         }
                     }
                     if (col == 0) {
                         let [type, ndim, dim,,,, c] = inferType(filename, node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug);
                         custom_functions = c;
-                        nrows += dim[0];
+                        //nrows += dim[0];
+                        nrows += `+${dim[0]}`;
                     }
                     
                     col += 1;
                 }
             }
             
+            if (/^[^a-zA-Z]+$/.test(nrows)) {
+                nrows = eval(nrows);
+            }
+            if (/^[^a-zA-Z]+$/.test(ncols)) {
+                ncols = eval(ncols);
+            }
             let children_types = [];
             let children_ndim = [];
             let children_dim = [];

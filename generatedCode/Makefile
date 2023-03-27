@@ -241,7 +241,7 @@ compareone:
 		sed -z -E 's/\+0i//g' | sed -z 's/\n\s/\n/gi' | grep "\S") > $$fulldir/f1; \
 	matlab -nodisplay -nosplash < $$fulldir/matlabToRun/$(ARGS)_torun.m; \
 	(cat $$fulldir/output.txt 2>/dev/null | \
-		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/Inf/inf/gi'| \
 		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
 		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
 		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \

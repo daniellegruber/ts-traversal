@@ -84,6 +84,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
     }
     //let block_idxs = [];
     var fun_flag = false;
+    var fun_def_flag = false;
     var scaler = 0;
     if (block_idxs.length > 0) {
         // examining a function definition
@@ -96,6 +97,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
         var c = cursor;
         switch (c.nodeType) {
             case "module" /* g.SyntaxType.Module */: {
+                fun_def_flag = false;
                 var node = c.currentNode;
                 block_idxs.push([node.startIndex, node.endIndex, 0]); // 0 indicates entire program
                 break;
@@ -112,10 +114,14 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                         block_level = prev_block[2];
                     }
                 }
+                if (fun_def_flag) {
+                    block_level = -1;
+                }
                 block_idxs.push([node_1.startIndex, node_1.endIndex, block_level]); // 1 for regular blocks
                 break;
             }
             case "function_definition" /* g.SyntaxType.FunctionDefinition */: {
+                fun_def_flag = true;
                 var node = c.currentNode;
                 block_idxs.push([node.startIndex, node.endIndex, -1]); // 2 for function def blocks 
                 break;
@@ -124,7 +130,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
     };
     do {
         _loop_1();
-    } while ((0, treeTraversal_1.gotoPreorderSucc_SkipFunctionDef)(cursor, debug));
+    } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
     var count = 0;
     cursor = tree.walk();
     var _loop_2 = function () {
@@ -542,7 +548,7 @@ function inferTypeByName(name, node, var_types, custom_functions, alias_tbl, deb
         console.log("inferTypeByName");
     }
     var obj1 = (0, helperFunctions_2.filterByScope)(var_types, name, node, 0);
-    if (obj1 != null) {
+    if (obj1 != null && obj1 != undefined) {
         return [obj1.type, obj1.ndim, obj1.dim, obj1.ismatrix, obj1.isvector, obj1.ispointer, obj1.isstruct, custom_functions];
     }
     var obj2 = (0, helperFunctions_2.filterByScope)(alias_tbl, name, node, 0);
@@ -635,8 +641,10 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
         case "matrix" /* g.SyntaxType.Matrix */: {
             var row = 0;
             var col = 0;
-            var nrows = 0;
-            var ncols = 0;
+            //let nrows = 0;
+            //let ncols = 0;
+            var nrows = '0';
+            var ncols = '0';
             for (var i = 0; i < node.childCount; i++) {
                 if (node.children[i].type === ";") {
                     row += 1;
@@ -647,19 +655,28 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                         var _d = inferType(filename, node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug), type_1 = _d[0], ndim = _d[1], dim = _d[2], c_4 = _d[6];
                         custom_functions = c_4;
                         if (ndim > 1) {
-                            ncols += dim[1];
+                            //ncols += dim[1];
+                            ncols += "+".concat(dim[1]);
                         }
                         else {
-                            ncols += dim[0];
+                            //ncols += dim[0];
+                            ncols += "+".concat(dim[0]);
                         }
                     }
                     if (col == 0) {
                         var _e = inferType(filename, node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug), type_2 = _e[0], ndim = _e[1], dim = _e[2], c_5 = _e[6];
                         custom_functions = c_5;
-                        nrows += dim[0];
+                        //nrows += dim[0];
+                        nrows += "+".concat(dim[0]);
                     }
                     col += 1;
                 }
+            }
+            if (/^[^a-zA-Z]+$/.test(nrows)) {
+                nrows = eval(nrows);
+            }
+            if (/^[^a-zA-Z]+$/.test(ncols)) {
+                ncols = eval(ncols);
             }
             var children_types_1 = [];
             var children_ndim_1 = [];

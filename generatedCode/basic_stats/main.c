@@ -336,8 +336,8 @@ int main(void) {
 	
 	int vec1[100];
 	
-	for (int iter7 = 0; 1 + 1*iter7 <= 100; iter7++) {
-		vec1[iter7] = 1 + 1*iter7;
+	for (int iter7 = 0; 1 + (1)*iter7 <= 100; iter7++) {
+		vec1[iter7] = 1 + (1)*iter7;
 	}
 	
 	int ndim16 = 2;
@@ -353,8 +353,8 @@ int main(void) {
 	
 	double vec2[101];
 	
-	for (int iter9 = 0; 0 + 0.01*iter9 <= 1; iter9++) {
-		vec2[iter9] = 0 + 0.01*iter9;
+	for (int iter9 = 0; 0 + (0.01)*iter9 <= 1; iter9++) {
+		vec2[iter9] = 0 + (0.01)*iter9;
 	}
 	Matrix * tmp15 = quantileM_vec(a, 101, vec2);
 	Matrix * tmp16 = transposeM(tmp15);
@@ -382,8 +382,8 @@ int main(void) {
 	b = tmp19;
 	double vec3[101];
 	
-	for (int iter12 = 0; 0 + 0.01*iter12 <= 1; iter12++) {
-		vec3[iter12] = 0 + 0.01*iter12;
+	for (int iter12 = 0; 0 + (0.01)*iter12 <= 1; iter12++) {
+		vec3[iter12] = 0 + (0.01)*iter12;
 	}
 	Matrix * tmp20 = quantileM_vec(b, 101, vec3);
 	Matrix * tmp21 = transposeM(tmp20);

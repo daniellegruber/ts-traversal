@@ -33,8 +33,8 @@ int main(void) {
 	//row_vectors_i
 	int vec1[10];
 	
-	for (int iter4 = 0; -4 + 1*iter4 <= 5; iter4++) {
-		vec1[iter4] = -4 + 1*iter4;
+	for (int iter4 = 0; -4 + (1)*iter4 <= 5; iter4++) {
+		vec1[iter4] = -4 + (1)*iter4;
 	}
 	
 	int ndim1 = 2;

@@ -18,6 +18,7 @@ int main(void) {
 	
 	// i_zero
 	
+	printf("\n%s\n", "i_zero");
 	Matrix * tmp1 = identityM(3);
 	Matrix * a = tmp1;
 	printM(a);
@@ -26,6 +27,7 @@ int main(void) {
 	printM(tmp2);
 	// d_zero
 	
+	printf("\n%s\n", "d_zero");
 	int ndim1 = 2;
 	int dim1[2] = {3, 3};
 	Matrix * tmp3 = zerosM(ndim1, dim1);
@@ -53,6 +55,7 @@ int main(void) {
 	printM(tmp6);
 	// c_zero
 	
+	printf("\n%s\n", "c_zero");
 	int ndim2 = 2;
 	int dim2[2] = {3, 3};
 	Matrix * tmp7 = zerosM(ndim2, dim2);
@@ -80,6 +83,7 @@ int main(void) {
 	printM(tmp10);
 	// i_one
 	
+	printf("\n%s\n", "i_one");
 	Matrix * tmp11 = identityM(3);
 	a = tmp11;
 	printM(a);
@@ -88,6 +92,7 @@ int main(void) {
 	printM(tmp12);
 	// d_one
 	
+	printf("\n%s\n", "d_one");
 	int ndim3 = 2;
 	int dim3[2] = {3, 3};
 	Matrix * tmp13 = zerosM(ndim3, dim3);
@@ -115,6 +120,7 @@ int main(void) {
 	printM(tmp16);
 	// c_one
 	
+	printf("\n%s\n", "c_one");
 	int ndim4 = 2;
 	int dim4[2] = {3, 3};
 	Matrix * tmp17 = zerosM(ndim4, dim4);
@@ -142,6 +148,7 @@ int main(void) {
 	printM(tmp20);
 	// i_large
 	
+	printf("\n%s\n", "i_large");
 	int ndim5 = 2;
 	int dim5[2] = {3, 3};
 	Matrix * tmp21 = zerosM(ndim5, dim5);
@@ -169,6 +176,7 @@ int main(void) {
 	printM(tmp24);
 	// i_negative
 	
+	printf("\n%s\n", "i_neg");
 	int ndim6 = 2;
 	int dim6[2] = {3, 3};
 	Matrix * tmp25 = zerosM(ndim6, dim6);
@@ -197,6 +205,7 @@ int main(void) {
 	printM(tmp29);
 	// d_small
 	
+	printf("\n%s\n", "d_small");
 	int ndim7 = 2;
 	int dim7[2] = {3, 3};
 	Matrix * tmp30 = zerosM(ndim7, dim7);
@@ -224,6 +233,7 @@ int main(void) {
 	printM(tmp33);
 	// d_negative
 	
+	printf("\n%s\n", "d_neg");
 	int ndim8 = 2;
 	int dim8[2] = {3, 3};
 	Matrix * tmp34 = zerosM(ndim8, dim8);
@@ -531,6 +541,7 @@ int main(void) {
 					char *mystr1 = NULL;
 					mystr1 = malloc(50*sizeof(*mystr1));
 					sprintf(mystr1, "Exponent: %.4f + %.4fi\n", iter36, iter37);
+					printf("\n%s\n", mystr1);
 					complex exponent13 = (iter36 + iter37 * 1*I);
 					Matrix * tmp73 = mpowerM(matrices[idx29], &exponent13, 2);
 					printM(tmp73);

@@ -15,10 +15,20 @@ var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+function compare(a, b) {
+    if (a.scope[0] < b.scope[0]) {
+        return -1;
+    }
+    if (a.scope[0] > b.scope[0]) {
+        return 1;
+    }
+    return 0;
+}
 function isInitialized(name, node, type, fun_params) {
     var scope = (0, typeInference_1.findVarScope)(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     var var_type = filterByScope(fun_params.var_types, name, node, 0);
     var all_var_type = fun_params.var_types.filter(function (x) { return x.name == name && x.scope[2] == scope[2]; });
+    all_var_type.sort(compare);
     var flag1 = false;
     var flag2 = false;
     if (var_type != null && var_type != undefined) {
@@ -181,7 +191,16 @@ function transformNodeByName(var_name, node, alias_tbl) {
 }
 exports.transformNodeByName = transformNodeByName;
 function numel(x) {
-    return x.reduce(function (a, b) { return a * b; });
+    var ans = x.reduce(function (a, b) { return a * b; });
+    if (!x.some(function (x) { return isNaN(x); })) {
+        //return `${ans}`;
+        return ans;
+    }
+    var ans2 = "(".concat(x[0], ")");
+    for (var i = 1; i < x.length; i++) {
+        ans2 = ans2.concat("*(".concat(x[i], ")"));
+    }
+    return ans2;
 }
 exports.numel = numel;
 function initVar(var_name, var_val, var_type, node) {

@@ -3534,10 +3534,10 @@ exports.builtin_functions = [
                 var format = '"\\n%d\\n"';
                 //if (arg_types[0].type == 'double' || arg_types[0].type == 'complex') {
                 if (arg_types[0].type == 'double') {
-                    format = '"\\n%f\\n"';
+                    format = '"\\n%.4f\\n"';
                 }
                 else if (arg_types[0].type == 'complex') {
-                    format = '"\\n%f + %fi\\n"';
+                    format = '"\\n%.4f + %.4fi\\n"';
                 }
                 else if (arg_types[0].type == 'int') {
                     format = '"\\n%d\\n"';
@@ -3571,10 +3571,10 @@ exports.builtin_functions = [
             else if (arg_types[0].type != 'char' && arg_types[0].isvector) {
                 var format = '"\\n%d\\n"';
                 if (arg_types[0].type == 'double') {
-                    format = '"\\n%f\\n"';
+                    format = '"\\n%.4f\\n"';
                 }
                 else if (arg_types[0].type == 'complex') {
-                    format = '"\\n%f + %fi\\n"';
+                    format = '"\\n%.4f + %.4fi\\n"';
                 }
                 else if (arg_types[0].type == 'int') {
                     format = '"\\n%d\\n"';
@@ -3741,10 +3741,17 @@ exports.builtin_functions = [
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'fft',
-        fun_c: function (args, arg_types, outs, fun_matlab) { return 'fftM'; },
+        fun_matlab: /fft|ifft/,
+        fun_c: function (args, arg_types, outs, fun_matlab) {
+            if (args.length == 2) {
+                if (arg_types[1].type == 'int') {
+                    return 'fun_matlabV';
+                }
+            }
+            return 'fun_matlabM';
+        },
         req_arg_types: function (args, arg_types, outs) { return null; },
-        args_transform: function (args, arg_types, outs) { return [args[0]]; },
+        args_transform: function (args, arg_types, outs) { return args; },
         outs_transform: function (args, arg_types, outs) { return outs[0]; },
         n_req_args: null,
         n_opt_args: null,
@@ -3755,38 +3762,6 @@ exports.builtin_functions = [
             var ndim = arg_types[0].ndim;
             if (args.length == 2) {
                 console.log("WARNING: fftM dimensions adjusted");
-            }
-            return {
-                type: 'double',
-                ndim: ndim,
-                dim: dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            };
-        },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; },
-        push_alias_tbl: function (args, arg_types, outs) { return null; }
-    },
-    {
-        fun_matlab: 'ifft',
-        fun_c: function (args, arg_types, outs, fun_matlab) { return 'ifftM'; },
-        req_arg_types: function (args, arg_types, outs) { return null; },
-        args_transform: function (args, arg_types, outs) { return [args[0]]; },
-        outs_transform: function (args, arg_types, outs) { return outs[0]; },
-        n_req_args: null,
-        n_opt_args: null,
-        opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) {
-            var dim = arg_types[0].dim;
-            var ndim = arg_types[0].ndim;
-            if (args.length == 2) {
-                console.log("WARNING: ifftM dimensions adjusted");
             }
             return {
                 type: 'double',

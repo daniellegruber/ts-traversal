@@ -3573,9 +3573,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 let format = '"\\n%d\\n"';
                 //if (arg_types[0].type == 'double' || arg_types[0].type == 'complex') {
                 if (arg_types[0].type == 'double') {
-                    format = '"\\n%f\\n"';
+                    format = '"\\n%.4f\\n"';
                 } else if (arg_types[0].type == 'complex') {
-                    format = '"\\n%f + %fi\\n"';
+                    format = '"\\n%.4f + %.4fi\\n"';
                 } else if (arg_types[0].type == 'int') {
                     format = '"\\n%d\\n"';
                 } else if (arg_types[0].type == 'char') {
@@ -3622,9 +3622,9 @@ return `switch(${args[0]}.type) {
             } else if (arg_types[0].type != 'char' && arg_types[0].isvector) {
                 let format = '"\\n%d\\n"';
                 if (arg_types[0].type == 'double') {
-                    format = '"\\n%f\\n"';
+                    format = '"\\n%.4f\\n"';
                 } else if (arg_types[0].type == 'complex') {
-                    format = '"\\n%f + %fi\\n"';
+                    format = '"\\n%.4f + %.4fi\\n"';
                 } else if (arg_types[0].type == 'int') {
                     format = '"\\n%d\\n"';
                 }
@@ -3793,10 +3793,17 @@ printf(${format}, ${args[0]}[i]);
         push_alias_tbl: (args, arg_types, outs) => null
     },
     { // Matrix * fftM(Matrix* restrict m)
-        fun_matlab: 'fft', 
-        fun_c: (args, arg_types, outs, fun_matlab) => 'fftM', 
+        fun_matlab: /fft|ifft/, 
+        fun_c: (args, arg_types, outs, fun_matlab) => {
+            if (args.length == 2) {
+                if (arg_types[1].type == 'int') {
+                    return 'fun_matlabV';
+                }
+            }
+            return 'fun_matlabM';
+        }, 
         req_arg_types: (args, arg_types, outs) => null,
-        args_transform: (args, arg_types, outs) => [args[0]],
+        args_transform: (args, arg_types, outs) => args,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -3818,41 +3825,6 @@ printf(${format}, ${args[0]}[i]);
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,//true,
-                isstruct: false 
-            };
-        },
-        push_main_before: (args, arg_types, outs) => null,
-        push_main_after: (args, arg_types, outs) => null,         
-        init_before: (args, arg_types, outs) => null,
-        tmp_out_transform: (args, arg_types, outs) => null,
-        push_alias_tbl: (args, arg_types, outs) => null
-    },
-    { // Matrix * ifftM(Matrix* restrict m)
-        fun_matlab: 'ifft', 
-        fun_c: (args, arg_types, outs, fun_matlab) => 'ifftM', 
-        req_arg_types: (args, arg_types, outs) => null,
-        args_transform: (args, arg_types, outs) => [args[0]],
-		outs_transform: (args, arg_types, outs) => outs[0],
-        n_req_args: null,
-        n_opt_args: null,
-        opt_arg_defaults: null,
-        ptr_args: (arg_types, outs) => null,
-        return_type: (args, arg_types, outs) => {
-            
-            let dim = arg_types[0].dim;
-            let ndim = arg_types[0].ndim;
-            
-            if (args.length == 2) {
-                console.log("WARNING: ifftM dimensions adjusted")
-            }
-            
-            return {
-                type: 'double',
-                ndim: ndim,
-                dim: dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false, //true,
                 isstruct: false 
             };
         },

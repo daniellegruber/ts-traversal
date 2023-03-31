@@ -30,6 +30,8 @@ elem_trig_matrix
 equal_matrix
 external_fun
 floor_matrix
+fourier
+hamming_hanning
 ic_matrix_multiplication
 id_matrix_multiplication
 ii_matrix_multiplication
@@ -53,8 +55,6 @@ ERROR
 advanced_stats
 determinant_matrix
 filterM
-fourier
-hamming_hanning
 octaveTimer
 power_matrix
 stftM

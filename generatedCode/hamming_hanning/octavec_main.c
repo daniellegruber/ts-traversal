@@ -16,7 +16,7 @@ int main()
 {
 	bool flag = true;
 
-	int iterations = 100;
+	int iterations = 3;
 
 	for (int i = 1 ; i < iterations+1 ; i++)
 	{

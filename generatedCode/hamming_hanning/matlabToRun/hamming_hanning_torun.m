@@ -7,11 +7,15 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/hamming_hanning/o
 %source octaveIncludes.m;
 
 
-iterations = 3;
+iterations = 100;
 
 for i=1:iterations
+    %dispArr(fileID, "hamming");
 	dispArr(fileID, hamming(i));
+	%dispArr(fileID, "periodic hamming");
 	dispArr(fileID, hamming(i, "periodic"));
+	%dispArr(fileID, "hanning");
 	dispArr(fileID, hanning(i));
+	%dispArr(fileID, "periodic hanning");
 	dispArr(fileID, hanning(i, "periodic"));
 end

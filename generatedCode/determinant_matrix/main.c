@@ -45,7 +45,7 @@ int main(void) {
 	printM(a);
 	complex d2;
 	detM(a, &d2);
-	printf("\n%f + %fi\n", creal(d2), cimag(d2));
+	printf("\n%.4f + %.4fi\n", creal(d2), cimag(d2));
 	//test3
 	int ndim3 = 2;
 	int dim3[2] = {3,3};

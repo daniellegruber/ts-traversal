@@ -15,10 +15,10 @@ int main(void) {
 	//source octaveIncludes.m;
 	
 	Matrix **matrices = NULL;
-	matrices = malloc(12*sizeof(*matrices));
+	matrices = malloc(13*sizeof(*matrices));
 		        
 	int ndim1 = 2;
-	int dim1[2] = {12,1};
+	int dim1[2] = {13,1};
 	int idx1 = convertSubscript(ndim1, dim1, 1);
 	int ndim2 = 2;
 	int dim2[2] = {1, 10};
@@ -259,6 +259,7 @@ int main(void) {
 				Matrix * zero1 = zerosM(1, state_size1);
 				Matrix * tmp19 = filterM(matrices[idx21], matrices[idx22], matrices[idx23], &zero1);
 				Matrix * y = tmp19;
+				printf("\n%s\n", "\ny\n");
 				printM(y);
 				printf("\n%s\n", "\n");
 				//disp(sf);

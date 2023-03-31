@@ -10,6 +10,14 @@ int convertSubscript(int ndim, int dim[], int idx) {
     int newidx;
     int d0=1, d1=1, d2=1, d3=1;
     
+    int numel = 1;
+    for (int i = 0; i < ndim; i ++) {
+        numel *= dim[i];
+    }
+    if (idx > numel) {
+        return idx - 1;
+    }
+    
     // Tmp variables
     if (ndim <= 2) {
         d0 = idx % dim[0];

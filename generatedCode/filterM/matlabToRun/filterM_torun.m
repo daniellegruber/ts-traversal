@@ -6,7 +6,7 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/filterM/output.tx
 
 %source octaveIncludes.m;
 
-matrices = cell(12,1);
+matrices = cell(13,1);
 
 matrices{1} = zeros(1,10);
 matrices{1}(1) = 1;
@@ -75,6 +75,7 @@ for i=1:13
 			dispArr(fileID, sprintf('\n'));
 			%[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
 			y = filter(matrices{i}, matrices{j}, matrices{k});
+			dispArr(fileID, sprintf('\ny\n'));
 			dispArr(fileID, y);
 			dispArr(fileID, sprintf('\n'));
 			%dispArr(fileID, sf);

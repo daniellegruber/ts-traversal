@@ -6,10 +6,6 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/fourier/output.tx
 
 %source octaveIncludes.m;
 
-
-
-
-
 %row_vectors_i
 a = [3,-5,0,1];
 dispArr(fileID, a);
@@ -102,3 +98,6 @@ end
 a=a.';
 dispArr(fileID, a);
 fourier_script(fileID, a);
+
+
+

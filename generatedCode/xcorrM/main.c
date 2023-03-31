@@ -16,10 +16,10 @@ int main(void) {
 	//pkg load signal;
 	
 	Matrix **matrices = NULL;
-	matrices = malloc(11*sizeof(*matrices));
+	matrices = malloc(12*sizeof(*matrices));
 		        
 	int ndim1 = 2;
-	int dim1[2] = {11,1};
+	int dim1[2] = {12,1};
 	int idx1 = convertSubscript(ndim1, dim1, 1);
 	int ndim2 = 2;
 	int dim2[2] = {1, 10};
@@ -214,12 +214,12 @@ int main(void) {
 	writeM( matrices[idx18], 10, input2);
 	free(input2);
 	
-	for (int iter13 = 1; iter13 <= 12; ++ iter13) {
-		printf("\n%s\n", "i\n");
+	for (int iter13 = 6; iter13 <= 6; ++ iter13) {
+		printf("i = %d\n", iter13);
 		int idx19 = convertSubscript(ndim1, dim1, iter13);
 		printM(matrices[idx19]);
-		for (int iter14 = 1; iter14 <= 12; ++ iter14) {
-			printf("\n%s\n", "j\n");
+		for (int iter14 = 11; iter14 <= 11; ++ iter14) {
+			printf("j = %d\n", iter14);
 			int idx20 = convertSubscript(ndim1, dim1, iter14);
 			printM(matrices[idx20]);
 			printf("\n%s\n", "\n\n");
@@ -241,54 +241,17 @@ int main(void) {
 				
 			
 			}
-			for (int iter15 = 9; iter15 <= 21; ++ iter15) {
-				Matrix * tmp26 = xcorrM(matrices[idx19], matrices[idx20], iter15, "none");
-				printM(tmp26);
-				int * dim18 = getDimsM(matrices[idx19]);
-				int * dim19 = getDimsM(matrices[idx19]);
-				int * dim20 = getDimsM(matrices[idx20]);
-				int * dim21 = getDimsM(matrices[idx20]);
-				if ((iter13 > 1 && iter14 > 1 && dim18[0] * dim19[1] == dim20[0] * dim21[1])) {
-					Matrix * tmp31 = xcorrM(matrices[idx19], matrices[idx20], iter15, "unbiased");
-					printM(tmp31);
-					Matrix * tmp32 = xcorrM(matrices[idx19], matrices[idx20], iter15, "biased");
-					printM(tmp32);
-					Matrix * tmp33 = xcorrM(matrices[idx19], matrices[idx20], iter15, "coeff");
-					printM(tmp33);
-					
-					
-					
-				
-				}
-			
-			}
+			//for k=9:21
+			//	disp(xcorr(matrices{index}, matrices{j}, k, 'none'));
+			//	if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
+			//		disp(xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
+			//		disp(xcorr(matrices{index}, matrices{j}, k, 'biased'));
+			//		disp(xcorr(matrices{index}, matrices{j}, k, 'coeff'));
+			//	end
+			//end
 		
 		}
 	
 	}
-	// for index=1:1
-	// 	% sprintf(stdout, 'i\n');
-	// 	% disp(matrices{index});
-	// 	for j=1:12
-	// 		index = j;
-	// 		sprintf(stdout, 'j\n');
-	// 		disp(matrices{j});
-	// 		sprintf(stdout, '\n\n');
-	// 		disp(xcorr(matrices{index}, matrices{j}, 'none'));
-	// 		if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
-	// 			disp(xcorr(matrices{index}, matrices{j}, 'unbiased'));
-	// 			disp(xcorr(matrices{index}, matrices{j}, 'biased'));
-	// 			disp(xcorr(matrices{index}, matrices{j}, 'coeff'));
-	// 		end
-	// 		for k=9:21
-	// 			disp(xcorr(matrices{index}, matrices{j}, k, 'none'));
-	// 			if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
-	// 				disp(xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
-	// 				disp(xcorr(matrices{index}, matrices{j}, k, 'biased'));
-	// 				disp(xcorr(matrices{index}, matrices{j}, k, 'coeff'));
-	// 			end
-	// 		end
-	// 	end
-	// end
 	return 0;
 }

@@ -4,7 +4,7 @@
 %source octaveIncludes.m;
 %pkg load signal;
 
-matrices = cell(11,1);
+matrices = cell(12,1);
 
 matrices{1} = zeros(1,10);
 matrices{2} = ones(20,1);
@@ -56,12 +56,12 @@ matrices{11} = [3,-2,0,   4,-1,0,   0,0,1, 2.5];
 matrices{12} = [3,-2,0,   4,-1,0,   0,0,1, 2.5];
 
 
-for index=1:12
-	disp(sprintf('i\n'));
+for index=6:6
+	disp(sprintf('i = %d\n', index));
 	disp(matrices{index});
 
-	for j=1:12
-		disp(sprintf('j\n'));
+	for j=11:11
+		disp(sprintf('j = %d\n', j));
 		disp(matrices{j});
 		disp(sprintf('\n\n'));
 		disp(xcorr(matrices{index}, matrices{j}, 'none'));
@@ -71,43 +71,14 @@ for index=1:12
 			disp(xcorr(matrices{index}, matrices{j}, 'coeff'));
 		end
 
-		for k=9:21
-			disp(xcorr(matrices{index}, matrices{j}, k, 'none'));
-			if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
-				disp(xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
-				disp(xcorr(matrices{index}, matrices{j}, k, 'biased'));
-				disp(xcorr(matrices{index}, matrices{j}, k, 'coeff'));
-			end
-		end
+		%for k=9:21
+		%	disp(xcorr(matrices{index}, matrices{j}, k, 'none'));
+		%	if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
+		%		disp(xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
+		%		disp(xcorr(matrices{index}, matrices{j}, k, 'biased'));
+		%		disp(xcorr(matrices{index}, matrices{j}, k, 'coeff'));
+		%	end
+		%end
 
 	end
 end
-
-% for index=1:1
-% 	% sprintf(stdout, 'i\n');
-% 	% disp(matrices{index});
-
-% 	for j=1:12
-% 		index = j;
-% 		sprintf(stdout, 'j\n');
-% 		disp(matrices{j});
-% 		sprintf(stdout, '\n\n');
-% 		disp(xcorr(matrices{index}, matrices{j}, 'none'));
-% 		if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
-% 			disp(xcorr(matrices{index}, matrices{j}, 'unbiased'));
-% 			disp(xcorr(matrices{index}, matrices{j}, 'biased'));
-% 			disp(xcorr(matrices{index}, matrices{j}, 'coeff'));
-% 		end
-
-% 		for k=9:21
-% 			disp(xcorr(matrices{index}, matrices{j}, k, 'none'));
-% 			if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
-% 				disp(xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
-% 				disp(xcorr(matrices{index}, matrices{j}, k, 'biased'));
-% 				disp(xcorr(matrices{index}, matrices{j}, k, 'coeff'));
-% 			end
-% 		end
-
-% 	end
-% end
-

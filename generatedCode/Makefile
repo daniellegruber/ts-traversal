@@ -256,6 +256,41 @@ compareone:
 		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\
 	module unload MATLAB/2021a; \
 	
+# Compare outputs of generated C program and original mfile for one test
+# Example: make compareone ARGS=testname
+compareone2:
+	module load MATLAB/2021a; \
+	fulldir="$(shell pwd)/$(ARGS)"; \
+	($$fulldir/test 2>/dev/null | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/inf +infi/inf/gi' | sed -z 's/inf + infi/inf/gi' | \
+		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
+		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
+		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/\+0i//g' | sed -z 's/\n\s/\n/gi' | \
+		grep "\S" | sed -z -E 's/\t/ /gi' | sed -z -E 's/ +/ /gi') > $$fulldir/f1; \
+	matlab -nodisplay -nosplash < $$fulldir/matlabToRun/$(ARGS)_torun.m; \
+	(cat $$fulldir/output.txt 2>/dev/null | \
+		sed -z 's/-nan/inf/gi' | sed -z 's/nan/inf/gi' | sed -z 's/Inf/inf/gi'| \
+		sed -z 's/\.000000//g' | sed -z 's/\.00000//g' | sed -z 's/\.0000//g' | \
+		tr -s ' \t\n' | sed -z 's/\n/ \n/g' | \
+		sed -z -E 's/-\s*(0+(\.0+)?(-|\+|\s))/\1/g' | sed -z -E 's/-\s*(0+(\.0+)?i)/+\1/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/(\.[[:digit:]]+)0+(\-|\+|i|\s|\n)/\1\2/g' | \
+		sed -z -E 's/\+0i//g' | sed -z 's/\n\s/\n/gi' | \
+		grep "\S" | sed -z 's/\t/ /gi' | sed -z 's/ +/ /gi') > $$fulldir/f2; \
+	diff -wi $$fulldir/f1 $$fulldir/f2 && \
+		echo -e "\e[1;32mSUCCESS\e[0m : $(ARGS)"||\
+		echo -e "\e[1;31mDIFF ERROR\e[0m : $(ARGS)";\
+	module unload MATLAB/2021a; \
+	
 
 # OLD STUFF
 

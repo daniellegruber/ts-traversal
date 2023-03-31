@@ -33,6 +33,6 @@ int main(void) {
 	printM(a);
 	printM(b);
 	double c = 1.0;
-	printf("\n%f\n", c);
+	printf("\n%.4f\n", c);
 	return 0;
 }

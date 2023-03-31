@@ -3,20 +3,6 @@
 
 %source octaveIncludes.m;
 
-function fourier_script(a)
-	disp(fft(a));
-	disp(ifft(a));
-end
-
-function fourier_vec_script(a)
-
-	for i=1:20
-		disp(fft(a,i));
-		disp(ifft(a,i));
-	end
-
-end
-
 %row_vectors_i
 a = [3,-5,0,1];
 disp(a);
@@ -109,3 +95,17 @@ end
 a=a.';
 disp(a);
 fourier_script(a);
+
+function fourier_script(a)
+	disp(fft(a));
+	disp(ifft(a));
+end
+
+function fourier_vec_script(a)
+
+	for i=1:20
+		disp(fft(a,i));
+		disp(ifft(a,i));
+	end
+
+end

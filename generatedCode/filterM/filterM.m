@@ -3,7 +3,7 @@
 
 %source octaveIncludes.m;
 
-matrices = cell(12,1);
+matrices = cell(13,1);
 
 matrices{1} = zeros(1,10);
 matrices{1}(1) = 1;
@@ -72,6 +72,7 @@ for i=1:13
 			disp(sprintf('\n'));
 			%[y, sf] = filter(matrices{i}, matrices{j}, matrices{k});
 			y = filter(matrices{i}, matrices{j}, matrices{k});
+			disp(sprintf('\ny\n'));
 			disp(y);
 			disp(sprintf('\n'));
 			%disp(sf);

@@ -54,7 +54,7 @@ int main(void) {
 				for (int iter9 = 1; iter9 <= 3; ++ iter9) {
 					double tmp3;
 					indexM(mat1, &tmp3, 4, iter8, iter9, iter7, iter6);
-					printf("\n%f\n", tmp3);
+					printf("\n%.4f\n", tmp3);
 				
 				}
 			
@@ -71,7 +71,7 @@ int main(void) {
 				for (int iter13 = 1; iter13 <= 2; ++ iter13) {
 					double tmp4;
 					indexM(mat1, &tmp4, 4, iter13, iter12, iter11, iter10);
-					printf("\n%f\n", tmp4);
+					printf("\n%.4f\n", tmp4);
 				
 				}
 			
@@ -86,7 +86,7 @@ int main(void) {
 		int idx1 = convertSubscript(ndim1, dim1, iter14);
 		double tmp5;
 		indexM(mat1, &tmp5, 1, idx1+1);
-		printf("\n%f\n", tmp5);
+		printf("\n%.4f\n", tmp5);
 	
 	}
 	printf("\n%s\n", "\n");
@@ -121,7 +121,7 @@ int main(void) {
 				for (int iter20 = 1; iter20 <= 3; ++ iter20) {
 					double tmp8;
 					indexM(mat2, &tmp8, 4, iter19, iter20, iter18, iter17);
-					printf("\n%f\n", tmp8);
+					printf("\n%.4f\n", tmp8);
 				
 				}
 			
@@ -138,7 +138,7 @@ int main(void) {
 				for (int iter24 = 1; iter24 <= 2; ++ iter24) {
 					double tmp9;
 					indexM(mat2, &tmp9, 4, iter24, iter23, iter22, iter21);
-					printf("\n%f\n", tmp9);
+					printf("\n%.4f\n", tmp9);
 				
 				}
 			
@@ -153,7 +153,7 @@ int main(void) {
 		int idx3 = convertSubscript(ndim1, dim1, iter25);
 		double tmp10;
 		indexM(mat2, &tmp10, 1, idx3+1);
-		printf("\n%f\n", tmp10);
+		printf("\n%.4f\n", tmp10);
 	
 	}
 	printf("\n%s\n", "\n");

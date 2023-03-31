@@ -7,7 +7,7 @@ fileID = fopen('/home/dlg59/project/ts-traversal/generatedCode/xcorrM/output.txt
 %source octaveIncludes.m;
 %pkg load signal;
 
-matrices = cell(11,1);
+matrices = cell(12,1);
 
 matrices{1} = zeros(1,10);
 matrices{2} = ones(20,1);
@@ -59,12 +59,12 @@ matrices{11} = [3,-2,0,   4,-1,0,   0,0,1, 2.5];
 matrices{12} = [3,-2,0,   4,-1,0,   0,0,1, 2.5];
 
 
-for index=1:12
-	dispArr(fileID, sprintf('i\n'));
+for index=6:6
+	dispArr(fileID, sprintf('i = %d\n', index));
 	dispArr(fileID, matrices{index});
 
-	for j=1:12
-		dispArr(fileID, sprintf('j\n'));
+	for j=11:11
+		dispArr(fileID, sprintf('j = %d\n', j));
 		dispArr(fileID, matrices{j});
 		dispArr(fileID, sprintf('\n\n'));
 		dispArr(fileID, xcorr(matrices{index}, matrices{j}, 'none'));
@@ -74,43 +74,14 @@ for index=1:12
 			dispArr(fileID, xcorr(matrices{index}, matrices{j}, 'coeff'));
 		end
 
-		for k=9:21
-			dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'none'));
-			if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
-				dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
-				dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'biased'));
-				dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'coeff'));
-			end
-		end
+		%for k=9:21
+		%	dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'none'));
+		%	if (index > 1 && j > 1 && size(matrices{index},1)*size(matrices{index},2) == size(matrices{j},1)*size(matrices{j},2))
+		%		dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
+		%		dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'biased'));
+		%		dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'coeff'));
+		%	end
+		%end
 
 	end
 end
-
-% for index=1:1
-% 	% sprintf(stdout, 'i\n');
-% 	% dispArr(fileID, matrices{index});
-
-% 	for j=1:12
-% 		index = j;
-% 		sprintf(stdout, 'j\n');
-% 		dispArr(fileID, matrices{j});
-% 		sprintf(stdout, '\n\n');
-% 		dispArr(fileID, xcorr(matrices{index}, matrices{j}, 'none'));
-% 		if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
-% 			dispArr(fileID, xcorr(matrices{index}, matrices{j}, 'unbiased'));
-% 			dispArr(fileID, xcorr(matrices{index}, matrices{j}, 'biased'));
-% 			dispArr(fileID, xcorr(matrices{index}, matrices{j}, 'coeff'));
-% 		end
-
-% 		for k=9:21
-% 			dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'none'));
-% 			if (index > 1 && j > 1 && size(matrices{index})(1)*size(matrices{index})(2) == size(matrices{j})(1)*size(matrices{j})(2))
-% 				dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'unbiased'));
-% 				dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'biased'));
-% 				dispArr(fileID, xcorr(matrices{index}, matrices{j}, k, 'coeff'));
-% 			end
-% 		end
-
-% 	end
-% end
-

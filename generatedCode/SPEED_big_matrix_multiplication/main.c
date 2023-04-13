@@ -25,7 +25,7 @@ int main(void) {
 	Matrix * tmp2 = onesM(ndim2, dim2);
 	Matrix * b = tmp2;
 	complex* lhs_data2 = i_to_c(b);
-	for (int iter1 = 1; iter1 <= size; ++ iter1) {
+	for (int iter1 = 1; iter1 <= size; iter1++) {
 		int tmp4 = pow(iter1, 2);
 		double tmp3 = tmp4 + 0.5;
 		int idx1 = convertSubscript(ndim1, dim1, iter1);
@@ -52,7 +52,7 @@ int main(void) {
 	}
 	Matrix *mat2 = createM(ndim2, dim2, 2);
 	writeM(mat2, size2, lhs_data2);
-	for (int iter4 = 1; iter4 <= iterations; ++ iter4) {
+	for (int iter4 = 1; iter4 <= iterations; iter4++) {
 		Matrix * tmp7 = mtimesM(mat2, mat1);
 		Matrix * c = tmp7;
 		//disp(c);

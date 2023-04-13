@@ -40,7 +40,7 @@ int main(void) {
 	C[2].type = 1;
 	C[2].data.dval = 2.0;
 	
-	for (int iter1 = 1; iter1 <= 3; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 3; iter1++) {
 		int ndim2 = 2;
 		int dim2[2] = {1,15};
 		int idx1 = convertSubscript(ndim2, dim2, iter1);

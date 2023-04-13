@@ -862,7 +862,12 @@ exports.operatorMapping = [
                 return 'equalM';
             }
             else {
-                return null;
+                if (arg_types[0].type == "int" && arg_types[1].type == "int") {
+                    return "".concat(args[0], " == ").concat(args[1]);
+                }
+                else {
+                    return "fabs(".concat(args[0], " - ").concat(args[1], ") < 1e-6");
+                }
             }
         },
         req_arg_types: function (args, arg_types, outs) {
@@ -883,7 +888,16 @@ exports.operatorMapping = [
                 return null;
             }
         },
-        args_transform: function (args, arg_types, outs) { return args; },
+        args_transform: function (args, arg_types, outs) {
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && right_ismatrix) {
+                return args;
+            }
+            else {
+                return ['void'];
+            }
+        },
         outs_transform: function (args, arg_types, outs) { return outs; },
         n_req_args: 2,
         n_opt_args: 0,
@@ -896,15 +910,30 @@ exports.operatorMapping = [
             var right_type = arg_types[1].type;
             var right_ndim = arg_types[1].ndim;
             var right_dim = arg_types[1].dim;
-            return {
-                type: 'bool',
-                ndim: left_ndim,
-                dim: left_dim,
-                ismatrix: true,
-                isvector: false,
-                ispointer: false,
-                isstruct: false
-            };
+            var left_ismatrix = arg_types[0].ismatrix;
+            var right_ismatrix = arg_types[1].ismatrix;
+            if (left_ismatrix && right_ismatrix) {
+                return {
+                    type: 'bool',
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
+            else {
+                return {
+                    type: 'bool',
+                    ndim: left_ndim,
+                    dim: left_dim,
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                };
+            }
         },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
@@ -921,8 +950,12 @@ exports.operatorMapping = [
                 return 'neM';
             }
             else {
-                //return null;
-                return "".concat(args[0], " != ").concat(args[1]);
+                if (arg_types[0].type == "int" && arg_types[1].type == "int") {
+                    return "".concat(args[0], " != ").concat(args[1]);
+                }
+                else {
+                    return "fabs(".concat(args[0], " - ").concat(args[1], ") > 1e-6");
+                }
             }
         },
         req_arg_types: function (args, arg_types, outs) { return null; },

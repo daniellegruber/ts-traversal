@@ -127,10 +127,18 @@ export function generateTmpVar(name, tmp_tbl) {
 }
 
 export function filterByScope(obj, name, node, find_or_filter) {
+    let obj2 = obj.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     if (find_or_filter == 0) {
+        
+        if (obj2.length > 0) {
+            return obj2.reduce(function(prev, curr) {
+                return (prev.scope[1] - prev.scope[0]) < (curr.scope[1] - curr.scope[0]) ? prev : curr;
+            });
+        }
         return obj.find(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     } else if (find_or_filter == 1) {
-        return obj.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+        //return obj.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+        return obj2;
     }
 }
 

@@ -34,7 +34,7 @@ int main(void) {
 	Matrix * tmp1 = transposeM(a);
 	Matrix * a_trans = tmp1;
 	printM(a);
-	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 9; iter1++) {
 		// Octave is natively column-major matrix storage, but C is row-major
 		// So when iterating over a matrix flatly (i.e., not calling dimensions), you must transpose
 		int ndim2 = getnDimM(a_trans);
@@ -61,8 +61,8 @@ int main(void) {
 		}
 	
 	}
-	for (int iter2 = 1; iter2 <= 3; ++ iter2) {
-		for (int iter3 = 1; iter3 <= 3; ++ iter3) {
+	for (int iter2 = 1; iter2 <= 3; iter2++) {
+		for (int iter3 = 1; iter3 <= 3; iter3++) {
 			complex tmp12;
 			indexM(a, &tmp12, 2, iter2, iter3);
 			double tmp13 = cimag(tmp12);

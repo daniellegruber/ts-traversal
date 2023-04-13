@@ -50,6 +50,7 @@ if (!fs.existsSync("".concat(out_folder, "/matlabToRun/").concat(name, "_torun.m
             (0, helperFunctions_1.writeToFile)("".concat(out_folder, "/matlabToRun"), "".concat(fun_name, ".m"), fun_defs[i]);
         }
         (0, helperFunctions_1.writeToFile)("".concat(out_folder, "/matlabToRun"), "".concat(name, "_torun.m"), code);
-    }, 8000);
+        //}, 8000);
+    }, 20000);
 }
 //# sourceMappingURL=matlabToRun.js.map

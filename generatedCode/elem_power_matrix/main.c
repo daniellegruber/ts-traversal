@@ -19,7 +19,7 @@ int main(void) {
 	Matrix * tmp1 = zerosM(ndim1, dim1);
 	Matrix * a = tmp1;
 	int* lhs_data1 = i_to_i(a);
-	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 9; iter1++) {
 		int tmp2 = iter1;
 		int idx1 = convertSubscript(ndim1, dim1, iter1);
 		lhs_data1[idx1] = tmp2;
@@ -47,7 +47,7 @@ int main(void) {
 	Matrix * tmp5 = zerosM(ndim2, dim2);
 	a = tmp5;
 	int* lhs_data2 = i_to_i(a);
-	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
+	for (int iter3 = 1; iter3 <= 9; iter3++) {
 		int tmp6 = iter3;
 		int idx2 = convertSubscript(ndim2, dim2, iter3);
 		lhs_data2[idx2] = tmp6;
@@ -69,7 +69,7 @@ int main(void) {
 	Matrix * tmp8 = zerosM(ndim3, dim3);
 	b = tmp8;
 	double* lhs_data3 = i_to_d(b);
-	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
+	for (int iter5 = 1; iter5 <= 9; iter5++) {
 		double tmp9 = iter5 + 0.4;
 		int idx3 = convertSubscript(ndim3, dim3, iter5);
 		lhs_data3[idx3] = tmp9;
@@ -95,7 +95,7 @@ int main(void) {
 	Matrix * tmp12 = zerosM(ndim4, dim4);
 	a = tmp12;
 	int* lhs_data4 = i_to_i(a);
-	for (int iter7 = 1; iter7 <= 9; ++ iter7) {
+	for (int iter7 = 1; iter7 <= 9; iter7++) {
 		int tmp13 = -iter7;
 		int idx4 = convertSubscript(ndim4, dim4, iter7);
 		lhs_data4[idx4] = tmp13;
@@ -117,7 +117,7 @@ int main(void) {
 	Matrix * tmp15 = zerosM(ndim5, dim5);
 	b = tmp15;
 	double* lhs_data5 = i_to_d(b);
-	for (int iter9 = 1; iter9 <= 9; ++ iter9) {
+	for (int iter9 = 1; iter9 <= 9; iter9++) {
 		double tmp16 = iter9 + 0.4;
 		int idx5 = convertSubscript(ndim5, dim5, iter9);
 		lhs_data5[idx5] = tmp16;
@@ -143,7 +143,7 @@ int main(void) {
 	Matrix * tmp19 = zerosM(ndim6, dim6);
 	a = tmp19;
 	int* lhs_data6 = i_to_i(a);
-	for (int iter11 = 1; iter11 <= 9; ++ iter11) {
+	for (int iter11 = 1; iter11 <= 9; iter11++) {
 		int tmp20 = iter11;
 		int idx6 = convertSubscript(ndim6, dim6, iter11);
 		lhs_data6[idx6] = tmp20;
@@ -165,7 +165,7 @@ int main(void) {
 	Matrix * tmp22 = zerosM(ndim7, dim7);
 	b = tmp22;
 	complex* lhs_data7 = i_to_c(b);
-	for (int iter13 = 1; iter13 <= 9; ++ iter13) {
+	for (int iter13 = 1; iter13 <= 9; iter13++) {
 		complex tmp23 = iter13 + 0.4*I;
 		int idx7 = convertSubscript(ndim7, dim7, iter13);
 		lhs_data7[idx7] = tmp23;
@@ -191,7 +191,7 @@ int main(void) {
 	Matrix * tmp26 = zerosM(ndim8, dim8);
 	a = tmp26;
 	double* lhs_data8 = i_to_d(a);
-	for (int iter15 = 1; iter15 <= 9; ++ iter15) {
+	for (int iter15 = 1; iter15 <= 9; iter15++) {
 		double tmp27 = iter15 + 0.4;
 		int idx8 = convertSubscript(ndim8, dim8, iter15);
 		lhs_data8[idx8] = tmp27;
@@ -213,7 +213,7 @@ int main(void) {
 	Matrix * tmp29 = zerosM(ndim9, dim9);
 	b = tmp29;
 	int* lhs_data9 = i_to_i(b);
-	for (int iter17 = 1; iter17 <= 9; ++ iter17) {
+	for (int iter17 = 1; iter17 <= 9; iter17++) {
 		int tmp30 = iter17;
 		int idx9 = convertSubscript(ndim9, dim9, iter17);
 		lhs_data9[idx9] = tmp30;
@@ -239,7 +239,7 @@ int main(void) {
 	Matrix * tmp33 = zerosM(ndim10, dim10);
 	a = tmp33;
 	double* lhs_data10 = i_to_d(a);
-	for (int iter19 = 1; iter19 <= 9; ++ iter19) {
+	for (int iter19 = 1; iter19 <= 9; iter19++) {
 		double tmp34 = iter19 + 0.4;
 		int idx10 = convertSubscript(ndim10, dim10, iter19);
 		lhs_data10[idx10] = tmp34;
@@ -261,7 +261,7 @@ int main(void) {
 	Matrix * tmp36 = zerosM(ndim11, dim11);
 	b = tmp36;
 	double* lhs_data11 = i_to_d(b);
-	for (int iter21 = 1; iter21 <= 9; ++ iter21) {
+	for (int iter21 = 1; iter21 <= 9; iter21++) {
 		double tmp37 = (iter21 + 0.4);
 		int idx11 = convertSubscript(ndim11, dim11, iter21);
 		lhs_data11[idx11] = tmp37;
@@ -287,7 +287,7 @@ int main(void) {
 	Matrix * tmp40 = zerosM(ndim12, dim12);
 	a = tmp40;
 	double* lhs_data12 = i_to_d(a);
-	for (int iter23 = 1; iter23 <= 9; ++ iter23) {
+	for (int iter23 = 1; iter23 <= 9; iter23++) {
 		double tmp41 = -(iter23 + 0.4);
 		int idx12 = convertSubscript(ndim12, dim12, iter23);
 		lhs_data12[idx12] = tmp41;
@@ -309,7 +309,7 @@ int main(void) {
 	Matrix * tmp43 = zerosM(ndim13, dim13);
 	b = tmp43;
 	double* lhs_data13 = i_to_d(b);
-	for (int iter25 = 1; iter25 <= 9; ++ iter25) {
+	for (int iter25 = 1; iter25 <= 9; iter25++) {
 		double tmp44 = -(iter25 + 0.4);
 		int idx13 = convertSubscript(ndim13, dim13, iter25);
 		lhs_data13[idx13] = tmp44;
@@ -335,7 +335,7 @@ int main(void) {
 	Matrix * tmp47 = zerosM(ndim14, dim14);
 	a = tmp47;
 	double* lhs_data14 = i_to_d(a);
-	for (int iter27 = 1; iter27 <= 9; ++ iter27) {
+	for (int iter27 = 1; iter27 <= 9; iter27++) {
 		double tmp48 = iter27 + 0.4;
 		int idx14 = convertSubscript(ndim14, dim14, iter27);
 		lhs_data14[idx14] = tmp48;
@@ -357,7 +357,7 @@ int main(void) {
 	Matrix * tmp50 = zerosM(ndim15, dim15);
 	b = tmp50;
 	complex* lhs_data15 = i_to_c(b);
-	for (int iter29 = 1; iter29 <= 9; ++ iter29) {
+	for (int iter29 = 1; iter29 <= 9; iter29++) {
 		complex tmp51 = iter29 + 0.4*I;
 		int idx15 = convertSubscript(ndim15, dim15, iter29);
 		lhs_data15[idx15] = tmp51;
@@ -383,7 +383,7 @@ int main(void) {
 	Matrix * tmp54 = zerosM(ndim16, dim16);
 	a = tmp54;
 	complex* lhs_data16 = i_to_c(a);
-	for (int iter31 = 1; iter31 <= 9; ++ iter31) {
+	for (int iter31 = 1; iter31 <= 9; iter31++) {
 		complex tmp55 = iter31 + 1*I;
 		int idx16 = convertSubscript(ndim16, dim16, iter31);
 		lhs_data16[idx16] = tmp55;
@@ -405,7 +405,7 @@ int main(void) {
 	Matrix * tmp57 = zerosM(ndim17, dim17);
 	b = tmp57;
 	int* lhs_data17 = i_to_i(b);
-	for (int iter33 = 1; iter33 <= 9; ++ iter33) {
+	for (int iter33 = 1; iter33 <= 9; iter33++) {
 		int tmp58 = iter33;
 		int idx17 = convertSubscript(ndim17, dim17, iter33);
 		lhs_data17[idx17] = tmp58;
@@ -431,7 +431,7 @@ int main(void) {
 	Matrix * tmp61 = zerosM(ndim18, dim18);
 	a = tmp61;
 	complex* lhs_data18 = i_to_c(a);
-	for (int iter35 = 1; iter35 <= 9; ++ iter35) {
+	for (int iter35 = 1; iter35 <= 9; iter35++) {
 		complex tmp62 = iter35 + 0.5*I;
 		int idx18 = convertSubscript(ndim18, dim18, iter35);
 		lhs_data18[idx18] = tmp62;
@@ -453,7 +453,7 @@ int main(void) {
 	Matrix * tmp64 = zerosM(ndim19, dim19);
 	b = tmp64;
 	double* lhs_data19 = i_to_d(b);
-	for (int iter37 = 1; iter37 <= 9; ++ iter37) {
+	for (int iter37 = 1; iter37 <= 9; iter37++) {
 		double tmp65 = (iter37 + 0.4);
 		int idx19 = convertSubscript(ndim19, dim19, iter37);
 		lhs_data19[idx19] = tmp65;
@@ -479,7 +479,7 @@ int main(void) {
 	Matrix * tmp68 = zerosM(ndim20, dim20);
 	a = tmp68;
 	complex* lhs_data20 = i_to_c(a);
-	for (int iter39 = 1; iter39 <= 9; ++ iter39) {
+	for (int iter39 = 1; iter39 <= 9; iter39++) {
 		complex tmp69 = iter39 + 0.4*I;
 		int idx20 = convertSubscript(ndim20, dim20, iter39);
 		lhs_data20[idx20] = tmp69;
@@ -501,7 +501,7 @@ int main(void) {
 	Matrix * tmp71 = zerosM(ndim21, dim21);
 	b = tmp71;
 	complex* lhs_data21 = i_to_c(b);
-	for (int iter41 = 1; iter41 <= 9; ++ iter41) {
+	for (int iter41 = 1; iter41 <= 9; iter41++) {
 		complex tmp72 = iter41 + 0.4*I;
 		int idx21 = convertSubscript(ndim21, dim21, iter41);
 		lhs_data21[idx21] = tmp72;

@@ -21,7 +21,7 @@ int main(void) {
 	Matrix * tmp1 = onesM(ndim1, dim1);
 	Matrix * a = tmp1;
 	double* lhs_data1 = i_to_d(a);
-	for (int iter1 = 1; iter1 <= size; ++ iter1) {
+	for (int iter1 = 1; iter1 <= size; iter1++) {
 		int tmp3 = pow(iter1, 2);
 		double tmp2 = tmp3 + 0.5;
 		int idx1 = convertSubscript(ndim1, dim1, iter1);
@@ -36,7 +36,7 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 1);
 	writeM(mat1, size1, lhs_data1);
-	for (int iter3 = 1; iter3 <= iterations; ++ iter3) {
+	for (int iter3 = 1; iter3 <= iterations; iter3++) {
 		Matrix * tmp4 = mpowerM(mat1, &exponent, 0);
 		Matrix * c = tmp4;
 		//disp(c);

@@ -244,7 +244,7 @@ int main(void) {
 	Matrix * tmp1 = zerosM(ndim13, dim13);
 	a = tmp1;
 	int* lhs_data1 = i_to_i(a);
-	for (int iter1 = 1; iter1 <= 63; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 63; iter1++) {
 		int tmp3 = pow((-1), iter1);
 		int tmp4 = pow(iter1, 2);
 		int tmp2 = tmp3 * tmp4;
@@ -271,7 +271,7 @@ int main(void) {
 	Matrix * tmp6 = zerosM(ndim14, dim14);
 	a = tmp6;
 	double* lhs_data2 = i_to_d(a);
-	for (int iter3 = 1; iter3 <= 63; ++ iter3) {
+	for (int iter3 = 1; iter3 <= 63; iter3++) {
 		int tmp8 = pow((-1), iter3);
 		int tmp9 = pow(iter3, 2);
 		double tmp7 = (double) tmp8 * tmp9 / 17;
@@ -298,7 +298,7 @@ int main(void) {
 	Matrix * tmp11 = zerosM(ndim15, dim15);
 	a = tmp11;
 	complex* lhs_data3 = i_to_c(a);
-	for (int iter5 = 1; iter5 <= 63; ++ iter5) {
+	for (int iter5 = 1; iter5 <= 63; iter5++) {
 		int tmp13 = pow((-1), iter5);
 		complex tmp12 = tmp13 * iter5 - ((complex) iter5) / (17*I);
 		int idx3 = convertSubscript(ndim15, dim15, iter5);

@@ -14,7 +14,7 @@ int main(void) {
 	//format short
 	//source octaveIncludes.m;
 	int iterations = 100;
-	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
+	for (int iter1 = 1; iter1 <= iterations; iter1++) {
 		//disp("hamming");
 		double *tmp1 = NULL;
 		tmp1 = malloc((iter1)*sizeof(*tmp1));

@@ -53,8 +53,8 @@ int main(void) {
 	a = tmp1;
 	int* lhs_data1 = i_to_i(a);
 	int counter = 1;
-	for (int iter1 = 1; iter1 <= 3; ++ iter1) {
-		for (int iter2 = 1; iter2 <= 3; ++ iter2) {
+	for (int iter1 = 1; iter1 <= 3; iter1++) {
+		for (int iter2 = 1; iter2 <= 3; iter2++) {
 			int tmp2 = counter * counter;
 			lhs_data1[(iter2-1) + (iter1-1)*3 + (1-1)*3*3 + (1-1)*3*3*1] = tmp2;
 			counter = counter + 1;
@@ -81,8 +81,8 @@ int main(void) {
 	a = tmp3;
 	int* lhs_data2 = i_to_i(a);
 	counter = 0;
-	for (int iter4 = 0; iter4 <= 4; ++ iter4) {
-		for (int iter5 = 0; iter5 <= 4; ++ iter5) {
+	for (int iter4 = 0; iter4 <= 4; iter4++) {
+		for (int iter5 = 0; iter5 <= 4; iter5++) {
 			counter = counter + 1;
 			int tmp4 = (counter - 1) % 2;
 			if ((tmp4 == 0)) {

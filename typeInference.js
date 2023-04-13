@@ -306,8 +306,70 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                 // If LHS is an identifier, type is same as RHS
                 var _b = inferType(filename, node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _b[0], ndim = _b[1], dim = _b[2], ismatrix = _b[3], ispointer = _b[4], isstruct = _b[5], cf = _b[6];
                 custom_functions = cf;
+                var scope = findVarScope(filename, node, block_idxs, "main", debug);
                 if (node.leftNode.type == "identifier" /* g.SyntaxType.Identifier */) {
-                    var v1_2 = {
+                    var name_3 = node.leftNode.text;
+                    var v1_2 = (0, helperFunctions_2.filterByScope)(var_types, name_3, node, 1);
+                    if (v1_2.length > 0) {
+                        count = count + 1;
+                        v1_2 = v1_2[v1_2.length - 1];
+                        if (scope[2] == v1_2.scope[2]) { // same block level
+                            var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v1_2); }); // replace if already in var_types
+                            v1_2.scope = [v1_2.scope[0], node.startIndex - 1, v1_2.scope[2]];
+                            var_types.push(v1_2);
+                            var v2 = {
+                                name: v1_2.name,
+                                type: type,
+                                ndim: ndim,
+                                dim: dim,
+                                ismatrix: ismatrix,
+                                isvector: (0, helperFunctions_1.numel)(dim) > 1 && !ismatrix,
+                                ispointer: ispointer,
+                                isstruct: isstruct,
+                                scope: [node.startIndex, scope[1], scope[2]],
+                                initialized: false //true
+                            };
+                            var_types.push(v2);
+                            if (name_3 == "i") {
+                                //console.log(node.text);
+                                //console.log(var_types.filter(x=>x.name=="i"));
+                                //console.log(v1);
+                                //console.log(v2);
+                                //console.log("-------------------------");
+                            }
+                        }
+                        else {
+                            v1_2 = {
+                                name: name_3,
+                                type: type,
+                                ndim: 1,
+                                dim: [1],
+                                ismatrix: false,
+                                isvector: false,
+                                ispointer: false,
+                                isstruct: false,
+                                initialized: false,
+                                scope: scope
+                            };
+                            var_types.push(v1_2);
+                        }
+                    }
+                    else {
+                        v1_2 = {
+                            name: name_3,
+                            type: type,
+                            ndim: 1,
+                            dim: [1],
+                            ismatrix: false,
+                            isvector: false,
+                            ispointer: false,
+                            isstruct: false,
+                            initialized: false,
+                            scope: scope
+                        };
+                        var_types.push(v1_2);
+                    }
+                    /*let v1: VarType = {
                         name: node.leftNode.text,
                         type: type,
                         ndim: 1,
@@ -318,9 +380,9 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                         isstruct: false,
                         initialized: false,
                         scope: findVarScope(filename, node, block_idxs, "main", debug)
-                    };
-                    var_types = var_types.filter(function (e) { return JSON.stringify(e) !== JSON.stringify(v1_2); }); // replace if already in var_types
-                    var_types.push(v1_2);
+                    };*/
+                    //var_types = var_types.filter(function(e) { return JSON.stringify(e) !== JSON.stringify(v1)}); // replace if already in var_types
+                    //var_types.push(v1);
                 }
                 break;
             }
@@ -1120,6 +1182,7 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                 step = children_vals[1];
             }
             var len = Math.floor((stop - start) / step) + 1;
+            //let len = Math.round((stop-start)/step) + 1;
             // TO DO: Maybe change so that it's only pointer, not a matrix and
             // represented in generateCode by creating an array, not a matrix
             //return [type, 2, [1, len], true, true, false, custom_functions];

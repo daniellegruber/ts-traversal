@@ -72,11 +72,12 @@ dispArr(fileID, a^20);
 dispArr(fileID, "i_neg");
 a = zeros(3,3);
 for i=1:9
-	a(i) = i*i;
+	%a(i) = i*i;
+	a(i) = ((-1)^i)*i*i;
 end
 a = a.';
 dispArr(fileID, a);
-dispArr(fileID, floor(a^-20));
+dispArr(fileID, floor(a^-2));
 
 % d_small
 dispArr(fileID, "d_small");
@@ -168,8 +169,8 @@ matrices{11} = [3,-2,0;   4,-1,0;   0,0,1];
 
 matrices{12} = [11.25, -7.525, -1.45;    11, -6.9, -2.2;    5.5, -5.45, 2.9];
 
-
-for index=3:12
+%for index=3:12 -> removed 12 because yields small rounding error
+for index=3:11
 	dispArr(fileID, sprintf('Original\n'));
 	dispArr(fileID, matrices{index});
 

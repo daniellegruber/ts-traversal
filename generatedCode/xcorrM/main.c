@@ -48,7 +48,7 @@ int main(void) {
 	Matrix * tmp6 = zerosM(ndim6, dim6);
 	matrices[idx5] = tmp6;
 	int* lhs_data1 = i_to_i(matrices[idx5]);
-	for (int iter1 = 1; iter1 <= 10; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 10; iter1++) {
 		int tmp7 = iter1 * iter1;
 		int idx6 = convertSubscript(ndim6, dim6, iter1);
 		lhs_data1[idx6] = tmp7;
@@ -70,7 +70,7 @@ int main(void) {
 	Matrix * tmp8 = zerosM(ndim7, dim7);
 	matrices[idx7] = tmp8;
 	double* lhs_data2 = i_to_d(matrices[idx7]);
-	for (int iter3 = 1; iter3 <= 10; ++ iter3) {
+	for (int iter3 = 1; iter3 <= 10; iter3++) {
 		double tmp9 = iter3 * iter3 + 0.5;
 		int idx8 = convertSubscript(ndim7, dim7, iter3);
 		lhs_data2[idx8] = tmp9;
@@ -92,7 +92,7 @@ int main(void) {
 	Matrix * tmp10 = onesM(ndim8, dim8);
 	matrices[idx9] = tmp10;
 	complex* lhs_data3 = i_to_c(matrices[idx9]);
-	for (int iter5 = 1; iter5 <= 20; ++ iter5) {
+	for (int iter5 = 1; iter5 <= 20; iter5++) {
 		complex tmp11 = iter5 * iter5 + 0.5*I;
 		int idx10 = convertSubscript(ndim8, dim8, iter5);
 		lhs_data3[idx10] = tmp11;
@@ -114,7 +114,7 @@ int main(void) {
 	Matrix * tmp12 = onesM(ndim9, dim9);
 	matrices[idx11] = tmp12;
 	int* lhs_data4 = i_to_i(matrices[idx11]);
-	for (int iter7 = 1; iter7 <= 20; ++ iter7) {
+	for (int iter7 = 1; iter7 <= 20; iter7++) {
 		int tmp13 = (iter7 - 5) * iter7;
 		int idx12 = convertSubscript(ndim9, dim9, iter7);
 		lhs_data4[idx12] = tmp13;
@@ -136,7 +136,7 @@ int main(void) {
 	Matrix * tmp14 = onesM(ndim10, dim10);
 	matrices[idx13] = tmp14;
 	double* lhs_data5 = i_to_d(matrices[idx13]);
-	for (int iter9 = 1; iter9 <= 20; ++ iter9) {
+	for (int iter9 = 1; iter9 <= 20; iter9++) {
 		double tmp15 = (iter9 - 8.5) * iter9 + 0.5;
 		int idx14 = convertSubscript(ndim10, dim10, iter9);
 		lhs_data5[idx14] = tmp15;
@@ -158,7 +158,7 @@ int main(void) {
 	Matrix * tmp16 = zerosM(ndim11, dim11);
 	matrices[idx15] = tmp16;
 	complex* lhs_data6 = i_to_c(matrices[idx15]);
-	for (int iter11 = 1; iter11 <= 10; ++ iter11) {
+	for (int iter11 = 1; iter11 <= 10; iter11++) {
 		complex tmp17 = (iter11 - 5.5) * (iter11) + ((0.5) * (4 - iter11)) * 1*I;
 		int idx16 = convertSubscript(ndim11, dim11, iter11);
 		lhs_data6[idx16] = tmp17;
@@ -214,11 +214,11 @@ int main(void) {
 	writeM( matrices[idx18], 10, input2);
 	free(input2);
 	
-	for (int iter13 = 6; iter13 <= 6; ++ iter13) {
+	for (int iter13 = 6; iter13 <= 6; iter13++) {
 		printf("i = %d\n", iter13);
 		int idx19 = convertSubscript(ndim1, dim1, iter13);
 		printM(matrices[idx19]);
-		for (int iter14 = 11; iter14 <= 11; ++ iter14) {
+		for (int iter14 = 11; iter14 <= 11; iter14++) {
 			printf("j = %d\n", iter14);
 			int idx20 = convertSubscript(ndim1, dim1, iter14);
 			printM(matrices[idx20]);

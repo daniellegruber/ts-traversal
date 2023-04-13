@@ -13,7 +13,7 @@ int main(void) {
 	//more off
 	//format short
 	tic;
-	for (int iter1 = 1; iter1 <= 5; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 5; iter1++) {
 		printf("\n%d\n", iter1);
 	
 	}

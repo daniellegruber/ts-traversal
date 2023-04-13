@@ -13,7 +13,7 @@ function double_vec_stats(fileID, a)
 		dispArr(fileID, sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd));
 
 		[h, pval, ci, z] = ztest(a, i, std(a, 0, "all"));
-		dispArr(fileID, sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit));
+		dispArr(fileID, sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\n", h, pval, ci(1), ci(2), z));
 	end
 
 	for i=(var(a, 0, "all")-0.05):0.01:(var(a, 0, "all")+0.05)

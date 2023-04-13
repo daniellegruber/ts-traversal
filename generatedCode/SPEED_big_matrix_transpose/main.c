@@ -20,8 +20,8 @@ int main(void) {
 	Matrix * tmp1 = onesM(ndim1, dim1);
 	Matrix * a = tmp1;
 	complex* lhs_data1 = i_to_c(a);
-	for (int iter1 = 1; iter1 <= size; ++ iter1) {
-		for (int iter2 = 1; iter2 <= size; ++ iter2) {
+	for (int iter1 = 1; iter1 <= size; iter1++) {
+		for (int iter2 = 1; iter2 <= size; iter2++) {
 			complex tmp3 = cpow(((iter1 - 1) * size + iter2), 2.1);
 			int tmp4 = ((iter1 - 1) * size + iter2) % 7;
 			complex tmp2 = tmp3 + 0.5 + tmp4;
@@ -38,7 +38,7 @@ int main(void) {
 	}
 	Matrix *mat1 = createM(ndim1, dim1, 2);
 	writeM(mat1, size1, lhs_data1);
-	for (int iter4 = 1; iter4 <= iterations; ++ iter4) {
+	for (int iter4 = 1; iter4 <= iterations; iter4++) {
 		Matrix * tmp5 = transposeM(mat1);
 		Matrix * b = tmp5;
 	

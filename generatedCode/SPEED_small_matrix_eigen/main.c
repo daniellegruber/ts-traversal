@@ -28,7 +28,7 @@ int main(void) {
 	free(input1);
 	
 	printM(a);
-	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
+	for (int iter1 = 1; iter1 <= iterations; iter1++) {
 		complex complex_one = 1;
 		Matrix * V1 = NULL;
 		Matrix * lambda1 = NULL;

@@ -52,6 +52,8 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
     
     var lhs_flag = false;
     
+    var if_flag = false;
+    
     var link = [`//Link
 #include <stdio.h>
 #include <stdbool.h>
@@ -266,8 +268,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             }
                 
             case g.SyntaxType.IfStatement: {
+                if_flag = true;
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain("if (" + transformNode(node.conditionNode) + ") {", fun_params);
+                if_flag = false;
                 block_level += 1;
                 for (let i=1; i<node.namedChildCount; i++) {
                     updateFunParams(0);
@@ -300,9 +304,11 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
             case g.SyntaxType.ForStatement: {
                 let expression = [];
                 let tmp_iter = generateTmpVar("iter", tmp_tbl);
+                let type = 'int';
                 //let tmp_iter = node.leftNode.text;
                 if (node.rightNode.type == g.SyntaxType.Slice) {
-                    let children = [];
+                    let [,,dim,,,,] = inferType(filename, node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                    var children = [];
                     for (let i = 0; i < node.rightNode.namedChildCount; i ++) {
                         extract_singular_mat = true;
                         children.push(transformNode(node.rightNode.namedChildren[i]));
@@ -310,19 +316,21 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         
                     }
                     let obj = tmp_var_types.find(x => x.name === node.leftNode.text);
-                    let type = 'int';
+                    //let type = 'int';
                     if (node.rightNode.namedChildCount == 3) {
                         [type,,,,,,] = inferType(filename, node.rightNode.namedChildren[1], tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
                     }
                     
-                    expression.push(`for (${type} ${tmp_iter} = ${children[0]};`);
+                    //expression.push(`for (${type} ${tmp_iter} = ${children[0]};`);
                     loop_iterators.push(tmp_iter);
                     updateFunParams(0);
-                    alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
+                    if (type == "int") {
+                        alias_tbl = pushAliasTbl(node.leftNode.text, tmp_iter, node.bodyNode, fun_params);
+                    }
                     
                     tmp_var_types.push({
                         name: tmp_iter,
-                        type: "int",
+                        type: type,
                         ndim: 1,
                         dim: [1],
                         ismatrix: false,
@@ -333,12 +341,31 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                         scope: findVarScope(filename, node, block_idxs, current_code, debug)
                     });
                     
+                    let start = children[0];
+                    let stop = children[1];
+                    let step = 1;
+                    
                     if (children.length == 3) {
-                        expression.push(`${tmp_iter} <= ${children[2]};`);
-                        expression.push(`${tmp_iter} += ${children[1]}`);
+                        stop = children[2];
+                        step = children[1];
+                        if (dim.some(x=>isNaN(x))) {
+                            dim = [1, `(int) floor((${stop}-${start})/${step}) + 1`];
+                            //dim = [1, `(int) round((${stop}-${start})/${step}) + 1`];
+                        }
+                        if (type == "int") {
+                            expression.push(`for (${type} ${tmp_iter} = ${children[0]};`);
+                            expression.push(`${tmp_iter} <= ${children[2]};`);
+                            expression.push(`${tmp_iter} += ${children[1]}`);
+                        } else {
+                            expression.push(`for (${type} ${tmp_iter} = 0;`);
+                            expression.push(`${tmp_iter} < ${dim[1]};`);
+                            expression.push(`${tmp_iter}++`);
+                        }
+                        
                     } else {
+                        expression.push(`for (${type} ${tmp_iter} = ${children[0]};`);
                         expression.push(`${tmp_iter} <= ${children[1]};`);
-                        expression.push(`++ ${tmp_iter}`);
+                        expression.push(`${tmp_iter}++`);
                     }
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(expression.join(" ") + ") {", fun_params);
@@ -359,7 +386,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(`\n${type} ${node.leftNode.text};`, fun_params);
                     updateFunParams(0);
-                    [main_function, function_definitions] = pushToMain(`for (int ${tmp_iter} = 1; ${tmp_iter} <= ${numel(dim)}; ${tmp_iter}++ ) {`, fun_params);
+                    [main_function, function_definitions] = pushToMain(`for (int ${tmp_iter} = 1; ${tmp_iter} < ${numel(dim)}; ${tmp_iter}++ ) {`, fun_params);
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(`indexM(${tmp_var1}, &${node.leftNode.text}, 1, ${tmp_iter});`, fun_params);
                     loop_iterators.push(tmp_iter);
@@ -371,7 +398,7 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(`\n${type} ${node.leftNode.text};`, fun_params);
                     updateFunParams(0);
-                    [main_function, function_definitions] = pushToMain(`for (int ${tmp_iter} = 1; ${tmp_iter} <= ${numel(dim)}; ${tmp_iter}++ ) {`, fun_params);
+                    [main_function, function_definitions] = pushToMain(`for (int ${tmp_iter} = 1; ${tmp_iter} < ${numel(dim)}; ${tmp_iter}++ ) {`, fun_params);
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(`indexM(${tmp_var1}, &${node.leftNode.text}, 1, ${tmp_iter});`, fun_params);
                     loop_iterators.push(tmp_iter);
@@ -380,6 +407,10 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 
                 
                 block_level += 1;
+                if (type != "int" && children != undefined) {
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(`${type} ${node.leftNode.text} = ${children[0]} + ${tmp_iter}*${children[1]};`, fun_params);
+                }
                 for (let child of node.bodyNode.namedChildren) {
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain(transformNode(child), fun_params);
@@ -862,11 +893,14 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                             updateFunParams(0);
                             //alias_tbl = pushAliasTbl(node.leftNode.valueNode.text, tmp_mat, node, fun_params);
                             let obj = filterByScope(tmp_var_types, node.leftNode.valueNode.text, node, 0);
+                            if (node.leftNode.valueNode.type != g.SyntaxType.CellSubscript) {
                             alias_tbl.push({
                                 name: node.leftNode.valueNode.text,
                                 tmp_var: tmp_mat,
                                 scope: [lhs_scope2[1] + 1, obj.scope[1], obj.scope[2]]//scope
                             });
+                            }
+                            
                             tmp_var_types.push({
                                 name: tmp_mat,
                                 type: type,
@@ -1564,8 +1598,9 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             case g.SyntaxType.ElseifClause: {
                 let expression = [];
                 updateFunParams(0);
+                if_flag = true;
                 [main_function, function_definitions] = pushToMain("} else if (" + transformNode(node.conditionNode) + ") {", fun_params);
-                // come back here
+                if_flag = false;
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain(transformNode(node.consequenceNode), fun_params);
                 //pushToMain("\n}")
@@ -1679,15 +1714,21 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
                 let tmp_iter = generateTmpVar("iter", tmp_tbl);
                 if (dim.some(x=>isNaN(x))) {
                     dim = [1, `(int) floor((${stop}-${start})/${step}) + 1`];
+                    //dim = [1, `(int) round((${stop}-${start})/${step}) + 1`];
                     //expression.push(`${type} *${tmp_vec};`);
                 } else {
                     //expression.push(`${type} ${tmp_vec}[${numel(dim)}];`);
                 }
+
                 expression.push(`${type} ${tmp_vec}[${numel(dim)}];`);
-                expression.push(`
-for (int ${tmp_iter} = 0; ${start} + (${step})*${tmp_iter} <= ${stop}; ${tmp_iter}++) {
+                /*expression.push(`
+for (int ${tmp_iter} = 0; ${start} + (${step})*${tmp_iter} < ${stop}; ${tmp_iter}++) {
 \t${tmp_vec}[${tmp_iter}] = ${start} + (${step})*${tmp_iter};
-}`)
+}`);*/
+                expression.push(`
+for (int ${tmp_iter} = 0; ${tmp_iter} < ${dim[1]}; ${tmp_iter}++) {
+\t${tmp_vec}[${tmp_iter}] = ${start} + (${step})*${tmp_iter};
+}`);
                 updateFunParams(0);
                 [main_function, function_definitions] = pushToMain(expression.join("\n"), fun_params);
                 let scope = findVarScope(filename, node, block_idxs, current_code, debug);
@@ -2123,6 +2164,14 @@ for (int ${tmp_iter} = 0; ${start} + (${step})*${tmp_iter} <= ${stop}; ${tmp_ite
                     break;
                 }
             }
+        } else if (if_flag) {
+            let var_val = `${fun_c}()`;
+            if (args[0] == "void") {
+                var_val = `${fun_c}`;
+            } else if (args != null) {
+                var_val = `${fun_c}(${args.join(", ")})`;
+            }
+            return var_val;
         } else {
             let tmp_var = generateTmpVar("tmp", tmp_tbl);
             tmp_var_types.push({

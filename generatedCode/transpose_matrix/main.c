@@ -20,8 +20,8 @@ int main(void) {
 	Matrix * a = tmp1;
 	int* lhs_data1 = i_to_i(a);
 	int counter = 1;
-	for (int iter1 = 1; iter1 <= 3; ++ iter1) {
-		for (int iter2 = 1; iter2 <= 6; ++ iter2) {
+	for (int iter1 = 1; iter1 <= 3; iter1++) {
+		for (int iter2 = 1; iter2 <= 6; iter2++) {
 			int tmp2 = counter * counter;
 			lhs_data1[(iter2-1) + (iter1-1)*6 + (1-1)*3*6 + (1-1)*3*6*1] = tmp2;
 			counter = counter + 1;
@@ -51,8 +51,8 @@ int main(void) {
 	a = tmp6;
 	double* lhs_data2 = i_to_d(a);
 	counter = 1;
-	for (int iter4 = 1; iter4 <= 3; ++ iter4) {
-		for (int iter5 = 1; iter5 <= 6; ++ iter5) {
+	for (int iter4 = 1; iter4 <= 3; iter4++) {
+		for (int iter5 = 1; iter5 <= 6; iter5++) {
 			double tmp7 = counter * counter + 0.5;
 			lhs_data2[(iter5-1) + (iter4-1)*6 + (1-1)*3*6 + (1-1)*3*6*1] = tmp7;
 			counter = counter + 1;
@@ -82,8 +82,8 @@ int main(void) {
 	a = tmp11;
 	complex* lhs_data3 = i_to_c(a);
 	counter = 1;
-	for (int iter7 = 1; iter7 <= 3; ++ iter7) {
-		for (int iter8 = 1; iter8 <= 6; ++ iter8) {
+	for (int iter7 = 1; iter7 <= 3; iter7++) {
+		for (int iter8 = 1; iter8 <= 6; iter8++) {
 			complex tmp12 = counter * counter + 0.5 - 0.5*I;
 			lhs_data3[(iter8-1) + (iter7-1)*6 + (1-1)*3*6 + (1-1)*3*6*1] = tmp12;
 			counter = counter + 1;
@@ -113,8 +113,8 @@ int main(void) {
 	a = tmp16;
 	complex* lhs_data4 = i_to_c(a);
 	counter = 1;
-	for (int iter10 = 1; iter10 <= 3; ++ iter10) {
-		for (int iter11 = 1; iter11 <= 6; ++ iter11) {
+	for (int iter10 = 1; iter10 <= 3; iter10++) {
+		for (int iter11 = 1; iter11 <= 6; iter11++) {
 			complex tmp17 = counter * counter + 0.5 - 0.5*I;
 			lhs_data4[(iter11-1) + (iter10-1)*6 + (1-1)*3*6 + (1-1)*3*6*1] = tmp17;
 			counter = counter + 1;

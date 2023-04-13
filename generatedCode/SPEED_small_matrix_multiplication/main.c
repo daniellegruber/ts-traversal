@@ -42,7 +42,7 @@ int main(void) {
 	
 	printM(a);
 	printM(b);
-	for (int iter1 = 1; iter1 <= iterations; ++ iter1) {
+	for (int iter1 = 1; iter1 <= iterations; iter1++) {
 		Matrix * tmp1 = mtimesM(b, a);
 		Matrix * c = tmp1;
 		//disp(c);

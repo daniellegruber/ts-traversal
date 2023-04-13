@@ -60,7 +60,8 @@ if (!fs.existsSync(`${out_folder}/matlabToRun/${name}_torun.m`)){
         
         writeToFile(`${out_folder}/matlabToRun`, `${name}_torun.m`, code);
         
-    }, 8000);
+    //}, 8000);
+    }, 20000);
     
 }
 

@@ -22,7 +22,7 @@ int main(void) {
 	Matrix * tmp2 = zerosM(ndim2, dim2);
 	Matrix * a = tmp2;
 	int* lhs_data1 = i_to_i(a);
-	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 9; iter1++) {
 		int tmp3 = iter1;
 		int idx1 = convertSubscript(ndim2, dim2, iter1);
 		lhs_data1[idx1] = tmp3;
@@ -44,7 +44,7 @@ int main(void) {
 	Matrix * tmp5 = zerosM(ndim3, dim3);
 	Matrix * b = tmp5;
 	complex* lhs_data2 = i_to_c(b);
-	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
+	for (int iter3 = 1; iter3 <= 9; iter3++) {
 		complex tmp6 = iter3 + iter3 * 1*I;
 		int idx2 = convertSubscript(ndim3, dim3, iter3);
 		lhs_data2[idx2] = tmp6;

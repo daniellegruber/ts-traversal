@@ -13,77 +13,77 @@ int_vec_stats(a);
 double_stats(a);
 disp("--------------------")
 
-% %row_vectors_d
-% disp("row_vectors_d")
-% a = [0.5,0.25,0,0.6];
-% disp(a);
-% two_t_test(a, ones(size(a)));
-% double_vec_stats(a);
-% double_stats(a);
-% disp("--------------------")
-% 
-% %column_vectors_i
-% disp("column_vectors_i")
-% a = [3;-5;0;1];
-% disp(a);
-% int_vec_stats(a);
-% double_stats(a);
-% disp("--------------------")
-% 
-% %column_vectors_d
-% disp("column_vectors_d")
-% a = [0.25;0.5;0;0.6];
-% disp(a);
-% double_vec_stats(a);
-% double_stats(a);
-% disp("--------------------")
-% 
-% %matrices_23_i
-% disp("matrices_23_i")
-% a=[3,-2,0;1,5,10];
-% disp(a);
-% double_stats(a);
-% disp("--------------------")
-% 
-% %matrices_23_d
-% disp("matrices_23_d")
-% a=[3.25,-2,0;1,5,10];
-% disp(a);
-% double_stats(a);
-% disp("--------------------")
-% 
-% %matrices_32_i
-% disp("matrices_32_i")
-% a=[3,-2;0,1;5,10];
-% disp(a);
-% double_stats(a);
-% disp("--------------------")
-% 
-% %matrices_32_d
-% disp("matrices_32_d")
-% a=[3.25,-2;0,1;5,10];
-% disp(a);
-% double_stats(a);
-% disp("--------------------")
+%row_vectors_d
+disp("row_vectors_d")
+a = [0.5,0.25,0,0.6];
+disp(a);
+two_t_test(a, ones(size(a)));
+double_vec_stats(a);
+double_stats(a);
+disp("--------------------")
 
-% %matrices_97_i
-% a=zeros(7,9);
-% for i=1:63
-% 	a(i) = (-1)^i*i^2;
-% end
-% a=a.';
-% disp(a);
-% double_stats(a);
-% 
-% %matrices_97_d
-% a=zeros(7,9);
-% for i=1:63
-% 	a(i) = (-1)^i*i^2/17;
-% end
-% a=a.';
-% disp(a);
-% double_stats(a);
-% 
+%column_vectors_i
+disp("column_vectors_i")
+a = [3;-5;0;1];
+disp(a);
+int_vec_stats(a);
+double_stats(a);
+disp("--------------------")
+
+%column_vectors_d
+disp("column_vectors_d")
+a = [0.25;0.5;0;0.6];
+disp(a);
+double_vec_stats(a);
+double_stats(a);
+disp("--------------------")
+
+%matrices_23_i
+disp("matrices_23_i")
+a=[3,-2,0;1,5,10];
+disp(a);
+double_stats(a);
+disp("--------------------")
+
+%matrices_23_d
+disp("matrices_23_d")
+a=[3.25,-2,0;1,5,10];
+disp(a);
+double_stats(a);
+disp("--------------------")
+
+%matrices_32_i
+disp("matrices_32_i")
+a=[3,-2;0,1;5,10];
+disp(a);
+double_stats(a);
+disp("--------------------")
+
+%matrices_32_d
+disp("matrices_32_d")
+a=[3.25,-2;0,1;5,10];
+disp(a);
+double_stats(a);
+disp("--------------------")
+
+%matrices_97_i
+a=zeros(7,9);
+for i=1:63
+	a(i) = (-1)^i*i^2;
+end
+a=a.';
+disp(a);
+double_stats(a);
+
+%matrices_97_d
+a=zeros(7,9);
+for i=1:63
+	a(i) = (-1)^i*i^2/17;
+end
+a=a.';
+disp(a);
+double_stats(a);
+
 % %big_matrix
 % a=ones(32,32);
 % disp(a);
@@ -148,7 +148,7 @@ function double_vec_stats(a)
 		disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\ntstat: %.3f\ndf: %.3f\nsd: %.3f\n", h, pval, ci(1), ci(2), stats.tstat, stats.df, stats.sd));
 
 		[h, pval, ci, z] = ztest(a, i, std(a, 0, "all"));
-		disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\nzcrit: %.3f\n", h, pval, ci(1), ci(2), z, zcrit));
+		disp(sprintf("h: %d\npval: %.2f\nci: %.3f, %.3f\nz: %.3f\n", h, pval, ci(1), ci(2), z));
 	end
 
 	for i=(var(a, 0, "all")-0.05):0.01:(var(a, 0, "all")+0.05)
@@ -160,29 +160,34 @@ function double_vec_stats(a)
 end
 
 function double_stats(a)
+    %disp("double stats");
 	fun_qs = [0, -1, 3, 0.2, 0.9, 0.53, 0.75, 1, 0.34, 0.17];
 
 	% Beta PDF
 	for i=0:0.05:0.95
 		for j=0:0.05:0.95
+		    %disp(sprintf("beta, i: %.3f, j: %.3f\n", i, j));
 			disp(betapdf(a, i, j));
 		end
 	end
 
 	% Exponential PDF
 	for lambda=0.05:0.05:4.95
+	    %disp(sprintf("lamvda, l: %.3f\n", lambda));
 		disp(exppdf(a, lambda));
 	end
 
 	% Chi-square PDF
 	for n=0.05:0.05:4.95
-		disp(sprintf("n = %.3f\n", n));
+	    %disp(sprintf("chi, n: %.3f\n", n));
+		%disp(sprintf("n = %.3f\n", n));
 		disp(chi2pdf(a, n));
 	end
 
 	% Gamma PDF
 	for i=0.25:0.25:1.75
 		for j=0.25:0.25:1.75
+		    %disp(sprintf("gamma, i: %.3f, j: %.3f\n", i, j));
 			disp(gampdf(a, i, j));
 		end
 	end

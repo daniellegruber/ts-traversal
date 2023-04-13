@@ -19,7 +19,7 @@ int main(void) {
 	Matrix * tmp1 = zerosM(ndim1, dim1);
 	Matrix * a = tmp1;
 	int* lhs_data1 = i_to_i(a);
-	for (int iter1 = 1; iter1 <= 9; ++ iter1) {
+	for (int iter1 = 1; iter1 <= 9; iter1++) {
 		int tmp2 = iter1 * iter1;
 		int idx1 = convertSubscript(ndim1, dim1, iter1);
 		lhs_data1[idx1] = tmp2;
@@ -56,7 +56,7 @@ int main(void) {
 	Matrix * tmp9 = zerosM(ndim2, dim2);
 	c = tmp9;
 	int* lhs_data2 = i_to_i(c);
-	for (int iter3 = 1; iter3 <= 9; ++ iter3) {
+	for (int iter3 = 1; iter3 <= 9; iter3++) {
 		int tmp10 = iter3 * iter3;
 		int idx2 = convertSubscript(ndim2, dim2, iter3);
 		lhs_data2[idx2] = tmp10;
@@ -87,7 +87,7 @@ int main(void) {
 	Matrix * tmp15 = zerosM(ndim3, dim3);
 	d = tmp15;
 	int* lhs_data3 = i_to_i(d);
-	for (int iter5 = 1; iter5 <= 9; ++ iter5) {
+	for (int iter5 = 1; iter5 <= 9; iter5++) {
 		int tmp16 = iter5 * iter5;
 		int idx6 = convertSubscript(ndim3, dim3, iter5);
 		lhs_data3[idx6] = tmp16;

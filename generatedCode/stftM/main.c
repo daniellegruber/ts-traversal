@@ -33,7 +33,7 @@ int main(void) {
 	//row_vectors_i
 	int vec1[10];
 	
-	for (int iter4 = 0; -4 + (1)*iter4 <= 5; iter4++) {
+	for (int iter4 = 0; iter4 < 10; iter4++) {
 		vec1[iter4] = -4 + (1)*iter4;
 	}
 	
@@ -83,9 +83,9 @@ int main(void) {
 // Subprograms
 	
 void fourier_vec_script(Matrix * a) {
-	for (int iter1 = 4; iter1 <= 4; ++ iter1) {
-		for (int iter2 = 8; iter2 <= 8; ++ iter2) {
-			for (int iter3 = 2; iter3 <= 2; ++ iter3) {
+	for (int iter1 = 4; iter1 <= 4; iter1++) {
+		for (int iter2 = 8; iter2 <= 8; iter2++) {
+			for (int iter3 = 2; iter3 <= 2; iter3++) {
 				printf("win_size: %d, overlap: %d, num_coef: %d\n", iter1, iter3, iter2);
 				int inc1 = iter1 - iter3;
 				int num_coef1 = iter2/2;

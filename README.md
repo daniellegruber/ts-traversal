@@ -201,6 +201,7 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 - In hamming_hanning, C-defined hanning doesnt work as expected
 - In determinant_matrix, C-defined detM doesnt work as expected
 - How to assign ndim and dim for dynamic variables/you don't know the values beforehand
+- How to deal with varargin and varargout
 
 # Under the hood
 ### cleanOctaveC.ts 

@@ -1,4 +1,4 @@
-//Link
+// Link
 #include <stdio.h>
 #include <stdbool.h>
 #include <complex.h>
@@ -6,6 +6,9 @@
 #include <matrix.h>
 #include "../convertSubscript.h"
 #include "./main.h"
+
+// Structs
+
 
 // Function declarations
 void normfit_int(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);

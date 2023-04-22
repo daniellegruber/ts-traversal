@@ -2,7 +2,6 @@ export function pushToMain(expression, fun_params) {
     if (fun_params.debug == 1) {
         console.log("pushToMain");
     }
-    
     if (expression != null) {
         // Indent expression
         let indent = '\t'.repeat(fun_params.block_level);
@@ -42,6 +41,10 @@ export function insertMain(expression, search_exp, before_after, fun_params) {
     
     //idx = idx[idx.length - num_back];
     idx = idx[idx.length - 1];
+    if (idx == undefined) {
+        console.error("ERROR IN INSERT MAIN: IDX UNDEFINED");
+        return [fun_params.main_function, fun_params.function_definitions, fun_params.block_level];
+    }
     // Indent expression
     let match = fun_params.main_function[idx].match(/\t+/);
     let indent = match[0];

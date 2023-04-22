@@ -6,27 +6,30 @@ const path = require("path");
 const glob = require("glob");
 import { VarType, CustomFunction, Class } from "./customTypes";
 import { identifyCustomFunctions } from "./identifyCustomFunctions";
-import { typeInference, inferType, findVarScope } from "./typeInference";
+import { typeInference, inferType, findVarScope, inferTypeFromAssignment } from "./typeInference";
 import { gotoPreorderSucc } from "./treeTraversal";
 import { pushToMain, insertMain, replaceMain } from "./modifyCode";
 import * as g from "./generated";
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/ts-traversal/node_modules/tree-sitter-matlab");
 
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
 
 function compare( a, b ) {
-  if ( a.scope[0] < b.scope[0] ){
+    //console.log("compare");
+    if ( a.scope[0] < b.scope[0] ){
     return -1;
-  }
-  if ( a.scope[0] > b.scope[0] ){
+    }
+    if ( a.scope[0] > b.scope[0] ){
     return 1;
-  }
-  return 0;
+    }
+    return 0;
 }
 
 export function isInitialized(name, node, type, fun_params) {
+    //console.log("isiinit");
     let scope = findVarScope(fun_params.filename, node, fun_params.block_idxs, fun_params.current_code, fun_params.debug);
     let var_type = filterByScope(fun_params.var_types, name, node, 0);
     let all_var_type = fun_params.var_types.filter(x=>x.name == name && x.scope[2]==scope[2]);
@@ -72,6 +75,7 @@ export function findBuiltin(builtin_funs, name) {
     });
 }
 export function extractSingularMat(mat, var_type, node, fun_params) {
+    //console.log("extract");
     let obj = fun_params.alias_tbl.find(x => x.name === mat && x.tmp_var.includes("[0]") &&
         node.startIndex > x.scope[0] && node.endIndex < x.scope[1]);
     if (obj == null || obj == undefined) {
@@ -127,15 +131,25 @@ export function generateTmpVar(name, tmp_tbl) {
 }
 
 export function filterByScope(obj, name, node, find_or_filter) {
-    let obj2 = obj.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+    //console.log("filter1");
+    let obj2 = obj.filter(x => x.scope != null);
+    obj2 = obj2.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     if (find_or_filter == 0) {
-        
-        if (obj2.length > 0) {
+        //console.log("filter2");
+        if (obj2.length > 1) {
+            //console.log("filter3");
+            //console.log(obj2);
             return obj2.reduce(function(prev, curr) {
                 return (prev.scope[1] - prev.scope[0]) < (curr.scope[1] - curr.scope[0]) ? prev : curr;
             });
+        } else if (obj2.length == 1) {
+            //console.log("filter31");
+            //console.log(obj2);
+            return obj2[0];
         }
-        return obj.find(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
+        //console.log("filter4");
+        return null;
+        //return obj.find(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     } else if (find_or_filter == 1) {
         //return obj.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
         return obj2;
@@ -161,6 +175,7 @@ export function pushAliasTbl(lhs, rhs, node, fun_params) {
 }
 
 export function findLastSubscript(node, fun_params) {
+    //console.log("findlast");
     // for a valueNode with text "m" finds all nodes of form m(...) = ...
     // helps with figuring out when to insert writeM(m) code since we want to do that
     // after all values have been assigned to the matrix m
@@ -199,6 +214,10 @@ export function transformNodeByName(var_name, node, alias_tbl) {
 }
 
 export function numel(x) {
+    if (x == null) {
+        console.error("ERROR IN NUMEL: X IS NULL");
+        return null;
+    }
     let ans = x.reduce(function(a, b) {return a * b;});
     if (!x.some(x=>isNaN(x))) {
         //return `${ans}`;
@@ -283,22 +302,40 @@ export function getClasses(src, debug) {
         let class_name = folder.substr(folder.indexOf("@") + 1);
         let files = getFilesInPath(folder);
         let methods: CustomFunction[] = [];
-
+        let properties: VarType[] = [];
         for (let file of files) {
             let sourceCode = fs.readFileSync(file, "utf8");
             let tree = parser.parse(sourceCode);
             [methods,] = identifyCustomFunctions(tree, methods, [], file, [], debug);
-            
+            let filename = path.parse(file).name;
+            if (filename == class_name) {
+                let cursor = tree.walk();
+                do {
+                    const c = cursor as g.TypedTreeCursor;
+                    if (c.currentNode.type == g.SyntaxType.ClassDefinition) {
+                         let node = c.currentNode;
+                         let properties_tree = parser.parse(node.propertiesNode.text);
+                         [properties, , ] = inferTypeFromAssignment("main", properties_tree, [], [], [], file, [], debug, []);
+                         /*if (filename == "mmo") {
+                             console.log("PROPERTIES");
+                             console.log(filename);
+                             console.log(properties);
+                             console.log("----------------------");
+                         }*/
+                    }
+                } while(gotoPreorderSucc(cursor, debug));
+            }
         }
         // Placeholder
         const c: Class = {
             name: class_name,
+            properties: properties,
             methods: methods,
             folder: folder
         }
         classes.push(c);
     }
-    
+
     // Loop 2
     let classes2: Class[] = [];
     for (let c1 of classes) {
@@ -306,20 +343,31 @@ export function getClasses(src, debug) {
         let methods = c1.methods;
         for (let file of files) {
             // Update placeholders
-            [, methods] = typeInference(path.parse(file).name, file, methods, classes, debug);
+            [, methods] = typeInference("main", file, methods, classes, debug);
+            //[, methods] = typeInference(path.parse(file).name, file, methods, classes, debug);
+        }
+        if (c1.name == "mmo") {
+            console.log("METHOD");
+            console.log(c1.name);
+            console.log(methods[1]);
+            //console.log(properties);
+            console.log("----------------------");
         }
         const c: Class = {
             name: c1.name,
             methods: methods,
+            properties: c1.properties,
             folder: c1.folder
         }
         classes2.push(c);
     }
+
     return classes2;
 };
 
 
 export function parseFunctionDefNode(node) {
+    //console.log("parsefun");
     switch (node.type) {
         case g.SyntaxType.ERROR: {
             let types = [];
@@ -342,7 +390,9 @@ export function parseFunctionDefNode(node) {
                     return_variableNode: return_variableNode,
                     nameNode: nameNode,
                     parametersNode: parametersNode,
-                    bodyNode: bodyNode
+                    bodyNode: bodyNode,
+                    startIndex: node.startIndex,
+                    endIndex: node.endIndex,
                 };
             } else {
                 return null;

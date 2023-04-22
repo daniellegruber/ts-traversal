@@ -182,6 +182,7 @@ export const enum SyntaxType {
   CatchClause = "catch_clause",
   Cell = "cell",
   CellSubscript = "cell_subscript",
+  ClassDefinition = "class_definition",
   ComparisonOperator = "comparison_operator",
   Complex = "complex",
   ContinueStatement = "continue_statement",
@@ -190,6 +191,7 @@ export const enum SyntaxType {
   ExpressionStatement = "expression_statement",
   ForStatement = "for_statement",
   FormatSpecifier = "format_specifier",
+  FunHandle = "fun_handle",
   FunctionDefinition = "function_definition",
   IfStatement = "if_statement",
   IgnoreOutput = "ignore_output",
@@ -200,9 +202,11 @@ export const enum SyntaxType {
   KeywordTransposeOperator = "keyword_transpose_operator",
   KeywordUnaryOperator = "keyword_unary_operator",
   Matrix = "matrix",
+  Methods = "methods",
   Module = "module",
   Parameters = "parameters",
   ParenthesizedExpression = "parenthesized_expression",
+  Properties = "properties",
   ReturnValue = "return_value",
   Slice = "slice",
   String = "string",
@@ -249,6 +253,7 @@ export type UnnamedType =
   | "=="
   | ">"
   | ">="
+  | "@"
   | "["
   | "\\"
   | "]"
@@ -256,6 +261,7 @@ export type UnnamedType =
   | "break"
   | "case"
   | "catch"
+  | "classdef"
   | "continue"
   | "else"
   | "elseif"
@@ -265,6 +271,8 @@ export type UnnamedType =
   | "i"
   | "if"
   | "j"
+  | SyntaxType.Methods // both named and unnamed
+  | SyntaxType.Properties // both named and unnamed
   | "try"
   | "while"
   | "{"
@@ -295,6 +303,7 @@ export type SyntaxNode =
   | CatchClauseNode
   | CellNode
   | CellSubscriptNode
+  | ClassDefinitionNode
   | ComparisonOperatorNode
   | ComplexNode
   | ContinueStatementNode
@@ -303,6 +312,7 @@ export type SyntaxNode =
   | ExpressionStatementNode
   | ForStatementNode
   | FormatSpecifierNode
+  | FunHandleNode
   | FunctionDefinitionNode
   | IfStatementNode
   | IgnoreOutputNode
@@ -313,9 +323,11 @@ export type SyntaxNode =
   | KeywordTransposeOperatorNode
   | KeywordUnaryOperatorNode
   | MatrixNode
+  | MethodsNode
   | ModuleNode
   | ParametersNode
   | ParenthesizedExpressionNode
+  | PropertiesNode
   | ReturnValueNode
   | SliceNode
   | StringNode
@@ -350,6 +362,7 @@ export type SyntaxNode =
   | UnnamedNode<"==">
   | UnnamedNode<">">
   | UnnamedNode<">=">
+  | UnnamedNode<"@">
   | UnnamedNode<"[">
   | UnnamedNode<"\\">
   | UnnamedNode<"]">
@@ -357,6 +370,7 @@ export type SyntaxNode =
   | UnnamedNode<"break">
   | UnnamedNode<"case">
   | UnnamedNode<"catch">
+  | UnnamedNode<"classdef">
   | CommentNode
   | UnnamedNode<"continue">
   | EllipsisNode
@@ -373,6 +387,8 @@ export type SyntaxNode =
   | UnnamedNode<"if">
   | IntegerNode
   | UnnamedNode<"j">
+  | UnnamedNode<SyntaxType.Methods>
+  | UnnamedNode<SyntaxType.Properties>
   | StringFragmentNode
   | TrueNode
   | UnnamedNode<"try">
@@ -387,6 +403,7 @@ export type SyntaxNode =
   ;
 
 export type CompoundStatementNode = 
+  | ClassDefinitionNode
   | ForStatementNode
   | FunctionDefinitionNode
   | IfStatementNode
@@ -448,6 +465,7 @@ export type PrimaryExpressionNode =
   | EllipsisNode
   | FalseNode
   | FloatNode
+  | FunHandleNode
   | IdentifierNode
   | IntegerNode
   | MatrixNode
@@ -461,7 +479,7 @@ export type PrimaryExpressionNode =
 export interface AssignmentNode extends NamedNodeBase {
   type: SyntaxType.Assignment;
   leftNode: PrimaryExpressionNode;
-  rightNode: ExpressionNode;
+  rightNode: ExpressionNode | SliceNode;
 }
 
 export interface AttributeNode extends NamedNodeBase {
@@ -494,7 +512,7 @@ export interface BreakStatementNode extends NamedNodeBase {
 
 export interface CallOrSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CallOrSubscript;
-  args_or_subscriptNodes: (UnnamedNode<":"> | ExpressionNode | KeywordExpressionNode | SliceNode)[];
+  args_or_subscriptNodes: (ExpressionNode | KeywordExpressionNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
 }
 
@@ -510,8 +528,15 @@ export interface CellNode extends NamedNodeBase {
 
 export interface CellSubscriptNode extends NamedNodeBase {
   type: SyntaxType.CellSubscript;
-  subscriptNodes: (UnnamedNode<":"> | ExpressionNode | KeywordExpressionNode | SliceNode)[];
+  subscriptNodes: (ExpressionNode | KeywordExpressionNode | SliceNode)[];
   valueNode: PrimaryExpressionNode;
+}
+
+export interface ClassDefinitionNode extends NamedNodeBase {
+  type: SyntaxType.ClassDefinition;
+  methodsNodes: MethodsNode[];
+  nameNode: IdentifierNode;
+  propertiesNode?: PropertiesNode;
 }
 
 export interface ComparisonOperatorNode extends NamedNodeBase {
@@ -555,11 +580,15 @@ export interface FormatSpecifierNode extends NamedNodeBase {
   type: SyntaxType.FormatSpecifier;
 }
 
+export interface FunHandleNode extends NamedNodeBase {
+  type: SyntaxType.FunHandle;
+}
+
 export interface FunctionDefinitionNode extends NamedNodeBase {
   type: SyntaxType.FunctionDefinition;
   bodyNode?: BlockNode;
   nameNode: IdentifierNode;
-  parametersNode: ParametersNode;
+  parametersNode?: ParametersNode;
   return_variableNode?: ReturnValueNode;
 }
 
@@ -615,6 +644,12 @@ export interface MatrixNode extends NamedNodeBase {
   type: SyntaxType.Matrix;
 }
 
+export interface MethodsNode extends NamedNodeBase {
+  type: SyntaxType.Methods;
+  attributesNode?: IdentifierNode;
+  functionNodes: FunctionDefinitionNode[];
+}
+
 export interface ModuleNode extends NamedNodeBase {
   type: SyntaxType.Module;
 }
@@ -625,6 +660,10 @@ export interface ParametersNode extends NamedNodeBase {
 
 export interface ParenthesizedExpressionNode extends NamedNodeBase {
   type: SyntaxType.ParenthesizedExpression;
+}
+
+export interface PropertiesNode extends NamedNodeBase {
+  type: SyntaxType.Properties;
 }
 
 export interface ReturnValueNode extends NamedNodeBase {

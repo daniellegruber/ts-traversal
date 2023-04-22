@@ -6,6 +6,8 @@ var helperFunctions_1 = require("./helperFunctions");
 var treeTraversal_1 = require("./treeTraversal");
 var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/ts-traversal/node_modules/tree-sitter-matlab");
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
 // Identify function definitions
@@ -18,18 +20,21 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
         var node = (0, helperFunctions_1.parseFunctionDefNode)(c.currentNode);
         if (node != null) {
             var arg_types = [];
-            for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
-                var arg = _a[_i];
-                // Placeholder
-                arg_types.push({
-                    name: arg.text,
-                    type: null,
-                    ndim: null,
-                    dim: null,
-                    ismatrix: null,
-                    ispointer: null,
-                    original_out: false
-                });
+            if (node.parametersNode != null && node.parametersNode != undefined) {
+                for (var _i = 0, _a = node.parametersNode.namedChildren; _i < _a.length; _i++) {
+                    var arg = _a[_i];
+                    // Placeholder
+                    arg_types.push({
+                        name: arg.text,
+                        type: null,
+                        ndim: null,
+                        dim: null,
+                        ismatrix: null,
+                        isstruct: null,
+                        ispointer: null,
+                        original_out: false
+                    });
+                }
             }
             var v1 = {
                 name: node.nameNode.text,

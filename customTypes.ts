@@ -82,6 +82,7 @@ export type CustomFunction = {
 
 export type Class = {
     name: string;
+    properties: Array<VarType>;
     methods: Array<CustomFunction>;
     folder: string;
 };

@@ -13,6 +13,7 @@ var identifyCustomFunctions_1 = require("./identifyCustomFunctions");
 var typeInference_1 = require("./typeInference");
 var Parser = require("tree-sitter");
 var Matlab = require("tree-sitter-matlab");
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/ts-traversal/node_modules/tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
 var args = process.argv.slice(2);
@@ -29,6 +30,7 @@ var tree = parser.parse(sourceCode);
 // Read filenames in given directory
 var search_folder = args[1];
 var classes = (0, helperFunctions_1.getClasses)(search_folder, debug);
+//console.log(classes);
 // Output code to given directory
 //let out_folder = args[2] + "/generatedCode";
 var out_folder = args[2] + "/generatedCode/" + path.parse(args[0]).name;
@@ -82,6 +84,8 @@ for (var _i = 0, _c = file_traversal_order.reverse(); _i < _c.length; _i++) {
         console.log(custom_functions[i].arg_type_dic);
         console.log("---------------------------------")
     }*/
+    //console.log("VAR TYPES");
+    //console.log(var_types);
     var _d = (0, generateCode_1.generateCode)(filename, tree_1, out_folder, custom_functions, classes, var_types, block_idxs, file, debug), generated_code = _d[0], header = _d[1], vt = _d[2], cf = _d[3];
     var_types = vt;
     custom_functions = cf;

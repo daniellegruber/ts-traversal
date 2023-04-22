@@ -1,4 +1,4 @@
-//Link
+// Link
 #include <stdio.h>
 #include <stdbool.h>
 #include <complex.h>
@@ -6,6 +6,9 @@
 #include <matrix.h>
 #include "../convertSubscript.h"
 #include "./main.h"
+
+// Structs
+
 
 // Function declarations
 void fourier_vec_script(Matrix * a);

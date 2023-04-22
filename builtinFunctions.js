@@ -2912,7 +2912,92 @@ exports.builtin_functions = [
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
+        //return_type: (args, arg_types, outs) => null,
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'heterogeneous',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: true
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'rmfield',
+        fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
+        req_arg_types: function (args, arg_types, outs) { return null; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        //return_type: (args, arg_types, outs) => null,
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'heterogeneous',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: true
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'builtin',
+        fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
+        req_arg_types: function (args, arg_types, outs) { return null; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        //return_type: (args, arg_types, outs) => null,
         return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: 'all',
+        fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
+        req_arg_types: function (args, arg_types, outs) { return null; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        //return_type: (args, arg_types, outs) => null,
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'bool',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; },

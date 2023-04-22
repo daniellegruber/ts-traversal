@@ -43,6 +43,10 @@ function insertMain(expression, search_exp, before_after, fun_params) {
     }, []);
     //idx = idx[idx.length - num_back];
     idx = idx[idx.length - 1];
+    if (idx == undefined) {
+        console.error("ERROR IN INSERT MAIN: IDX UNDEFINED");
+        return [fun_params.main_function, fun_params.function_definitions, fun_params.block_level];
+    }
     // Indent expression
     var match = fun_params.main_function[idx].match(/\t+/);
     var indent = match[0];

@@ -6,10 +6,10 @@ import { generateCode } from "./generateCode";
 import { CustomFunction, VarType, Type } from "./customTypes";
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
-
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/ts-traversal/node_modules/tree-sitter-matlab");
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/tree-sitter-matlab");
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
-
 // Identify function definitions
 // -----------------------------------------------------------------------------
     
@@ -22,17 +22,20 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
         let node = parseFunctionDefNode(c.currentNode);
         if (node != null) {
             let arg_types = [];
-            for (let arg of node.parametersNode.namedChildren) {
-                // Placeholder
-                arg_types.push({
-                    name: arg.text,
-                    type: null,
-                    ndim: null,
-                    dim: null,
-                    ismatrix: null,
-                    ispointer: null,
-                    original_out: false
-                });
+            if (node.parametersNode != null && node.parametersNode != undefined) {
+                for (let arg of node.parametersNode.namedChildren) {
+                    // Placeholder
+                    arg_types.push({
+                        name: arg.text,
+                        type: null,
+                        ndim: null,
+                        dim: null,
+                        ismatrix: null,
+                        isstruct: null,
+                        ispointer: null,
+                        original_out: false
+                    });
+                }
             }
             const v1: CustomFunction = { 
                 name: node.nameNode.text, 

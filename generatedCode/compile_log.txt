@@ -84,6 +84,7 @@ xcorrM
 
 
 ERROR
+class_test
 octaveIncludes
 octaveTimer
 

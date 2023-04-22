@@ -4,16 +4,15 @@ var fs = require('fs');
 var path = require("path");
 var gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(fs);
-
 import { generateCode } from "./generateCode";
 import { getFilesInPath, getNonClassFilesInPath, getClasses, writeToFile } from "./helperFunctions";
 import * as g from "./generated";
 import { CustomFunction, VarType, Type } from "./customTypes";
 import { identifyCustomFunctions } from "./identifyCustomFunctions";
 import { typeInference, inferType } from "./typeInference";
-
 import Parser = require("tree-sitter");
 import Matlab = require("tree-sitter-matlab");
+//import Matlab = require("/gpfs/gibbs/project/manohar/dlg59/ts-traversal/node_modules/tree-sitter-matlab");
 
 let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
@@ -37,6 +36,7 @@ let tree = parser.parse(sourceCode);
 // Read filenames in given directory
 const search_folder = args[1];
 let classes = getClasses(search_folder, debug);
+//console.log(classes);
 
 // Output code to given directory
 //let out_folder = args[2] + "/generatedCode";
@@ -57,6 +57,7 @@ if (show_output==1) {
     console.log("---------------------\n");
 }
 
+
 if (!fs.existsSync(`${out_folder}/matlabToRun`)){
     fs.mkdirSync(`${out_folder}/matlabToRun`);
 } else {
@@ -64,8 +65,10 @@ if (!fs.existsSync(`${out_folder}/matlabToRun`)){
     fs.mkdirSync(`${out_folder}/matlabToRun`);
 }
 
+
 var files = getNonClassFilesInPath(search_folder);
 files = files.filter(function(e) { return path.parse(e).name !== path.parse(args[0]).name });
+
 
 var var_types: VarType[] = [];
 var [custom_functions, file_traversal_order] = identifyCustomFunctions(tree, [], files, args[0], [args[0]], debug);
@@ -94,6 +97,8 @@ for (let file of file_traversal_order.reverse()) {
         console.log(custom_functions[i].arg_type_dic);
         console.log("---------------------------------")
     }*/
+    //console.log("VAR TYPES");
+    //console.log(var_types);
     let [generated_code, header, vt, cf] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file, debug);
     var_types = vt;
     custom_functions = cf;

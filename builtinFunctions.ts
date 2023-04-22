@@ -2964,7 +2964,92 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         n_opt_args: null,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
+        //return_type: (args, arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'heterogeneous',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: true
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: 'rmfield', 
+        fun_c: (args, arg_types, outs, fun_matlab) => null, 
+        req_arg_types: (args, arg_types, outs) => null,
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        //return_type: (args, arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'heterogeneous',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: true
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: 'builtin', 
+        fun_c: (args, arg_types, outs, fun_matlab) => null, 
+        req_arg_types: (args, arg_types, outs) => null,
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        //return_type: (args, arg_types, outs) => null,
         return_type: (args, arg_types, outs) => null,
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: 'all', 
+        fun_c: (args, arg_types, outs, fun_matlab) => null, 
+        req_arg_types: (args, arg_types, outs) => null,
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: null,
+        n_opt_args: null,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        //return_type: (args, arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'bool',
+                ndim: 1,
+                dim: [1],
+                ismatrix: false,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null,

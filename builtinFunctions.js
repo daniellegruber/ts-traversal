@@ -3570,7 +3570,66 @@ exports.builtin_functions = [
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
     {
-        fun_matlab: 'isa',
+        fun_matlab: 'sqrt',
+        fun_c: function (args, arg_types, outs, fun_matlab) {
+            if (arg_types[0].ismatrix) {
+                return 'powerM';
+            }
+            else {
+                return 'sqrt';
+            }
+        },
+        req_arg_types: function (args, arg_types, outs) { return null; },
+        args_transform: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                var obj = type_to_matrix_type.find(function (x) { return x.type === 'double'; });
+                return [args[0], '&exponent', obj.matrix_type.toString()];
+            }
+            else {
+                return args;
+            }
+        },
+        outs_transform: function (args, arg_types, outs) { return outs[0]; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'complex',
+                ndim: arg_types[0].ndim,
+                dim: arg_types[0].dim,
+                ismatrix: arg_types[0].ismatrix,
+                isvector: false,
+                ispointer: false,
+                isstruct: false
+            };
+        },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) {
+            if (arg_types[0].ismatrix) {
+                var init_var = [];
+                init_var.push({
+                    name: 'exponent',
+                    val: '0.5',
+                    type: 'double',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                });
+                return init_var;
+            }
+            return null;
+        },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: /isa|orderfields/,
         fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
         req_arg_types: function (args, arg_types, outs) { return null; },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -3580,6 +3639,33 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) { return null; },
+        push_main_before: function (args, arg_types, outs) { return null; },
+        push_main_after: function (args, arg_types, outs) { return null; },
+        init_before: function (args, arg_types, outs) { return null; },
+        tmp_out_transform: function (args, arg_types, outs) { return null; },
+        push_alias_tbl: function (args, arg_types, outs) { return null; }
+    },
+    {
+        fun_matlab: /fullfile|fileparts|which/,
+        fun_c: function (args, arg_types, outs, fun_matlab) { return 'fun_matlab_toreplace'; },
+        req_arg_types: function (args, arg_types, outs) { return null; },
+        args_transform: function (args, arg_types, outs) { return args; },
+        outs_transform: function (args, arg_types, outs) { return outs; },
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: function (arg_types, outs) { return null; },
+        return_type: function (args, arg_types, outs) {
+            return {
+                type: 'char',
+                ndim: 1,
+                dim: [50],
+                ismatrix: false,
+                isvector: true,
+                ispointer: false,
+                isstruct: false
+            };
+        },
         push_main_before: function (args, arg_types, outs) { return null; },
         push_main_after: function (args, arg_types, outs) { return null; },
         init_before: function (args, arg_types, outs) { return null; },

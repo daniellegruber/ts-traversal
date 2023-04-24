@@ -7,9 +7,6 @@
 #include "../convertSubscript.h"
 #include "./main.h"
 
-// Structs
-
-
 // Entry-point function
 int main(void) {
 

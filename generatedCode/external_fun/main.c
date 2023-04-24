@@ -8,9 +8,6 @@
 #include "./main.h"
 #include "./myfun3.h"
 
-// Structs
-
-
 // Function declarations
 void myfun1(int f, int g, int* p_F, int* p_G);
 

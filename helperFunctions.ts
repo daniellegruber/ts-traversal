@@ -6,7 +6,7 @@ const path = require("path");
 const glob = require("glob");
 import { VarType, CustomFunction, Class } from "./customTypes";
 import { identifyCustomFunctions } from "./identifyCustomFunctions";
-import { typeInference, inferType, findVarScope, inferTypeFromAssignment } from "./typeInference";
+import { typeInference, inferType, findVarScope, inferTypeFromAssignment, getFunctionReturnType } from "./typeInference";
 import { gotoPreorderSucc } from "./treeTraversal";
 import { pushToMain, insertMain, replaceMain } from "./modifyCode";
 import * as g from "./generated";
@@ -131,23 +131,16 @@ export function generateTmpVar(name, tmp_tbl) {
 }
 
 export function filterByScope(obj, name, node, find_or_filter) {
-    //console.log("filter1");
     let obj2 = obj.filter(x => x.scope != null);
     obj2 = obj2.filter(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     if (find_or_filter == 0) {
-        //console.log("filter2");
         if (obj2.length > 1) {
-            //console.log("filter3");
-            //console.log(obj2);
             return obj2.reduce(function(prev, curr) {
                 return (prev.scope[1] - prev.scope[0]) < (curr.scope[1] - curr.scope[0]) ? prev : curr;
             });
         } else if (obj2.length == 1) {
-            //console.log("filter31");
-            //console.log(obj2);
             return obj2[0];
         }
-        //console.log("filter4");
         return null;
         //return obj.find(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     } else if (find_or_filter == 1) {
@@ -215,7 +208,7 @@ export function transformNodeByName(var_name, node, alias_tbl) {
 
 export function numel(x) {
     if (x == null) {
-        console.error("ERROR IN NUMEL: X IS NULL");
+        //console.error("ERROR IN NUMEL: X IS NULL");
         return null;
     }
     let ans = x.reduce(function(a, b) {return a * b;});
@@ -230,7 +223,7 @@ export function numel(x) {
     return ans2;
 }
 
-export function initVar(var_name, var_val, var_type, node) {
+export function initVar(var_name, var_val, var_type) {
     let expression = '';
     
     if (var_type.isvector && var_val == null) {
@@ -294,9 +287,10 @@ export function getClassFolders(src) {
     return folders;
 };
         
-export function getClasses(src, debug) {
+export function getClasses(src, all_files, debug) {
     let folders = getClassFolders(src);
     let classes: Class[] = [];
+    let custom_functions = [];
     // Loop 1
     for (let folder of folders) {
         let class_name = folder.substr(folder.indexOf("@") + 1);
@@ -306,7 +300,9 @@ export function getClasses(src, debug) {
         for (let file of files) {
             let sourceCode = fs.readFileSync(file, "utf8");
             let tree = parser.parse(sourceCode);
-            [methods,] = identifyCustomFunctions(tree, methods, [], file, [], debug);
+            [methods,] = identifyCustomFunctions(tree, methods, all_files, file, [], debug);
+            custom_functions = custom_functions.concat(methods.filter(x=>!x.file.includes("@")));
+            methods = methods.filter(x=>x.file.includes("@"));
             let filename = path.parse(file).name;
             if (filename == class_name) {
                 let cursor = tree.walk();
@@ -316,15 +312,30 @@ export function getClasses(src, debug) {
                          let node = c.currentNode;
                          let properties_tree = parser.parse(node.propertiesNode.text);
                          [properties, , ] = inferTypeFromAssignment("main", properties_tree, [], [], [], file, [], debug, []);
-                         /*if (filename == "mmo") {
-                             console.log("PROPERTIES");
-                             console.log(filename);
-                             console.log(properties);
-                             console.log("----------------------");
-                         }*/
                     }
                 } while(gotoPreorderSucc(cursor, debug));
             }
+        }
+        
+        for (let m of methods) {
+            methods = methods.filter(x => x.name != m.name);
+            for (let i = 0; i < m.arg_types.length; i ++) {
+                if (m.arg_types[i].name.includes("obj")) {
+                    m.arg_types[i] = {
+                        name: m.arg_types[i].name,
+                        type: class_name,
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: true,
+                        initialized: false,
+                        scope: m.arg_types[i].scope
+                    }
+                }
+            }
+            methods.push(m);
         }
         // Placeholder
         const c: Class = {
@@ -343,16 +354,43 @@ export function getClasses(src, debug) {
         let methods = c1.methods;
         for (let file of files) {
             // Update placeholders
-            [, methods] = typeInference("main", file, methods, classes, debug);
+            let filename = path.parse(file).name;
+            if (filename == c1.name) {
+                let constructor_method = c1.methods.find(x=>x.name == c1.name);
+                let classdef_file_methods = methods.filter(x=>x.file == constructor_method.file);
+                for (let m of classdef_file_methods) {
+                    let var_types: VarType[] = [];
+                    let def_node = parseFunctionDefNode(m.def_node);
+                    let tree = parser.parse(def_node.bodyNode.text);
+                    let arg_types = m.arg_types;
+                    for (let i = 0; i < arg_types.length; i++) {
+                        arg_types[i].scope = [def_node.bodyNode.startIndex, def_node.bodyNode.endIndex, 0];
+                    }
+                    if (m.name == c1.name) {
+                        var_types.push({
+                            name: def_node.return_variableNode.firstNamedChild.text,
+                            type: c1.name,
+                            ndim: 1,
+                            dim: [1],
+                            ismatrix: false,
+                            isvector: false,
+                            ispointer: false,
+                            isstruct: true,
+                            initialized: false,
+                            scope: [def_node.bodyNode.startIndex, def_node.bodyNode.endIndex, 0]
+                        });
+                    }
+                    //[, methods] = getFunctionReturnType(filename, m.name, arg_types, [], methods, methods, classes, file, [], debug, 1);
+                    [, methods] = getFunctionReturnType(filename, m.name, arg_types, [], methods, custom_functions, classes, file, [], debug, 1);
+                }
+                
+            } else {
+                //[, methods] = typeInference("main", file, methods, classes, debug);
+                [, custom_functions] = typeInference("main", file, custom_functions, classes, debug);
+            }
             //[, methods] = typeInference(path.parse(file).name, file, methods, classes, debug);
         }
-        if (c1.name == "mmo") {
-            console.log("METHOD");
-            console.log(c1.name);
-            console.log(methods[1]);
-            //console.log(properties);
-            console.log("----------------------");
-        }
+        
         const c: Class = {
             name: c1.name,
             methods: methods,

@@ -7,9 +7,6 @@
 #include "../convertSubscript.h"
 #include "./main.h"
 
-// Structs
-
-
 // Function declarations
 void normfit_int(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);
 void normfit_double(Matrix * a, Matrix ** p_mu, Matrix ** p_sd);

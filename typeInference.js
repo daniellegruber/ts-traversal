@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.inferTypeFromAssignment = exports.inferTypeByName = exports.inferType = exports.typeInference = exports.findVarScope = void 0;
+exports.getFunctionReturnType = exports.inferTypeFromAssignment = exports.inferTypeByName = exports.inferType = exports.typeInference = exports.findVarScope = void 0;
 var fs = require('fs');
 var treeTraversal_1 = require("./treeTraversal");
 var helperFunctions_1 = require("./helperFunctions");
@@ -12,6 +12,7 @@ var Parser = require("tree-sitter");
 var Matlab = require("/gpfs/gibbs/project/manohar/dlg59/ts-traversal/node_modules/tree-sitter-matlab");
 var parser = new Parser();
 parser.setLanguage(Matlab);
+var dummy_count = 0;
 // Type inference
 // -----------------------------------------------------------------------------
 function findVarScope(filename, node, block_idxs, current_code, debug) {
@@ -49,6 +50,7 @@ function typeInference(filename, file, custom_functions, classes, debug) {
     if (debug == 1) {
         console.log("typeInference");
     }
+    var class_method = false;
     var var_types = [];
     var block_idxs = [];
     var sourceCode = fs.readFileSync(file, "utf8");
@@ -57,14 +59,22 @@ function typeInference(filename, file, custom_functions, classes, debug) {
     if (entry_fun_node != null) {
         tree = parser.parse(entry_fun_node.bodyNode.text);
         var obj = custom_functions.find(function (x) { return x.name == entry_fun_node.nameNode.text; });
+        var class_name_1 = file.match(/(?<=@)(.*?)(?=\/)/);
+        if (class_name_1 != null) {
+            var class_obj = classes.find(function (x) { return x.name === class_name_1[0]; });
+            if (class_obj != null && class_obj != undefined) {
+                obj = class_obj.methods.find(function (x) { return x.name == entry_fun_node.nameNode.text; });
+            }
+            class_method = true;
+        }
         var_types = var_types.concat(obj.arg_types);
         for (var i = 0; i < var_types.length; i++) {
             var_types[i].scope = [entry_fun_node.startIndex, entry_fun_node.endIndex, 0];
         }
-        var class_name = file.match(/(?<=@)(.*?)(?=\/)/);
+        /*let class_name = file.match(/(?<=@)(.*?)(?=\/)/);
         if (class_name != null) {
+            let class_obj = classes.find(x => x.name === class_name[0]);
             // Assumes first argument to method is class object
-            /*let class_obj = classes.find(x => x.name === class_name[0]);
             var_types.push({
                 name: entry_fun_node.parametersNode.namedChildren[0].text,
                 type: class_name[0],
@@ -82,25 +92,41 @@ function typeInference(filename, file, custom_functions, classes, debug) {
                 let property = JSON.parse(JSON.stringify(class_obj.properties[i]));
                 property.name = `${entry_fun_node.parametersNode.namedChildren[0].text}.${property.name}`;
                 var_types.push(property);
-            }*/
+            }
             //var_types = var_types.concat(class_obj.properties);
             //console.log(var_types);
             //console.log("----------------------------");
-        }
+        }*/
     }
     var alias_tbl = [];
     _a = inferTypeFromAssignment(filename, tree, var_types, custom_functions, classes, file, alias_tbl, debug, []), var_types = _a[0], custom_functions = _a[1], block_idxs = _a[2];
     if (entry_fun_node != null) {
-        var obj_1 = custom_functions.find(function (x) { return x.name == entry_fun_node.nameNode.text; });
-        custom_functions = custom_functions.filter(function (x) { return x.name != entry_fun_node.nameNode.text; });
-        var _loop_1 = function (i) {
-            obj_1.arg_types[i] = var_types.find(function (x) { return x.name == obj_1.arg_types[i].name; });
-        };
-        for (var i = 0; i < obj_1.arg_types.length; i++) {
-            _loop_1(i);
+        if (class_method) {
+            var class_name_2 = file.match(/(?<=@)(.*?)(?=\/)/);
+            var class_obj = classes.find(function (x) { return x.name === class_name_2[0]; });
+            var obj_1 = class_obj.methods.find(function (x) { return x.name == entry_fun_node.nameNode.text; });
+            class_obj.methods = class_obj.methods.filter(function (x) { return x.name != entry_fun_node.nameNode.text; });
+            var _loop_1 = function (i) {
+                obj_1.arg_types[i] = var_types.find(function (x) { return x.name == obj_1.arg_types[i].name; });
+            };
+            for (var i = 0; i < obj_1.arg_types.length; i++) {
+                _loop_1(i);
+            }
+            obj_1.var_types = var_types;
+            class_obj.methods.push(obj_1);
         }
-        obj_1.var_types = var_types;
-        custom_functions.push(obj_1);
+        else {
+            var obj_2 = custom_functions.find(function (x) { return x.name == entry_fun_node.nameNode.text; });
+            custom_functions = custom_functions.filter(function (x) { return x.name != entry_fun_node.nameNode.text; });
+            var _loop_2 = function (i) {
+                obj_2.arg_types[i] = var_types.find(function (x) { return x.name == obj_2.arg_types[i].name; });
+            };
+            for (var i = 0; i < obj_2.arg_types.length; i++) {
+                _loop_2(i);
+            }
+            obj_2.var_types = var_types;
+            custom_functions.push(obj_2);
+        }
     }
     return [var_types, custom_functions, block_idxs];
 }
@@ -110,11 +136,6 @@ exports.typeInference = typeInference;
 function inferTypeFromAssignment(filename, tree, var_types, custom_functions, classes, file, alias_tbl, debug, block_idxs) {
     if (debug == 1) {
         console.log("inferTypeFromAssignment");
-    }
-    if (file.includes("binaryopp")) {
-        //console.log("STARTING VARTYPES");
-        //console.log(var_types);
-        //console.log("------------------------------------");
     }
     var text = tree.rootNode.text;
     //let block_idxs = [];
@@ -128,7 +149,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
     }
     var block_level = 0;
     var cursor = tree.walk();
-    var _loop_2 = function () {
+    var _loop_3 = function () {
         var c = cursor;
         switch (c.nodeType) {
             case "module" /* g.SyntaxType.Module */: {
@@ -164,10 +185,10 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
         }
     };
     do {
-        _loop_2();
+        _loop_3();
     } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
     cursor = tree.walk();
-    var _loop_3 = function () {
+    var _loop_4 = function () {
         var c = cursor;
         switch (c.nodeType) {
             case "attribute" /* g.SyntaxType.Attribute */: {
@@ -177,8 +198,6 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                     var property = classes[i].properties.find(function (x) { return x.name === node_2.attributeNode.text; });
                     if (property !== null && property !== undefined) {
                         var class_property_count = 0;
-                        //console.log("ATTRIBUTE");
-                        //console.log(node.text);
                         for (var j = 0; j < classes[i].properties.length; j++) {
                             var object_node_text = node_2.objectNode.text;
                             object_node_text = object_node_text.replace("(", "\\(");
@@ -188,11 +207,6 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                                 class_property_count += 1;
                             }
                         }
-                        //console.log(`Match count: ${class_property_count}`);
-                        //console.log(`Actual count: ${classes[i].properties.length}`);
-                        //console.log(classes[i].properties);
-                        //console.log("--------------------------");
-                        //if (class_property_count == classes[i].properties.length) {
                         if (class_property_count >= 2) {
                             var v1 = var_types.find(function (x) { return x.name == node_2.objectNode.text; });
                             if (v1 != null && v1 != undefined) {
@@ -224,9 +238,6 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                                 initialized: false,
                                 scope: scope
                             });
-                            //console.log(var_types[var_types.length-2]);
-                            //console.log(var_types[var_types.length-1]);
-                            //console.log("--------------------------------");
                         }
                     }
                 }
@@ -234,17 +245,27 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
         }
     };
     do {
-        _loop_3();
+        _loop_4();
     } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
     var count = 0;
     cursor = tree.walk();
-    var _loop_4 = function () {
+    var _loop_5 = function () {
         var c = cursor;
         switch (c.nodeType) {
             case "assignment" /* g.SyntaxType.Assignment */: {
                 var node_3 = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
                 var _a = inferType(filename, node_3.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _a[0], ndim = _a[1], dim = _a[2], ismatrix = _a[3], ispointer = _a[4], isstruct = _a[5], cf = _a[6];
+                var _b = inferType(filename, node_3.leftNode, var_types, custom_functions, classes, file, alias_tbl, debug), l_type = _b[0], l_ndim = _b[1], l_dim = _b[2], l_ismatrix = _b[3], l_ispointer = _b[4], l_isstruct = _b[5];
+                if (l_type != null && type == null) {
+                    //if ((l_type != null && l_type != "unknown") && type == null) {
+                    type = l_type;
+                    ndim = l_ndim;
+                    dim = l_dim;
+                    ismatrix = l_ismatrix;
+                    ispointer = l_ispointer;
+                    isstruct = l_isstruct;
+                }
                 custom_functions = cf;
                 var scope = findVarScope(filename, node_3, block_idxs, "main", debug);
                 if (node_3.leftNode.type == "identifier" /* g.SyntaxType.Identifier */ || node_3.leftNode.type == "attribute" /* g.SyntaxType.Attribute */) {
@@ -416,7 +437,7 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
             case "for_statement" /* g.SyntaxType.ForStatement */: {
                 var node = c.currentNode;
                 // If LHS is an identifier, type is same as RHS
-                var _b = inferType(filename, node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _b[0], ndim = _b[1], dim = _b[2], ismatrix = _b[3], ispointer = _b[4], isstruct = _b[5], cf = _b[6];
+                var _c = inferType(filename, node.rightNode, var_types, custom_functions, classes, file, alias_tbl, debug), type = _c[0], ndim = _c[1], dim = _c[2], ismatrix = _c[3], ispointer = _c[4], isstruct = _c[5], cf = _c[6];
                 custom_functions = cf;
                 var scope = findVarScope(filename, node, block_idxs, "main", debug);
                 if (node.leftNode.type == "identifier" /* g.SyntaxType.Identifier */) {
@@ -493,14 +514,14 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
             }
             case "call_or_subscript" /* g.SyntaxType.CallOrSubscript */: { // This helps update the argument types of function definitions
                 var node = c.currentNode;
-                var _c = inferType(filename, node, var_types, custom_functions, classes, file, alias_tbl, debug), cf = _c[6];
+                var _d = inferType(filename, node, var_types, custom_functions, classes, file, alias_tbl, debug), cf = _d[6];
                 custom_functions = cf;
                 break;
             }
         }
     };
     do {
-        _loop_4();
+        _loop_5();
     } while ((0, treeTraversal_1.gotoPreorderSucc_SkipFunctionDef)(cursor, debug));
     return [var_types, custom_functions, block_idxs];
 }
@@ -510,13 +531,12 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
     if (debug == 1) {
         console.log("getFunctionReturnType");
     }
+    //console.log("GETFUNRETURNTYPE");
+    //console.log(isclass);
+    //console.log(fun_name);
+    //console.log(file);
     var obj = fun_dictionary.find(function (x) { return x.name === fun_name; });
-    /*if (fun_name == "binaryopp") {
-        console.log("FUNCTION!!")
-        console.log(fun_name);
-        console.log(obj.file);
-        console.log("---------------------------");
-    }*/
+    //console.log(obj.file);
     if (obj != null) {
         var tree2 = parser.parse(obj.def_node.bodyNode.text);
         for (var i = 0; i < arg_types.length; i++) {
@@ -531,7 +551,8 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         }
         var block_idxs = [[0, obj.def_node.endIndex - obj.def_node.startIndex, 0]];
         //let [var_types2, c] = inferTypeFromAssignment(filename, tree2, arg_types, custom_functions, classes, file, alias_tbl, debug, block_idxs);
-        var _a = inferTypeFromAssignment("main", tree2, arg_types, custom_functions, classes, file, alias_tbl, debug, block_idxs), var_types2 = _a[0], c_1 = _a[1];
+        var _a = inferTypeFromAssignment("main", tree2, arg_types.concat(var_types), custom_functions, classes, obj.file, alias_tbl, debug, block_idxs), var_types2 = _a[0], c_1 = _a[1];
+        //let [var_types2, c] = inferTypeFromAssignment(filename, tree2, arg_types.concat(var_types), custom_functions, classes, file, alias_tbl, debug, block_idxs);
         for (var i = 0; i < var_types2.length; i++) {
             if (var_types2[i].scope != null) {
                 if (var_types2[i].scope[0] == 0) {
@@ -720,6 +741,7 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
         }
     }
 }
+exports.getFunctionReturnType = getFunctionReturnType;
 function inferTypeByName(name, node, var_types, custom_functions, alias_tbl, debug) {
     if (debug == 1) {
         console.log("inferTypeByName");
@@ -1054,7 +1076,7 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
             var obj = classes.find(function (x) { return x.name === type_6; });
             if (obj !== null && obj !== undefined) {
                 var obj2 = obj.methods.find(function (x) { return x.name === node.attributeNode.text; });
-                if (obj2 != null) {
+                if (obj2 != null && obj2 != undefined) {
                     if (obj2.return_type == null) {
                         return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                     }
@@ -1070,9 +1092,19 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                         ];
                     }
                 }
-                else {
-                    return ['unknown', 2, [1, 1], false, false, false, custom_functions];
+                var obj3 = obj.properties.find(function (x) { return x.name === node.attributeNode.text; });
+                if (obj3 != null && obj3 != undefined) {
+                    return [
+                        obj3.type,
+                        obj3.ndim,
+                        obj3.dim,
+                        obj3.ismatrix,
+                        obj3.ispointer,
+                        obj3.isstruct,
+                        custom_functions
+                    ];
                 }
+                return ['unknown', 2, [1, 1], false, false, false, custom_functions];
             }
             // If not class method, treat like an identifier (field of a struct)
             //let obj = var_types.find(x => x.name === node.text);
@@ -1115,11 +1147,16 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                     var _q = inferType(filename, node.children[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_type = _q[0], child_dim = _q[2], child_ismatrix = _q[3], c = _q[6];
                     custom_functions = c;
                     //dim.push(child_dim[1]);
-                    if (child_dim.length > 1) {
-                        dim.push(child_dim[1]);
+                    if (child_dim == null) {
+                        console.error("ERROR IN CELLSUB: CHILD DIM IS NULL");
                     }
                     else {
-                        dim.push(child_dim[0]);
+                        if (child_dim.length > 1) {
+                            dim.push(child_dim[1]);
+                        }
+                        else {
+                            dim.push(child_dim[0]);
+                        }
                     }
                 }
                 else if (node.children[i].type == ":") {
@@ -1157,28 +1194,28 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
             }
             else if (args.length > 0) {
                 // Is a function call
-                // recursive function call
                 var filename2 = file.match(/((?<=\/)([^\/]*?)(?=\.m))|(^([^\/]*?)(?=\.m))/);
+                // Avoid recursive function calls
                 if (filename2[0] != node.valueNode.text) {
-                    //let [args, arg_types, outs] = parseFunctionCallNode(node);
-                    var obj1_1 = classes.find(function (x) { return x.name === arg_types_1[0].type; });
+                    //let obj1 = classes.find(x => x.name === arg_types[0].type);
+                    var obj1_1 = classes.find(function (x) { return arg_types_1.some(function (y) { return y.type == x.name; }); });
                     var obj2 = custom_functions.find(function (x) { return x.name === node.valueNode.text; });
-                    //let obj3 = builtin_functions.find(x => x.fun_matlab === node.valueNode.text);
                     var obj3 = (0, helperFunctions_2.findBuiltin)(builtinFunctions_1.builtin_functions, node.valueNode.text);
                     if (obj1_1 != null && obj1_1 != undefined) {
-                        var obj_2 = obj1_1.methods.find(function (x) { return x.name === node.valueNode.text; });
-                        if (obj_2 != null && obj_2 != undefined) {
+                        var obj_3 = obj1_1.methods.find(function (x) { return x.name === node.valueNode.text; });
+                        if (obj_3 != null && obj_3 != undefined) {
                             for (var i = 0; i < arg_types_1.length; i++) {
-                                obj_2.arg_types[i].type = arg_types_1[i].type;
-                                obj_2.arg_types[i].ndim = arg_types_1[i].ndim;
-                                obj_2.arg_types[i].dim = arg_types_1[i].dim;
-                                obj_2.arg_types[i].ismatrix = arg_types_1[i].ismatrix;
-                                obj_2.arg_types[i].isstruct = arg_types_1[i].isstruct;
-                                obj_2.arg_types[i].ispointer = arg_types_1[i].ispointer;
+                                obj_3.arg_types[i].type = arg_types_1[i].type;
+                                obj_3.arg_types[i].ndim = arg_types_1[i].ndim;
+                                obj_3.arg_types[i].dim = arg_types_1[i].dim;
+                                obj_3.arg_types[i].ismatrix = arg_types_1[i].ismatrix;
+                                obj_3.arg_types[i].isstruct = arg_types_1[i].isstruct;
+                                obj_3.arg_types[i].ispointer = arg_types_1[i].ispointer;
                             }
                             var return_type = null;
                             //[return_type, obj1.methods] = getFunctionReturnType(filename, node.valueNode.text, obj.arg_types, obj1.methods, custom_functions, classes, file, alias_tbl, debug); 
-                            _b = getFunctionReturnType(filename, node.valueNode.text, obj_2.arg_types, var_types, obj1_1.methods, custom_functions, classes, file, alias_tbl, debug, 1), return_type = _b[0], obj1_1.methods = _b[1];
+                            //[return_type, obj1.methods] = getFunctionReturnType(filename, node.valueNode.text, obj.arg_types, var_types, obj1.methods, custom_functions, classes, file, alias_tbl, debug, 1); 
+                            _b = getFunctionReturnType(filename, node.valueNode.text, obj_3.arg_types, [], obj1_1.methods, custom_functions, classes, file, alias_tbl, debug, 1), return_type = _b[0], obj1_1.methods = _b[1];
                             if (return_type == null) {
                                 return ['unknown', 2, [1, 1], false, false, false, custom_functions];
                             }
@@ -1197,16 +1234,19 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                     }
                     if (obj2 != null && obj2 != undefined) {
                         // make sure class method receives arg of class type
-                        var class_name = obj2.file.match(/(?<=@)(.*?)(?=\/)/);
+                        var class_name_3 = obj2.file.match(/(?<=@)(.*?)(?=\/)/);
                         var flag = true;
-                        if (class_name != null) {
-                            if (arg_types_1[0].type != class_name) {
+                        if (class_name_3 != null) {
+                            //if (arg_types[0].type != class_name) {
+                            if (arg_types_1.every(function (x) { return x.type != class_name_3; })) {
                                 flag = false;
                             }
                         }
                         if (flag == true) {
-                            for (var i = 0; i < arg_types_1.length; i++) {
-                                if (arg_types_1[i].type !== "unknown") {
+                            //TO DO: figure out way to deal with varargin
+                            for (var i = 0; i < obj2.arg_types.length; i++) {
+                                //for (let i=0; i < arg_types.length; i++) {
+                                if (arg_types_1[i].type !== "unknown" && arg_types_1[i].type !== null) {
                                     obj2.arg_types[i].type = arg_types_1[i].type;
                                     obj2.arg_types[i].ndim = arg_types_1[i].ndim;
                                     obj2.arg_types[i].dim = arg_types_1[i].dim;
@@ -1216,7 +1256,8 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                                 }
                             }
                             var return_type = null;
-                            _c = getFunctionReturnType(filename, node.valueNode.text, obj2.arg_types, var_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0), return_type = _c[0], custom_functions = _c[1];
+                            //[return_type, custom_functions] = getFunctionReturnType(filename, node.valueNode.text, obj2.arg_types, var_types, custom_functions, custom_functions, classes, file, alias_tbl, debug, 0);
+                            _c = getFunctionReturnType(filename, node.valueNode.text, obj2.arg_types, [], custom_functions, custom_functions, classes, file, alias_tbl, debug, 0), return_type = _c[0], custom_functions = _c[1];
                             /*obj2 = custom_functions.find(x => x.name === node.valueNode.text);
                             let typestr = '';
                             for  (let i = 0; i < arg_types.length; i++) {
@@ -1257,9 +1298,6 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                             ];
                         }
                     }
-                    else {
-                        return ['unknown', 2, [1, 1], false, false, false, custom_functions];
-                    }
                 }
                 else {
                     return ['unknown', 2, [1, 1], false, false, false, custom_functions];
@@ -1273,11 +1311,16 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
                 for (var i = 1; i < node.namedChildCount; i++) {
                     var _t = inferType(filename, node.namedChildren[i], var_types, custom_functions, classes, file, alias_tbl, debug), child_dim_3 = _t[2], c_10 = _t[6];
                     custom_functions = c_10;
-                    if (child_dim_3.length > 1) {
-                        dim.push(child_dim_3[1]);
+                    if (child_dim_3 == null) {
+                        console.error("ERROR IN CALLORSUB: CHILD DIM IS NULL");
                     }
                     else {
-                        dim.push(child_dim_3[0]);
+                        if (child_dim_3.length > 1) {
+                            dim.push(child_dim_3[1]);
+                        }
+                        else {
+                            dim.push(child_dim_3[0]);
+                        }
                     }
                 }
                 if (dim.length == 1 && dim[0] == 1) {

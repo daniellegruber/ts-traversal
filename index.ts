@@ -35,7 +35,7 @@ let tree = parser.parse(sourceCode);
 
 // Read filenames in given directory
 const search_folder = args[1];
-let classes = getClasses(search_folder, debug);
+//let classes = getClasses(search_folder, debug);
 //console.log(classes);
 
 // Output code to given directory
@@ -77,6 +77,10 @@ if (show_output==1) {
     console.log(file_traversal_order);
     console.log("---------------------\n");
 }
+//console.log("CUSTOMFUN");
+//console.log(files);
+//console.log(custom_functions);
+let classes = getClasses(search_folder, files, debug);
 
 for (let i = 0; i < custom_functions.length; i ++) {
     writeToFile(`${out_folder}/matlabToRun`, `${custom_functions[i].name}.m`, custom_functions[i].def_node.text);
@@ -91,14 +95,9 @@ for (let file of file_traversal_order.reverse()) {
     } else {
         var filename:string = path.parse(file).name;
     }
+
     [var_types, custom_functions, block_idxs] = typeInference(filename, file, custom_functions, classes, debug);
-    /*for (let i = 0; i < custom_functions.length; i ++) {
-        console.log(custom_functions[i].name);
-        console.log(custom_functions[i].arg_type_dic);
-        console.log("---------------------------------")
-    }*/
-    //console.log("VAR TYPES");
-    //console.log(var_types);
+
     let [generated_code, header, vt, cf] = generateCode(filename, tree, out_folder, custom_functions, classes, var_types, block_idxs, file, debug);
     var_types = vt;
     custom_functions = cf;

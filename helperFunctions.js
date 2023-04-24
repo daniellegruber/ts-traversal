@@ -131,24 +131,17 @@ function generateTmpVar(name, tmp_tbl) {
 }
 exports.generateTmpVar = generateTmpVar;
 function filterByScope(obj, name, node, find_or_filter) {
-    //console.log("filter1");
     var obj2 = obj.filter(function (x) { return x.scope != null; });
     obj2 = obj2.filter(function (x) { return x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
     if (find_or_filter == 0) {
-        //console.log("filter2");
         if (obj2.length > 1) {
-            //console.log("filter3");
-            //console.log(obj2);
             return obj2.reduce(function (prev, curr) {
                 return (prev.scope[1] - prev.scope[0]) < (curr.scope[1] - curr.scope[0]) ? prev : curr;
             });
         }
         else if (obj2.length == 1) {
-            //console.log("filter31");
-            //console.log(obj2);
             return obj2[0];
         }
-        //console.log("filter4");
         return null;
         //return obj.find(x => x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]);
     }
@@ -216,7 +209,7 @@ function transformNodeByName(var_name, node, alias_tbl) {
 exports.transformNodeByName = transformNodeByName;
 function numel(x) {
     if (x == null) {
-        console.error("ERROR IN NUMEL: X IS NULL");
+        //console.error("ERROR IN NUMEL: X IS NULL");
         return null;
     }
     var ans = x.reduce(function (a, b) { return a * b; });
@@ -231,7 +224,7 @@ function numel(x) {
     return ans2;
 }
 exports.numel = numel;
-function initVar(var_name, var_val, var_type, node) {
+function initVar(var_name, var_val, var_type) {
     var expression = '';
     if (var_type.isvector && var_val == null) {
         return "".concat(var_type.type, " *").concat(var_name, " = NULL;\n").concat(var_name, " = malloc(").concat(numel(var_type.dim), "*sizeof(*").concat(var_name, "));");
@@ -302,10 +295,11 @@ function getClassFolders(src) {
 }
 exports.getClassFolders = getClassFolders;
 ;
-function getClasses(src, debug) {
-    var _a, _b;
+function getClasses(src, all_files, debug) {
+    var _a;
     var folders = getClassFolders(src);
     var classes = [];
+    var custom_functions = [];
     // Loop 1
     for (var _i = 0, folders_1 = folders; _i < folders_1.length; _i++) {
         var folder = folders_1[_i];
@@ -313,11 +307,13 @@ function getClasses(src, debug) {
         var files = getFilesInPath(folder);
         var methods = [];
         var properties = [];
-        for (var _c = 0, files_1 = files; _c < files_1.length; _c++) {
-            var file = files_1[_c];
+        for (var _b = 0, files_1 = files; _b < files_1.length; _b++) {
+            var file = files_1[_b];
             var sourceCode = fs.readFileSync(file, "utf8");
             var tree = parser.parse(sourceCode);
-            methods = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, methods, [], file, [], debug)[0];
+            methods = (0, identifyCustomFunctions_1.identifyCustomFunctions)(tree, methods, all_files, file, [], debug)[0];
+            custom_functions = custom_functions.concat(methods.filter(function (x) { return !x.file.includes("@"); }));
+            methods = methods.filter(function (x) { return x.file.includes("@"); });
             var filename = path.parse(file).name;
             if (filename == class_name) {
                 var cursor = tree.walk();
@@ -327,15 +323,33 @@ function getClasses(src, debug) {
                         var node = c_1.currentNode;
                         var properties_tree = parser.parse(node.propertiesNode.text);
                         _a = (0, typeInference_1.inferTypeFromAssignment)("main", properties_tree, [], [], [], file, [], debug, []), properties = _a[0];
-                        /*if (filename == "mmo") {
-                            console.log("PROPERTIES");
-                            console.log(filename);
-                            console.log(properties);
-                            console.log("----------------------");
-                        }*/
                     }
                 } while ((0, treeTraversal_1.gotoPreorderSucc)(cursor, debug));
             }
+        }
+        var _loop_1 = function (m) {
+            methods = methods.filter(function (x) { return x.name != m.name; });
+            for (var i = 0; i < m.arg_types.length; i++) {
+                if (m.arg_types[i].name.includes("obj")) {
+                    m.arg_types[i] = {
+                        name: m.arg_types[i].name,
+                        type: class_name,
+                        ndim: 1,
+                        dim: [1],
+                        ismatrix: false,
+                        isvector: false,
+                        ispointer: false,
+                        isstruct: true,
+                        initialized: false,
+                        scope: m.arg_types[i].scope
+                    };
+                }
+            }
+            methods.push(m);
+        };
+        for (var _c = 0, methods_1 = methods; _c < methods_1.length; _c++) {
+            var m = methods_1[_c];
+            _loop_1(m);
         }
         // Placeholder
         var c = {
@@ -348,22 +362,51 @@ function getClasses(src, debug) {
     }
     // Loop 2
     var classes2 = [];
-    for (var _d = 0, classes_1 = classes; _d < classes_1.length; _d++) {
-        var c1 = classes_1[_d];
+    var _loop_2 = function (c1) {
         var files = getFilesInPath(c1.folder);
         var methods = c1.methods;
+        var _loop_3 = function (file) {
+            var _f, _g;
+            // Update placeholders
+            var filename = path.parse(file).name;
+            if (filename == c1.name) {
+                var constructor_method_1 = c1.methods.find(function (x) { return x.name == c1.name; });
+                var classdef_file_methods = methods.filter(function (x) { return x.file == constructor_method_1.file; });
+                for (var _h = 0, classdef_file_methods_1 = classdef_file_methods; _h < classdef_file_methods_1.length; _h++) {
+                    var m = classdef_file_methods_1[_h];
+                    var var_types = [];
+                    var def_node = parseFunctionDefNode(m.def_node);
+                    var tree = parser.parse(def_node.bodyNode.text);
+                    var arg_types = m.arg_types;
+                    for (var i = 0; i < arg_types.length; i++) {
+                        arg_types[i].scope = [def_node.bodyNode.startIndex, def_node.bodyNode.endIndex, 0];
+                    }
+                    if (m.name == c1.name) {
+                        var_types.push({
+                            name: def_node.return_variableNode.firstNamedChild.text,
+                            type: c1.name,
+                            ndim: 1,
+                            dim: [1],
+                            ismatrix: false,
+                            isvector: false,
+                            ispointer: false,
+                            isstruct: true,
+                            initialized: false,
+                            scope: [def_node.bodyNode.startIndex, def_node.bodyNode.endIndex, 0]
+                        });
+                    }
+                    //[, methods] = getFunctionReturnType(filename, m.name, arg_types, [], methods, methods, classes, file, [], debug, 1);
+                    _f = (0, typeInference_1.getFunctionReturnType)(filename, m.name, arg_types, [], methods, custom_functions, classes, file, [], debug, 1), methods = _f[1];
+                }
+            }
+            else {
+                //[, methods] = typeInference("main", file, methods, classes, debug);
+                _g = (0, typeInference_1.typeInference)("main", file, custom_functions, classes, debug), custom_functions = _g[1];
+            }
+        };
         for (var _e = 0, files_2 = files; _e < files_2.length; _e++) {
             var file = files_2[_e];
-            // Update placeholders
-            _b = (0, typeInference_1.typeInference)("main", file, methods, classes, debug), methods = _b[1];
-            //[, methods] = typeInference(path.parse(file).name, file, methods, classes, debug);
-        }
-        if (c1.name == "mmo") {
-            console.log("METHOD");
-            console.log(c1.name);
-            console.log(methods[1]);
-            //console.log(properties);
-            console.log("----------------------");
+            _loop_3(file);
         }
         var c = {
             name: c1.name,
@@ -372,6 +415,10 @@ function getClasses(src, debug) {
             folder: c1.folder
         };
         classes2.push(c);
+    };
+    for (var _d = 0, classes_1 = classes; _d < classes_1.length; _d++) {
+        var c1 = classes_1[_d];
+        _loop_2(c1);
     }
     return classes2;
 }

@@ -7,9 +7,6 @@
 #include "../convertSubscript.h"
 #include "./main.h"
 
-// Structs
-
-
 // Function declarations
 void fourier_vec_script(Matrix * a);
 

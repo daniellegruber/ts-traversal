@@ -7,9 +7,6 @@
 #include "../convertSubscript.h"
 #include "./main.h"
 
-// Structs
-
-
 // Function declarations
 void fourier_script_int(Matrix * a);
 void fourier_script_double(Matrix * a);

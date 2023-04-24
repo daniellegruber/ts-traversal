@@ -7,9 +7,6 @@
 #include "../convertSubscript.h"
 #include "./myfun3.h"
 
-// Structs
-
-
 	
 int myfun3(int a) {
 	int tmp1 = pow(a, 2);

@@ -449,7 +449,6 @@ export const operatorMapping = [
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -3608,8 +3607,66 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
     },
+    { // Matrix * meanM(Matrix* restrict m)
+        fun_matlab: 'sqrt', // M = mean(A,dim)
+        fun_c: (args, arg_types, outs, fun_matlab) => {
+            if (arg_types[0].ismatrix) {
+                return 'powerM';
+            } else {
+                return 'sqrt';
+            }
+        }, 
+        req_arg_types: (args, arg_types, outs) => null,
+        args_transform: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                let obj = type_to_matrix_type.find(x => x.type === 'double');
+                return [args[0], '&exponent', obj.matrix_type.toString()];
+            } else {
+                return args;
+            }
+            
+        },
+		outs_transform: (args, arg_types, outs) => outs[0],
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'complex', // create function to get types giving precedence to complex, double, then int
+                ndim: arg_types[0].ndim,
+                dim: arg_types[0].dim,
+                ismatrix: arg_types[0].ismatrix,
+                isvector: false,
+                ispointer: false, //left_ismatrix && !right_ismatrix,
+                isstruct: false 
+            };
+        },
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix) {
+                let init_var: InitVar[] = [];
+                init_var.push({
+                    name: 'exponent',
+                    val: '0.5',
+                    type: 'double',
+                    ndim: 1,
+                    dim: [1],
+                    ismatrix: false,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false
+                })
+                return init_var;
+            }
+            return null;
+        },
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },
     {
-        fun_matlab: 'isa', 
+        fun_matlab: /isa|orderfields/, 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
@@ -3619,6 +3676,33 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => null,
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,         
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },
+    {
+        fun_matlab: /fullfile|fileparts|which/, 
+        fun_c: (args, arg_types, outs, fun_matlab) => 'fun_matlab_toreplace', 
+        req_arg_types: (args, arg_types, outs) => null,
+        args_transform: (args, arg_types, outs) => args,
+		outs_transform: (args, arg_types, outs) => outs,
+        n_req_args: 1,
+        n_opt_args: 0,
+        opt_arg_defaults: null,
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => {
+            return {
+                type: 'char', 
+                ndim: 1,
+                dim: [50],
+                ismatrix: false,
+                isvector: true,
+                ispointer: false,
+                isstruct: false 
+            };
+        },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
         init_before: (args, arg_types, outs) => null,

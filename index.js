@@ -29,7 +29,7 @@ var sourceCode = fs.readFileSync(args[0], "utf8");
 var tree = parser.parse(sourceCode);
 // Read filenames in given directory
 var search_folder = args[1];
-var classes = (0, helperFunctions_1.getClasses)(search_folder, debug);
+//let classes = getClasses(search_folder, debug);
 //console.log(classes);
 // Output code to given directory
 //let out_folder = args[2] + "/generatedCode";
@@ -64,6 +64,10 @@ if (show_output == 1) {
     console.log(file_traversal_order);
     console.log("---------------------\n");
 }
+//console.log("CUSTOMFUN");
+//console.log(files);
+//console.log(custom_functions);
+var classes = (0, helperFunctions_1.getClasses)(search_folder, files, debug);
 for (var i = 0; i < custom_functions.length; i++) {
     (0, helperFunctions_1.writeToFile)("".concat(out_folder, "/matlabToRun"), "".concat(custom_functions[i].name, ".m"), custom_functions[i].def_node.text);
 }
@@ -79,13 +83,6 @@ for (var _i = 0, _c = file_traversal_order.reverse(); _i < _c.length; _i++) {
         var filename = path.parse(file).name;
     }
     _a = (0, typeInference_1.typeInference)(filename, file, custom_functions, classes, debug), var_types = _a[0], custom_functions = _a[1], block_idxs = _a[2];
-    /*for (let i = 0; i < custom_functions.length; i ++) {
-        console.log(custom_functions[i].name);
-        console.log(custom_functions[i].arg_type_dic);
-        console.log("---------------------------------")
-    }*/
-    //console.log("VAR TYPES");
-    //console.log(var_types);
     var _d = (0, generateCode_1.generateCode)(filename, tree_1, out_folder, custom_functions, classes, var_types, block_idxs, file, debug), generated_code = _d[0], header = _d[1], vt = _d[2], cf = _d[3];
     var_types = vt;
     custom_functions = cf;

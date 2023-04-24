@@ -7,9 +7,6 @@
 #include "../convertSubscript.h"
 #include "./main.h"
 
-// Structs
-
-
 // Function declarations
 void two_t_test_intint(Matrix * a, Matrix * b);
 void two_t_test_doubleint(Matrix * a, Matrix * b);

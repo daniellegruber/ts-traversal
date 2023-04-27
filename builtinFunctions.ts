@@ -32,8 +32,9 @@ type InitVar = {
 type functionMapping = {
     fun_matlab: string;
     fun_c: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>, fun_matlab: string): string; };
-    req_arg_types: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<Type>; };
-    args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
+    req_arg_types: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<Type>; }; //arg types required by C function
+    args_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; };
+    arg_types_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<VarType>; }; //if MATLAB function arguments must have specific type, used to help determine unknown types
     outs_transform: { (args: Array<string>, arg_types: Array<Type>, outs: Array<string>): Array<string>; }; 
     n_req_args: number; // # required args
     n_opt_args: number; // # optional args
@@ -126,16 +127,17 @@ export const operatorMapping = [
             }
         },
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
         outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let type = arg_types[0].type;
             let ndim = arg_types[0].ndim;
             let dim = arg_types[0].dim;
+            let ismatrix = arg_types[0].ismatrix;
             
             if (args.length == 2) {
                 type = binaryOpType(type, arg_types[1].type);
@@ -145,7 +147,7 @@ export const operatorMapping = [
                 type: type, // create function to get types giving precedence to complex, double, then int
                 ndim: ndim,
                 dim: dim,
-                ismatrix: true,
+                ismatrix: ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false
@@ -189,12 +191,12 @@ export const operatorMapping = [
                 return args;
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -220,7 +222,7 @@ export const operatorMapping = [
                     type: binaryOpType(left_type, right_type),
                     ndim: left_ndim,
                     dim: [left_dim[0], right_dim[1]],
-                    ismatrix: true,
+                    ismatrix: left_ismatrix || right_ismatrix,
                     isvector: false,
                     ispointer: false, //true,
                     isstruct: false 
@@ -299,6 +301,7 @@ export const operatorMapping = [
                 return [`(double) ${args[0]}`, args[1]];
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -311,6 +314,8 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             let type = binaryOpType(left_type, right_type);
             if (left_type == 'complex' || right_type == 'complex') {
@@ -323,7 +328,7 @@ export const operatorMapping = [
                 type: type, // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -364,12 +369,12 @@ export const operatorMapping = [
                 return [`1/(${args[0]})`, args[1], obj.matrix_type.toString()];
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -377,12 +382,14 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             return {
                 type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: [left_dim[0], right_dim[1]],
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false
@@ -444,6 +451,7 @@ export const operatorMapping = [
             
             return args;
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -525,12 +533,12 @@ export const operatorMapping = [
         },  
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -538,12 +546,14 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             return {
                 type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -568,12 +578,12 @@ export const operatorMapping = [
         }, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -581,12 +591,14 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             return {
                 type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -611,12 +623,12 @@ export const operatorMapping = [
         },  
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -624,12 +636,14 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             return {
                 type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -685,12 +699,12 @@ export const operatorMapping = [
                 return args;
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_type = arg_types[0].type;
             let left_ndim = arg_types[0].ndim;
@@ -698,6 +712,9 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
+            
             let type = left_type;
             if (right_type != 'int') {
                 type = 'complex';
@@ -707,7 +724,7 @@ export const operatorMapping = [
                 type: type,
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -804,21 +821,23 @@ export const operatorMapping = [
                 return args;
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let left_ndim = arg_types[0].ndim;
             let left_dim = arg_types[0].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             return {
                 type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -927,6 +946,7 @@ export const operatorMapping = [
                 return ['void'];
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -943,27 +963,16 @@ export const operatorMapping = [
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
             
-            if (left_ismatrix && right_ismatrix) {
-                return {
-                    type: 'bool', // create function to get types giving precedence to complex, double, then int
-                    ndim: left_ndim,
-                    dim: left_dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false 
-                };
-            } else {
-                return {
-                    type: 'bool', // create function to get types giving precedence to complex, double, then int
-                    ndim: left_ndim,
-                    dim: left_dim,
-                    ismatrix: false,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false 
-                };
-            }
+            return {
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
+                ndim: left_ndim,
+                dim: left_dim,
+                ismatrix: left_ismatrix || right_ismatrix,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
+            
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
@@ -996,6 +1005,7 @@ export const operatorMapping = [
                 return ['void'];
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1011,28 +1021,16 @@ export const operatorMapping = [
             let right_dim = arg_types[1].dim;
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
-            
-            if (left_ismatrix && right_ismatrix) {
-                return {
-                    type: 'bool', // create function to get types giving precedence to complex, double, then int
-                    ndim: left_ndim,
-                    dim: left_dim,
-                    ismatrix: true,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false 
-                };
-            } else {
-                return {
-                    type: 'bool', // create function to get types giving precedence to complex, double, then int
-                    ndim: left_ndim,
-                    dim: left_dim,
-                    ismatrix: false,
-                    isvector: false,
-                    ispointer: false, //true,
-                    isstruct: false 
-                };
-            }
+
+            return {
+                type: 'bool', // create function to get types giving precedence to complex, double, then int
+                ndim: left_ndim,
+                dim: left_dim,
+                ismatrix: left_ismatrix || right_ismatrix,
+                isvector: false,
+                ispointer: false, //true,
+                isstruct: false 
+            };
         },
         push_main_before: (args, arg_types, outs) => null,
         push_main_after: (args, arg_types, outs) => null,         
@@ -1045,6 +1043,7 @@ export const operatorMapping = [
         fun_c: (args, arg_types, outs, fun_matlab) => {
             let left_ismatrix = arg_types[0].ismatrix;
             let right_ismatrix = arg_types[1].ismatrix;
+
             if (left_ismatrix && right_ismatrix) {
                 if (fun_matlab == "&") {
                     return 'andM';
@@ -1057,6 +1056,7 @@ export const operatorMapping = [
         }, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1070,12 +1070,14 @@ export const operatorMapping = [
             let right_type = arg_types[1].type;
             let right_ndim = arg_types[1].ndim;
             let right_dim = arg_types[1].dim;
+            let left_ismatrix = arg_types[0].ismatrix;
+            let right_ismatrix = arg_types[1].ismatrix;
             
             return {
                 type: 'bool', // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: left_ismatrix || right_ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -1092,6 +1094,7 @@ export const operatorMapping = [
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1107,7 +1110,7 @@ export const operatorMapping = [
                 type: binaryOpType(left_type, right_type), // create function to get types giving precedence to complex, double, then int
                 ndim: left_ndim,
                 dim: left_dim,
-                ismatrix: true,
+                ismatrix: false,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -1131,12 +1134,12 @@ export const operatorMapping = [
         },  
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
-        
         return_type: (args, arg_types, outs) => {
             let type = arg_types[0].type;
             let ndim = arg_types[0].ndim;
@@ -1146,7 +1149,7 @@ export const operatorMapping = [
                 type: type,
                 ndim: ndim,
                 dim: dim,
-                ismatrix: true,
+                ismatrix: arg_types[0].ismatrix,
                 isvector: false,
                 ispointer: false, //true,
                 isstruct: false 
@@ -1174,6 +1177,23 @@ export const operatorMapping = [
         },  
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => {
+            if (arg_types[0].ismatrix == null) {
+                return [{
+                    name: args[0],
+                    type: arg_types[0].type,
+                    ndim: arg_types[0].ndim,
+                    dim: arg_types[0].dim,
+                    ismatrix: true,
+                    isvector: false,
+                    ispointer: false,
+                    isstruct: false,
+                    initialized: false,
+                    scope: null
+                }];
+            }
+            return null;
+        },
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1189,9 +1209,9 @@ export const operatorMapping = [
                 type: type,
                 ndim: ndim,
                 dim: [dim[1], dim[0]],
-                ismatrix: true,
+                ismatrix: arg_types[0].ismatrix, //true
                 isvector: false,
-                ispointer: false, //true,
+                ispointer: false,
                 isstruct: false 
             };
         },
@@ -1210,6 +1230,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'isEqualM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1243,6 +1264,7 @@ export const builtin_functions = [
         }, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -1452,6 +1474,7 @@ export const builtin_functions = [
         },
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 2,
         n_opt_args: 1,
@@ -1576,6 +1599,7 @@ export const builtin_functions = [
 		    }
 		],
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 3,
         n_opt_args: 0,
@@ -1678,6 +1702,7 @@ export const builtin_functions = [
 		    }
 		],
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1782,6 +1807,7 @@ export const builtin_functions = [
 		    }
 		],
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 0,
@@ -1816,6 +1842,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'exppdfM',
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 1,
@@ -1851,6 +1878,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'chi2pdfM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -1885,6 +1913,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'gampdfM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 1,
@@ -1920,7 +1949,8 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'lognpdfM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (args, arg_types, outs) => outs,
+        arg_types_transform: (args, arg_types, outs) => null,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 2,
         opt_arg_defaults: ['0','1'],
@@ -1955,6 +1985,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'normpdfM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 3,
         n_opt_args: 2,
@@ -1990,7 +2021,8 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'unidpdfM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
-				outs_transform: (args, arg_types, outs) => outs,
+        arg_types_transform: (args, arg_types, outs) => null,
+		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
         opt_arg_defaults: null,
@@ -2025,6 +2057,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'normfitM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -2073,6 +2106,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'unifitM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -2189,6 +2223,7 @@ export const builtin_functions = [
         fun_c: (args, arg_types, outs, fun_matlab) => 'eigM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => null,
         n_req_args: 1,
         n_opt_args: 0,
@@ -2277,9 +2312,9 @@ export const builtin_functions = [
     { // Matrix * floorM(Matrix* restrict m)
         fun_matlab: /abs|round|floor|ceil/,
         fun_c: (args, arg_types, outs, fun_matlab) => 'fun_matlabM',
-        //fun_c: (args, arg_types, outs, fun_matlab) => 'floorM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -2320,6 +2355,7 @@ export const builtin_functions = [
         }, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => {
 			return outs[0];
 		},
@@ -2381,6 +2417,7 @@ export const builtin_functions = [
             }
             return [args[0]];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
         req_arg_types: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
@@ -2454,6 +2491,7 @@ export const builtin_functions = [
             }
             return [args[0], n_quantiles, quantiles];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -2566,6 +2604,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
             }
             return ['ndim', 'dim'];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -2654,6 +2693,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs, fun_matlab) => 'identityM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]],
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -2686,6 +2726,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
         args_transform: (args, arg_types, outs) => {
             return [args[0], 'ndim', 'dim'];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -2786,6 +2827,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs, fun_matlab) => 'detM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -2822,6 +2864,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs, fun_matlab) => 'invertM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -2849,6 +2892,7 @@ for (int i = 1; ${step}*i < 1; i ++) {
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -2903,6 +2947,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => 'strcmp', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -2930,6 +2975,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => 'strcmpi', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 2,
         n_opt_args: 0,
@@ -2958,6 +3004,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -2986,6 +3033,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -3014,6 +3062,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -3032,6 +3081,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -3060,6 +3110,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => 'getsizeM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3087,6 +3138,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => 'getDimsM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]],
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3118,6 +3170,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -3135,6 +3188,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3152,6 +3206,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3169,6 +3224,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null,
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3186,6 +3242,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null,
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3221,6 +3278,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 return ['ndim', 'dim'];
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => {
             let match = args.find(x => x.includes('seed'));
             if (match != null && match != undefined) {
@@ -3328,6 +3386,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         args_transform: (args, arg_types, outs) => {
             return ['ndim', 'dim', 0, args[0]];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -3418,6 +3477,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             return ['ndim', 'dim'];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
@@ -3501,6 +3561,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3518,6 +3579,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => 'medianM',
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
@@ -3552,6 +3614,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             return [args[0]];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
@@ -3626,6 +3689,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
             }
             
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
@@ -3670,6 +3734,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3687,6 +3752,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => 'fun_matlab_toreplace', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3714,6 +3780,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3731,6 +3798,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3792,6 +3860,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
                 //return args;
             }
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs,
         n_req_args: 1,
         n_opt_args: 0,
@@ -3844,6 +3913,7 @@ printf(${format}, ${args[0]}[i]);
         fun_c: (args, arg_types, outs, fun_matlab) => `${args[0]} % ${args[1]}`,
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
@@ -3883,6 +3953,7 @@ printf(${format}, ${args[0]}[i]);
             }
         ],
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: 1,
         n_opt_args: 0,
@@ -3943,6 +4014,7 @@ printf(${format}, ${args[0]}[i]);
             args.unshift(buffer);
             return args;
         },
+        arg_types_transform: (args, arg_types, outs) => null,
         req_arg_types: (args, arg_types, outs) => [
             {
                 type: 'char', 
@@ -4003,6 +4075,7 @@ printf(${format}, ${args[0]}[i]);
         }, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -4077,6 +4150,7 @@ printf(${format}, ${args[0]}[i]);
             
             return [args[0], win_size, inc, num_coef, win_type];
         },
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -4168,6 +4242,7 @@ printf(${format}, ${args[0]}[i]);
         }, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => [args[0]], 
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -4235,6 +4310,7 @@ printf(${format}, ${args[0]}[i]);
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,
@@ -4297,6 +4373,7 @@ printf(${format}, ${args[0]}[i]);
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => null,
+        arg_types_transform: (args, arg_types, outs) => null,
 		outs_transform: (args, arg_types, outs) => outs[0],
         n_req_args: null,
         n_opt_args: null,

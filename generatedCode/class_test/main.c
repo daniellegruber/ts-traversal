@@ -27,7 +27,7 @@ int main(void) {
 	int *dim2 = getDimsM(mmo);
 	undefined mat2[] = {};
 	undefined mat3[] = {};
-	unknown tmp1;
+	mmo_type tmp1;
 	indexM(mmo, &tmp1, 2, mat3, dim);
 	tmp1;
 	return 0;

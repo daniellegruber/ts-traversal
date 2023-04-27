@@ -77,6 +77,7 @@ SPEED_small_matrix_transpose
 subtract_matrix
 testing
 transpose_matrix
+unknown_test
 
 
 ERROR

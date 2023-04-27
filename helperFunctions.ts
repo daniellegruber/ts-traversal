@@ -34,7 +34,6 @@ export function isInitialized(name, node, type, fun_params) {
     let var_type = filterByScope(fun_params.var_types, name, node, 0);
     let all_var_type = fun_params.var_types.filter(x=>x.name == name && x.scope[2]==scope[2]);
     all_var_type.sort(compare);
-    
     let flag1 = false;
     let flag2 = false;
     if (var_type != null && var_type != undefined) { 
@@ -381,7 +380,7 @@ export function getClasses(src, all_files, debug) {
                         });
                     }
                     //[, methods] = getFunctionReturnType(filename, m.name, arg_types, [], methods, methods, classes, file, [], debug, 1);
-                    [, methods] = getFunctionReturnType(filename, m.name, arg_types, [], methods, custom_functions, classes, file, [], debug, 1);
+                    [, methods, ] = getFunctionReturnType(filename, m.name, arg_types, [], methods, custom_functions, classes, file, [], debug, 1);
                 }
                 
             } else {

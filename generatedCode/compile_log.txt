@@ -87,4 +87,5 @@ ERROR
 class_test
 octaveIncludes
 octaveTimer
+unknown_test
 

@@ -25,11 +25,21 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
             if (node.parametersNode != null && node.parametersNode != undefined) {
                 for (let arg of node.parametersNode.namedChildren) {
                     // Placeholder
-                    arg_types.push({
+                    /*arg_types.push({
                         name: arg.text,
                         type: null,
                         ndim: null,
                         dim: null,
+                        ismatrix: null,
+                        isstruct: null,
+                        ispointer: null,
+                        original_out: false
+                    });*/
+                    arg_types.push({
+                        name: arg.text,
+                        type: `${arg.text}_type`,
+                        ndim: 2,
+                        dim: [`${arg.text}_dim0`, `${arg.text}_dim1`],
                         ismatrix: null,
                         isstruct: null,
                         ispointer: null,

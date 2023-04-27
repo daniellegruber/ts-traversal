@@ -17,7 +17,7 @@ int main(void) {
 		printf("\n%d\n", iter1);
 	
 	}
-	unknown a = toc;
+	toc_type a = toc;
 	printf("\n%d\n", a);
 	return 0;
 }

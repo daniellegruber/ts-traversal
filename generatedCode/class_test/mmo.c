@@ -1,15 +1,15 @@
 struct mmo {
-	unknown dataFile;
-	unknown dimensions;
+	dataFile_type dataFile;
+	dimensions_type dimensions;
 	bool writable;
-	unknown workspace;
+	workspace_type workspace;
 	char *type = NULL;
 type = malloc(5*sizeof(*type));
 	unknown transposed;
 	unknown debug;
 }
 
-mmo binaryopp(unknown f, mmo obj1, mmo obj2) {
+mmo mmo_binaryopp(unknown f, mmo obj1, mmo obj2) {
 
 
 
@@ -22,7 +22,7 @@ mmo binaryopp(unknown f, mmo obj1, mmo obj2) {
 
 
 
-tmp18;
+tmp19;
 // create object
 // -------------
 
@@ -30,22 +30,22 @@ tmp18;
 return obj3;
 }
 
-int checkcopies_local(mmo obj, unknown arg) {
+int mmo_checkcopies_local(mmo obj, int arg) {
 
 
 return ncopies;
 }
 
-unknown ctranspose(mmo obj, int useconj) {
+res_type mmo_ctranspose(mmo obj, int useconj) {
 return res;
 }
 
-unknown ndims(mmo obj) {
+res_type mmo_ndims(mmo obj) {
 
 return res;
 }
 
-unknown subsref(mmo obj, unknown s) {
+unknown mmo_subsref(mmo obj, ss_type s) {
 
 
 
@@ -73,16 +73,7 @@ unknown subsref(mmo obj, unknown s) {
 return res;
 }
 
-unknown sum(mmo obj, null dim) {
-
-
-
-
-
-return sumval;
-}
-
-mmo unitaryopp(unknown f, mmo obj1, unknown varargin) {
+mmo mmo_unitaryopp(unknown f, mmo obj1, unknown varargin) {
 // make new memory mapped data file (blank)
 // ----------------------------------------
 
@@ -92,7 +83,7 @@ mmo unitaryopp(unknown f, mmo obj1, unknown varargin) {
 
 
 
-tmp59;
+tmp70;
 // copy the data
 // -------------
 
@@ -100,7 +91,7 @@ tmp59;
 return obj2;
 }
 
-mmo mmo(null dataFileIn, null datadims, null writableVal, null transposedVal, null debugVal) {
+mmo mmo_mmo(dataFileIn_type dataFileIn, unknown datadims, writableVal_type writableVal, transposedVal_type transposedVal, debugVal_type debugVal) {
 
 
 
@@ -143,40 +134,40 @@ test;
 return dataout;
 }
 
-int checkcopies(mmo obj) {
+int mmo_checkcopies(mmo obj) {
 
 
 return ncopies;
 }
 
-double mean(mmo obj, null dim) {
+double mmo_mean(mmo obj, dim_type dim) {
 
 
 
 return val;
 }
 
-Matrix * std(null varargin) {
-
-return val;
-}
-
-mmo minus(mmo obj1, mmo obj2) {
+mmo mmo_minus(mmo obj1, mmo obj2) {
 
 return obj3;
 }
 
-mmo time(mmo obj1, mmo obj2) {
+mmo mmo_time(mmo obj1, mmo obj2) {
 
 return obj3;
 }
 
-char getnewfilename(void) {
+char mmo_getnewfilename(void) {
 
 return str;
 }
 
-mmo updateWorkspace(mmo obj) {
+res_type mmo_ndims(mmo obj) {
+
+return res;
+}
+
+mmo mmo_updateWorkspace(mmo obj) {
 
 
 
@@ -184,7 +175,7 @@ mmo updateWorkspace(mmo obj) {
 return obj;
 }
 
-int checkworkspace(mmo obj) {
+int mmo_checkworkspace(mmo obj) {
 
 
 
@@ -193,13 +184,26 @@ int checkworkspace(mmo obj) {
 return ncopies;
 }
 
-int checkcopies_local(mmo obj, unknown arg) {
+int mmo_checkcopies_local_mmounknown(mmo obj, int arg) {
 
 
 return ncopies;
 }
 
-mmo binaryopp(unknown f, mmo obj1, mmo obj2) {
+int mmo_checkcopies_local_mmoint(mmo obj, int arg) {
+
+
+return ncopies;
+}
+
+void mmo_size(mmo obj, dim_type dim, tmpdimensions_type* p_[s varargout]) {
+
+
+
+return ncopies;
+}
+
+mmo mmo_binaryopp(unknown f, mmo obj1, mmo obj2) {
 
 
 
@@ -212,7 +216,7 @@ mmo binaryopp(unknown f, mmo obj1, mmo obj2) {
 
 
 
-tmp130;
+tmp168;
 // create object
 // -------------
 
@@ -220,7 +224,7 @@ tmp130;
 return obj3;
 }
 
-mmo updateWorkspace(mmo obj) {
+mmo mmo_updateWorkspace(mmo obj) {
 
 
 

@@ -3057,8 +3057,9 @@ exports.builtin_functions = [
         tmp_out_transform: function (args, arg_types, outs) { return null; },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
+    // TO DO: make separate entry for length, length often used similarly to numel but not always
     {
-        fun_matlab: 'numel',
+        fun_matlab: /numel|length/,
         fun_c: function (args, arg_types, outs, fun_matlab) { return 'getsizeM'; },
         req_arg_types: function (args, arg_types, outs) { return null; },
         args_transform: function (args, arg_types, outs) { return args; },
@@ -3117,24 +3118,24 @@ exports.builtin_functions = [
         },
         push_alias_tbl: function (args, arg_types, outs) { return null; }
     },
-    {
-        fun_matlab: 'length',
-        fun_c: function (args, arg_types, outs, fun_matlab) { return null; },
-        req_arg_types: function (args, arg_types, outs) { return null; },
-        args_transform: function (args, arg_types, outs) { return args; },
-        arg_types_transform: function (args, arg_types, outs) { return null; },
-        outs_transform: function (args, arg_types, outs) { return outs; },
+    /*{
+        fun_matlab: 'length', // length(X) = max(size(X))
+        fun_c: (args, arg_types, outs, fun_matlab) => null,
+        req_arg_types: (args, arg_types, outs) => null,
+        args_transform: (args, arg_types, outs) => args,
+        arg_types_transform: (args, arg_types, outs) => null,
+        outs_transform: (args, arg_types, outs) => outs,
         n_req_args: null,
         n_opt_args: null,
         opt_arg_defaults: null,
-        ptr_args: function (arg_types, outs) { return null; },
-        return_type: function (args, arg_types, outs) { return null; },
-        push_main_before: function (args, arg_types, outs) { return null; },
-        push_main_after: function (args, arg_types, outs) { return null; },
-        init_before: function (args, arg_types, outs) { return null; },
-        tmp_out_transform: function (args, arg_types, outs) { return null; },
-        push_alias_tbl: function (args, arg_types, outs) { return null; }
-    },
+        ptr_args: (arg_types, outs) => null,
+        return_type: (args, arg_types, outs) => null,
+        push_main_before: (args, arg_types, outs) => null,
+        push_main_after: (args, arg_types, outs) => null,
+        init_before: (args, arg_types, outs) => null,
+        tmp_out_transform: (args, arg_types, outs) => null,
+        push_alias_tbl: (args, arg_types, outs) => null
+    },*/
     {
         fun_matlab: 'sum',
         fun_c: function (args, arg_types, outs, fun_matlab) { return null; },

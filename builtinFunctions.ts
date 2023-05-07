@@ -3105,8 +3105,9 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
     },
+    // TO DO: make separate entry for length, length often used similarly to numel but not always
     { //int getsizeM(Matrix* restrict m)
-        fun_matlab: 'numel', 
+        fun_matlab: /numel|length/, 
         fun_c: (args, arg_types, outs, fun_matlab) => 'getsizeM', 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
@@ -3165,8 +3166,8 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         },
         push_alias_tbl: (args, arg_types, outs) => null
     },
-    {
-        fun_matlab: 'length', 
+    /*{
+        fun_matlab: 'length', // length(X) = max(size(X))
         fun_c: (args, arg_types, outs, fun_matlab) => null, 
         req_arg_types: (args, arg_types, outs) => null,
         args_transform: (args, arg_types, outs) => args,
@@ -3182,7 +3183,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
         init_before: (args, arg_types, outs) => null,
         tmp_out_transform: (args, arg_types, outs) => null,
         push_alias_tbl: (args, arg_types, outs) => null
-    },
+    },*/
     {
         fun_matlab: 'sum', 
         fun_c: (args, arg_types, outs, fun_matlab) => null, 

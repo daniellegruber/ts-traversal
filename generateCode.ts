@@ -2480,7 +2480,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${dim[1]}; ${tmp_iter}++) {
             for (let i = 0; i < method_obj.arg_type_dic.length; i++) {
                 let fun_name = `${class_obj.name}_${method_obj.name}_${method_obj.arg_type_dic[i].arg_type_id}`;
                 if (method_obj.arg_type_dic.length == 1) {
-                    fun_name = node.nameNode.text;
+                    fun_name = `${class_obj.name}_${method_obj.name}`;
                 }
                 //updateFunParams(0);
                 fun_params2.main_function = main_function2; 

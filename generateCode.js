@@ -2298,7 +2298,7 @@ for (int ${tmp_iter} = 0; ${start} + (${step})*${tmp_iter} < ${stop}; ${tmp_iter
             for (var i = 0; i < method_obj.arg_type_dic.length; i++) {
                 var fun_name = "".concat(class_obj.name, "_").concat(method_obj.name, "_").concat(method_obj.arg_type_dic[i].arg_type_id);
                 if (method_obj.arg_type_dic.length == 1) {
-                    fun_name = node.nameNode.text;
+                    fun_name = "".concat(class_obj.name, "_").concat(method_obj.name);
                 }
                 //updateFunParams(0);
                 fun_params2.main_function = main_function2;

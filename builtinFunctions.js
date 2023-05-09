@@ -36,10 +36,12 @@ function parseVectorArg(arg) {
                 }
             }
         }
-        return ["{".concat(vec_str, "}"), vec_elements];
+        //return [`{${vec_str}}`, vec_elements];
+        return vec_elements;
     }
     else {
-        return [arg, null];
+        //return [arg, []];
+        return [];
     }
 }
 exports.operatorMapping = [
@@ -2688,10 +2690,36 @@ exports.builtin_functions = [
         opt_arg_defaults: null,
         ptr_args: function (arg_types, outs) { return null; },
         return_type: function (args, arg_types, outs) {
+            var dim = [];
+            var ndim = 2;
+            if (arg_types[1].ispointer) {
+                dim = arg_types[1].dim;
+                ndim = arg_types[1].ndim;
+            }
+            else {
+                var vec_el = parseVectorArg(args[1]);
+                ndim = vec_el.length;
+                if (ndim != 0) {
+                    for (var _i = 0, vec_el_1 = vec_el; _i < vec_el_1.length; _i++) {
+                        var v = vec_el_1[_i];
+                        var isnum = !/^[a-z].*$/.test(v);
+                        if (isnum) {
+                            dim.push(Number(v));
+                        }
+                        else {
+                            dim.push(v);
+                        }
+                    }
+                }
+                else {
+                    ndim = 1; //null;
+                    dim = [1]; //null;
+                }
+            }
             return {
-                type: arg_types[0],
-                ndim: 2,
-                dim: [1, 1],
+                type: arg_types[0].type,
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
                 ispointer: false,
@@ -3791,7 +3819,7 @@ exports.builtin_functions = [
     {
         fun_matlab: 'disp',
         fun_c: function (args, arg_types, outs, fun_matlab) {
-            if ((arg_types[0].type != 'char' && arg_types[0].isvector) || arg_types[0].type == "dynamic" || args[0] == null) {
+            if ((arg_types[0].type != 'char' && arg_types[0].isvector) || arg_types[0].type == "dynamic" || arg_types[0].type.includes("_type") || args[0] == null) {
                 return null; // args[0] == null occurs when calling disp(sprintf(...)) 
             }
             else if (arg_types[0].ismatrix) {
@@ -3844,6 +3872,9 @@ exports.builtin_functions = [
         push_main_before: function (args, arg_types, outs) {
             if (arg_types[0].type == "dynamic") {
                 return "switch(".concat(args[0], ".type) {\n\tcase 0:\n\tprintf(\"\\n%d\\n\", ").concat(args[0], ".data.ival);\n\tbreak;\n        \n\tcase 1:\n\tprintf(\"\\n%f\\n\", ").concat(args[0], ".data.dval);\n\tbreak;\n        \n\tcase 2:\n\tprintf(\"\\n%f\\n\", ").concat(args[0], ".data.cval);\n\tbreak;\n        \n\tcase 3:\n\tprintf(\"\\n%s\\n\", ").concat(args[0], ".data.chval);\n\tbreak;\n}");
+            }
+            else if (arg_types[0].type.includes("_type")) {
+                return "unknown_printf(&".concat(args[0], ");");
             }
             else if (arg_types[0].type != 'char' && arg_types[0].isvector) {
                 var format = '"\\n%d\\n"';

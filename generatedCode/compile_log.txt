@@ -80,6 +80,7 @@ stftM
 subtract_matrix
 testing
 transpose_matrix
+varargin_test
 xcorrM
 
 

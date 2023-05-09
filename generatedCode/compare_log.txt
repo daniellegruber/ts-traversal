@@ -87,5 +87,6 @@ filterM
 octaveTimer
 SPEED_small_matrix_power_complex
 stftM
+varargin_test
 xcorrM
 

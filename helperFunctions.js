@@ -226,6 +226,11 @@ function numel(x) {
 exports.numel = numel;
 function initVar(var_name, var_val, var_type) {
     var expression = '';
+    if (var_type.type.includes("_type") && !var_type.ismatrix) {
+        expression = "struct generic_val ".concat(var_name, ";");
+        expression.concat("\nfillVal(&".concat(var_name, ", ").concat(var_type, ", &").concat(var_val, ");"));
+        return expression;
+    }
     if (var_type.isvector && var_val == null) {
         return "".concat(var_type.type, " *").concat(var_name, " = NULL;\n").concat(var_name, " = malloc(").concat(numel(var_type.dim), "*sizeof(*").concat(var_name, "));");
     }

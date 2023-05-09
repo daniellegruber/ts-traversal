@@ -17,6 +17,9 @@ let parser = new Parser() as g.Parser;
 parser.setLanguage(Matlab);
 
 let dummy_count = 0;
+let fun_obj = null;
+let varargin = [];
+let varargin_flag = false;
 
 // Type inference
 // -----------------------------------------------------------------------------
@@ -41,8 +44,8 @@ export function findVarScope(filename, node, block_idxs, current_code, debug) {
         return scope;
     } 
 
-    if (current_code == filename) {
-    //if (current_code == "main") {
+    //if (current_code == filename) {
+    if (current_code == "main") {
         let fundef_blocks = block_idxs.filter(function(e) { return e[2] == -1 });
         if (fundef_blocks.length != 0) {
             if (node.startIndex >= entire_scope[0] && node.endIndex < fundef_blocks[0][0]) {
@@ -552,6 +555,13 @@ function inferTypeFromAssignment(filename, tree, var_types, custom_functions, cl
                 var_types = vt;
                 break;
             }
+            case g.SyntaxType.Comment: { // This helps update the varargin argument types of function definitions
+                let node = c.currentNode;
+                let [, , , , , , cf, vt] = inferType(filename, node, var_types, custom_functions, classes, file, alias_tbl, debug);
+                custom_functions = cf;
+                var_types = vt;
+                break;
+            }
             
         }
     } while(gotoPreorderSucc_SkipFunctionDef(cursor, debug));
@@ -574,6 +584,7 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
     
     
     if (obj != null) {
+        fun_obj = obj;
         let tree2 = parser.parse(obj.def_node.bodyNode.text);
         for (let i = 0; i < arg_types.length; i++) {
             arg_types[i].scope = [0, obj.def_node.endIndex - obj.def_node.startIndex, -1]; // "transpose" since passing adjusted tree
@@ -658,6 +669,7 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                 const v1: CustomFunction = { 
                     name: obj.name,
                     arg_types: tmp_arg_types,
+                    var_arg_types: obj.var_arg_types,
                     return_type: null,
                     outs_transform: (outs) => null,
                     external: obj.external,
@@ -726,6 +738,7 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
                 const v1: CustomFunction = { 
                     name: obj.name, 
                     arg_types: tmp_arg_types,
+                    var_arg_types: obj.var_arg_types,
                     // arg_types.push(tmp_arg_types)
                     outs_transform: (outs) => outs,
                     return_type: {
@@ -767,6 +780,7 @@ function getFunctionReturnType(filename, fun_name, arg_types, var_types, fun_dic
             const v1: CustomFunction = { 
                 name: obj.name,
                 arg_types: tmp_arg_types,
+                var_arg_types: obj.var_arg_types,
                 outs_transform: (outs) => outs,
                 return_type: null,
                 //ptr_param: null, 
@@ -823,8 +837,8 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
         console.log(node.text);
         console.log(node.type);
     }
-    console.log("-----------------------");
-    }*/
+    console.log("-----------------------");*/
+    
     
     
     if (debug == 1) {
@@ -846,6 +860,59 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
         
         
     switch (node.type) {
+        case g.SyntaxType.Comment: {
+            if (fun_obj != null) {
+                if (fun_obj.var_arg_types == null) {
+                    if (node.text.includes("Varargin")) {
+                        varargin_flag = true;
+                    }
+                    if (varargin_flag) {
+                        let match = node.text.match(/(\w*)\: ([a-zA-Z]*)( matrix)?/);
+                        if (match != null) {
+                            if (match[3] != undefined) {
+                                varargin.push({
+                                    name: match[1],
+                                    type: match[2],
+                                    ndim: `${match[1]}_ndim`,
+                                    dim: `${match[1]}_dim`,
+                                    ismatrix: true,
+                                    isvector: false,
+                                    ispointer: false,
+                                    isstruct: false,
+                                    scope: null //findVarScope(filename, node, block_idxs, current_code, debug)
+                                })
+                            } else {
+                                varargin.push({
+                                    name: match[1],
+                                    type: match[2],
+                                    ndim: 1,
+                                    dim: [1],
+                                    ismatrix: false,
+                                    isvector: false,
+                                    ispointer: false,
+                                    isstruct: false,
+                                    scope: null //findVarScope(filename, node, block_idxs, current_code, debug)
+                                })
+                            }
+                            
+                        }
+                    }
+                    if (node.text.includes("Outputs")) {
+                        varargin_flag = false;
+                        //console.log(varargin);
+                        //let fun_def = node.closest(g.SyntaxType.FunctionDefinition);
+                        //let obj = custom_functions.find(x=>x.name == fun_def.nameNode.text);
+                        fun_obj.var_arg_types = varargin;
+                        custom_functions.filter(x=>x.name != fun_obj.name);
+                        custom_functions.push(fun_obj);
+                        //console.log(custom_functions.find(x=>x.name == fun_obj.name));
+                    }
+                }
+            }
+            return ['unknown', 2, [1, 1], false, false, false, custom_functions, var_types];
+            break;
+        }
+            
         case g.SyntaxType.ParenthesizedExpression: {
             return inferType(filename, node.firstNamedChild, var_types, custom_functions, classes, file, alias_tbl, debug);
             break;
@@ -1014,6 +1081,7 @@ function inferType(filename, node, var_types, custom_functions, classes, file, a
             let return_type = obj.return_type(args, arg_types, outs);
             let arg_types_transform = obj.arg_types_transform(args, arg_types, outs);
             if (arg_types_transform != null) {
+                return_type = obj.return_type(args, arg_types_transform, outs);
                 for (let i = 0; i < arg_types_transform.length; i++) {
                     let obj2 = filterByScope(var_types, arg_types_transform[i].name, node, 0);
                     if (obj2 != null) {

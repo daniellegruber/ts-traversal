@@ -224,6 +224,11 @@ export function numel(x) {
 
 export function initVar(var_name, var_val, var_type) {
     let expression = '';
+    if (var_type.type.includes("_type") && !var_type.ismatrix) {
+        expression = `struct generic_val ${var_name};`;
+        expression.concat(`\nfillVal(&${var_name}, ${var_type}, &${var_val});`)
+        return expression;
+    }
     
     if (var_type.isvector && var_val == null) {
         return `${var_type.type} *${var_name} = NULL;\n${var_name} = malloc(${numel(var_type.dim)}*sizeof(*${var_name}));`;

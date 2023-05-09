@@ -1,8 +1,8 @@
 struct mmo {
-	dataFile_type dataFile;
-	dimensions_type dimensions;
+	struct generic_val dataFile;
+	struct generic_val dimensions;
 	bool writable;
-	workspace_type workspace;
+	struct generic_val workspace;
 	char *type = NULL;
 type = malloc(5*sizeof(*type));
 	unknown transposed;

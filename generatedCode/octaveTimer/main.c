@@ -6,6 +6,7 @@
 #include <matrix.h>
 #include "../convertSubscript.h"
 #include "./main.h"
+#include "../unknownTypes.h"
 
 // Entry-point function
 int main(void) {
@@ -17,7 +18,7 @@ int main(void) {
 		printf("\n%d\n", iter1);
 	
 	}
-	toc_type a = toc;
-	printf("\n%d\n", a);
+	struct generic_val a;
+	unknown_printf(&a);
 	return 0;
 }

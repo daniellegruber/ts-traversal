@@ -35,21 +35,24 @@ export function identifyCustomFunctions(tree, custom_functions, files, filename,
                         ispointer: null,
                         original_out: false
                     });*/
-                    arg_types.push({
-                        name: arg.text,
-                        type: `${arg.text}_type`,
-                        ndim: 2,
-                        dim: [`${arg.text}_dim0`, `${arg.text}_dim1`],
-                        ismatrix: null,
-                        isstruct: null,
-                        ispointer: null,
-                        original_out: false
-                    });
+                    //if (arg.text != "varargin") {
+                        arg_types.push({
+                            name: arg.text,
+                            type: `${arg.text}_type`,
+                            ndim: 2,
+                            dim: [`${arg.text}_dim0`, `${arg.text}_dim1`],
+                            ismatrix: null,
+                            isstruct: null,
+                            ispointer: null,
+                            original_out: false
+                        });
+                    //}
                 }
             }
             const v1: CustomFunction = { 
                 name: node.nameNode.text, 
                 arg_types: arg_types,
+                var_arg_types: null,
                 return_type: null,
                 outs_transform: (outs) => outs,
                 ptr_args: (arg_types, outs) => null,

@@ -41,6 +41,13 @@ function insertMain(expression, search_exp, before_after, fun_params) {
             a.push(i);
         return a;
     }, []);
+    if (fun_params.current_code != "main") {
+        idx = fun_params.function_definitions.reduce(function (a, e, i) {
+            if (e.includes(search_exp))
+                a.push(i);
+            return a;
+        }, []);
+    }
     //idx = idx[idx.length - num_back];
     idx = idx[idx.length - 1];
     if (idx == undefined) {
@@ -49,6 +56,9 @@ function insertMain(expression, search_exp, before_after, fun_params) {
     }
     // Indent expression
     var match = fun_params.main_function[idx].match(/\t+/);
+    if (fun_params.current_code != "main") {
+        match = fun_params.function_definitions[idx].match(/\t+/);
+    }
     var indent = match[0];
     var block_level = indent.length;
     if (expression.slice(0, 2) != '\n') {

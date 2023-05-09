@@ -34,6 +34,7 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                         ispointer: null,
                         original_out: false
                     });*/
+                    //if (arg.text != "varargin") {
                     arg_types.push({
                         name: arg.text,
                         type: "".concat(arg.text, "_type"),
@@ -44,11 +45,13 @@ function identifyCustomFunctions(tree, custom_functions, files, filename, file_t
                         ispointer: null,
                         original_out: false
                     });
+                    //}
                 }
             }
             var v1 = {
                 name: node.nameNode.text,
                 arg_types: arg_types,
+                var_arg_types: null,
                 return_type: null,
                 outs_transform: function (outs) { return outs; },
                 ptr_args: function (arg_types, outs) { return null; },

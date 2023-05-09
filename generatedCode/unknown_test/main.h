@@ -2,5 +2,5 @@
 #define MAIN_H
 
 // Function declarations
-A_type myfun(Matrix * A);
+Matrix * myfun(Matrix * A);
 #endif

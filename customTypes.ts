@@ -68,6 +68,7 @@ export type ArgTypeDic = {
 export type CustomFunction = {
     name: string;
     arg_types: Array<VarType>;
+    var_arg_types: Array<VarType>; // for MATLAB varargin
     return_type:Type;
     outs_transform: { (outs: Array<string>): Array<string>; }; 
     ptr_args: { (arg_types: Array<Type>, outs: Array<string>): Array<VarType>; };

@@ -19,14 +19,20 @@ setup:
 	module load ScaLAPACK/2.1.0-gompi-2020b; \
 	module load FFTW; \
 	
-# Copy mfiles from tests_C_Octave folder into generatedCode and "clean"
+# Create matrix.o
 compmatrix:
 	eval $(CC) -c -o matrix.o $$OCTAVEC/matrix.c $(CFLAGS) $(LIB) $(INC); \
 
 # Copy mfiles from tests_C_Octave folder into generatedCode and "clean"
 copyall:
-	if [ -f "matrix.o" ]; then \
+	if [ ! -f "matrix.o" ]; then \
 		eval $(CC) -c -o matrix.o $$OCTAVEC/matrix.c $(CFLAGS) $(LIB) $(INC); \
+	fi; \
+	if [ ! -f "convertSubscript.o" ]; then \
+		eval $(CC) -c -o convertSubscript.o $$TS_TRAVERSAL/generatedCode/convertSubscript.c $(CFLAGS) $(LIB) $(INC); \
+	fi; \
+	if [ ! -f "unknownTypes.o" ]; then \
+		eval $(CC) -c -o unknownTypes.o $$TS_TRAVERSAL/generatedCode/unknownTypes.c $(CFLAGS) $(LIB) $(INC); \
 	fi; \
 	mfiles=$$(find $$OCTAVEC/tests_C_Octave -type f -name "*.m"); \
 	for mfile in $$mfiles; do \
@@ -45,12 +51,17 @@ matlabtorun:
 		eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $$dir.m $$TS_TRAVERSAL; \
 	done; \
 
-	
+
+		
 # Generate one C program
 # make genone ARGS=testname
 genone:
 	eval npx tsc -sourcemap $$TS_TRAVERSAL/index.ts; \
-	eval npx ts-node $$TS_TRAVERSAL/index.ts $(shell pwd)/$(ARGS)/$(ARGS).m $(shell pwd)/$(ARGS) $$TS_TRAVERSAL 0 0; \
+	if [[ "$(ARGS)" == "class_test" ]]; then \
+		eval npx ts-node $$TS_TRAVERSAL/index.ts $(shell pwd)/$(ARGS)/$(ARGS).m $$EEGLAB/functions $$TS_TRAVERSAL 0 0; \
+	else \
+		eval npx ts-node $$TS_TRAVERSAL/index.ts $(shell pwd)/$(ARGS)/$(ARGS).m $(shell pwd)/$(ARGS) $$TS_TRAVERSAL 0 0; \
+	fi; \
 	eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $(ARGS).m $$TS_TRAVERSAL; \
 	
 # Generate main.c for all mfiles that haven't already been generated
@@ -66,13 +77,18 @@ genall:
 		fi \
 	done; \
 	
+	
 # Generate main.c for all mfiles, regardless of whether already generated
 regenall:
 	for dir in $(all_dirs) ; do \
 		dir=$${dir//\//}; \
 		fulldir="$(shell pwd)/$$dir"; \
 		echo $$dir; \
-		eval npx ts-node $$TS_TRAVERSAL/index.ts $$fulldir/$$dir.m $$fulldir $$TS_TRAVERSAL 0 0; \
+		if [[ "$$dir" == "class_test" ]]; then \
+			eval npx ts-node $$TS_TRAVERSAL/index.ts $$fulldir/$$dir.m $$EEGLAB/functions $$TS_TRAVERSAL 0 0; \
+		else \
+			eval npx ts-node $$TS_TRAVERSAL/index.ts $$fulldir/$$dir.m $$fulldir $$TS_TRAVERSAL 0 0; \
+		fi; \
 		eval npx ts-node $$TS_TRAVERSAL/matlabToRun.ts $$dir.m $$TS_TRAVERSAL; \
 	done; \
 
@@ -89,6 +105,7 @@ compileall:
 		dirs=$$(echo $(speed_dirs)); \
 	fi; \
 	eval $(CC) -c -o $(shell pwd)/convertSubscript.o $(shell pwd)/convertSubscript.c $(CFLAGS) $(LIB) $(INC); \
+	eval $(CC) -c -o $(shell pwd)/unknownTypes.o $(shell pwd)/unknownTypes.c $(CFLAGS) $(LIB) $(INC); \
 	good=(); \
 	bad=(); \
 	for dir in $$dirs; do \
@@ -101,10 +118,10 @@ compileall:
 		objects=$$(echo "$$mfiles" | sed "s/$$dir\.m/main.o/"); \
 		objects=$$(echo "$$objects" | sed "s/\.m/.o/"); \
 		objects+=" $(shell pwd)/convertSubscript.o";\
+		objects+=" $(shell pwd)/unknownTypes.o";\
 		for src in $$srcs; do \
 			eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
 		done; \
-		eval $(CC) -c -o $$fulldir/octavec_main.o $$fulldir/octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -o $$fulldir/test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
 		if $$($(CC) -o $$fulldir/test $$objects matrix.o $(CFLAGS) $(LIB) $(INC)); then \
 			good+="$$dir\n"; \
@@ -112,6 +129,7 @@ compileall:
 			bad+="$$dir\n"; \
 		fi; \
 		if [ -f "$$fulldir/octavec_main.c" ]; then \
+			eval $(CC) -c -o $$fulldir/octavec_main.o $$fulldir/octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 			eval $(CC) -o $$fulldir/check $$fulldir/octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
 		else \
 			echo "Custom test"; \
@@ -130,15 +148,17 @@ compileone:
 	srcs=$$(echo "$$mfiles" | sed "s/$(ARGS)\.m/main/"); \
 	srcs=$$(echo "$$srcs" | sed "s/\.m//"); \
 	srcs+=" $(shell pwd)/convertSubscript";\
+	srcs+=" $(shell pwd)/unknownTypes";\
 	objects=$$(echo "$$mfiles" | sed "s/$(ARGS)\.m/main.o/"); \
 	objects=$$(echo "$$objects" | sed "s/\.m/.o/"); \
 	objects+=" $(shell pwd)/convertSubscript.o";\
+	objects+=" $(shell pwd)/unknownTypes.o";\
 	for src in $$srcs; do \
 		eval $(CC) -c -o $$src.o $$src.c $(CFLAGS) $(LIB) $(INC); \
 	done; \
-	eval $(CC) -c -o $$fulldir/octavec_main.o $$fulldir/octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 	eval $(CC) -o $$fulldir/test $$objects matrix.o $(CFLAGS) $(LIB) $(INC); \
 	if [ -f "$$fulldir/octavec_main.c" ]; then \
+		eval $(CC) -c -o $$fulldir/octavec_main.o $$fulldir/octavec_main.c $(CFLAGS) $(LIB) $(INC); \
 		eval $(CC) -o $$fulldir/check $$fulldir/octavec_main.o matrix.o $(CFLAGS) $(LIB) $(INC); \
 	else \
 		echo "Custom test"; \

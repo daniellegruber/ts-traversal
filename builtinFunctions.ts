@@ -73,9 +73,11 @@ function parseVectorArg(arg:string) {
                 }
             }
         }
-        return [`{${vec_str}}`, vec_elements];
+        //return [`{${vec_str}}`, vec_elements];
+        return vec_elements;
     } else {
-        return [arg, null];
+        //return [arg, []];
+        return [];
     }
 }
     
@@ -2733,13 +2735,35 @@ for (int i = 1; ${step}*i < 1; i ++) {
         opt_arg_defaults: null,
         ptr_args: (arg_types, outs) => null,
         return_type: (args, arg_types, outs) => {
+            let dim = [];
+            let ndim = 2;
+            if (arg_types[1].ispointer) {
+                dim = arg_types[1].dim;
+                ndim = arg_types[1].ndim;
+            } else {
+                let vec_el = parseVectorArg(args[1]);
+                ndim = vec_el.length;
+                if (ndim != 0) {
+                    for (let v of vec_el) {
+                        let isnum = !/^[a-z].*$/.test(v);
+                        if (isnum) {
+                            dim.push(Number(v));
+                        } else {
+                            dim.push(v);
+                        }
+                    }
+                } else {
+                    ndim = 1; //null;
+                    dim = [1]; //null;
+                }
+            }
             return {
-                type: arg_types[0],
-                ndim: 2,
-                dim: [1,1],
+                type: arg_types[0].type,
+                ndim: ndim,
+                dim: dim,
                 ismatrix: true,
                 isvector: false,
-                ispointer: false, //true,
+                ispointer: false,
                 isstruct: false 
             };
         },
@@ -3825,7 +3849,7 @@ ${outs[0]} = malloc(${numel}*sizeof(*${outs[0]}));
     { // TO DO: FIX THIS https://www.tutorialspoint.com/c_standard_library/c_function_printf.htm
         fun_matlab: 'disp', 
         fun_c: (args, arg_types, outs, fun_matlab) => {
-            if ((arg_types[0].type != 'char' && arg_types[0].isvector) || arg_types[0].type == "dynamic" || args[0] == null) {
+            if ((arg_types[0].type != 'char' && arg_types[0].isvector) || arg_types[0].type == "dynamic" || arg_types[0].type.includes("_type") || args[0] == null) {
                 return null; // args[0] == null occurs when calling disp(sprintf(...)) 
             } else if (arg_types[0].ismatrix) {
                 return 'printM';
@@ -3888,6 +3912,8 @@ return `switch(${args[0]}.type) {
 \tprintf("\\n%s\\n", ${args[0]}.data.chval);
 \tbreak;
 }`;
+            } else if (arg_types[0].type.includes("_type")) {
+                return `unknown_printf(&${args[0]});`;
             } else if (arg_types[0].type != 'char' && arg_types[0].isvector) {
                 let format = '"\\n%d\\n"';
                 if (arg_types[0].type == 'double') {

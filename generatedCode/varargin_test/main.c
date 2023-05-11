@@ -36,11 +36,14 @@ int main(void) {
 Matrix * myfun(Matrix * A, int n_varargin, ...) {
 	va_list varargin;
 	va_start(varargin, n_varargin);
+	int a;
+	Matrix * b = NULL;
+	double c;
 	// Inputs:
 	//   A: int matrix
 	// Varargin:
 	//   a: int
-	//   b: int
+	//   b: int matrix
 	//   c: double
 	// Outputs:
 	//   B: int matrix
@@ -48,23 +51,29 @@ Matrix * myfun(Matrix * A, int n_varargin, ...) {
 	Matrix * tmp1 = scaleM(A, &scalar1, 0);
 	Matrix * B = tmp1;
 	if ((n_varargin + 1) > 3) {
-		int a = va_arg(varargin, int);
-		int b = va_arg(varargin, int);
-		int c = va_arg(varargin, double);
-		printf("a: %d\nb: %d\nc: %.4f\n", a, b, c);
+		a = va_arg(varargin, int);
+		b = va_arg(varargin, Matrix *);
+		c = va_arg(varargin, double);
+		printf("a: %d\nb:\n", a);
+		printM(b);
+		printf("c: %.4f\n", c);
+		
+		
 		
 		
 		
 		
 		} else if ((n_varargin + 1) > 2) {
-		int a = va_arg(varargin, int);
-		int b = va_arg(varargin, int);
-		printf("a: %d\nb: %d\n", a, b);
+		a = va_arg(varargin, int);
+		b = va_arg(varargin, Matrix *);
+		printf("a: %d\nb:\n", a);
+		printM(b);
+		
 		
 		
 		
 		} else if ((n_varargin + 1) > 1) {
-		int a = va_arg(varargin, int);
+		a = va_arg(varargin, int);
 		printf("a: %d\n", a);
 
 		

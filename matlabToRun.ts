@@ -37,7 +37,10 @@ if (!fs.existsSync(`${out_folder}/matlabToRun/${name}_torun.m`)){
         for (let i = 0; i < custom_fun.length; i++) {
             let fun_code = fs.readFileSync(custom_fun[i], "utf8");
             code = code.replace(fun_code, '');
+            // Replace disp with dispArr
             fun_code = fun_code.replace(/disp\(/g, 'dispArr(fileID, ');
+            // Replace nargin with (nargin - 1) because of fileID param
+            fun_code = fun_code.replace(/nargin/g, '(nargin - 1)');
             fun_defs.push(fun_code);
         }
         

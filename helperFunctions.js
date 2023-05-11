@@ -133,6 +133,14 @@ exports.generateTmpVar = generateTmpVar;
 function filterByScope(obj, name, node, find_or_filter) {
     var obj2 = obj.filter(function (x) { return x.scope != null; });
     obj2 = obj2.filter(function (x) { return x.name == name && node.startIndex >= x.scope[0] && node.endIndex <= x.scope[1]; });
+    /*if (name == "c") {
+        console.log("filterByScope");
+        console.log(node.text);
+        console.log([node.startIndex, node.endIndex]);
+        console.log(obj.filter(x=>x.name=="c"));
+        console.log(obj2);
+        console.log("--------------------------");
+    }*/
     if (find_or_filter == 0) {
         if (obj2.length > 1) {
             return obj2.reduce(function (prev, curr) {

@@ -32,7 +32,10 @@ if (!fs.existsSync("".concat(out_folder, "/matlabToRun/").concat(name, "_torun.m
         for (var i = 0; i < custom_fun_1.length; i++) {
             var fun_code = fs.readFileSync(custom_fun_1[i], "utf8");
             code = code.replace(fun_code, '');
+            // Replace disp with dispArr
             fun_code = fun_code.replace(/disp\(/g, 'dispArr(fileID, ');
+            // Replace nargin with (nargin - 1) because of fileID param
+            fun_code = fun_code.replace(/nargin/g, '(nargin - 1)');
             fun_defs.push(fun_code);
         }
         // Replace disp with dispArr

@@ -8,7 +8,7 @@ function B = myfun(A, varargin)
 %   A: int matrix
 % Varargin:
 %   a: int
-%   b: int
+%   b: int matrix
 %   c: double
 % Outputs:
 %   B: int matrix
@@ -19,12 +19,16 @@ if nargin > 3
     a = varargin{1};
     b = varargin{2};
     c = varargin{3};
-    disp(sprintf("a: %d\nb: %d\nc: %.4f\n", a, b, c));
+    disp(sprintf("a: %d\nb:\n", a));
+    disp(b);
+    disp(sprintf("c: %.4f\n", c));
+    
     
 elseif nargin > 2
     a = varargin{1};
     b = varargin{2};
-    disp(sprintf("a: %d\nb: %d\n", a, b);
+    disp(sprintf("a: %d\nb:\n", a));
+    disp(b);
     
 elseif nargin > 1
     a = varargin{1};

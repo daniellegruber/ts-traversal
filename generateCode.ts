@@ -476,6 +476,18 @@ export function generateCode(filename, tree, out_folder, custom_functions, class
                 let arg_types = [];
                 let args = [];
                 var [type, ndim, dim, ismatrix, ispointer, isstruct, c,] = inferType(filename, node.rightNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                let [l_type, l_ndim, l_dim, l_ismatrix, l_ispointer, l_isstruct, , ] = inferType(filename, node.leftNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
+                
+                if (type_to_matrix_type.findIndex(x=>x.type == l_type) != -1 && type_to_matrix_type.findIndex(x=>x.type == type) == -1) {
+                    type = l_type;
+                    ndim = l_ndim;
+                    dim = l_dim;
+                    ismatrix = l_ismatrix;
+                    ispointer = l_ispointer;
+                    isstruct = l_isstruct;
+                }
+                
+                
                 custom_functions = c;
                 var init_flag = false;
                 var lhs = null;
@@ -1018,7 +1030,11 @@ writeM(${tmp_mat}, ${tmp_size}, ${tmp_lhs});`,
             case g.SyntaxType.CellSubscript: {
                 if (node.valueNode.text == "varargin") {
                     let idx = node.namedChildren[1].text.match(/\d+/)[0];
-                    return `va_arg(varargin, ${fun_obj.var_arg_types[Number(idx) - 1].type})`;
+                    if (fun_obj.var_arg_types[Number(idx) - 1].ismatrix) {
+                        return "va_arg(varargin, Matrix *)";
+                    } else {
+                        return `va_arg(varargin, ${fun_obj.var_arg_types[Number(idx) - 1].type})`;
+                    }
                 }
                 
                 let [type, ndim, dim, ismatrix, ispointer, isstruct, c,] = inferType(filename, node.valueNode, tmp_var_types, custom_functions, classes, file, alias_tbl, debug);
@@ -2321,7 +2337,7 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${dim[1]}; ${tmp_iter}++) {
             console.log("printFunctionDefDeclare");
         }
         let obj = custom_functions.find(x => x.name === node.nameNode.text);
-        //console.log(obj);
+        
         if (obj != null) {
             for (let i = 0; i < obj.arg_type_dic.length; i ++) {
                 let fun_name = `${node.nameNode.text}_${obj.arg_type_dic[i].arg_type_id}`;
@@ -2358,7 +2374,17 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${dim[1]}; ${tmp_iter}++) {
                 }
                 
                 
-                
+                if (obj.var_arg_types != null) {
+                    let expression = [];
+                    expression.push("va_list varargin;");
+                    expression.push("va_start(varargin, n_varargin);");
+                    for (let k = 0; k < obj.var_arg_types.length; k++) {
+                        expression.push(initVar(obj.var_arg_types[k].name, null, obj.var_arg_types[k]));
+                    }
+                    updateFunParams(0);
+                    [main_function, function_definitions] = pushToMain(expression.join("\n"), fun_params);
+                      
+                }
 
                 for (let child of node.bodyNode.namedChildren) {
                     updateFunParams(0);
@@ -2366,11 +2392,6 @@ for (int ${tmp_iter} = 0; ${tmp_iter} < ${dim[1]}; ${tmp_iter}++) {
                 }
                 
                 if (obj.var_arg_types != null) {
-                    let expression = [];
-                    expression.push("va_list varargin;");
-                    expression.push("va_start(varargin, n_varargin);");
-                    updateFunParams(0);
-                    [main_function, function_definitions] = insertMain(expression.join("\n"), `${fun_name}_placeholder`, 1, fun_params);
                     updateFunParams(0);
                     [main_function, function_definitions] = pushToMain("va_end(varargin);", fun_params);
                       

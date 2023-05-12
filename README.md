@@ -206,8 +206,7 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
   - Changed matrix.c stftV function so that it would output regular Fourier coeff, not absolute values
 - In hamming_hanning, C-defined hanning doesnt work as expected
 - In determinant_matrix, C-defined detM doesnt work as expected
-- How to assign ndim and dim for dynamic variables/you don't know the values beforehand
-- How to deal with varargin and varargout
+- How to deal with varargout (varargin addressed)
 
 # New: support for unknown types
 Say you have a standalone MATLAB function like the following, where the types of the input arguments are unknown, since there are no function calls provided in some main script.

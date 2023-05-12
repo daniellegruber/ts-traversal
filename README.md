@@ -209,6 +209,60 @@ where `$TS_TRAVERSAL` is the path to your ts-traversal folder.
 - How to assign ndim and dim for dynamic variables/you don't know the values beforehand
 - How to deal with varargin and varargout
 
+# New: support for unknown types
+Say you have a standalone MATLAB function like the following, where the types of the input arguments are unknown, since there are no function calls provided in some main script.
+
+```matlab
+function B = myfun(A)
+    B = A';
+    disp(B(end));
+    disp(B(end, 1));
+end
+```
+
+The generated C code is as follows:
+```c
+// Link
+#include <stdio.h>
+#include <stdbool.h>
+#include <complex.h>
+#include <string.h>
+#include <matrix.h>
+#include "../convertSubscript.h"
+#include "./main.h"
+#include "../unknownTypes.h"
+
+    
+Matrix * myfun(Matrix * A) {
+    int *A_dim = getDimsM(A);
+    int A_dim0 = A_dim[0];
+    int A_dim1 = A_dim[1];
+    int A_type = gettypeM(A);
+    Matrix * tmp1 = ctransposeM(A);
+    Matrix * B = tmp1;
+    int ndim1 = getnDimM(B);
+    int *dim1 = getDimsM(B);
+    int idx1 = convertSubscript(ndim1, dim1, (A_dim1)*(A_dim0));
+    struct generic_val tmp2;
+    unknown_indexM(&tmp2, A_type, B, 1, idx1+1);
+    unknown_printf(&tmp2);
+    struct generic_val tmp3;
+    unknown_indexM(&tmp3, A_type, B, 1, (1-1) + (A_dim1-1)*A_dim0 + (1-1)*A_dim1*A_dim0 + (1-1)*A_dim1*A_dim0*1);
+    unknown_printf(&tmp3);
+    return B;
+}
+```
+
+To test it, the following chunk of code can be added, and it can be seen that it will function in the same way as the MATLAB code.
+```c
+int main(void) {
+    int dim[2] = {3,2};
+    Matrix * B = myfun(randM(2, dim));
+    printM(B);
+    return 0;
+}
+```
+
 # Under the hood
 ### cleanOctaveC.ts 
 #### Overview
